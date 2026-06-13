@@ -1,0 +1,6 @@
+@AksiyonFutbol.Api_HostAddress = http://localhost:5194
+
+GET {{AksiyonFutbol.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
