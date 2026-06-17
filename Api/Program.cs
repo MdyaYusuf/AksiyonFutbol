@@ -31,6 +31,17 @@ builder.Services.AddAuthenticationDependencies();
 builder.Services.AddUserDependencies();
 builder.Services.AddRoleDependencies();
 
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy("AllowFrontend", policy =>
+  {
+    policy.WithOrigins("http://localhost:3000")
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+          .AllowCredentials();
+  });
+});
+
 builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection("TokenOptions"));
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");
@@ -76,6 +87,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

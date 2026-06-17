@@ -1,6 +1,7 @@
 using Api.Core.Controllers;
 using Api.Core.Responses;
 using Api.Core.Security;
+using Api.Features.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -28,7 +29,7 @@ public class AuthenticationController(
 
     SetTokensAsCookies(result.Data);
 
-    return CreateActionResult(result);
+    return CreateClientAwareResult(result);
   }
 
   [HttpPost("register")]
@@ -63,7 +64,7 @@ public class AuthenticationController(
 
     SetTokensAsCookies(result.Data);
 
-    return CreateActionResult(result);
+    return CreateClientAwareResult(result);
   }
 
   [HttpPost("revoke-refresh-token")]
@@ -106,5 +107,25 @@ public class AuthenticationController(
       Expires = DateTime.Now.AddDays(_options.RefreshTokenExpiration)
     };
     Response.Cookies.Append("refreshToken", tokens.RefreshToken, refreshOptions);
+  }
+
+  private IActionResult CreateClientAwareResult(ReturnModel<TokenResponseDto> result)
+  {
+    bool isMobile = Request.Headers["X-Client-Platform"] == "Mobile";
+
+    if (isMobile)
+    {
+      return CreateActionResult(result);
+    }
+
+    var safeWebResponse = new ReturnModel<UserResponseDto>
+    {
+      Success = result.Success,
+      Message = result.Message,
+      StatusCode = result.StatusCode,
+      Data = result.Data!.User
+    };
+
+    return CreateActionResult(safeWebResponse);
   }
 }

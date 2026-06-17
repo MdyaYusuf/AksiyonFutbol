@@ -1,7 +1,42 @@
-export default function App() {
+import { useEffect, useState } from 'react'
+import { Outlet } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { useAppDispatch } from './core/store/hooks'
+import { authService } from './features/auth/authService'
+import { setCredentials } from './features/auth/authSlice'
+
+function App() {
+  const dispatch = useAppDispatch()
+  const [isInitializing, setIsInitializing] = useState(true)
+
+  useEffect(() => {
+    authService.checkAuth()
+      .then((response) => {
+
+        if (response.success && response.data) {
+          dispatch(setCredentials(response.data))
+        }
+      })
+      .catch(() => {
+        /* Fail silently if no valid cookie exists */
+      })
+      .finally(() => setIsInitializing(false))
+  }, [dispatch])
+
+  if (isInitializing) {
+    return <div>Yükleniyor...</div>;
+  }
+
   return (
-    <div>
-      <h1>Aksiyon Futbol</h1>
-    </div>
-  );
+    <>
+      <h1>AksiyonFutbol</h1>
+      <main>
+        <Outlet />
+      </main>
+      <ToastContainer position="bottom-right" />
+    </>
+  )
 }
+
+export default App
