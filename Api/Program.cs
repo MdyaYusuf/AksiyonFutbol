@@ -6,6 +6,7 @@ using Api.Core.Security;
 using Api.Data;
 using Api.Features.Authentication;
 using Api.Features.ClubPresidents;
+using Api.Features.LeagueDivisions;
 using Api.Features.Roles;
 using Api.Features.Users;
 using FluentValidation;
@@ -34,6 +35,7 @@ builder.Services.AddAuthenticationDependencies();
 builder.Services.AddUserDependencies();
 builder.Services.AddRoleDependencies();
 builder.Services.AddClubPresidentDependencies();
+builder.Services.AddLeagueDivisionDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>
