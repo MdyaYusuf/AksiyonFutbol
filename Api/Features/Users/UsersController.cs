@@ -7,7 +7,7 @@ namespace Api.Features.Users;
 
 [Authorize]
 [ApiController]
-[Route("api/[users]")]
+[Route("api/[controller]")]
 public class UsersController(IUserService _userService) : CustomBaseController
 {
   [HttpGet]

@@ -1,11 +1,14 @@
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using Api.Core.Middlewares;
 using Api.Core.Security;
 using Api.Data;
 using Api.Features.Authentication;
+using Api.Features.ClubPresidents;
 using Api.Features.Roles;
 using Api.Features.Users;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +33,8 @@ builder.Services.AddDataDependencies(builder.Configuration);
 builder.Services.AddAuthenticationDependencies();
 builder.Services.AddUserDependencies();
 builder.Services.AddRoleDependencies();
+builder.Services.AddClubPresidentDependencies();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>
 {

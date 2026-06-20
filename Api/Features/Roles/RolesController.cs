@@ -7,7 +7,7 @@ namespace Api.Features.Roles;
 
 [Authorize]
 [ApiController]
-[Route("api/roles")]
+[Route("api/[controller]")]
 public class RolesController(IRoleService _roleService) : CustomBaseController
 {
   [HttpGet]

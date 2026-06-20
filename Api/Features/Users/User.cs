@@ -24,7 +24,7 @@ public class User : Entity<Guid>
   public string? ProfileImageUrl { get; set; }
   public bool IsActive { get; set; } = true;
 
-  // Navigation properties
+  // Relationship properties
   public int RoleId { get; set; }
   public virtual Role Role { get; set; } = default!;
 }

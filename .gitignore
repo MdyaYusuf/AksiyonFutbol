@@ -3,9 +3,6 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# dotenv files
-.env
-
 # User-specific files
 *.rsuser
 *.suo
@@ -97,7 +94,6 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *_wpftmp.csproj
-*.log
 *.tlog
 *.vspscc
 *.vssscc
@@ -289,10 +285,6 @@ FakesAssemblies/
 # GhostDoc plugin setting file
 *.GhostDoc.xml
 
-# Node.js Tools for Visual Studio
-.ntvs_analysis.dat
-node_modules/
-
 # Visual Studio 6 build log
 *.plg
 
@@ -308,10 +300,6 @@ node_modules/
 # Visual Studio 6 workspace and project file (working project files containing files to include in project)
 *.dsw
 *.dsp
-
-# Visual Studio 6 technical files
-*.ncb
-*.aps
 
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
@@ -384,14 +372,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# VS Code files for those working on multiple tools
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
 # Local History for Visual Studio Code
 .history/
 
@@ -413,7 +393,6 @@ FodyWeavers.xsd
 
 # globs
 Makefile.in
-*.userprefs
 *.usertasks
 config.make
 config.status
@@ -426,7 +405,6 @@ test-results/
 
 # content below from: https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
 # General
-.DS_Store
 .AppleDouble
 .LSOverride
 
@@ -468,24 +446,28 @@ ehthumbs_vista.db
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Windows Installer files
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-
 # Windows shortcuts
 *.lnk
 
-# Vim temporary swap files
-*.swp
+# Secrets & local configuration
 
-# Local development settings
-**/appsettings.Development.json
+# Frontend environment files (.env.example stays tracked as a template)
+.env
+.env.*
+!.env*.example
 
-# VsCode workspace settings
+# ASP.NET environment overrides (appsettings.json stays tracked with sample data)
+**/appsettings.*.json
+
+# VS Code
 .vscode/
+*.code-workspace
+
+# Vite / frontend (merged from Client/.gitignore)
+**/dist-ssr/
+*.ntvs*
+*.njsproj
+*.sw?
 
 # dependencies
 **/node_modules/
@@ -501,11 +483,15 @@ $RECYCLE.BIN/
 
 # misc
 **/.DS_Store
-**/.env.local
-**/.env.development.local
-**/.env.test.local
-**/.env.production.local
 
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cursor AI Indexing Exclusions
+.cursorignore

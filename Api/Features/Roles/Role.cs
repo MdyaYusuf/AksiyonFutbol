@@ -16,6 +16,6 @@ public class Role : Entity<int>
 
   public required string Name { get; set; }
 
-  // Navigation Properties
+  // Relationship properties
   public virtual ICollection<User> Users { get; set; }
 }
