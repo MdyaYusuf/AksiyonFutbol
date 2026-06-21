@@ -1,4 +1,6 @@
+using Api.Core.Options;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 
 namespace Api.Features.LeagueDivisions;
 
@@ -41,13 +43,13 @@ public class UpdateLeagueDivisionRequestValidator : AbstractValidator<UpdateLeag
 
 public class UpdateLeagueDivisionMatchWeekRequestValidator : AbstractValidator<UpdateLeagueDivisionMatchWeekRequest>
 {
-  public UpdateLeagueDivisionMatchWeekRequestValidator()
+  public UpdateLeagueDivisionMatchWeekRequestValidator(IOptions<GameOptions> gameOptions)
   {
     RuleFor(ld => ld.Id)
       .GreaterThan(0).WithMessage("Geçersiz lig ID.");
 
     RuleFor(ld => ld.CurrentMatchWeek)
-      .InclusiveBetween(1, LeagueDivisionBusinessRules.MaximumMatchWeek)
-      .WithMessage($"Maç haftası 1 ile {LeagueDivisionBusinessRules.MaximumMatchWeek} arasında olmalıdır.");
+      .InclusiveBetween(gameOptions.Value.MinimumMatchWeek, gameOptions.Value.MaximumMatchWeek)
+      .WithMessage($"Maç haftası {gameOptions.Value.MinimumMatchWeek} ile {gameOptions.Value.MaximumMatchWeek} arasında olmalıdır.");
   }
 }

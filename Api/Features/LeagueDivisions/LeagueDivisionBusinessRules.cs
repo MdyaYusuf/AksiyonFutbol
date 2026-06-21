@@ -1,12 +1,13 @@
 using Api.Core.Exceptions;
+using Api.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace Api.Features.LeagueDivisions;
 
-public class LeagueDivisionBusinessRules(ILeagueDivisionRepository _leagueDivisionRepository)
+public class LeagueDivisionBusinessRules(
+  ILeagueDivisionRepository _leagueDivisionRepository,
+  IOptions<GameOptions> _gameOptions)
 {
-  public const int MinimumMatchWeek = 1;
-  public const int MaximumMatchWeek = 18;
-
   public async Task<LeagueDivision> GetLeagueDivisionIfExistAsync(
     int id,
     Func<IQueryable<LeagueDivision>, IQueryable<LeagueDivision>>? include = null,
@@ -68,15 +69,15 @@ public class LeagueDivisionBusinessRules(ILeagueDivisionRepository _leagueDivisi
 
   public void MatchWeekMustBeValid(int matchWeek)
   {
-    if (matchWeek < MinimumMatchWeek || matchWeek > MaximumMatchWeek)
+    if (matchWeek < _gameOptions.Value.MinimumMatchWeek || matchWeek > _gameOptions.Value.MaximumMatchWeek)
     {
-      throw new BusinessException($"Maç haftası {MinimumMatchWeek} ile {MaximumMatchWeek} arasında olmalıdır.");
+      throw new BusinessException($"Maç haftası {_gameOptions.Value.MinimumMatchWeek} ile {_gameOptions.Value.MaximumMatchWeek} arasında olmalıdır.");
     }
   }
 
   public void LeagueCanAdvanceMatchWeek(LeagueDivision leagueDivision)
   {
-    if (leagueDivision.CurrentMatchWeek >= MaximumMatchWeek)
+    if (leagueDivision.CurrentMatchWeek >= _gameOptions.Value.MaximumMatchWeek)
     {
       throw new BusinessException("Lig sezonunun son maç haftasına ulaşmış durumda.");
     }

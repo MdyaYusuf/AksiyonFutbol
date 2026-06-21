@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 
 namespace Api.Features.LeagueDivisions;
 
@@ -12,7 +14,8 @@ public class LeagueDivisionService(
   IUnitOfWork _unitOfWork,
   IValidator<CreateLeagueDivisionRequest> _createValidator,
   IValidator<UpdateLeagueDivisionRequest> _updateValidator,
-  IValidator<UpdateLeagueDivisionMatchWeekRequest> _updateMatchWeekValidator) : ILeagueDivisionService
+  IValidator<UpdateLeagueDivisionMatchWeekRequest> _updateMatchWeekValidator,
+  IOptions<GameOptions> _gameOptions) : ILeagueDivisionService
 {
   public async Task<ReturnModel<PagedResponse<LeagueDivisionResponseDto>>> GetAllAsync(
     Expression<Func<LeagueDivision, bool>>? filter = null,
@@ -158,7 +161,7 @@ public class LeagueDivisionService(
     await _businessRules.TierGroupMustBeUniqueAsync(request.Tier, request.GroupNumber, cancellationToken: cancellationToken);
 
     LeagueDivision leagueDivision = _mapper.CreateToEntity(request);
-    leagueDivision.CurrentMatchWeek = LeagueDivisionBusinessRules.MinimumMatchWeek;
+    leagueDivision.CurrentMatchWeek = _gameOptions.Value.MinimumMatchWeek;
 
     await _leagueDivisionRepository.AddAsync(leagueDivision, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
