@@ -42,6 +42,16 @@ public class BasePlayerConfiguration : IEntityTypeConfiguration<BasePlayer>
     builder.Property(bp => bp.Age)
       .IsRequired();
 
+    builder.Property(bp => bp.HeightCm)
+      .IsRequired();
+
+    builder.Property(bp => bp.WeightKg)
+      .IsRequired();
+
+    builder.Property(bp => bp.PreferredFoot)
+      .HasConversion<int>()
+      .IsRequired();
+
     builder.Property(bp => bp.AttackPower)
       .IsRequired();
 

@@ -25,6 +25,15 @@ public class CreateBasePlayerRequestValidator : AbstractValidator<CreateBasePlay
     RuleFor(bp => bp.Age)
       .InclusiveBetween(16, 40).WithMessage("Oyuncu yaşı 16 ile 40 arasında olmalıdır.");
 
+    RuleFor(bp => bp.HeightCm)
+      .InclusiveBetween(150, 220).WithMessage("Oyuncu boyu 150 cm ile 220 cm arasında olmalıdır.");
+
+    RuleFor(bp => bp.WeightKg)
+      .InclusiveBetween(50, 120).WithMessage("Oyuncu kilosu 50 kg ile 120 kg arasında olmalıdır.");
+
+    RuleFor(bp => bp.PreferredFoot)
+      .IsInEnum().WithMessage("Geçersiz tercih edilen ayak değeri.");
+
     RuleFor(bp => bp.AttackPower)
       .InclusiveBetween(1, 100).WithMessage("Hücum gücü 1 ile 100 arasında olmalıdır.");
 
@@ -61,6 +70,15 @@ public class UpdateBasePlayerRequestValidator : AbstractValidator<UpdateBasePlay
 
     RuleFor(bp => bp.Age)
       .InclusiveBetween(16, 40).WithMessage("Oyuncu yaşı 16 ile 40 arasında olmalıdır.");
+
+    RuleFor(bp => bp.HeightCm)
+      .InclusiveBetween(150, 220).WithMessage("Oyuncu boyu 150 cm ile 220 cm arasında olmalıdır.");
+
+    RuleFor(bp => bp.WeightKg)
+      .InclusiveBetween(50, 120).WithMessage("Oyuncu kilosu 50 kg ile 120 kg arasında olmalıdır.");
+
+    RuleFor(bp => bp.PreferredFoot)
+      .IsInEnum().WithMessage("Geçersiz tercih edilen ayak değeri.");
 
     RuleFor(bp => bp.AttackPower)
       .InclusiveBetween(1, 100).WithMessage("Hücum gücü 1 ile 100 arasında olmalıdır.");

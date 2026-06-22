@@ -9,6 +9,9 @@ public sealed record BasePlayerResponseDto
   public string? Nationality { get; init; }
   public PlayerPosition Position { get; init; }
   public int Age { get; init; }
+  public int HeightCm { get; init; }
+  public int WeightKg { get; init; }
+  public PreferredFoot PreferredFoot { get; init; }
   public int AttackPower { get; init; }
   public int DefenseStrength { get; init; }
   public int MidfieldControl { get; init; }
@@ -23,6 +26,9 @@ public sealed record BasePlayerPreviewDto
   public string DefaultLastName { get; init; } = default!;
   public PlayerPosition Position { get; init; }
   public int Age { get; init; }
+  public int HeightCm { get; init; }
+  public int WeightKg { get; init; }
+  public PreferredFoot PreferredFoot { get; init; }
   public int OverallRating { get; init; }
 }
 
@@ -32,6 +38,7 @@ public sealed record CreatedBasePlayerResponseDto
   public string DefaultFirstName { get; init; } = default!;
   public string DefaultLastName { get; init; } = default!;
   public PlayerPosition Position { get; init; }
+  public PreferredFoot PreferredFoot { get; init; }
 }
 
 // Requests
@@ -41,6 +48,9 @@ public sealed record CreateBasePlayerRequest(
   string? Nationality,
   PlayerPosition Position,
   int Age,
+  int HeightCm,
+  int WeightKg,
+  PreferredFoot PreferredFoot,
   int AttackPower,
   int DefenseStrength,
   int MidfieldControl);
@@ -52,6 +62,9 @@ public sealed record UpdateBasePlayerRequest(
   string? Nationality,
   PlayerPosition Position,
   int Age,
+  int HeightCm,
+  int WeightKg,
+  PreferredFoot PreferredFoot,
   int AttackPower,
   int DefenseStrength,
   int MidfieldControl);

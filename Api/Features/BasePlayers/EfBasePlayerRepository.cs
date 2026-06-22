@@ -30,6 +30,9 @@ public class EfBasePlayerRepository : EfBaseRepository<BaseDbContext, BasePlayer
     string? nationality,
     PlayerPosition position,
     int age,
+    int heightCm,
+    int weightKg,
+    PreferredFoot preferredFoot,
     int attackPower,
     int defenseStrength,
     int midfieldControl,
@@ -43,6 +46,9 @@ public class EfBasePlayerRepository : EfBaseRepository<BaseDbContext, BasePlayer
         bp.Nationality == nationality &&
         bp.Position == position &&
         bp.Age == age &&
+        bp.HeightCm == heightCm &&
+        bp.WeightKg == weightKg &&
+        bp.PreferredFoot == preferredFoot &&
         bp.AttackPower == attackPower &&
         bp.DefenseStrength == defenseStrength &&
         bp.MidfieldControl == midfieldControl &&

@@ -1,0 +1,119 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Api.Features.PlayerInstances;
+
+public class PlayerInstanceConfiguration : IEntityTypeConfiguration<PlayerInstance>
+{
+  public void Configure(EntityTypeBuilder<PlayerInstance> builder)
+  {
+    builder.ToTable("PlayerInstances");
+
+    builder.HasKey(pi => pi.Id);
+
+    builder.Property(pi => pi.Id)
+      .HasColumnName("Id")
+      .IsRequired();
+
+    builder.Property(pi => pi.CreatedDate)
+      .HasColumnName("CreatedDate")
+      .IsRequired();
+
+    builder.Property(pi => pi.UpdatedDate)
+      .HasColumnName("UpdatedDate")
+      .IsRequired(false);
+
+    builder.Property(pi => pi.FirstName)
+      .HasMaxLength(50)
+      .IsRequired();
+
+    builder.Property(pi => pi.LastName)
+      .HasMaxLength(50)
+      .IsRequired();
+
+    builder.Property(pi => pi.Nationality)
+      .HasMaxLength(50)
+      .IsRequired(false);
+
+    builder.Property(pi => pi.Position)
+      .HasConversion<int>()
+      .IsRequired();
+
+    builder.Property(pi => pi.Age)
+      .IsRequired();
+
+    builder.Property(pi => pi.HeightCm)
+      .IsRequired();
+
+    builder.Property(pi => pi.WeightKg)
+      .IsRequired();
+
+    builder.Property(pi => pi.PreferredFoot)
+      .HasConversion<int>()
+      .IsRequired();
+
+    builder.Property(pi => pi.AttackPower)
+      .IsRequired();
+
+    builder.Property(pi => pi.DefenseStrength)
+      .IsRequired();
+
+    builder.Property(pi => pi.MidfieldControl)
+      .IsRequired();
+
+    builder.Property(pi => pi.IsInjured)
+      .HasDefaultValue(false)
+      .IsRequired();
+
+    builder.Property(pi => pi.InjuryDays)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(pi => pi.SeasonGoals)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(pi => pi.SeasonAssists)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(pi => pi.SeasonYellowCards)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(pi => pi.SeasonRedCards)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(pi => pi.MarketValue)
+      .HasPrecision(18, 2)
+      .HasDefaultValue(0m)
+      .IsRequired();
+
+    builder.Property(pi => pi.Wage)
+      .HasPrecision(18, 2)
+      .HasDefaultValue(0m)
+      .IsRequired();
+
+    builder.Property(pi => pi.ClubId)
+      .IsRequired();
+
+    builder.Property(pi => pi.BasePlayerId)
+      .IsRequired(false);
+
+    builder.HasOne(pi => pi.Club)
+      .WithMany(c => c.Players)
+      .HasForeignKey(pi => pi.ClubId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+    builder.HasOne(pi => pi.BasePlayer)
+      .WithMany(bp => bp.PlayerInstances)
+      .HasForeignKey(pi => pi.BasePlayerId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+    builder.HasIndex(pi => pi.ClubId);
+    builder.HasIndex(pi => pi.BasePlayerId);
+    builder.HasIndex(pi => pi.Position);
+    builder.HasIndex(pi => new { pi.ClubId, pi.Position });
+  }
+}

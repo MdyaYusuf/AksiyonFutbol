@@ -19,6 +19,9 @@ public partial class BasePlayerMapper
       Nationality = entity.Nationality,
       Position = entity.Position,
       Age = entity.Age,
+      HeightCm = entity.HeightCm,
+      WeightKg = entity.WeightKg,
+      PreferredFoot = entity.PreferredFoot,
       AttackPower = entity.AttackPower,
       DefenseStrength = entity.DefenseStrength,
       MidfieldControl = entity.MidfieldControl,
@@ -36,6 +39,9 @@ public partial class BasePlayerMapper
       DefaultLastName = entity.DefaultLastName,
       Position = entity.Position,
       Age = entity.Age,
+      HeightCm = entity.HeightCm,
+      WeightKg = entity.WeightKg,
+      PreferredFoot = entity.PreferredFoot,
       OverallRating = BasePlayerRatingCalculator.Calculate(entity)
     };
   }

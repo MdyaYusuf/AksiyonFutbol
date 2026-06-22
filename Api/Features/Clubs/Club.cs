@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Api.Core.Entities;
 using Api.Features.ClubPresidents;
 using Api.Features.LeagueDivisions;
+using Api.Features.PlayerInstances;
 
 namespace Api.Features.Clubs;
 
@@ -10,6 +11,8 @@ public class Club : Entity<Guid>
   [SetsRequiredMembers]
   public Club()
   {
+    Players = new HashSet<PlayerInstance>();
+
     Name = default!;
     Morale = 50;
     Chemistry = 50;
@@ -29,4 +32,5 @@ public class Club : Entity<Guid>
   public int DivisionId { get; set; }
   public virtual ClubPresident? President { get; set; }
   public virtual LeagueDivision Division { get; set; } = default!;
+  public virtual ICollection<PlayerInstance> Players { get; set; }
 }
