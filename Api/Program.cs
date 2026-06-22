@@ -6,6 +6,7 @@ using Api.Core.Options;
 using Api.Core.Security;
 using Api.Data;
 using Api.Features.Authentication;
+using Api.Features.BasePlayers;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
@@ -39,6 +40,7 @@ builder.Services.AddRoleDependencies();
 builder.Services.AddClubPresidentDependencies();
 builder.Services.AddLeagueDivisionDependencies();
 builder.Services.AddClubDependencies();
+builder.Services.AddBasePlayerDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>

@@ -1,0 +1,52 @@
+using Api.Core.Repositories;
+using Api.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace Api.Features.BasePlayers;
+
+public class EfBasePlayerRepository : EfBaseRepository<BaseDbContext, BasePlayer, Guid>, IBasePlayerRepository
+{
+  public EfBasePlayerRepository(BaseDbContext context) : base(context)
+  {
+
+  }
+
+  public async Task<List<BasePlayer>> GetByPositionAsync(
+    PlayerPosition position,
+    bool enableTracking = false,
+    CancellationToken cancellationToken = default)
+  {
+    return await Query(enableTracking)
+      .Where(bp => bp.Position == position)
+      .OrderByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)
+      .ThenBy(bp => bp.DefaultLastName)
+      .ThenBy(bp => bp.DefaultFirstName)
+      .ToListAsync(cancellationToken);
+  }
+
+  public async Task<bool> TemplateExistsAsync(
+    string defaultFirstName,
+    string defaultLastName,
+    string? nationality,
+    PlayerPosition position,
+    int age,
+    int attackPower,
+    int defenseStrength,
+    int midfieldControl,
+    Guid? excludedId = null,
+    CancellationToken cancellationToken = default)
+  {
+    return await Query(enableTracking: false)
+      .AnyAsync(bp =>
+        bp.DefaultFirstName == defaultFirstName &&
+        bp.DefaultLastName == defaultLastName &&
+        bp.Nationality == nationality &&
+        bp.Position == position &&
+        bp.Age == age &&
+        bp.AttackPower == attackPower &&
+        bp.DefenseStrength == defenseStrength &&
+        bp.MidfieldControl == midfieldControl &&
+        (excludedId == null || bp.Id != excludedId),
+        cancellationToken);
+  }
+}

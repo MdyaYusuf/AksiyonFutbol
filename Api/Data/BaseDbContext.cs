@@ -1,4 +1,5 @@
 using System.Reflection;
+using Api.Features.BasePlayers;
 using Api.Core.Helpers;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
@@ -21,6 +22,7 @@ public class BaseDbContext : DbContext
   public DbSet<ClubPresident> ClubPresidents { get; set; }
   public DbSet<LeagueDivision> LeagueDivisions { get; set; }
   public DbSet<Club> Clubs { get; set; }
+  public DbSet<BasePlayer> BasePlayers { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
