@@ -5,6 +5,7 @@ using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
 using Api.Features.PlayerInstances;
+using Api.Features.Referees;
 using Api.Features.Roles;
 using Api.Features.Users;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ public class BaseDbContext : DbContext
   public DbSet<Club> Clubs { get; set; }
   public DbSet<BasePlayer> BasePlayers { get; set; }
   public DbSet<PlayerInstance> PlayerInstances { get; set; }
+  public DbSet<Referee> Referees { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
