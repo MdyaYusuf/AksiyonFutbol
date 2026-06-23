@@ -104,7 +104,7 @@ public class AuthenticationController(
       HttpOnly = true,
       Secure = true,
       SameSite = SameSiteMode.Strict,
-      Expires = DateTime.Now.AddDays(_options.RefreshTokenExpiration)
+      Expires = DateTime.UtcNow.AddDays(_options.RefreshTokenExpiration)
     };
     Response.Cookies.Append("refreshToken", tokens.RefreshToken, refreshOptions);
   }

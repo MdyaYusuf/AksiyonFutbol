@@ -10,6 +10,7 @@ using Api.Features.BasePlayers;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
+using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using Api.Features.Roles;
@@ -45,6 +46,7 @@ builder.Services.AddClubDependencies();
 builder.Services.AddBasePlayerDependencies();
 builder.Services.AddPlayerInstanceDependencies();
 builder.Services.AddRefereeDependencies();
+builder.Services.AddMatchDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>

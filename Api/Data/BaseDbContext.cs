@@ -4,6 +4,7 @@ using Api.Core.Helpers;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
+using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using Api.Features.Roles;
@@ -27,6 +28,7 @@ public class BaseDbContext : DbContext
   public DbSet<BasePlayer> BasePlayers { get; set; }
   public DbSet<PlayerInstance> PlayerInstances { get; set; }
   public DbSet<Referee> Referees { get; set; }
+  public DbSet<Match> Matches { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
