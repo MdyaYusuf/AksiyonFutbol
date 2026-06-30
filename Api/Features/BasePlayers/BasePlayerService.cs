@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using Api.Core.Helpers;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Api.Features.BasePlayers;
 
@@ -11,8 +13,11 @@ public class BasePlayerService(
   BasePlayerBusinessRules _businessRules,
   IUnitOfWork _unitOfWork,
   IValidator<CreateBasePlayerRequest> _createValidator,
-  IValidator<UpdateBasePlayerRequest> _updateValidator) : IBasePlayerService
+  IValidator<UpdateBasePlayerRequest> _updateValidator,
+  HybridCache _cache) : IBasePlayerService
 {
+  private const string CacheTag = "base-players";
+
   public async Task<ReturnModel<PagedResponse<BasePlayerResponseDto>>> GetAllAsync(
     Expression<Func<BasePlayer, bool>>? filter = null,
     Func<IQueryable<BasePlayer>, IQueryable<BasePlayer>>? include = null,
@@ -23,18 +28,31 @@ public class BasePlayerService(
     bool withDeleted = false,
     CancellationToken cancellationToken = default)
   {
-    var (basePlayers, totalCount) = await _basePlayerRepository.GetPagedListAsync(
-      pageNumber,
-      pageSize,
-      filter,
-      include,
-      orderBy ?? (query => query.OrderBy(bp => bp.Position).ThenByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)),
-      enableTracking,
-      withDeleted,
-      cancellationToken);
+    PagedResponse<BasePlayerResponseDto> pagedResponse;
 
-    List<BasePlayerResponseDto> responseDtos = _mapper.EntityToResponseDtoList(basePlayers);
-    var pagedResponse = new PagedResponse<BasePlayerResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    if (CacheQueryHelper.CanUseDefaultCache<BasePlayer, Guid>(filter, include, orderBy, enableTracking, withDeleted))
+    {
+      pagedResponse = await _cache.GetOrCreateAsync(
+        $"base-players:page:{pageNumber}:size:{pageSize}",
+        async token => await GetPagedBasePlayersAsync(pageNumber, pageSize, token),
+        tags: [CacheTag],
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      var (basePlayers, totalCount) = await _basePlayerRepository.GetPagedListAsync(
+        pageNumber,
+        pageSize,
+        filter,
+        include,
+        orderBy ?? (query => query.OrderBy(bp => bp.Position).ThenByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)),
+        enableTracking,
+        withDeleted,
+        cancellationToken);
+
+      List<BasePlayerResponseDto> responseDtos = _mapper.EntityToResponseDtoList(basePlayers);
+      pagedResponse = new PagedResponse<BasePlayerResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    }
 
     return new ReturnModel<PagedResponse<BasePlayerResponseDto>>()
     {
@@ -85,13 +103,33 @@ public class BasePlayerService(
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    BasePlayer basePlayer = await _businessRules.GetBasePlayerIfExistAsync(
-      id,
-      include,
-      enableTracking,
-      cancellationToken);
+    BasePlayerResponseDto response;
 
-    BasePlayerResponseDto response = _mapper.EntityToResponseDto(basePlayer);
+    if (include == null && !enableTracking)
+    {
+      response = await _cache.GetOrCreateAsync(
+        $"base-players:id:{id}",
+        async token =>
+        {
+          BasePlayer basePlayer = await _businessRules.GetBasePlayerIfExistAsync(
+            id,
+            cancellationToken: token);
+
+          return _mapper.EntityToResponseDto(basePlayer);
+        },
+        tags: [CacheTag],
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      BasePlayer basePlayer = await _businessRules.GetBasePlayerIfExistAsync(
+        id,
+        include,
+        enableTracking,
+        cancellationToken);
+
+      response = _mapper.EntityToResponseDto(basePlayer);
+    }
 
     return new ReturnModel<BasePlayerResponseDto>()
     {
@@ -106,8 +144,15 @@ public class BasePlayerService(
     PlayerPosition position,
     CancellationToken cancellationToken = default)
   {
-    List<BasePlayer> basePlayers = await _basePlayerRepository.GetByPositionAsync(position, cancellationToken: cancellationToken);
-    List<BasePlayerPreviewDto> response = _mapper.EntityToPreviewDtoList(basePlayers);
+    List<BasePlayerPreviewDto> response = await _cache.GetOrCreateAsync(
+      $"base-players:position:{position}",
+      async token =>
+      {
+        List<BasePlayer> basePlayers = await _basePlayerRepository.GetByPositionAsync(position, cancellationToken: token);
+        return _mapper.EntityToPreviewDtoList(basePlayers);
+      },
+      tags: [CacheTag],
+      cancellationToken: cancellationToken);
 
     return new ReturnModel<List<BasePlayerPreviewDto>>()
     {
@@ -150,6 +195,7 @@ public class BasePlayerService(
 
     await _basePlayerRepository.AddAsync(basePlayer, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     CreatedBasePlayerResponseDto response = _mapper.EntityToCreatedResponseDto(basePlayer);
 
@@ -200,6 +246,7 @@ public class BasePlayerService(
 
     _basePlayerRepository.Update(basePlayer);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -223,6 +270,7 @@ public class BasePlayerService(
 
     _basePlayerRepository.Delete(basePlayer);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -230,5 +278,20 @@ public class BasePlayerService(
       Message = "Oyuncu şablonu başarılı bir şekilde silindi.",
       StatusCode = 200
     };
+  }
+
+  private async Task<PagedResponse<BasePlayerResponseDto>> GetPagedBasePlayersAsync(
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken)
+  {
+    var (basePlayers, totalCount) = await _basePlayerRepository.GetPagedListAsync(
+      pageNumber,
+      pageSize,
+      orderBy: query => query.OrderBy(bp => bp.Position).ThenByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl),
+      cancellationToken: cancellationToken);
+
+    List<BasePlayerResponseDto> responseDtos = _mapper.EntityToResponseDtoList(basePlayers);
+    return new PagedResponse<BasePlayerResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
   }
 }

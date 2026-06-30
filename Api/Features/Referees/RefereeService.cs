@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using Api.Core.Helpers;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Api.Features.Referees;
 
@@ -11,8 +13,11 @@ public class RefereeService(
   RefereeBusinessRules _businessRules,
   IUnitOfWork _unitOfWork,
   IValidator<CreateRefereeRequest> _createValidator,
-  IValidator<UpdateRefereeRequest> _updateValidator) : IRefereeService
+  IValidator<UpdateRefereeRequest> _updateValidator,
+  HybridCache _cache) : IRefereeService
 {
+  private const string CacheTag = "referees";
+
   public async Task<ReturnModel<PagedResponse<RefereeResponseDto>>> GetAllAsync(
     Expression<Func<Referee, bool>>? filter = null,
     Func<IQueryable<Referee>, IQueryable<Referee>>? include = null,
@@ -23,18 +28,31 @@ public class RefereeService(
     bool withDeleted = false,
     CancellationToken cancellationToken = default)
   {
-    var (referees, totalCount) = await _refereeRepository.GetPagedListAsync(
-      pageNumber,
-      pageSize,
-      filter,
-      include,
-      orderBy ?? (query => query.OrderBy(r => r.Name)),
-      enableTracking,
-      withDeleted,
-      cancellationToken);
+    PagedResponse<RefereeResponseDto> pagedResponse;
 
-    List<RefereeResponseDto> responseDtos = _mapper.EntityToResponseDtoList(referees);
-    var pagedResponse = new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    if (CacheQueryHelper.CanUseDefaultCache<Referee, int>(filter, include, orderBy, enableTracking, withDeleted))
+    {
+      pagedResponse = await _cache.GetOrCreateAsync(
+        $"referees:page:{pageNumber}:size:{pageSize}",
+        async token => await GetPagedRefereesAsync(pageNumber, pageSize, token),
+        tags: [CacheTag],
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      var (referees, totalCount) = await _refereeRepository.GetPagedListAsync(
+        pageNumber,
+        pageSize,
+        filter,
+        include,
+        orderBy ?? (query => query.OrderBy(r => r.Name)),
+        enableTracking,
+        withDeleted,
+        cancellationToken);
+
+      List<RefereeResponseDto> responseDtos = _mapper.EntityToResponseDtoList(referees);
+      pagedResponse = new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    }
 
     return new ReturnModel<PagedResponse<RefereeResponseDto>>()
     {
@@ -81,13 +99,33 @@ public class RefereeService(
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    Referee referee = await _businessRules.GetRefereeIfExistAsync(
-      id,
-      include,
-      enableTracking,
-      cancellationToken);
+    RefereeResponseDto response;
 
-    RefereeResponseDto response = _mapper.EntityToResponseDto(referee);
+    if (include == null && !enableTracking)
+    {
+      response = await _cache.GetOrCreateAsync(
+        $"referees:id:{id}",
+        async token =>
+        {
+          Referee referee = await _businessRules.GetRefereeIfExistAsync(
+            id,
+            cancellationToken: token);
+
+          return _mapper.EntityToResponseDto(referee);
+        },
+        tags: [CacheTag],
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      Referee referee = await _businessRules.GetRefereeIfExistAsync(
+        id,
+        include,
+        enableTracking,
+        cancellationToken);
+
+      response = _mapper.EntityToResponseDto(referee);
+    }
 
     return new ReturnModel<RefereeResponseDto>()
     {
@@ -102,11 +140,18 @@ public class RefereeService(
     RefereePersonalityType personalityType,
     CancellationToken cancellationToken = default)
   {
-    List<Referee> referees = await _refereeRepository.GetByPersonalityTypeAsync(
-      personalityType,
-      cancellationToken: cancellationToken);
+    List<RefereePreviewDto> response = await _cache.GetOrCreateAsync(
+      $"referees:personality:{personalityType}",
+      async token =>
+      {
+        List<Referee> referees = await _refereeRepository.GetByPersonalityTypeAsync(
+          personalityType,
+          cancellationToken: token);
 
-    List<RefereePreviewDto> response = _mapper.EntityToPreviewDtoList(referees);
+        return _mapper.EntityToPreviewDtoList(referees);
+      },
+      tags: [CacheTag],
+      cancellationToken: cancellationToken);
 
     return new ReturnModel<List<RefereePreviewDto>>()
     {
@@ -121,11 +166,18 @@ public class RefereeService(
     int count,
     CancellationToken cancellationToken = default)
   {
-    List<Referee> referees = await _refereeRepository.GetEasiestToBribeAsync(
-      count,
-      cancellationToken: cancellationToken);
+    List<RefereePreviewDto> response = await _cache.GetOrCreateAsync(
+      $"referees:easiest-to-bribe:{count}",
+      async token =>
+      {
+        List<Referee> referees = await _refereeRepository.GetEasiestToBribeAsync(
+          count,
+          cancellationToken: token);
 
-    List<RefereePreviewDto> response = _mapper.EntityToPreviewDtoList(referees);
+        return _mapper.EntityToPreviewDtoList(referees);
+      },
+      tags: [CacheTag],
+      cancellationToken: cancellationToken);
 
     return new ReturnModel<List<RefereePreviewDto>>()
     {
@@ -156,6 +208,7 @@ public class RefereeService(
 
     await _refereeRepository.AddAsync(referee, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     CreatedRefereeResponseDto response = _mapper.EntityToCreatedResponseDto(referee);
 
@@ -193,6 +246,7 @@ public class RefereeService(
 
     _refereeRepository.Update(referee);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -216,6 +270,7 @@ public class RefereeService(
 
     _refereeRepository.Delete(referee);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -223,5 +278,20 @@ public class RefereeService(
       Message = "Hakem başarılı bir şekilde silindi.",
       StatusCode = 200
     };
+  }
+
+  private async Task<PagedResponse<RefereeResponseDto>> GetPagedRefereesAsync(
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken)
+  {
+    var (referees, totalCount) = await _refereeRepository.GetPagedListAsync(
+      pageNumber,
+      pageSize,
+      orderBy: query => query.OrderBy(r => r.Name),
+      cancellationToken: cancellationToken);
+
+    List<RefereeResponseDto> responseDtos = _mapper.EntityToResponseDtoList(referees);
+    return new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
   }
 }

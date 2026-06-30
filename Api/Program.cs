@@ -18,6 +18,7 @@ using Api.Features.Users;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,14 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+builder.Services.AddHybridCache(options =>
+{
+  options.DefaultEntryOptions = new HybridCacheEntryOptions
+  {
+    Expiration = TimeSpan.FromMinutes(10),
+    LocalCacheExpiration = TimeSpan.FromMinutes(5)
+  };
+});
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

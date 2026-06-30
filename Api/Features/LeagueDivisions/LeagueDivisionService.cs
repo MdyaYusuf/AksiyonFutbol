@@ -1,8 +1,10 @@
 using System.Linq.Expressions;
+using Api.Core.Helpers;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
 namespace Api.Features.LeagueDivisions;
@@ -15,8 +17,11 @@ public class LeagueDivisionService(
   IValidator<CreateLeagueDivisionRequest> _createValidator,
   IValidator<UpdateLeagueDivisionRequest> _updateValidator,
   IValidator<UpdateLeagueDivisionMatchWeekRequest> _updateMatchWeekValidator,
-  IOptions<GameOptions> _gameOptions) : ILeagueDivisionService
+  IOptions<GameOptions> _gameOptions,
+  HybridCache _cache) : ILeagueDivisionService
 {
+  private const string CacheTag = "league-divisions";
+
   public async Task<ReturnModel<PagedResponse<LeagueDivisionResponseDto>>> GetAllAsync(
     Expression<Func<LeagueDivision, bool>>? filter = null,
     Func<IQueryable<LeagueDivision>, IQueryable<LeagueDivision>>? include = null,
@@ -27,18 +32,31 @@ public class LeagueDivisionService(
     bool withDeleted = false,
     CancellationToken cancellationToken = default)
   {
-    var (leagueDivisions, totalCount) = await _leagueDivisionRepository.GetPagedListAsync(
-      pageNumber,
-      pageSize,
-      filter,
-      include,
-      orderBy ?? (query => query.OrderBy(ld => ld.Tier).ThenBy(ld => ld.GroupNumber)),
-      enableTracking,
-      withDeleted,
-      cancellationToken);
+    PagedResponse<LeagueDivisionResponseDto> pagedResponse;
 
-    List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
-    var pagedResponse = new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    if (CacheQueryHelper.CanUseDefaultCache<LeagueDivision, int>(filter, include, orderBy, enableTracking, withDeleted))
+    {
+      pagedResponse = await _cache.GetOrCreateAsync(
+        $"league-divisions:page:{pageNumber}:size:{pageSize}",
+        async token => await GetPagedLeagueDivisionsAsync(pageNumber, pageSize, token),
+        tags: [CacheTag],
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      var (leagueDivisions, totalCount) = await _leagueDivisionRepository.GetPagedListAsync(
+        pageNumber,
+        pageSize,
+        filter,
+        include,
+        orderBy ?? (query => query.OrderBy(ld => ld.Tier).ThenBy(ld => ld.GroupNumber)),
+        enableTracking,
+        withDeleted,
+        cancellationToken);
+
+      List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
+      pagedResponse = new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    }
 
     return new ReturnModel<PagedResponse<LeagueDivisionResponseDto>>()
     {
@@ -89,13 +107,33 @@ public class LeagueDivisionService(
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    LeagueDivision leagueDivision = await _businessRules.GetLeagueDivisionIfExistAsync(
-      id,
-      include,
-      enableTracking,
-      cancellationToken);
+    LeagueDivisionResponseDto response;
 
-    LeagueDivisionResponseDto response = _mapper.EntityToResponseDto(leagueDivision);
+    if (include == null && !enableTracking)
+    {
+      response = await _cache.GetOrCreateAsync(
+        $"league-divisions:id:{id}",
+        async token =>
+        {
+          LeagueDivision leagueDivision = await _businessRules.GetLeagueDivisionIfExistAsync(
+            id,
+            cancellationToken: token);
+
+          return _mapper.EntityToResponseDto(leagueDivision);
+        },
+        tags: [CacheTag],
+        cancellationToken: cancellationToken);
+    }
+    else
+    {
+      LeagueDivision leagueDivision = await _businessRules.GetLeagueDivisionIfExistAsync(
+        id,
+        include,
+        enableTracking,
+        cancellationToken);
+
+      response = _mapper.EntityToResponseDto(leagueDivision);
+    }
 
     return new ReturnModel<LeagueDivisionResponseDto>()
     {
@@ -110,8 +148,15 @@ public class LeagueDivisionService(
     int tier,
     CancellationToken cancellationToken = default)
   {
-    List<LeagueDivision> leagueDivisions = await _leagueDivisionRepository.GetByTierAsync(tier, cancellationToken: cancellationToken);
-    List<LeagueDivisionPreviewDto> response = _mapper.EntityToPreviewDtoList(leagueDivisions);
+    List<LeagueDivisionPreviewDto> response = await _cache.GetOrCreateAsync(
+      $"league-divisions:tier:{tier}",
+      async token =>
+      {
+        List<LeagueDivision> leagueDivisions = await _leagueDivisionRepository.GetByTierAsync(tier, cancellationToken: token);
+        return _mapper.EntityToPreviewDtoList(leagueDivisions);
+      },
+      tags: [CacheTag],
+      cancellationToken: cancellationToken);
 
     return new ReturnModel<List<LeagueDivisionPreviewDto>>()
     {
@@ -127,12 +172,19 @@ public class LeagueDivisionService(
     int groupNumber,
     CancellationToken cancellationToken = default)
   {
-    LeagueDivision leagueDivision = await _businessRules.GetLeagueDivisionByTierAndGroupIfExistAsync(
-      tier,
-      groupNumber,
-      cancellationToken: cancellationToken);
+    LeagueDivisionResponseDto response = await _cache.GetOrCreateAsync(
+      $"league-divisions:tier:{tier}:group:{groupNumber}",
+      async token =>
+      {
+        LeagueDivision leagueDivision = await _businessRules.GetLeagueDivisionByTierAndGroupIfExistAsync(
+          tier,
+          groupNumber,
+          cancellationToken: token);
 
-    LeagueDivisionResponseDto response = _mapper.EntityToResponseDto(leagueDivision);
+        return _mapper.EntityToResponseDto(leagueDivision);
+      },
+      tags: [CacheTag],
+      cancellationToken: cancellationToken);
 
     return new ReturnModel<LeagueDivisionResponseDto>()
     {
@@ -165,6 +217,7 @@ public class LeagueDivisionService(
 
     await _leagueDivisionRepository.AddAsync(leagueDivision, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     CreatedLeagueDivisionResponseDto response = _mapper.EntityToCreatedResponseDto(leagueDivision);
 
@@ -203,6 +256,7 @@ public class LeagueDivisionService(
 
     _leagueDivisionRepository.Update(leagueDivision);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -237,6 +291,7 @@ public class LeagueDivisionService(
 
     _leagueDivisionRepository.Update(leagueDivision);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -264,6 +319,7 @@ public class LeagueDivisionService(
 
     _leagueDivisionRepository.Update(leagueDivision);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -287,6 +343,7 @@ public class LeagueDivisionService(
 
     _leagueDivisionRepository.Delete(leagueDivision);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _cache.RemoveByTagAsync(CacheTag, cancellationToken);
 
     return new ReturnModel<NoData>()
     {
@@ -294,5 +351,20 @@ public class LeagueDivisionService(
       Message = "Lig başarılı bir şekilde silindi.",
       StatusCode = 200
     };
+  }
+
+  private async Task<PagedResponse<LeagueDivisionResponseDto>> GetPagedLeagueDivisionsAsync(
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken)
+  {
+    var (leagueDivisions, totalCount) = await _leagueDivisionRepository.GetPagedListAsync(
+      pageNumber,
+      pageSize,
+      orderBy: query => query.OrderBy(ld => ld.Tier).ThenBy(ld => ld.GroupNumber),
+      cancellationToken: cancellationToken);
+
+    List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
+    return new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
   }
 }
