@@ -1,5 +1,13 @@
-import { PlaceholderPage } from "../../../core/components/ui/PlaceholderPage";
+import { Navigate } from "react-router-dom";
+import { useAppSelector } from "../../../core/store/hooks";
+import { LoginForm } from "../components/LoginForm";
 
-export const LoginPage = () => (
-  <PlaceholderPage title="Login" description="Login form placeholder." />
-);
+export const LoginPage = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  if (isAuthenticated) {
+    return <Navigate to="/app" replace />;
+  }
+
+  return <LoginForm />;
+};
