@@ -18,6 +18,7 @@ export interface RegisterUserRequest {
   username: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface RefreshTokenRequest {

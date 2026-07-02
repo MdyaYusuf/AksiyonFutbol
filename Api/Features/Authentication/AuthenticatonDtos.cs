@@ -17,7 +17,8 @@ public sealed record LoginRequest(
 public sealed record RegisterUserRequest(
   string Username,
   string Email,
-  string Password);
+  string Password,
+  string ConfirmPassword);
 
 public sealed record RefreshTokenRequest(
   string? RefreshToken);

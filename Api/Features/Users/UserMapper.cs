@@ -7,6 +7,7 @@ namespace Api.Features.Users;
 public partial class UserMapper
 {
   [MapperIgnoreSource(nameof(RegisterUserRequest.Password))]
+  [MapperIgnoreSource(nameof(RegisterUserRequest.ConfirmPassword))]
   [MapperIgnoreTarget(nameof(User.PasswordHash))]
   [MapperIgnoreTarget(nameof(User.PasswordKey))]
   public partial User CreateToEntity(RegisterUserRequest request);

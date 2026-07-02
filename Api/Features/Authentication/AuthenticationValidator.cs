@@ -34,5 +34,8 @@ public class RegisterUserRequestValidator : AbstractValidator<RegisterUserReques
       .Matches(@"[A-Z]").WithMessage("Şifre en az bir büyük harf içermelidir.")
       .Matches(@"[a-z]").WithMessage("Şifre en az bir küçük harf içermelidir.")
       .Matches(@"[0-9]").WithMessage("Şifre en az bir rakam içermelidir.");
+
+    RuleFor(u => u.ConfirmPassword)
+      .Equal(u => u.Password).WithMessage("Şifreler eşleşmiyor.");
   }
 }
