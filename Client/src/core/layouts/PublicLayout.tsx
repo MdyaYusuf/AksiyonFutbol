@@ -1,14 +1,15 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import { PublicFooter } from "../components/public/PublicFooter";
+import { PublicHeader } from "../components/public/PublicHeader";
 
 export const PublicLayout = () => {
   return (
-    <section>
-      <nav>
-        <Link to="/">AksiyonFutbol</Link>{" | "}
-        <Link to="/login">Login</Link>{" | "}
-        <Link to="/register">Register</Link>
-      </nav>
-      <Outlet />
-    </section>
+    <div className="flex min-h-screen flex-col">
+      <PublicHeader />
+      <main className="flex flex-grow flex-col">
+        <Outlet />
+      </main>
+      <PublicFooter />
+    </div>
   );
 };

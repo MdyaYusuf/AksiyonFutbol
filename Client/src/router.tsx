@@ -6,7 +6,25 @@ import { AppLayout } from "./core/layouts/AppLayout";
 import { PublicLayout } from "./core/layouts/PublicLayout";
 import { OnboardingGuard } from "./core/routes/OnboardingGuard";
 import { OnboardingRedirect } from "./core/routes/OnboardingRedirect";
-import { PlaceholderPage } from "./pages/PlaceholderPage";
+import { AdminDashboardPage } from "./features/admin/pages/AdminDashboardPage";
+import { LoginPage } from "./features/auth/pages/LoginPage";
+import { RegisterPage } from "./features/auth/pages/RegisterPage";
+import { AdminBasePlayersPage } from "./features/basePlayers/pages/AdminBasePlayersPage";
+import { CreatePresidentPage } from "./features/clubPresidents/pages/CreatePresidentPage";
+import { PresidentProfilePage } from "./features/clubPresidents/pages/PresidentProfilePage";
+import { AdminClubsPage } from "./features/clubs/pages/AdminClubsPage";
+import { ClubOverviewPage } from "./features/clubs/pages/ClubOverviewPage";
+import { CreateClubPage } from "./features/clubs/pages/CreateClubPage";
+import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
+import { AdminLeagueDivisionsPage } from "./features/leagueDivisions/pages/AdminLeagueDivisionsPage";
+import { LeaguePage } from "./features/leagueDivisions/pages/LeaguePage";
+import { AdminMatchesPage } from "./features/matches/pages/AdminMatchesPage";
+import { FixturesPage } from "./features/matches/pages/FixturesPage";
+import { MatchDetailPage } from "./features/matches/pages/MatchDetailPage";
+import { AdminPlayerInstancesPage } from "./features/playerInstances/pages/AdminPlayerInstancesPage";
+import { SquadPage } from "./features/playerInstances/pages/SquadPage";
+import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
+import { LandingPage } from "./pages/public/LandingPage";
 
 export const router = createBrowserRouter([
   {
@@ -18,30 +36,15 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (
-              <PlaceholderPage
-                title="AksiyonFutbol"
-                description="Public landing page placeholder."
-              />
-            ),
+            element: <LandingPage />,
           },
           {
             path: "login",
-            element: (
-              <PlaceholderPage
-                title="Login"
-                description="Login form placeholder."
-              />
-            ),
+            element: <LoginPage />,
           },
           {
             path: "register",
-            element: (
-              <PlaceholderPage
-                title="Register"
-                description="Registration form placeholder."
-              />
-            ),
+            element: <RegisterPage />,
           },
         ],
       },
@@ -65,21 +68,11 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: "president",
-                    element: (
-                      <PlaceholderPage
-                        title="Create Club President"
-                        description="President onboarding placeholder."
-                      />
-                    ),
+                    element: <CreatePresidentPage />,
                   },
                   {
                     path: "club",
-                    element: (
-                      <PlaceholderPage
-                        title="Create Club"
-                        description="Club onboarding placeholder."
-                      />
-                    ),
+                    element: <CreateClubPage />,
                   },
                 ],
               },
@@ -88,66 +81,31 @@ export const router = createBrowserRouter([
                 children: [
                   {
                     path: "dashboard",
-                    element: (
-                      <PlaceholderPage
-                        title="Dashboard"
-                        description="Authenticated game dashboard placeholder."
-                      />
-                    ),
+                    element: <DashboardPage />,
                   },
                   {
                     path: "president",
-                    element: (
-                      <PlaceholderPage
-                        title="My President"
-                        description="Current president profile placeholder."
-                      />
-                    ),
+                    element: <PresidentProfilePage />,
                   },
                   {
                     path: "club",
-                    element: (
-                      <PlaceholderPage
-                        title="My Club"
-                        description="Current club overview placeholder."
-                      />
-                    ),
+                    element: <ClubOverviewPage />,
                   },
                   {
                     path: "squad",
-                    element: (
-                      <PlaceholderPage
-                        title="Squad"
-                        description="Current club squad placeholder."
-                      />
-                    ),
+                    element: <SquadPage />,
                   },
                   {
                     path: "league",
-                    element: (
-                      <PlaceholderPage
-                        title="League"
-                        description="League division table placeholder."
-                      />
-                    ),
+                    element: <LeaguePage />,
                   },
                   {
                     path: "fixtures",
-                    element: (
-                      <PlaceholderPage
-                        title="Fixtures & Results"
-                        description="Club fixtures and match results placeholder."
-                      />
-                    ),
+                    element: <FixturesPage />,
                   },
                   {
                     path: "matches/:id",
-                    element: (
-                      <PlaceholderPage
-                        title="Match Detail"
-                        description="Match score and event log placeholder."
-                      />
-                    ),
+                    element: <MatchDetailPage />,
                   },
                 ],
               },
@@ -164,66 +122,31 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: (
-                  <PlaceholderPage
-                    title="Admin Dashboard"
-                    description="Admin overview placeholder."
-                  />
-                ),
+                element: <AdminDashboardPage />,
               },
               {
                 path: "league-divisions",
-                element: (
-                  <PlaceholderPage
-                    title="League Division Management"
-                    description="Admin league division management placeholder."
-                  />
-                ),
+                element: <AdminLeagueDivisionsPage />,
               },
               {
                 path: "base-players",
-                element: (
-                  <PlaceholderPage
-                    title="Base Player Management"
-                    description="Admin base player template management placeholder."
-                  />
-                ),
+                element: <AdminBasePlayersPage />,
               },
               {
                 path: "referees",
-                element: (
-                  <PlaceholderPage
-                    title="Referee Management"
-                    description="Admin referee management placeholder."
-                  />
-                ),
+                element: <AdminRefereesPage />,
               },
               {
                 path: "clubs",
-                element: (
-                  <PlaceholderPage
-                    title="Club Management"
-                    description="Admin club management placeholder."
-                  />
-                ),
+                element: <AdminClubsPage />,
               },
               {
                 path: "player-instances",
-                element: (
-                  <PlaceholderPage
-                    title="Player Instance Management"
-                    description="Admin player instance management placeholder."
-                  />
-                ),
+                element: <AdminPlayerInstancesPage />,
               },
               {
                 path: "matches",
-                element: (
-                  <PlaceholderPage
-                    title="Match Scheduling"
-                    description="Admin match scheduling and simulation placeholder."
-                  />
-                ),
+                element: <AdminMatchesPage />,
               },
             ],
           },
