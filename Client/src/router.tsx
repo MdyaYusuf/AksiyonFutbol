@@ -3,6 +3,7 @@ import App from "./App";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AdminLayout } from "./core/layouts/AdminLayout";
 import { AppLayout } from "./core/layouts/AppLayout";
+import { OnboardingLayout } from "./core/layouts/OnboardingLayout";
 import { PublicLayout } from "./core/layouts/PublicLayout";
 import { OnboardingGuard } from "./core/routes/OnboardingGuard";
 import { OnboardingRedirect } from "./core/routes/OnboardingRedirect";
@@ -53,59 +54,68 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "app",
-            element: <AppLayout />,
             children: [
               {
                 index: true,
                 element: <OnboardingRedirect />,
               },
               {
-                path: "onboarding",
+                element: <OnboardingLayout />,
                 children: [
                   {
-                    index: true,
-                    element: <OnboardingRedirect />,
-                  },
-                  {
-                    path: "president",
-                    element: <CreatePresidentPage />,
-                  },
-                  {
-                    path: "club",
-                    element: <CreateClubPage />,
+                    path: "onboarding",
+                    children: [
+                      {
+                        index: true,
+                        element: <OnboardingRedirect />,
+                      },
+                      {
+                        path: "president",
+                        element: <CreatePresidentPage />,
+                      },
+                      {
+                        path: "club",
+                        element: <CreateClubPage />,
+                      },
+                    ],
                   },
                 ],
               },
               {
-                element: <OnboardingGuard />,
+                element: <AppLayout />,
                 children: [
                   {
-                    path: "dashboard",
-                    element: <DashboardPage />,
-                  },
-                  {
-                    path: "president",
-                    element: <PresidentProfilePage />,
-                  },
-                  {
-                    path: "club",
-                    element: <ClubOverviewPage />,
-                  },
-                  {
-                    path: "squad",
-                    element: <SquadPage />,
-                  },
-                  {
-                    path: "league",
-                    element: <LeaguePage />,
-                  },
-                  {
-                    path: "fixtures",
-                    element: <FixturesPage />,
-                  },
-                  {
-                    path: "matches/:id",
-                    element: <MatchDetailPage />,
+                    element: <OnboardingGuard />,
+                    children: [
+                      {
+                        path: "dashboard",
+                        element: <DashboardPage />,
+                      },
+                      {
+                        path: "president",
+                        element: <PresidentProfilePage />,
+                      },
+                      {
+                        path: "club",
+                        element: <ClubOverviewPage />,
+                      },
+                      {
+                        path: "squad",
+                        element: <SquadPage />,
+                      },
+                      {
+                        path: "league",
+                        element: <LeaguePage />,
+                      },
+                      {
+                        path: "fixtures",
+                        element: <FixturesPage />,
+                      },
+                      {
+                        path: "matches/:id",
+                        element: <MatchDetailPage />,
+                      },
+                    ],
                   },
                 ],
               },
