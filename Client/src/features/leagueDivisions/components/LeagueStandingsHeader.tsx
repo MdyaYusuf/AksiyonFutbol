@@ -1,0 +1,60 @@
+import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import type { LeagueDivisionResponse } from "../leagueDivisionTypes";
+
+interface LeagueStandingsHeaderProps {
+  division: LeagueDivisionResponse;
+  selectedMatchWeek: number;
+  onMatchWeekChange: (matchWeek: number) => void;
+  onExport: () => void;
+}
+
+export const LeagueStandingsHeader = ({
+  division,
+  selectedMatchWeek,
+  onMatchWeekChange,
+  onExport,
+}: LeagueStandingsHeaderProps) => {
+  const matchWeekOptions = Array.from(
+    { length: Math.max(1, division.currentMatchWeek) },
+    (_, index) => index + 1,
+  );
+
+  return (
+    <div className="flex flex-col justify-between gap-4 border-b border-outline-variant pb-6 md:flex-row md:items-end">
+      <div>
+        <h2 className="text-[32px] leading-10 font-extrabold tracking-tight text-on-surface lg:text-display-lg lg:leading-[56px]">
+          {division.name}
+        </h2>
+        <p className="mt-2 text-headline-sm text-on-surface-variant">
+          Group {division.groupNumber} Standings
+        </p>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="flex items-center rounded border border-outline-variant bg-surface-container px-3 py-1.5 focus-within:border-primary">
+          <span className="mr-2 text-label-caps text-on-surface-variant">MW</span>
+          <select
+            value={selectedMatchWeek}
+            onChange={(event) => onMatchWeekChange(Number(event.target.value))}
+            className="cursor-pointer border-none bg-transparent p-0 pr-6 text-stat-value text-on-surface outline-none focus:ring-0"
+          >
+            {matchWeekOptions.map((week) => (
+              <option key={week} value={week} className="bg-surface-container">
+                {week}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="button"
+          onClick={onExport}
+          className="flex items-center gap-2 rounded bg-primary-container px-4 py-2 text-label-caps text-on-primary-container transition-colors hover:bg-primary-fixed"
+        >
+          <MaterialIcon name="download" className="text-[18px]" />
+          EXPORT
+        </button>
+      </div>
+    </div>
+  );
+};
