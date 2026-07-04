@@ -48,7 +48,7 @@ export const playerInstancesApiSlice = apiSlice.injectEndpoints({
           : [{ type: "PlayerInstance", id: `CLUB-${clubId}` }],
     }),
 
-    getCurrentUserClubPlayers: builder.query<PlayerInstancePreview[], void>({
+    getCurrentUserClubPlayers: builder.query<PlayerInstanceResponse[], void>({
       query: () => ({ url: "playerInstances/my-club" }),
       providesTags: (result) =>
         result

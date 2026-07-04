@@ -94,7 +94,7 @@ public class PlayerInstanceService(
     };
   }
 
-  public async Task<ReturnModel<List<PlayerInstancePreviewDto>>> GetCurrentUserClubPlayersAsync(
+  public async Task<ReturnModel<List<PlayerInstanceResponseDto>>> GetCurrentUserClubPlayersAsync(
     Guid currentUserId,
     CancellationToken cancellationToken = default)
   {
@@ -105,9 +105,9 @@ public class PlayerInstanceService(
       include: IncludePlayerRelations,
       cancellationToken: cancellationToken);
 
-    List<PlayerInstancePreviewDto> response = _mapper.EntityToPreviewDtoList(players);
+    List<PlayerInstanceResponseDto> response = _mapper.EntityToResponseDtoList(players);
 
-    return new ReturnModel<List<PlayerInstancePreviewDto>>()
+    return new ReturnModel<List<PlayerInstanceResponseDto>>()
     {
       Success = true,
       Message = "Kulübünüzün oyuncuları başarılı bir şekilde getirildi.",

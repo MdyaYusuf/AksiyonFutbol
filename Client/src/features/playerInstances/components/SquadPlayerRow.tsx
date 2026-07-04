@@ -1,0 +1,70 @@
+import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+import {
+  formatSquadMoney,
+  getOverallBadgeClassName,
+  getPlayerDisplayName,
+  getPlayerInitials,
+  getPlayerStatus,
+  getPositionBadgeClassName,
+  getPositionLabel,
+  getSeasonCardsTotal,
+} from "../utils/squadHelpers";
+
+interface SquadPlayerRowProps {
+  player: PlayerInstanceResponse;
+}
+
+export const SquadPlayerRow = ({ player }: SquadPlayerRowProps) => {
+  const status = getPlayerStatus(player);
+  const displayName = getPlayerDisplayName(player.firstName, player.lastName);
+  const initials = getPlayerInitials(player.firstName, player.lastName);
+  const cards = getSeasonCardsTotal(player);
+
+  return (
+    <tr className="transition-colors hover:bg-surface-container-high">
+      <td className="px-4 py-3">
+        <span
+          className={`inline-flex h-6 w-8 items-center justify-center rounded text-label-caps ${getPositionBadgeClassName(player.position)}`}
+        >
+          {getPositionLabel(player.position)}
+        </span>
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-3 font-semibold text-on-surface">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-surface-variant bg-surface-bright text-label-caps text-on-surface-variant">
+            {initials}
+          </div>
+          {displayName}
+        </div>
+      </td>
+      <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
+        {player.age}
+      </td>
+      <td className="px-4 py-3">
+        <div
+          className={`inline-flex h-8 w-8 items-center justify-center rounded text-stat-value ${getOverallBadgeClassName(player.overallRating)}`}
+        >
+          {player.overallRating}
+        </div>
+      </td>
+      <td className="px-4 py-3 text-center">
+        <span
+          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] text-label-caps ${status.className}`}
+        >
+          <MaterialIcon name={status.icon} className="text-[14px]" />
+          {status.label}
+        </span>
+      </td>
+      <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
+        {player.seasonGoals} / {player.seasonAssists} / {cards}
+      </td>
+      <td className="px-4 py-3 text-right font-data-mono text-data-mono text-on-surface">
+        {formatSquadMoney(player.wage)}
+      </td>
+      <td className="px-4 py-3 text-right font-data-mono text-data-mono text-on-surface">
+        {formatSquadMoney(player.marketValue)}
+      </td>
+    </tr>
+  );
+};

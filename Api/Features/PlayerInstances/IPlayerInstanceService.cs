@@ -23,7 +23,7 @@ public interface IPlayerInstanceService
     Guid clubId,
     CancellationToken cancellationToken = default);
 
-  Task<ReturnModel<List<PlayerInstancePreviewDto>>> GetCurrentUserClubPlayersAsync(
+  Task<ReturnModel<List<PlayerInstanceResponseDto>>> GetCurrentUserClubPlayersAsync(
     Guid currentUserId,
     CancellationToken cancellationToken = default);
 
