@@ -2,6 +2,8 @@ import type { ClubResponse } from "../../clubs/clubTypes";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { MatchResponse } from "../../matches/matchTypes";
 
+export { getGroupDisplayLabel } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
+
 export type DivisionHealthStatus = "healthy" | "pending" | "alert";
 export type ActivityType = "match-created" | "club-created" | "match-played";
 
@@ -35,18 +37,6 @@ export interface RecentActivityItem {
   subtitle: string;
   sortDate: Date;
 }
-
-const formatGroupLabel = (groupNumber: number): string => {
-  if (groupNumber <= 0) {
-    return "—";
-  }
-
-  return String.fromCharCode(64 + groupNumber);
-};
-
-export const getGroupDisplayLabel = (groupNumber: number): string => {
-  return formatGroupLabel(groupNumber);
-};
 
 const getDivisionStatus = (
   unplayedThisWeek: number,
