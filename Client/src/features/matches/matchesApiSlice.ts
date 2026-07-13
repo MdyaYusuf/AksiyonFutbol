@@ -119,6 +119,8 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
         { type: "Match", id },
         { type: "Match", id: "LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
+        { type: "PlayerInstance", id: "LIST" },
+        { type: "Club", id: "LIST" },
       ],
     }),
 

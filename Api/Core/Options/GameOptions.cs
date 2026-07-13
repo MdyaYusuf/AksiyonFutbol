@@ -17,4 +17,11 @@ public class GameOptions
   public int StarterSquadForwards { get; set; } = 4;
   public decimal StarterMarketValuePerOverall { get; set; } = 1000m;
   public decimal StarterWagePerOverall { get; set; } = 50m;
+
+  public int PostMatchWinMoraleDelta { get; set; } = 3;
+  public int PostMatchDrawMoraleDelta { get; set; } = 0;
+  public int PostMatchLossMoraleDelta { get; set; } = -3;
+  public decimal PostMatchWinCashReward { get; set; } = 5000m;
+  public decimal PostMatchDrawCashReward { get; set; } = 2000m;
+  public decimal PostMatchLossCashReward { get; set; } = 1000m;
 }

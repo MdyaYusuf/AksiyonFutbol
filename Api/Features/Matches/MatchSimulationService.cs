@@ -1,13 +1,15 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Api.Core.Exceptions;
+using Api.Core.Options;
 using Api.Features.Clubs;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
+using Microsoft.Extensions.Options;
 
 namespace Api.Features.Matches;
 
-public class MatchSimulationService : IMatchSimulationService
+public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatchSimulationService
 {
   private const int AttackSlotCount = 72;
   private const double BaseGoalRate = 0.075;
@@ -73,6 +75,7 @@ public class MatchSimulationService : IMatchSimulationService
       if (Random.Shared.NextDouble() <= goalChance)
       {
         PlayerInstance scorer = PickScorer(attackingPlayers);
+        scorer.SeasonGoals++;
 
         if (homeControlsAttack)
         {
@@ -101,12 +104,46 @@ public class MatchSimulationService : IMatchSimulationService
       Description = $"Maç sonucu: {homeClub.Name} {homeScore} - {awayScore} {awayClub.Name}."
     });
 
+    ApplyClubResultEffects(homeClub, awayClub, homeScore, awayScore);
+
     return new SimulatedMatchResultDto
     {
       HomeScore = homeScore,
       AwayScore = awayScore,
       MatchLogJson = JsonSerializer.Serialize(events.OrderBy(e => e.Minute).ToList(), _jsonOptions)
     };
+  }
+
+  private void ApplyClubResultEffects(
+    Club homeClub,
+    Club awayClub,
+    int homeScore,
+    int awayScore)
+  {
+    GameOptions options = _gameOptions.Value;
+
+    if (homeScore > awayScore)
+    {
+      ApplyClubDeltas(homeClub, options.PostMatchWinMoraleDelta, options.PostMatchWinCashReward);
+      ApplyClubDeltas(awayClub, options.PostMatchLossMoraleDelta, options.PostMatchLossCashReward);
+      return;
+    }
+
+    if (awayScore > homeScore)
+    {
+      ApplyClubDeltas(awayClub, options.PostMatchWinMoraleDelta, options.PostMatchWinCashReward);
+      ApplyClubDeltas(homeClub, options.PostMatchLossMoraleDelta, options.PostMatchLossCashReward);
+      return;
+    }
+
+    ApplyClubDeltas(homeClub, options.PostMatchDrawMoraleDelta, options.PostMatchDrawCashReward);
+    ApplyClubDeltas(awayClub, options.PostMatchDrawMoraleDelta, options.PostMatchDrawCashReward);
+  }
+
+  private static void ApplyClubDeltas(Club club, int moraleDelta, decimal cashReward)
+  {
+    club.Morale = Math.Clamp(club.Morale + moraleDelta, 0, 100);
+    club.Cash += cashReward;
   }
 
   private static TeamPower CalculateTeamPower(List<PlayerInstance> players, Club club, bool isHome)

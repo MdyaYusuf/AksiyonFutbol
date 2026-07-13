@@ -120,6 +120,8 @@ export const leagueDivisionsApiSlice = apiSlice.injectEndpoints({
         { type: "LeagueDivision", id: "LIST" },
         { type: "Match", id: "LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
+        { type: "PlayerInstance", id: "LIST" },
+        { type: "Club", id: "LIST" },
       ],
     }),
 

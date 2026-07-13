@@ -90,6 +90,12 @@ builder.Services.AddOptions<GameOptions>()
     "Başlangıç kadrosu toplam oyuncu sayısı 0'dan büyük olmalıdır.")
   .Validate(options => options.StarterMarketValuePerOverall >= 0, "StarterMarketValuePerOverall negatif olamaz.")
   .Validate(options => options.StarterWagePerOverall >= 0, "StarterWagePerOverall negatif olamaz.")
+  .Validate(options => options.PostMatchWinMoraleDelta >= -100 && options.PostMatchWinMoraleDelta <= 100, "PostMatchWinMoraleDelta -100 ile 100 arasında olmalıdır.")
+  .Validate(options => options.PostMatchDrawMoraleDelta >= -100 && options.PostMatchDrawMoraleDelta <= 100, "PostMatchDrawMoraleDelta -100 ile 100 arasında olmalıdır.")
+  .Validate(options => options.PostMatchLossMoraleDelta >= -100 && options.PostMatchLossMoraleDelta <= 100, "PostMatchLossMoraleDelta -100 ile 100 arasında olmalıdır.")
+  .Validate(options => options.PostMatchWinCashReward >= 0, "PostMatchWinCashReward negatif olamaz.")
+  .Validate(options => options.PostMatchDrawCashReward >= 0, "PostMatchDrawCashReward negatif olamaz.")
+  .Validate(options => options.PostMatchLossCashReward >= 0, "PostMatchLossCashReward negatif olamaz.")
   .ValidateOnStart();
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");

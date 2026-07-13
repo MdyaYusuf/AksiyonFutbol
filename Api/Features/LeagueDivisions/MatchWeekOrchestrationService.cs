@@ -97,10 +97,12 @@ public class MatchWeekOrchestrationService(
 
     List<PlayerInstance> homePlayers = await _playerInstanceRepository.GetAvailableByClubIdAsync(
       match.HomeClubId,
+      enableTracking: true,
       cancellationToken: cancellationToken);
 
     List<PlayerInstance> awayPlayers = await _playerInstanceRepository.GetAvailableByClubIdAsync(
       match.AwayClubId,
+      enableTracking: true,
       cancellationToken: cancellationToken);
 
     if (homePlayers.Count == 0 || awayPlayers.Count == 0)
