@@ -13,6 +13,7 @@ public class ClubService(
   IClubRepository _clubRepository,
   ClubMapper _mapper,
   ClubBusinessRules _businessRules,
+  IStarterSquadService _starterSquadService,
   IUnitOfWork _unitOfWork,
   IValidator<CreateClubRequest> _createValidator,
   IValidator<CreateBotClubRequest> _createBotValidator,
@@ -201,6 +202,7 @@ public class ClubService(
     club.Discipline = _gameOptions.Value.StartingClubStatus;
 
     await _clubRepository.AddAsync(club, cancellationToken);
+    await _starterSquadService.AssignAsync(club, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     CreatedClubResponseDto response = _mapper.EntityToCreatedResponseDto(club);

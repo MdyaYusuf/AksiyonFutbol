@@ -6,6 +6,7 @@ public static class ClubRegistration
   {
     services.AddScoped<IClubRepository, EfClubRepository>();
     services.AddScoped<ClubBusinessRules>();
+    services.AddScoped<IStarterSquadService, StarterSquadService>();
     services.AddScoped<IClubService, ClubService>();
     services.AddSingleton<ClubMapper>();
 

@@ -78,6 +78,19 @@ builder.Services.AddOptions<GameOptions>()
   .Validate(options => options.MaximumClubsPerDivision > 0, "MaximumClubsPerDivision 0'dan büyük olmalıdır.")
   .Validate(options => options.MinimumMatchWeek > 0, "MinimumMatchWeek 0'dan büyük olmalıdır.")
   .Validate(options => options.MaximumMatchWeek >= options.MinimumMatchWeek, "MaximumMatchWeek, MinimumMatchWeek değerinden küçük olamaz.")
+  .Validate(options => options.StarterSquadGoalkeepers >= 1, "StarterSquadGoalkeepers en az 1 olmalıdır.")
+  .Validate(options => options.StarterSquadDefenders >= 0, "StarterSquadDefenders negatif olamaz.")
+  .Validate(options => options.StarterSquadMidfielders >= 0, "StarterSquadMidfielders negatif olamaz.")
+  .Validate(options => options.StarterSquadForwards >= 0, "StarterSquadForwards negatif olamaz.")
+  .Validate(
+    options =>
+      options.StarterSquadGoalkeepers +
+      options.StarterSquadDefenders +
+      options.StarterSquadMidfielders +
+      options.StarterSquadForwards > 0,
+    "Başlangıç kadrosu toplam oyuncu sayısı 0'dan büyük olmalıdır.")
+  .Validate(options => options.StarterMarketValuePerOverall >= 0, "StarterMarketValuePerOverall negatif olamaz.")
+  .Validate(options => options.StarterWagePerOverall >= 0, "StarterWagePerOverall negatif olamaz.")
   .ValidateOnStart();
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");
