@@ -5,6 +5,7 @@ import type {
   CreateLeagueDivisionRequest,
   LeagueDivisionPreview,
   LeagueDivisionResponse,
+  ProcessMatchWeekResult,
   UpdateLeagueDivisionMatchWeekRequest,
   UpdateLeagueDivisionRequest,
 } from "./leagueDivisionTypes";
@@ -109,6 +110,19 @@ export const leagueDivisionsApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
+    processLeagueDivisionWeek: builder.mutation<ProcessMatchWeekResult, number>({
+      query: (id) => ({
+        url: `leagueDivisions/${id}/process-week`,
+        method: "POST",
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: "LeagueDivision", id },
+        { type: "LeagueDivision", id: "LIST" },
+        { type: "Match", id: "LIST" },
+        { type: "Match", id: "SCHEDULED-UNPLAYED" },
+      ],
+    }),
+
     deleteLeagueDivision: builder.mutation<null, number>({
       query: (id) => ({
         url: `leagueDivisions/${id}`,
@@ -132,5 +146,6 @@ export const {
   useUpdateLeagueDivisionMutation,
   useUpdateLeagueDivisionMatchWeekMutation,
   useAdvanceLeagueDivisionMatchWeekMutation,
+  useProcessLeagueDivisionWeekMutation,
   useDeleteLeagueDivisionMutation,
 } = leagueDivisionsApiSlice;

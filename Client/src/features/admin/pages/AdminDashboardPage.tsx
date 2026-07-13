@@ -1,12 +1,15 @@
 import { useMemo } from "react";
+import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
-import { useAdvanceLeagueDivisionMatchWeekMutation } from "../../leagueDivisions/leagueDivisionsApiSlice";
+import {
+  useGetLeagueDivisionsQuery,
+  useProcessLeagueDivisionWeekMutation,
+} from "../../leagueDivisions/leagueDivisionsApiSlice";
 import {
   useGetMatchesQuery,
   useGetScheduledUnplayedMatchesQuery,
   useSimulateMatchMutation,
 } from "../../matches/matchesApiSlice";
-import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
 import { AdminDivisionsGlanceTable } from "../components/AdminDivisionsGlanceTable";
 import { AdminQuickActions } from "../components/AdminQuickActions";
 import { AdminRecentActivity } from "../components/AdminRecentActivity";
@@ -17,7 +20,6 @@ import {
   buildRecentActivity,
   findAdvanceMatchWeekTarget,
 } from "../utils/adminDashboardHelpers";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 
 export const AdminDashboardPage = () => {
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
@@ -31,8 +33,8 @@ export const AdminDashboardPage = () => {
   const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
   const { data: scheduledMatches = [] } = useGetScheduledUnplayedMatchesQuery(1);
 
-  const [advanceMatchWeek, { isLoading: isAdvancing }] =
-    useAdvanceLeagueDivisionMatchWeekMutation();
+  const [processWeek, { isLoading: isProcessingWeek }] =
+    useProcessLeagueDivisionWeekMutation();
   const [simulateMatch, { isLoading: isSimulating }] = useSimulateMatchMutation();
 
   const divisions = divisionsData?.items ?? [];
@@ -60,12 +62,12 @@ export const AdminDashboardPage = () => {
 
   const isLoading = isDivisionsLoading || isClubsLoading || isMatchesLoading;
 
-  const handleAdvanceMatchWeek = async () => {
+  const handleProcessWeek = async () => {
     if (!advanceTarget) {
       return;
     }
 
-    await advanceMatchWeek(advanceTarget.id);
+    await processWeek(advanceTarget.id);
   };
 
   const handleSimulateNextFixture = async () => {
@@ -106,15 +108,15 @@ export const AdminDashboardPage = () => {
       <div className="flex flex-col gap-gutter lg:flex-row">
         <AdminRecentActivity items={recentActivity} />
         <AdminQuickActions
-          onAdvanceMatchWeek={handleAdvanceMatchWeek}
+          onAdvanceMatchWeek={handleProcessWeek}
           onSimulateNextFixture={handleSimulateNextFixture}
-          isAdvancing={isAdvancing}
+          isAdvancing={isProcessingWeek}
           isSimulating={isSimulating}
           canSimulate={scheduledMatches.length > 0}
           advanceLabel={
             advanceTarget
-              ? `Advance Week (${advanceTarget.name})`
-              : "Advance Match Week"
+              ? `Process Week (${advanceTarget.name})`
+              : "Process Match Week"
           }
         />
       </div>

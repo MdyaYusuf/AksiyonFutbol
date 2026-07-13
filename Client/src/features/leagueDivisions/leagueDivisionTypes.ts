@@ -23,6 +23,14 @@ export interface CreatedLeagueDivisionResponse {
   groupNumber: number;
 }
 
+export interface ProcessMatchWeekResult {
+  divisionId: number;
+  processedMatchWeek: number;
+  simulatedMatchCount: number;
+  currentMatchWeek: number;
+  weekAdvanced: boolean;
+}
+
 // Requests
 export interface CreateLeagueDivisionRequest {
   name: string;

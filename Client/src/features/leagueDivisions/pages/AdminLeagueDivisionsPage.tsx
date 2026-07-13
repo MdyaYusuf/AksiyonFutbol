@@ -7,10 +7,10 @@ import {
 } from "../components/AdminDivisionFormPanel";
 import { AdminDivisionsTable } from "../components/AdminDivisionsTable";
 import {
-  useAdvanceLeagueDivisionMatchWeekMutation,
   useCreateLeagueDivisionMutation,
   useDeleteLeagueDivisionMutation,
   useGetLeagueDivisionsQuery,
+  useProcessLeagueDivisionWeekMutation,
   useUpdateLeagueDivisionMatchWeekMutation,
   useUpdateLeagueDivisionMutation,
 } from "../leagueDivisionsApiSlice";
@@ -59,7 +59,7 @@ export const AdminLeagueDivisionsPage = () => {
   const [updateDivision, { isLoading: isUpdating }] = useUpdateLeagueDivisionMutation();
   const [updateMatchWeek, { isLoading: isUpdatingMatchWeek }] =
     useUpdateLeagueDivisionMatchWeekMutation();
-  const [advanceMatchWeek] = useAdvanceLeagueDivisionMatchWeekMutation();
+  const [processWeek] = useProcessLeagueDivisionWeekMutation();
   const [deleteDivision] = useDeleteLeagueDivisionMutation();
 
   const divisions = divisionsData?.items ?? [];
@@ -186,7 +186,7 @@ export const AdminLeagueDivisionsPage = () => {
     setAdvancingDivisionId(divisionId);
 
     try {
-      await advanceMatchWeek(divisionId).unwrap();
+      await processWeek(divisionId).unwrap();
     } finally {
       setAdvancingDivisionId(null);
     }

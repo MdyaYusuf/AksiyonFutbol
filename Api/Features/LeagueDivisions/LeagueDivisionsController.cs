@@ -8,7 +8,9 @@ namespace Api.Features.LeagueDivisions;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class LeagueDivisionsController(ILeagueDivisionService _leagueDivisionService) : CustomBaseController
+public class LeagueDivisionsController(
+  ILeagueDivisionService _leagueDivisionService,
+  IMatchWeekOrchestrationService _matchWeekOrchestrationService) : CustomBaseController
 {
   [HttpGet]
   public async Task<IActionResult> GetAll(
@@ -101,6 +103,18 @@ public class LeagueDivisionsController(ILeagueDivisionService _leagueDivisionSer
   {
     var result = await _leagueDivisionService.AdvanceMatchWeekAsync(
       id: id,
+      userRole: GetUserRole(),
+      cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpPost("{id:int}/process-week")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> ProcessWeek(int id, CancellationToken cancellationToken)
+  {
+    var result = await _matchWeekOrchestrationService.ProcessCurrentWeekAsync(
+      divisionId: id,
       userRole: GetUserRole(),
       cancellationToken: cancellationToken);
 

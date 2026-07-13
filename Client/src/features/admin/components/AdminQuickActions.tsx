@@ -33,7 +33,7 @@ export const AdminQuickActions = ({
         >
           <span className="flex items-center gap-2">
             <MaterialIcon name="fast_forward" className="text-[18px]" />
-            {isAdvancing ? "Advancing..." : (advanceLabel ?? "Advance Match Week")}
+            {isAdvancing ? "Processing..." : (advanceLabel ?? "Process Match Week")}
           </span>
           <MaterialIcon
             name="arrow_forward"

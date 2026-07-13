@@ -98,7 +98,7 @@ export const AdminDivisionsTable = ({
                     <div className="flex items-center justify-end gap-2 opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
                       <button
                         type="button"
-                        title="Advance match week"
+                        title="Process match week"
                         onClick={() => onAdvanceWeek(division.id)}
                         disabled={advancingDivisionId === division.id}
                         className="text-on-surface-variant transition-colors hover:text-primary disabled:opacity-50"

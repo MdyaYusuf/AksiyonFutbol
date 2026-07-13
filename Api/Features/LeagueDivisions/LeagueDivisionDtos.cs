@@ -28,6 +28,15 @@ public sealed record CreatedLeagueDivisionResponseDto
   public int GroupNumber { get; init; }
 }
 
+public sealed record ProcessMatchWeekResultDto
+{
+  public int DivisionId { get; init; }
+  public int ProcessedMatchWeek { get; init; }
+  public int SimulatedMatchCount { get; init; }
+  public int CurrentMatchWeek { get; init; }
+  public bool WeekAdvanced { get; init; }
+}
+
 // Requests
 public sealed record CreateLeagueDivisionRequest(
   string Name,
