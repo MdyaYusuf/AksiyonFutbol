@@ -29,7 +29,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddHybridCache(options =>
 {
@@ -128,11 +127,6 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 var app = builder.Build();
 
 app.UseExceptionHandler();
-
-if (app.Environment.IsDevelopment())
-{
-  app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
