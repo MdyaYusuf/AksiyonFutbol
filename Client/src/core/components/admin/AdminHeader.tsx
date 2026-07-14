@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "../ui/MaterialIcon";
 import { useAppSelector } from "../../store/hooks";
 
@@ -42,13 +43,13 @@ export const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
           <MaterialIcon name="notifications" />
           <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full border border-surface bg-error" />
         </button>
-        <button
-          type="button"
+        <Link
+          to="/admin/settings"
           className="transition-colors hover:text-primary"
           aria-label="Settings"
         >
           <MaterialIcon name="settings" />
-        </button>
+        </Link>
         <div className="ml-2 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-surface-container-high">
           {user?.profileImageUrl ? (
             <img

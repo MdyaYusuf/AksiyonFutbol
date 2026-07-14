@@ -26,6 +26,7 @@ import { AdminPlayerInstancesPage } from "./features/playerInstances/pages/Admin
 import { PlayerDetailPage } from "./features/playerInstances/pages/PlayerDetailPage";
 import { SquadPage } from "./features/playerInstances/pages/SquadPage";
 import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
+import { AccountSettingsPage } from "./features/users/pages/AccountSettingsPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -100,6 +101,10 @@ export const router = createBrowserRouter([
               {
                 element: <AppLayout />,
                 children: [
+                  {
+                    path: "settings",
+                    element: <AccountSettingsPage />,
+                  },
                   {
                     element: <OnboardingGuard />,
                     children: [
@@ -177,6 +182,10 @@ export const router = createBrowserRouter([
               {
                 path: "matches",
                 element: <AdminMatchesPage />,
+              },
+              {
+                path: "settings",
+                element: <AccountSettingsPage />,
               },
             ],
           },

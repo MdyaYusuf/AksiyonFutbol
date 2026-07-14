@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "../ui/MaterialIcon";
 import { useAppSelector } from "../../store/hooks";
 import { formatCash } from "../../../features/dashboard/utils/dashboardFormatters";
@@ -50,13 +51,13 @@ export const AppHeader = ({ cash, reputation, onMenuClick }: AppHeaderProps) => 
             <MaterialIcon name="notifications" />
             <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary" />
           </button>
-          <button
-            type="button"
+          <Link
+            to="/app/settings"
             className="text-on-surface-variant transition-colors hover:text-primary"
             aria-label="Settings"
           >
             <MaterialIcon name="settings" />
-          </button>
+          </Link>
           <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-surface-container-high">
             {user?.profileImageUrl ? (
               <img
