@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { PlayerInstanceResponse } from "../playerInstanceTypes";
 import {
@@ -20,6 +21,7 @@ export const SquadPlayerRow = ({ player }: SquadPlayerRowProps) => {
   const displayName = getPlayerDisplayName(player.firstName, player.lastName);
   const initials = getPlayerInitials(player.firstName, player.lastName);
   const cards = getSeasonCardsTotal(player);
+  const detailPath = `/app/squad/${player.id}`;
 
   return (
     <tr className="transition-colors hover:bg-surface-container-high">
@@ -31,12 +33,15 @@ export const SquadPlayerRow = ({ player }: SquadPlayerRowProps) => {
         </span>
       </td>
       <td className="px-4 py-3">
-        <div className="flex items-center gap-3 font-semibold text-on-surface">
+        <Link
+          to={detailPath}
+          className="flex items-center gap-3 font-semibold text-on-surface transition-colors hover:text-primary"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-full border border-surface-variant bg-surface-bright text-label-caps text-on-surface-variant">
             {initials}
           </div>
           {displayName}
-        </div>
+        </Link>
       </td>
       <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
         {player.age}

@@ -23,6 +23,7 @@ import { AdminMatchesPage } from "./features/matches/pages/AdminMatchesPage";
 import { FixturesPage } from "./features/matches/pages/FixturesPage";
 import { MatchDetailPage } from "./features/matches/pages/MatchDetailPage";
 import { AdminPlayerInstancesPage } from "./features/playerInstances/pages/AdminPlayerInstancesPage";
+import { PlayerDetailPage } from "./features/playerInstances/pages/PlayerDetailPage";
 import { SquadPage } from "./features/playerInstances/pages/SquadPage";
 import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
 import { LandingPage } from "./pages/public/LandingPage";
@@ -117,6 +118,10 @@ export const router = createBrowserRouter([
                       {
                         path: "squad",
                         element: <SquadPage />,
+                      },
+                      {
+                        path: "squad/:id",
+                        element: <PlayerDetailPage />,
                       },
                       {
                         path: "league",

@@ -97,19 +97,21 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
       </div>
 
       <div className="relative z-10 mt-auto flex justify-end gap-3 border-t border-surface-variant pt-4">
-        <button
-          type="button"
+        <Link
+          to={`/app/matches/${nextMatch.id}`}
           className="rounded border border-outline-variant bg-transparent px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
         >
           Scout Report
-        </button>
-        <Link
-          to="/app/squad"
-          className="flex items-center gap-2 rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
+        </Link>
+        <button
+          type="button"
+          disabled
+          title="Tactics coming in a future update"
+          className="flex cursor-not-allowed items-center gap-2 rounded bg-primary/40 px-4 py-2 text-body-sm font-semibold text-on-primary opacity-70"
         >
           <MaterialIcon name="strategy" className="text-sm" />
-          Tactics
-        </Link>
+          Tactics — Coming Soon
+        </button>
       </div>
     </div>
   );
