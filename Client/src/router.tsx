@@ -26,6 +26,9 @@ import { AdminPlayerInstancesPage } from "./features/playerInstances/pages/Admin
 import { SquadPage } from "./features/playerInstances/pages/SquadPage";
 import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
 import { LandingPage } from "./pages/public/LandingPage";
+import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
+import { SupportPage } from "./pages/public/SupportPage";
+import { TermsOfServicePage } from "./pages/public/TermsOfServicePage";
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +49,18 @@ export const router = createBrowserRouter([
           {
             path: "register",
             element: <RegisterPage />,
+          },
+          {
+            path: "terms",
+            element: <TermsOfServicePage />,
+          },
+          {
+            path: "privacy",
+            element: <PrivacyPolicyPage />,
+          },
+          {
+            path: "support",
+            element: <SupportPage />,
           },
         ],
       },
