@@ -10,85 +10,19 @@ import {
   useGetMyClubLineupQuery,
   useUpsertMyClubLineupMutation,
 } from "../clubLineupsApiSlice";
-import {
-  TeamFormation,
-  TeamMentality,
-  type ClubLineupResponse,
-} from "../clubLineupTypes";
+import { TeamFormation, TeamMentality } from "../clubLineupTypes";
 import {
   createEmptyBenchSlots,
   createEmptyStarterSlots,
-  getFormationShape,
-  LINEUP_MAX_BENCH,
   LINEUP_STARTER_COUNT,
+  lineupToSlots,
+  redistributeByFormation,
 } from "../utils/tacticsHelpers";
 
 type SlotSelection =
   | { kind: "starter"; index: number }
   | { kind: "bench"; index: number }
   | null;
-
-const redistributeByFormation = (
-  playerIds: string[],
-  formation: TeamFormation,
-  playersById: Map<string, PlayerInstanceResponse>,
-): (string | null)[] => {
-  const shape = getFormationShape(formation);
-  const remaining = [...playerIds];
-  const result = createEmptyStarterSlots();
-  let cursor = 0;
-
-  const take = (position: PlayerPosition, count: number) => {
-    for (let i = 0; i < count; i++) {
-      const foundIndex = remaining.findIndex((id) => {
-        const player = playersById.get(id);
-        return player?.position === position;
-      });
-
-      if (foundIndex >= 0) {
-        result[cursor] = remaining[foundIndex] ?? null;
-        remaining.splice(foundIndex, 1);
-      } else {
-        result[cursor] = null;
-      }
-      cursor += 1;
-    }
-  };
-
-  take(PlayerPosition.Goalkeeper, shape.goalkeepers);
-  take(PlayerPosition.Defender, shape.defenders);
-  take(PlayerPosition.Midfielder, shape.midfielders);
-  take(PlayerPosition.Forward, shape.forwards);
-
-  for (let i = 0; i < result.length && remaining.length > 0; i++) {
-    if (result[i] == null) {
-      result[i] = remaining.shift() ?? null;
-    }
-  }
-
-  return result;
-};
-
-const lineupToSlots = (
-  lineup: ClubLineupResponse,
-  playersById: Map<string, PlayerInstanceResponse>,
-): { starters: (string | null)[]; bench: (string | null)[] } => {
-  const starterIds = [...lineup.starters]
-    .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map((s) => s.playerInstanceId);
-
-  const benchIds = [...lineup.bench]
-    .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map((s) => s.playerInstanceId);
-
-  const starters = redistributeByFormation(starterIds, lineup.formation, playersById);
-  const bench = createEmptyBenchSlots();
-  benchIds.slice(0, LINEUP_MAX_BENCH).forEach((id, index) => {
-    bench[index] = id;
-  });
-
-  return { starters, bench };
-};
 
 export const TacticsBoardPage = () => {
   const { data: squad = [], isLoading: isSquadLoading } =
@@ -110,7 +44,9 @@ export const TacticsBoardPage = () => {
   }, [squad]);
 
   useEffect(() => {
-    if (!lineup || squad.length === 0) return;
+    if (!lineup || squad.length === 0) {
+      return;
+    }
 
     const slots = lineupToSlots(lineup, playersById);
     setFormation(lineup.formation);
@@ -131,10 +67,14 @@ export const TacticsBoardPage = () => {
   const usedIds = useMemo(() => {
     const ids = new Set<string>();
     starterIds.forEach((id) => {
-      if (id) ids.add(id);
+      if (id) {
+        ids.add(id);
+      }
     });
     benchIds.forEach((id) => {
-      if (id) ids.add(id);
+      if (id) {
+        ids.add(id);
+      }
     });
     return ids;
   }, [starterIds, benchIds]);
@@ -146,11 +86,17 @@ export const TacticsBoardPage = () => {
 
   const filledStarterCount = starterIds.filter(Boolean).length;
   const hasGoalkeeper = starterIds.some((id) => {
-    if (!id) return false;
+    if (!id) {
+      return false;
+    }
+
     return playersById.get(id)?.position === PlayerPosition.Goalkeeper;
   });
   const hasInjuredStarter = starterIds.some((id) => {
-    if (!id) return false;
+    if (!id) {
+      return false;
+    }
+
     return playersById.get(id)?.isInjured === true;
   });
 
@@ -175,7 +121,9 @@ export const TacticsBoardPage = () => {
 
   const assignToStarter = (index: number, playerId: string) => {
     const player = playersById.get(playerId);
-    if (!player || player.isInjured) return;
+    if (!player || player.isInjured) {
+      return;
+    }
 
     clearPlayerFromSlots(playerId);
     setStarterIds((current) => {
@@ -272,10 +220,15 @@ export const TacticsBoardPage = () => {
 
   const handleAvailablePlayerClick = (playerId: string) => {
     const player = playersById.get(playerId);
-    if (!player) return;
+    if (!player) {
+      return;
+    }
 
     if (selection?.kind === "starter") {
-      if (player.isInjured) return;
+      if (player.isInjured) {
+        return;
+      }
+
       assignToStarter(selection.index, playerId);
       return;
     }
@@ -307,7 +260,10 @@ export const TacticsBoardPage = () => {
   };
 
   const handleReset = () => {
-    if (!lineup) return;
+    if (!lineup) {
+      return;
+    }
+
     const slots = lineupToSlots(lineup, playersById);
     setFormation(lineup.formation);
     setMentality(lineup.mentality);
@@ -317,7 +273,9 @@ export const TacticsBoardPage = () => {
   };
 
   const handleSave = async () => {
-    if (!canSave) return;
+    if (!canSave) {
+      return;
+    }
 
     const payloadStarters = starterIds.filter((id): id is string => Boolean(id));
     const payloadBench = benchIds.filter((id): id is string => Boolean(id));

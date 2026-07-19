@@ -1,6 +1,10 @@
 import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { TeamFormation, TeamMentality } from "../clubLineupTypes";
+import {
+  TeamFormation,
+  TeamMentality,
+  type ClubLineupResponse,
+} from "../clubLineupTypes";
 
 export interface FormationShape {
   goalkeepers: number;
@@ -41,8 +45,16 @@ export const getFormationShape = (formation: TeamFormation): FormationShape => {
 export const formatShortName = (firstName: string, lastName: string): string => {
   const initial = firstName.trim().charAt(0);
   const last = lastName.trim();
-  if (!initial) return last || "—";
-  return `${initial}. ${last.length > 10 ? `${last.slice(0, 9)}…` : last}`;
+
+  if (!initial) {
+    return last || "—";
+  }
+
+  if (last.length > 10) {
+    return `${initial}. ${last.slice(0, 9)}…`;
+  }
+
+  return `${initial}. ${last}`;
 };
 
 export const getPitchAccentClass = (position: PlayerPosition): string => {
@@ -124,3 +136,69 @@ export const createEmptyStarterSlots = (): (string | null)[] =>
 
 export const createEmptyBenchSlots = (): (string | null)[] =>
   Array.from({ length: LINEUP_MAX_BENCH }, () => null);
+
+export const getFormationLabel = (formation: TeamFormation): string => {
+  return FORMATION_OPTIONS.find((option) => option.value === formation)?.label ?? "—";
+};
+
+export const redistributeByFormation = (
+  playerIds: string[],
+  formation: TeamFormation,
+  playersById: Map<string, PlayerInstanceResponse>,
+): (string | null)[] => {
+  const shape = getFormationShape(formation);
+  const remaining = [...playerIds];
+  const result = createEmptyStarterSlots();
+  let cursor = 0;
+
+  const take = (position: PlayerPosition, count: number) => {
+    for (let i = 0; i < count; i++) {
+      const foundIndex = remaining.findIndex((id) => {
+        const player = playersById.get(id);
+        return player?.position === position;
+      });
+
+      if (foundIndex >= 0) {
+        result[cursor] = remaining[foundIndex] ?? null;
+        remaining.splice(foundIndex, 1);
+      } else {
+        result[cursor] = null;
+      }
+      cursor += 1;
+    }
+  };
+
+  take(PlayerPosition.Goalkeeper, shape.goalkeepers);
+  take(PlayerPosition.Defender, shape.defenders);
+  take(PlayerPosition.Midfielder, shape.midfielders);
+  take(PlayerPosition.Forward, shape.forwards);
+
+  for (let i = 0; i < result.length && remaining.length > 0; i++) {
+    if (result[i] == null) {
+      result[i] = remaining.shift() ?? null;
+    }
+  }
+
+  return result;
+};
+
+export const lineupToSlots = (
+  lineup: ClubLineupResponse,
+  playersById: Map<string, PlayerInstanceResponse>,
+): { starters: (string | null)[]; bench: (string | null)[] } => {
+  const starterIds = [...lineup.starters]
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((s) => s.playerInstanceId);
+
+  const benchIds = [...lineup.bench]
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((s) => s.playerInstanceId);
+
+  const starters = redistributeByFormation(starterIds, lineup.formation, playersById);
+  const bench = createEmptyBenchSlots();
+  benchIds.slice(0, LINEUP_MAX_BENCH).forEach((id, index) => {
+    bench[index] = id;
+  });
+
+  return { starters, bench };
+};

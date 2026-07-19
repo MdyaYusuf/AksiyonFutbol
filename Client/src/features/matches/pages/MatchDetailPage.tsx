@@ -51,6 +51,17 @@ export const MatchDetailPage = () => {
     <div className="mx-auto max-w-7xl space-y-gutter">
       <MatchReportHeader match={match} />
 
+      {!match.isPlayed && (
+        <div className="flex justify-end">
+          <Link
+            to={`/app/matches/${match.id}/lineup`}
+            className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
+          >
+            Set Lineup
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-card-gap lg:grid-cols-12">
         <MatchTimeline match={match} events={events} />
         <MatchDominancePanel match={match} events={events} />

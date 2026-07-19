@@ -104,11 +104,11 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
           Scout Report
         </Link>
         <Link
-          to="/app/tactics"
+          to={`/app/matches/${nextMatch.id}/lineup`}
           className="flex items-center gap-2 rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
         >
-          <MaterialIcon name="strategy" className="text-sm" />
-          Tactics
+          <MaterialIcon name="groups" className="text-sm" />
+          Set Lineup
         </Link>
       </div>
     </div>

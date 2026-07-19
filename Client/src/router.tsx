@@ -27,6 +27,7 @@ import { PlayerDetailPage } from "./features/playerInstances/pages/PlayerDetailP
 import { SquadPage } from "./features/playerInstances/pages/SquadPage";
 import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
 import { AccountSettingsPage } from "./features/users/pages/AccountSettingsPage";
+import { MatchDayLineupPage } from "./features/clubLineups/pages/MatchDayLineupPage";
 import { TacticsBoardPage } from "./features/clubLineups/pages/TacticsBoardPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
@@ -140,6 +141,10 @@ export const router = createBrowserRouter([
                       {
                         path: "fixtures",
                         element: <FixturesPage />,
+                      },
+                      {
+                        path: "matches/:id/lineup",
+                        element: <MatchDayLineupPage />,
                       },
                       {
                         path: "matches/:id",
