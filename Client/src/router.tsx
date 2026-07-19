@@ -27,6 +27,7 @@ import { PlayerDetailPage } from "./features/playerInstances/pages/PlayerDetailP
 import { SquadPage } from "./features/playerInstances/pages/SquadPage";
 import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
 import { AccountSettingsPage } from "./features/users/pages/AccountSettingsPage";
+import { TacticsBoardPage } from "./features/clubLineups/pages/TacticsBoardPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -127,6 +128,10 @@ export const router = createBrowserRouter([
                       {
                         path: "squad/:id",
                         element: <PlayerDetailPage />,
+                      },
+                      {
+                        path: "tactics",
+                        element: <TacticsBoardPage />,
                       },
                       {
                         path: "league",

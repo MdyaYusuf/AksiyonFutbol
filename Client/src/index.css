@@ -125,4 +125,13 @@
     );
     background-size: 20px 20px;
   }
+
+  .pitch-bg {
+    background: linear-gradient(180deg, #102618 0%, #0c1a11 100%);
+    border: 1px solid var(--color-outline-variant);
+  }
+
+  .pitch-line {
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
 }

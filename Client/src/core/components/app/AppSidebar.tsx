@@ -14,6 +14,7 @@ const navItems: AppNavItem[] = [
   { to: "/app/president", label: "President", icon: "account_balance" },
   { to: "/app/club", label: "Club", icon: "shield" },
   { to: "/app/squad", label: "Squad", icon: "groups" },
+  { to: "/app/tactics", label: "Tactics", icon: "strategy" },
   { to: "/app/league", label: "League", icon: "military_tech" },
   { to: "/app/fixtures", label: "Fixtures", icon: "calendar_month" },
   { to: "/admin", label: "Admin", icon: "admin_panel_settings", adminOnly: true },

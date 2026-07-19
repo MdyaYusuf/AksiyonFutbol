@@ -1,15 +1,19 @@
-export enum PlayerPosition {
-  Goalkeeper = 1,
-  Defender = 2,
-  Midfielder = 3,
-  Forward = 4,
-}
+export const PlayerPosition = {
+  Goalkeeper: 1,
+  Defender: 2,
+  Midfielder: 3,
+  Forward: 4,
+} as const;
 
-export enum PreferredFoot {
-  Right = 1,
-  Left = 2,
-  Both = 3,
-}
+export type PlayerPosition = (typeof PlayerPosition)[keyof typeof PlayerPosition];
+
+export const PreferredFoot = {
+  Right: 1,
+  Left: 2,
+  Both: 3,
+} as const;
+
+export type PreferredFoot = (typeof PreferredFoot)[keyof typeof PreferredFoot];
 
 // Responses
 export interface BasePlayerResponse {

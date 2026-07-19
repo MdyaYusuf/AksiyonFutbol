@@ -45,9 +45,9 @@ export const parseMatchEvents = (matchLogJson?: string | null): MatchEvent[] => 
     return parsed
       .map((event) => {
         const typeValue = event.type ?? event.Type;
-        const type =
+        const type: MatchEventType =
           typeof typeValue === "number"
-            ? typeValue
+            ? (typeValue as MatchEventType)
             : eventTypeNameMap[String(typeValue)] ?? MatchEventType.KickOff;
 
         return {

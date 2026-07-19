@@ -1,10 +1,13 @@
-export enum RefereePersonalityType {
-  Strict = 1,
-  Lenient = 2,
-  Balanced = 3,
-  Corruptible = 4,
-  Showman = 5,
-}
+export const RefereePersonalityType = {
+  Strict: 1,
+  Lenient: 2,
+  Balanced: 3,
+  Corruptible: 4,
+  Showman: 5,
+} as const;
+
+export type RefereePersonalityType =
+  (typeof RefereePersonalityType)[keyof typeof RefereePersonalityType];
 
 // Responses
 export interface RefereeResponse {
