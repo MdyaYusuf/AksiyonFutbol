@@ -24,4 +24,7 @@ public class GameOptions
   public decimal PostMatchWinCashReward { get; set; } = 5000m;
   public decimal PostMatchDrawCashReward { get; set; } = 2000m;
   public decimal PostMatchLossCashReward { get; set; } = 1000m;
+
+  public int LineupStarterCount { get; set; } = 11;
+  public int LineupMaxBenchSize { get; set; } = 7;
 }

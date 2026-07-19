@@ -1,7 +1,7 @@
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.ClubLineups;
 using Api.Features.Clubs;
-using Api.Features.PlayerInstances;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +9,7 @@ namespace Api.Features.Matches;
 
 public class MatchService(
   IMatchRepository _matchRepository,
-  IPlayerInstanceRepository _playerInstanceRepository,
+  IMatchDaySquadResolver _matchDaySquadResolver,
   MatchMapper _mapper,
   MatchBusinessRules _businessRules,
   IMatchSimulationService _matchSimulationService,
@@ -63,9 +63,10 @@ public class MatchService(
   {
     await _businessRules.GetClubIfExistAsync(clubId, cancellationToken);
 
-    List<Match> matches = await _matchRepository.GetByClubIdAsync(
-      clubId,
+    List<Match> matches = await _matchRepository.GetAllAsync(
+      filter: m => m.HomeClubId == clubId || m.AwayClubId == clubId,
       include: IncludeMatchRelations,
+      orderBy: query => query.OrderByDescending(m => m.MatchDate),
       cancellationToken: cancellationToken);
 
     List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);
@@ -86,10 +87,10 @@ public class MatchService(
   {
     await _businessRules.DivisionMustExistAsync(divisionId, cancellationToken);
 
-    List<Match> matches = await _matchRepository.GetByDivisionAndMatchWeekAsync(
-      divisionId,
-      matchWeek,
+    List<Match> matches = await _matchRepository.GetAllAsync(
+      filter: m => m.DivisionId == divisionId && m.MatchWeek == matchWeek,
       include: IncludeMatchRelations,
+      orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),
       cancellationToken: cancellationToken);
 
     List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);
@@ -247,22 +248,22 @@ public class MatchService(
     _businessRules.MatchMustNotBePlayed(match);
     _businessRules.MatchMustHaveReferee(match);
 
-    List<PlayerInstance> homePlayers = await _playerInstanceRepository.GetAvailableByClubIdAsync(
+    MatchDaySquad homeSquad = await _matchDaySquadResolver.ResolveAsync(
       match.HomeClubId,
       enableTracking: true,
       cancellationToken: cancellationToken);
 
-    List<PlayerInstance> awayPlayers = await _playerInstanceRepository.GetAvailableByClubIdAsync(
+    MatchDaySquad awaySquad = await _matchDaySquadResolver.ResolveAsync(
       match.AwayClubId,
       enableTracking: true,
       cancellationToken: cancellationToken);
 
-    _businessRules.ClubsMustHaveAvailablePlayers(homePlayers.Count, awayPlayers.Count);
+    _businessRules.ClubsMustHaveAvailablePlayers(homeSquad.StartingPlayers.Count, awaySquad.StartingPlayers.Count);
 
     SimulatedMatchResultDto result = _matchSimulationService.Simulate(
       match,
-      homePlayers,
-      awayPlayers,
+      homeSquad,
+      awaySquad,
       match.Referee!);
 
     match.HomeScore = result.HomeScore;

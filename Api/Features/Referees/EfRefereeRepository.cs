@@ -8,18 +8,6 @@ public class EfRefereeRepository : EfBaseRepository<BaseDbContext, Referee, int>
 {
   public EfRefereeRepository(BaseDbContext context) : base(context)
   {
-
-  }
-
-  public async Task<List<Referee>> GetByPersonalityTypeAsync(
-    RefereePersonalityType personalityType,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    return await Query(enableTracking)
-      .Where(r => r.PersonalityType == personalityType)
-      .OrderBy(r => r.Name)
-      .ToListAsync(cancellationToken);
   }
 
   public async Task<List<Referee>> GetEasiestToBribeAsync(

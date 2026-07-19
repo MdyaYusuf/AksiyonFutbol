@@ -144,8 +144,9 @@ public class RefereeService(
       $"referees:personality:{personalityType}",
       async token =>
       {
-        List<Referee> referees = await _refereeRepository.GetByPersonalityTypeAsync(
-          personalityType,
+        List<Referee> referees = await _refereeRepository.GetAllAsync(
+          filter: r => r.PersonalityType == personalityType,
+          orderBy: query => query.OrderBy(r => r.Name),
           cancellationToken: token);
 
         return _mapper.EntityToPreviewDtoList(referees);

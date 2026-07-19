@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Api.Core.Entities;
+using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
 using Api.Features.LeagueDivisions;
 using Api.Features.PlayerInstances;
@@ -32,5 +33,6 @@ public class Club : Entity<Guid>
   public int DivisionId { get; set; }
   public virtual ClubPresident? President { get; set; }
   public virtual LeagueDivision Division { get; set; } = default!;
+  public virtual ClubLineup? Lineup { get; set; }
   public virtual ICollection<PlayerInstance> Players { get; set; }
 }

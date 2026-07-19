@@ -172,6 +172,11 @@ public class EfBaseRepository<TContext, TEntity, TId> : IRepository<TEntity, TId
     _context.Set<TEntity>().Remove(entity);
   }
 
+  public void DeleteRange(IEnumerable<TEntity> entities)
+  {
+    _context.Set<TEntity>().RemoveRange(entities);
+  }
+
   public void Update(TEntity entity)
   {
     entity.UpdatedDate = DateTime.UtcNow;

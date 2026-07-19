@@ -4,11 +4,6 @@ namespace Api.Features.Referees;
 
 public interface IRefereeRepository : IRepository<Referee, int>
 {
-  Task<List<Referee>> GetByPersonalityTypeAsync(
-    RefereePersonalityType personalityType,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default);
-
   Task<List<Referee>> GetEasiestToBribeAsync(
     int count,
     bool enableTracking = false,

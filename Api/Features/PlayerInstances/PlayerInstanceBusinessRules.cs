@@ -48,7 +48,11 @@ public class PlayerInstanceBusinessRules(
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    Club? club = await _clubRepository.GetByUserIdAsync(userId, include, enableTracking, cancellationToken);
+    Club? club = await _clubRepository.GetAsync(
+      c => c.President != null && c.President.UserId == userId,
+      include,
+      enableTracking,
+      cancellationToken);
 
     if (club == null)
     {

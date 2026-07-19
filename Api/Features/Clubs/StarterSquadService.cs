@@ -84,10 +84,14 @@ public class StarterSquadService(
       return [];
     }
 
-    List<BasePlayer> pool = await _basePlayerRepository.GetByPositionAsync(
-      position,
+    List<BasePlayer> pool = await _basePlayerRepository.GetAllAsync(
+      filter: bp => bp.Position == position,
+      orderBy: query => query
+        .OrderByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)
+        .ThenBy(bp => bp.DefaultLastName)
+        .ThenBy(bp => bp.DefaultFirstName),
       enableTracking: false,
-      cancellationToken);
+      cancellationToken: cancellationToken);
 
     if (pool.Count < count)
     {

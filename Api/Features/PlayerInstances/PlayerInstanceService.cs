@@ -78,9 +78,12 @@ public class PlayerInstanceService(
   {
     await _businessRules.GetClubIfExistAsync(clubId, cancellationToken: cancellationToken);
 
-    List<PlayerInstance> players = await _playerInstanceRepository.GetByClubIdAsync(
-      clubId,
+    List<PlayerInstance> players = await _playerInstanceRepository.GetAllAsync(
+      filter: pi => pi.ClubId == clubId,
       include: IncludePlayerRelations,
+      orderBy: query => query
+        .OrderBy(pi => pi.Position)
+        .ThenByDescending(pi => pi.AttackPower + pi.DefenseStrength + pi.MidfieldControl),
       cancellationToken: cancellationToken);
 
     List<PlayerInstancePreviewDto> response = _mapper.EntityToPreviewDtoList(players);
@@ -100,9 +103,12 @@ public class PlayerInstanceService(
   {
     Club club = await _businessRules.GetClubByUserIdIfExistAsync(currentUserId, cancellationToken: cancellationToken);
 
-    List<PlayerInstance> players = await _playerInstanceRepository.GetByClubIdAsync(
-      club.Id,
+    List<PlayerInstance> players = await _playerInstanceRepository.GetAllAsync(
+      filter: pi => pi.ClubId == club.Id,
       include: IncludePlayerRelations,
+      orderBy: query => query
+        .OrderBy(pi => pi.Position)
+        .ThenByDescending(pi => pi.AttackPower + pi.DefenseStrength + pi.MidfieldControl),
       cancellationToken: cancellationToken);
 
     List<PlayerInstanceResponseDto> response = _mapper.EntityToResponseDtoList(players);
@@ -122,9 +128,12 @@ public class PlayerInstanceService(
   {
     await _businessRules.GetClubIfExistAsync(clubId, cancellationToken: cancellationToken);
 
-    List<PlayerInstance> players = await _playerInstanceRepository.GetAvailableByClubIdAsync(
-      clubId,
+    List<PlayerInstance> players = await _playerInstanceRepository.GetAllAsync(
+      filter: pi => pi.ClubId == clubId && !pi.IsInjured,
       include: IncludePlayerRelations,
+      orderBy: query => query
+        .OrderBy(pi => pi.Position)
+        .ThenByDescending(pi => pi.AttackPower + pi.DefenseStrength + pi.MidfieldControl),
       cancellationToken: cancellationToken);
 
     List<PlayerInstancePreviewDto> response = _mapper.EntityToPreviewDtoList(players);
@@ -144,9 +153,12 @@ public class PlayerInstanceService(
   {
     await _businessRules.GetClubIfExistAsync(clubId, cancellationToken: cancellationToken);
 
-    List<PlayerInstance> players = await _playerInstanceRepository.GetInjuredByClubIdAsync(
-      clubId,
+    List<PlayerInstance> players = await _playerInstanceRepository.GetAllAsync(
+      filter: pi => pi.ClubId == clubId && pi.IsInjured,
       include: IncludePlayerRelations,
+      orderBy: query => query
+        .OrderByDescending(pi => pi.InjuryDays)
+        .ThenBy(pi => pi.Position),
       cancellationToken: cancellationToken);
 
     List<PlayerInstancePreviewDto> response = _mapper.EntityToPreviewDtoList(players);

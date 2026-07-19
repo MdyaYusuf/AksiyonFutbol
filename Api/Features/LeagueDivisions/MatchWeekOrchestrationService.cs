@@ -2,8 +2,8 @@ using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.ClubLineups;
 using Api.Features.Matches;
-using Api.Features.PlayerInstances;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
@@ -14,7 +14,7 @@ public class MatchWeekOrchestrationService(
   ILeagueDivisionRepository _leagueDivisionRepository,
   LeagueDivisionBusinessRules _leagueBusinessRules,
   IMatchRepository _matchRepository,
-  IPlayerInstanceRepository _playerInstanceRepository,
+  IMatchDaySquadResolver _matchDaySquadResolver,
   IMatchSimulationService _matchSimulationService,
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions,
@@ -36,11 +36,11 @@ public class MatchWeekOrchestrationService(
 
     int processedMatchWeek = leagueDivision.CurrentMatchWeek;
 
-    List<Match> weekMatches = await _matchRepository.GetByDivisionAndMatchWeekAsync(
-      divisionId,
-      processedMatchWeek,
+    List<Match> weekMatches = await _matchRepository.GetAllAsync(
+      filter: m => m.DivisionId == divisionId && m.MatchWeek == processedMatchWeek,
       include: IncludeMatchRelations,
       enableTracking: true,
+      orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),
       cancellationToken: cancellationToken);
 
     List<Match> unplayedMatches = weekMatches
@@ -95,17 +95,17 @@ public class MatchWeekOrchestrationService(
         $"{match.HomeClub.Name} - {match.AwayClub.Name} maçı için hakem atanmalıdır.");
     }
 
-    List<PlayerInstance> homePlayers = await _playerInstanceRepository.GetAvailableByClubIdAsync(
+    MatchDaySquad homeSquad = await _matchDaySquadResolver.ResolveAsync(
       match.HomeClubId,
       enableTracking: true,
       cancellationToken: cancellationToken);
 
-    List<PlayerInstance> awayPlayers = await _playerInstanceRepository.GetAvailableByClubIdAsync(
+    MatchDaySquad awaySquad = await _matchDaySquadResolver.ResolveAsync(
       match.AwayClubId,
       enableTracking: true,
       cancellationToken: cancellationToken);
 
-    if (homePlayers.Count == 0 || awayPlayers.Count == 0)
+    if (homeSquad.StartingPlayers.Count == 0 || awaySquad.StartingPlayers.Count == 0)
     {
       throw new BusinessException(
         $"{match.HomeClub.Name} - {match.AwayClub.Name} maçı için her iki kulübün de en az bir uygun oyuncusu bulunmalıdır.");
@@ -113,8 +113,8 @@ public class MatchWeekOrchestrationService(
 
     SimulatedMatchResultDto simulation = _matchSimulationService.Simulate(
       match,
-      homePlayers,
-      awayPlayers,
+      homeSquad,
+      awaySquad,
       match.Referee);
 
     match.HomeScore = simulation.HomeScore;

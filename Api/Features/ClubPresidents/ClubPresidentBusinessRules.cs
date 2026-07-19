@@ -26,7 +26,11 @@ public class ClubPresidentBusinessRules(IClubPresidentRepository _clubPresidentR
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    ClubPresident? clubPresident = await _clubPresidentRepository.GetByUserIdAsync(userId, include, enableTracking, cancellationToken);
+    ClubPresident? clubPresident = await _clubPresidentRepository.GetAsync(
+      cp => cp.UserId == userId,
+      include,
+      enableTracking,
+      cancellationToken);
 
     if (clubPresident == null)
     {

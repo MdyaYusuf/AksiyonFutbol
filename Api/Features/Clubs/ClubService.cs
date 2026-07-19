@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ public class ClubService(
   ClubMapper _mapper,
   ClubBusinessRules _businessRules,
   IStarterSquadService _starterSquadService,
+  IDefaultClubLineupService _defaultClubLineupService,
   IUnitOfWork _unitOfWork,
   IValidator<CreateClubRequest> _createValidator,
   IValidator<CreateBotClubRequest> _createBotValidator,
@@ -141,9 +143,10 @@ public class ClubService(
   {
     await _businessRules.DivisionMustExistAsync(divisionId, cancellationToken);
 
-    List<Club> clubs = await _clubRepository.GetByDivisionIdAsync(
-      divisionId,
+    List<Club> clubs = await _clubRepository.GetAllAsync(
+      filter: c => c.DivisionId == divisionId,
       include: IncludeClubRelations,
+      orderBy: query => query.OrderBy(c => c.Name),
       cancellationToken: cancellationToken);
 
     List<ClubPreviewDto> response = _mapper.EntityToPreviewDtoList(clubs);
@@ -203,6 +206,8 @@ public class ClubService(
 
     await _clubRepository.AddAsync(club, cancellationToken);
     await _starterSquadService.AssignAsync(club, cancellationToken);
+    await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _defaultClubLineupService.EnsureAsync(club.Id, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     CreatedClubResponseDto response = _mapper.EntityToCreatedResponseDto(club);

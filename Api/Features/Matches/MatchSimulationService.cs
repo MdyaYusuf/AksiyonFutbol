@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Features.ClubLineups;
 using Api.Features.Clubs;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
@@ -20,10 +21,13 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
 
   public SimulatedMatchResultDto Simulate(
     Match match,
-    List<PlayerInstance> homePlayers,
-    List<PlayerInstance> awayPlayers,
+    MatchDaySquad homeSquad,
+    MatchDaySquad awaySquad,
     Referee referee)
   {
+    List<PlayerInstance> homePlayers = homeSquad.StartingPlayers;
+    List<PlayerInstance> awayPlayers = awaySquad.StartingPlayers;
+
     if (homePlayers.Count == 0 || awayPlayers.Count == 0)
     {
       throw new BusinessException("Maç simülasyonu için iki takımda da en az bir uygun oyuncu bulunmalıdır.");
@@ -32,8 +36,8 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     Club homeClub = match.HomeClub;
     Club awayClub = match.AwayClub;
 
-    TeamPower homePower = CalculateTeamPower(homePlayers, homeClub, isHome: true);
-    TeamPower awayPower = CalculateTeamPower(awayPlayers, awayClub, isHome: false);
+    TeamPower homePower = CalculateTeamPower(homePlayers, homeClub, homeSquad.Mentality, isHome: true);
+    TeamPower awayPower = CalculateTeamPower(awayPlayers, awayClub, awaySquad.Mentality, isHome: false);
 
     List<MatchEventDto> events = new()
     {
@@ -146,18 +150,33 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     club.Cash += cashReward;
   }
 
-  private static TeamPower CalculateTeamPower(List<PlayerInstance> players, Club club, bool isHome)
+  private static TeamPower CalculateTeamPower(
+    List<PlayerInstance> players,
+    Club club,
+    TeamMentality mentality,
+    bool isHome)
   {
     double matchDayVariance = Random.Shared.NextDouble() * 0.30 + 0.85;
     double homeAdvantage = isHome ? 1.05 : 1.0;
     double clubStatusModifier = (club.Morale + club.Chemistry + club.Discipline) / 300d;
     double finalModifier = matchDayVariance * homeAdvantage * (0.90 + clubStatusModifier * 0.20);
+    MentalityModifiers mentalityModifiers = GetMentalityModifiers(mentality);
 
     return new TeamPower
     {
-      AttackPower = Math.Max(1, players.Average(p => p.AttackPower) * finalModifier),
-      DefenseStrength = Math.Max(1, players.Average(p => p.DefenseStrength) * finalModifier),
-      MidfieldControl = Math.Max(1, players.Average(p => p.MidfieldControl) * finalModifier)
+      AttackPower = Math.Max(1, players.Average(p => p.AttackPower) * finalModifier * mentalityModifiers.Attack),
+      DefenseStrength = Math.Max(1, players.Average(p => p.DefenseStrength) * finalModifier * mentalityModifiers.Defense),
+      MidfieldControl = Math.Max(1, players.Average(p => p.MidfieldControl) * finalModifier * mentalityModifiers.Midfield)
+    };
+  }
+
+  private static MentalityModifiers GetMentalityModifiers(TeamMentality mentality)
+  {
+    return mentality switch
+    {
+      TeamMentality.Attacking => new MentalityModifiers(1.08, 0.94, 1.02),
+      TeamMentality.Defensive => new MentalityModifiers(0.94, 1.08, 1.02),
+      _ => new MentalityModifiers(1.0, 1.0, 1.0)
     };
   }
 
@@ -203,4 +222,6 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     public double DefenseStrength { get; init; }
     public double MidfieldControl { get; init; }
   }
+
+  private sealed record MentalityModifiers(double Attack, double Defense, double Midfield);
 }

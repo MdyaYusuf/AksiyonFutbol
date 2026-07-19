@@ -7,6 +7,7 @@ using Api.Core.Security;
 using Api.Data;
 using Api.Features.Authentication;
 using Api.Features.BasePlayers;
+using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
@@ -53,6 +54,7 @@ builder.Services.AddLeagueDivisionDependencies();
 builder.Services.AddClubDependencies();
 builder.Services.AddBasePlayerDependencies();
 builder.Services.AddPlayerInstanceDependencies();
+builder.Services.AddClubLineupDependencies();
 builder.Services.AddRefereeDependencies();
 builder.Services.AddMatchDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -96,6 +98,8 @@ builder.Services.AddOptions<GameOptions>()
   .Validate(options => options.PostMatchWinCashReward >= 0, "PostMatchWinCashReward negatif olamaz.")
   .Validate(options => options.PostMatchDrawCashReward >= 0, "PostMatchDrawCashReward negatif olamaz.")
   .Validate(options => options.PostMatchLossCashReward >= 0, "PostMatchLossCashReward negatif olamaz.")
+  .Validate(options => options.LineupStarterCount == 11, "LineupStarterCount 11 olmalıdır.")
+  .Validate(options => options.LineupMaxBenchSize >= 0 && options.LineupMaxBenchSize <= 12, "LineupMaxBenchSize 0 ile 12 arasında olmalıdır.")
   .ValidateOnStart();
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");

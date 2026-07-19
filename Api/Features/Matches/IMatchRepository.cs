@@ -4,19 +4,6 @@ namespace Api.Features.Matches;
 
 public interface IMatchRepository : IRepository<Match, Guid>
 {
-  Task<List<Match>> GetByClubIdAsync(
-    Guid clubId,
-    Func<IQueryable<Match>, IQueryable<Match>>? include = null,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default);
-
-  Task<List<Match>> GetByDivisionAndMatchWeekAsync(
-    int divisionId,
-    int matchWeek,
-    Func<IQueryable<Match>, IQueryable<Match>>? include = null,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default);
-
   Task<List<Match>> GetScheduledUnplayedAsync(
     DateTime utcNow,
     int count,

@@ -34,7 +34,11 @@ public class ClubBusinessRules(
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    Club? club = await _clubRepository.GetByUserIdAsync(userId, include, enableTracking, cancellationToken);
+    Club? club = await _clubRepository.GetAsync(
+      c => c.President != null && c.President.UserId == userId,
+      include,
+      enableTracking,
+      cancellationToken);
 
     if (club == null)
     {
@@ -48,7 +52,9 @@ public class ClubBusinessRules(
     Guid userId,
     CancellationToken cancellationToken = default)
   {
-    ClubPresident? president = await _clubPresidentRepository.GetByUserIdAsync(userId, cancellationToken: cancellationToken);
+    ClubPresident? president = await _clubPresidentRepository.GetAsync(
+      cp => cp.UserId == userId,
+      cancellationToken: cancellationToken);
 
     if (president == null)
     {

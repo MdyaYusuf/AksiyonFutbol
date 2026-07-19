@@ -48,5 +48,6 @@ where TId : notnull
     CancellationToken cancellationToken = default);
 
   void Delete(TEntity entity);
+  void DeleteRange(IEnumerable<TEntity> entities);
   void Update(TEntity entity);
 }

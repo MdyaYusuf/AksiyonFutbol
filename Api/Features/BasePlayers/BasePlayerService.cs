@@ -148,7 +148,13 @@ public class BasePlayerService(
       $"base-players:position:{position}",
       async token =>
       {
-        List<BasePlayer> basePlayers = await _basePlayerRepository.GetByPositionAsync(position, cancellationToken: token);
+        List<BasePlayer> basePlayers = await _basePlayerRepository.GetAllAsync(
+          filter: bp => bp.Position == position,
+          orderBy: query => query
+            .OrderByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)
+            .ThenBy(bp => bp.DefaultLastName)
+            .ThenBy(bp => bp.DefaultFirstName),
+          cancellationToken: token);
         return _mapper.EntityToPreviewDtoList(basePlayers);
       },
       tags: [CacheTag],

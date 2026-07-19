@@ -8,20 +8,6 @@ public class EfBasePlayerRepository : EfBaseRepository<BaseDbContext, BasePlayer
 {
   public EfBasePlayerRepository(BaseDbContext context) : base(context)
   {
-
-  }
-
-  public async Task<List<BasePlayer>> GetByPositionAsync(
-    PlayerPosition position,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    return await Query(enableTracking)
-      .Where(bp => bp.Position == position)
-      .OrderByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)
-      .ThenBy(bp => bp.DefaultLastName)
-      .ThenBy(bp => bp.DefaultFirstName)
-      .ToListAsync(cancellationToken);
   }
 
   public async Task<bool> TemplateExistsAsync(

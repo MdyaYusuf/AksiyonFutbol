@@ -30,7 +30,10 @@ public class LeagueDivisionBusinessRules(
     bool enableTracking = false,
     CancellationToken cancellationToken = default)
   {
-    LeagueDivision? leagueDivision = await _leagueDivisionRepository.GetByTierAndGroupAsync(tier, groupNumber, enableTracking, cancellationToken);
+    LeagueDivision? leagueDivision = await _leagueDivisionRepository.GetAsync(
+      ld => ld.Tier == tier && ld.GroupNumber == groupNumber,
+      enableTracking: enableTracking,
+      cancellationToken: cancellationToken);
 
     if (leagueDivision == null)
     {

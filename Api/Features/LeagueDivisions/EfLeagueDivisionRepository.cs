@@ -8,28 +8,6 @@ public class EfLeagueDivisionRepository : EfBaseRepository<BaseDbContext, League
 {
   public EfLeagueDivisionRepository(BaseDbContext context) : base(context)
   {
-
-  }
-
-  public async Task<LeagueDivision?> GetByTierAndGroupAsync(
-    int tier,
-    int groupNumber,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    return await Query(enableTracking)
-      .FirstOrDefaultAsync(ld => ld.Tier == tier && ld.GroupNumber == groupNumber, cancellationToken);
-  }
-
-  public async Task<List<LeagueDivision>> GetByTierAsync(
-    int tier,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    return await Query(enableTracking)
-      .Where(ld => ld.Tier == tier)
-      .OrderBy(ld => ld.GroupNumber)
-      .ToListAsync(cancellationToken);
   }
 
   public async Task<bool> IsNameUniqueAsync(

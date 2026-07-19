@@ -8,23 +8,6 @@ public class EfClubPresidentRepository : EfBaseRepository<BaseDbContext, ClubPre
 {
   public EfClubPresidentRepository(BaseDbContext context) : base(context)
   {
-
-  }
-
-  public async Task<ClubPresident?> GetByUserIdAsync(
-    Guid userId,
-    Func<IQueryable<ClubPresident>, IQueryable<ClubPresident>>? include = null,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    IQueryable<ClubPresident> query = Query(enableTracking);
-
-    if (include != null)
-    {
-      query = include(query);
-    }
-
-    return await query.FirstOrDefaultAsync(cp => cp.UserId == userId, cancellationToken);
   }
 
   public async Task<bool> IsNameUniqueAsync(

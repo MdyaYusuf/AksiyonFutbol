@@ -8,47 +8,6 @@ public class EfMatchRepository : EfBaseRepository<BaseDbContext, Match, Guid>, I
 {
   public EfMatchRepository(BaseDbContext context) : base(context)
   {
-
-  }
-
-  public async Task<List<Match>> GetByClubIdAsync(
-    Guid clubId,
-    Func<IQueryable<Match>, IQueryable<Match>>? include = null,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    IQueryable<Match> query = Query(enableTracking);
-
-    if (include != null)
-    {
-      query = include(query);
-    }
-
-    return await query
-      .Where(m => m.HomeClubId == clubId || m.AwayClubId == clubId)
-      .OrderByDescending(m => m.MatchDate)
-      .ToListAsync(cancellationToken);
-  }
-
-  public async Task<List<Match>> GetByDivisionAndMatchWeekAsync(
-    int divisionId,
-    int matchWeek,
-    Func<IQueryable<Match>, IQueryable<Match>>? include = null,
-    bool enableTracking = false,
-    CancellationToken cancellationToken = default)
-  {
-    IQueryable<Match> query = Query(enableTracking);
-
-    if (include != null)
-    {
-      query = include(query);
-    }
-
-    return await query
-      .Where(m => m.DivisionId == divisionId && m.MatchWeek == matchWeek)
-      .OrderBy(m => m.MatchDate)
-      .ThenBy(m => m.HomeClub.Name)
-      .ToListAsync(cancellationToken);
   }
 
   public async Task<List<Match>> GetScheduledUnplayedAsync(

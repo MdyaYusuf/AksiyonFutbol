@@ -152,7 +152,10 @@ public class LeagueDivisionService(
       $"league-divisions:tier:{tier}",
       async token =>
       {
-        List<LeagueDivision> leagueDivisions = await _leagueDivisionRepository.GetByTierAsync(tier, cancellationToken: token);
+        List<LeagueDivision> leagueDivisions = await _leagueDivisionRepository.GetAllAsync(
+          filter: ld => ld.Tier == tier,
+          orderBy: query => query.OrderBy(ld => ld.GroupNumber),
+          cancellationToken: token);
         return _mapper.EntityToPreviewDtoList(leagueDivisions);
       },
       tags: [CacheTag],
