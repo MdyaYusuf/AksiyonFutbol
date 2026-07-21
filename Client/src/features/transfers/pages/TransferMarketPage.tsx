@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
 import { TransferMarketTable } from "../components/TransferMarketTable";
@@ -48,12 +48,20 @@ export const TransferMarketPage = () => {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="font-headline-md text-headline-md text-on-surface">Transfer Market</h1>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">
-          Scout available talent and spend wisely
-          {isFetching ? " · Updating..." : ""}
-        </p>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-headline-md text-headline-md text-on-surface">Transfer Market</h1>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            Scout available talent and spend wisely
+            {isFetching ? " · Updating..." : ""}
+          </p>
+        </div>
+        <Link
+          to="/app/transfers/deals"
+          className="rounded border border-outline-variant px-4 py-2 font-label-caps text-label-caps text-on-surface transition-colors hover:border-primary hover:text-primary"
+        >
+          My Deals
+        </Link>
       </div>
 
       <TransferMarketToolbar

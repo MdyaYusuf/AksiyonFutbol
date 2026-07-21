@@ -31,6 +31,7 @@ import { MatchDayLineupPage } from "./features/clubLineups/pages/MatchDayLineupP
 import { TacticsBoardPage } from "./features/clubLineups/pages/TacticsBoardPage";
 import { TransferMarketPage } from "./features/transfers/pages/TransferMarketPage";
 import { MakeOfferPage } from "./features/transfers/pages/MakeOfferPage";
+import { MyDealsPage } from "./features/transfers/pages/MyDealsPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -139,6 +140,10 @@ export const router = createBrowserRouter([
                       {
                         path: "transfers",
                         element: <TransferMarketPage />,
+                      },
+                      {
+                        path: "transfers/deals",
+                        element: <MyDealsPage />,
                       },
                       {
                         path: "transfers/:listingId/offer",
