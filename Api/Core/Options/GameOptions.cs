@@ -27,4 +27,6 @@ public class GameOptions
 
   public int LineupStarterCount { get; set; } = 11;
   public int LineupMaxBenchSize { get; set; } = 7;
+
+  public int TransferMinimumSquadSize { get; set; } = 11;
 }

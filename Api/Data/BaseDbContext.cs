@@ -9,6 +9,7 @@ using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using Api.Features.Roles;
+using Api.Features.Transfers;
 using Api.Features.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,8 @@ public class BaseDbContext : DbContext
   public DbSet<PlayerInstance> PlayerInstances { get; set; }
   public DbSet<Referee> Referees { get; set; }
   public DbSet<Match> Matches { get; set; }
+  public DbSet<TransferListing> TransferListings { get; set; }
+  public DbSet<TransferOffer> TransferOffers { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
