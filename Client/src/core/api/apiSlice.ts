@@ -63,6 +63,7 @@ export const apiSlice = createApi({
     "PlayerInstance",
     "Referee",
     "Match",
+    "Transfer",
   ],
   endpoints: () => ({}),
 });

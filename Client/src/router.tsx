@@ -29,6 +29,7 @@ import { AdminRefereesPage } from "./features/referees/pages/AdminRefereesPage";
 import { AccountSettingsPage } from "./features/users/pages/AccountSettingsPage";
 import { MatchDayLineupPage } from "./features/clubLineups/pages/MatchDayLineupPage";
 import { TacticsBoardPage } from "./features/clubLineups/pages/TacticsBoardPage";
+import { TransferMarketPage } from "./features/transfers/pages/TransferMarketPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -133,6 +134,10 @@ export const router = createBrowserRouter([
                       {
                         path: "tactics",
                         element: <TacticsBoardPage />,
+                      },
+                      {
+                        path: "transfers",
+                        element: <TransferMarketPage />,
                       },
                       {
                         path: "league",
