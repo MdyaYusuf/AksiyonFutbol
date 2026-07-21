@@ -1,13 +1,10 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
 import { TransferMarketTable } from "../components/TransferMarketTable";
 import { TransferMarketToolbar } from "../components/TransferMarketToolbar";
-import { TransferOfferModal } from "../components/TransferOfferModal";
-import {
-  useCreateTransferOfferMutation,
-  useGetTransferMarketQuery,
-} from "../transfersApiSlice";
+import { useGetTransferMarketQuery } from "../transfersApiSlice";
 import type { TransferMarketItem } from "../transferTypes";
 import {
   positionFilterToApi,
@@ -16,11 +13,11 @@ import {
 } from "../utils/transferMarketHelpers";
 
 export const TransferMarketPage = () => {
+  const navigate = useNavigate();
   const { data: club } = useGetCurrentUserClubQuery();
   const [positionFilter, setPositionFilter] = useState<SquadPositionFilter>("ALL");
   const [sortOption, setSortOption] = useState<TransferMarketSortOption>("rating-desc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [offerTarget, setOfferTarget] = useState<TransferMarketItem | null>(null);
 
   const marketQuery = useMemo(() => {
     const sort = sortOptionToApi(sortOption);
@@ -34,24 +31,11 @@ export const TransferMarketPage = () => {
     };
   }, [positionFilter, sortOption, searchQuery]);
 
-  const { data: marketItems = [], isLoading, isFetching } = useGetTransferMarketQuery(marketQuery);
-  const [createOffer, { isLoading: isSubmitting }] = useCreateTransferOfferMutation();
+  const { data: marketItems = [], isLoading, isFetching } =
+    useGetTransferMarketQuery(marketQuery);
 
-  const handleSubmitOffer = async (offerFee: number, proposedWage: number) => {
-    if (!offerTarget) {
-      return;
-    }
-
-    try {
-      await createOffer({
-        transferListingId: offerTarget.listingId,
-        offerFee,
-        proposedWage,
-      }).unwrap();
-      setOfferTarget(null);
-    } catch {
-      /* Toasts via apiClient */
-    }
+  const handleMakeOffer = (item: TransferMarketItem) => {
+    navigate(`/app/transfers/${item.listingId}/offer`);
   };
 
   if (isLoading) {
@@ -84,18 +68,8 @@ export const TransferMarketPage = () => {
       <TransferMarketTable
         items={marketItems}
         currentClubId={club?.id}
-        onMakeOffer={setOfferTarget}
+        onMakeOffer={handleMakeOffer}
       />
-
-      {offerTarget && (
-        <TransferOfferModal
-          item={offerTarget}
-          clubCash={club?.cash ?? 0}
-          isSubmitting={isSubmitting}
-          onClose={() => setOfferTarget(null)}
-          onSubmit={handleSubmitOffer}
-        />
-      )}
     </div>
   );
 };
