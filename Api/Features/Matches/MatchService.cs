@@ -13,6 +13,7 @@ public class MatchService(
   MatchMapper _mapper,
   MatchBusinessRules _businessRules,
   IMatchSimulationService _matchSimulationService,
+  IMatchBribeInfluenceProvider _matchBribeInfluenceProvider,
   IUnitOfWork _unitOfWork,
   IValidator<CreateMatchRequest> _createValidator,
   IValidator<UpdateMatchScheduleRequest> _updateScheduleValidator) : IMatchService
@@ -260,11 +261,16 @@ public class MatchService(
 
     _businessRules.ClubsMustHaveAvailablePlayers(homeSquad.StartingPlayers.Count, awaySquad.StartingPlayers.Count);
 
+    MatchBribeInfluence bribeInfluence = await _matchBribeInfluenceProvider.GetForMatchAsync(
+      match.Id,
+      cancellationToken);
+
     SimulatedMatchResultDto result = _matchSimulationService.Simulate(
       match,
       homeSquad,
       awaySquad,
-      match.Referee!);
+      match.Referee!,
+      bribeInfluence);
 
     match.HomeScore = result.HomeScore;
     match.AwayScore = result.AwayScore;

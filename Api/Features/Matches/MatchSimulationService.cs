@@ -23,8 +23,10 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     Match match,
     MatchDaySquad homeSquad,
     MatchDaySquad awaySquad,
-    Referee referee)
+    Referee referee,
+    MatchBribeInfluence? bribeInfluence = null)
   {
+    MatchBribeInfluence influence = bribeInfluence ?? MatchBribeInfluence.None;
     List<PlayerInstance> homePlayers = homeSquad.StartingPlayers;
     List<PlayerInstance> awayPlayers = awaySquad.StartingPlayers;
 
@@ -75,6 +77,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
 
       double attackSuccessChance = attackingPower.AttackPower / (attackingPower.AttackPower + defendingPower.DefenseStrength);
       double goalChance = attackSuccessChance * BaseGoalRate * GetRefereeGoalModifier(referee);
+      goalChance *= GetBribeGoalModifier(attackingClub.Id, influence);
 
       if (Random.Shared.NextDouble() <= goalChance)
       {
@@ -195,6 +198,21 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       RefereePersonalityType.Showman => 1.02,
       _ => 1.0
     };
+  }
+
+  private double GetBribeGoalModifier(Guid attackingClubId, MatchBribeInfluence influence)
+  {
+    if (!influence.Favors(attackingClubId))
+    {
+      if (influence.FavoredClubIds.Count == 0)
+      {
+        return 1.0;
+      }
+
+      return (double)_gameOptions.Value.BribeOpponentGoalMultiplier;
+    }
+
+    return (double)_gameOptions.Value.BribeFavoredGoalMultiplier;
   }
 
   private static PlayerInstance PickScorer(List<PlayerInstance> players)

@@ -29,4 +29,13 @@ public class GameOptions
   public int LineupMaxBenchSize { get; set; } = 7;
 
   public int TransferMinimumSquadSize { get; set; } = 11;
+
+  public decimal BribeMinAmount { get; set; } = 1000m;
+  public decimal BribeMaxAmount { get; set; } = 100000m;
+  public decimal BribeMinSuccessChance { get; set; } = 0.05m;
+  public decimal BribeMaxSuccessChance { get; set; } = 0.85m;
+  public decimal BribeDifficultyCashScale { get; set; } = 500m;
+  public decimal BribeCorruptibleBonus { get; set; } = 0.15m;
+  public decimal BribeFavoredGoalMultiplier { get; set; } = 1.18m;
+  public decimal BribeOpponentGoalMultiplier { get; set; } = 0.90m;
 }

@@ -16,6 +16,7 @@ public class MatchWeekOrchestrationService(
   IMatchRepository _matchRepository,
   IMatchDaySquadResolver _matchDaySquadResolver,
   IMatchSimulationService _matchSimulationService,
+  IMatchBribeInfluenceProvider _matchBribeInfluenceProvider,
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions,
   HybridCache _cache) : IMatchWeekOrchestrationService
@@ -111,11 +112,16 @@ public class MatchWeekOrchestrationService(
         $"{match.HomeClub.Name} - {match.AwayClub.Name} maçı için her iki kulübün de en az bir uygun oyuncusu bulunmalıdır.");
     }
 
+    MatchBribeInfluence bribeInfluence = await _matchBribeInfluenceProvider.GetForMatchAsync(
+      match.Id,
+      cancellationToken);
+
     SimulatedMatchResultDto simulation = _matchSimulationService.Simulate(
       match,
       homeSquad,
       awaySquad,
-      match.Referee);
+      match.Referee,
+      bribeInfluence);
 
     match.HomeScore = simulation.HomeScore;
     match.AwayScore = simulation.AwayScore;

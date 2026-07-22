@@ -10,6 +10,7 @@ using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using Api.Features.Roles;
 using Api.Features.Transfers;
+using Api.Features.Bribery;
 using Api.Features.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +36,7 @@ public class BaseDbContext : DbContext
   public DbSet<Match> Matches { get; set; }
   public DbSet<TransferListing> TransferListings { get; set; }
   public DbSet<TransferOffer> TransferOffers { get; set; }
+  public DbSet<BribeAttempt> BribeAttempts { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

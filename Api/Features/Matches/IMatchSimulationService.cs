@@ -10,5 +10,6 @@ public interface IMatchSimulationService
     Match match,
     MatchDaySquad homeSquad,
     MatchDaySquad awaySquad,
-    Referee referee);
+    Referee referee,
+    MatchBribeInfluence? bribeInfluence = null);
 }

@@ -16,6 +16,7 @@ using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using Api.Features.Roles;
 using Api.Features.Transfers;
+using Api.Features.Bribery;
 using Api.Features.Users;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,6 +60,7 @@ builder.Services.AddClubLineupDependencies();
 builder.Services.AddTransferDependencies();
 builder.Services.AddRefereeDependencies();
 builder.Services.AddMatchDependencies();
+builder.Services.AddBriberyDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>
@@ -103,6 +105,14 @@ builder.Services.AddOptions<GameOptions>()
   .Validate(options => options.LineupStarterCount == 11, "LineupStarterCount 11 olmalıdır.")
   .Validate(options => options.LineupMaxBenchSize >= 0 && options.LineupMaxBenchSize <= 12, "LineupMaxBenchSize 0 ile 12 arasında olmalıdır.")
   .Validate(options => options.TransferMinimumSquadSize >= 11, "TransferMinimumSquadSize en az 11 olmalıdır.")
+  .Validate(options => options.BribeMinAmount > 0, "BribeMinAmount 0'dan büyük olmalıdır.")
+  .Validate(options => options.BribeMaxAmount >= options.BribeMinAmount, "BribeMaxAmount, BribeMinAmount değerinden küçük olamaz.")
+  .Validate(options => options.BribeMinSuccessChance >= 0 && options.BribeMinSuccessChance <= 1, "BribeMinSuccessChance 0 ile 1 arasında olmalıdır.")
+  .Validate(options => options.BribeMaxSuccessChance >= options.BribeMinSuccessChance && options.BribeMaxSuccessChance <= 1, "BribeMaxSuccessChance geçerli bir aralıkta olmalıdır.")
+  .Validate(options => options.BribeDifficultyCashScale > 0, "BribeDifficultyCashScale 0'dan büyük olmalıdır.")
+  .Validate(options => options.BribeCorruptibleBonus >= 0 && options.BribeCorruptibleBonus <= 1, "BribeCorruptibleBonus 0 ile 1 arasında olmalıdır.")
+  .Validate(options => options.BribeFavoredGoalMultiplier >= 1, "BribeFavoredGoalMultiplier 1 veya daha büyük olmalıdır.")
+  .Validate(options => options.BribeOpponentGoalMultiplier > 0 && options.BribeOpponentGoalMultiplier <= 1, "BribeOpponentGoalMultiplier 0 ile 1 arasında olmalıdır.")
   .ValidateOnStart();
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");
