@@ -32,6 +32,8 @@ import { TacticsBoardPage } from "./features/clubLineups/pages/TacticsBoardPage"
 import { TransferMarketPage } from "./features/transfers/pages/TransferMarketPage";
 import { MakeOfferPage } from "./features/transfers/pages/MakeOfferPage";
 import { MyDealsPage } from "./features/transfers/pages/MyDealsPage";
+import { MatchInfluencePage } from "./features/bribery/pages/MatchInfluencePage";
+import { ConfirmBribePage } from "./features/bribery/pages/ConfirmBribePage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -156,6 +158,14 @@ export const router = createBrowserRouter([
                       {
                         path: "fixtures",
                         element: <FixturesPage />,
+                      },
+                      {
+                        path: "influence",
+                        element: <MatchInfluencePage />,
+                      },
+                      {
+                        path: "influence/confirm",
+                        element: <ConfirmBribePage />,
                       },
                       {
                         path: "matches/:id/lineup",

@@ -96,7 +96,13 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
         </div>
       </div>
 
-      <div className="relative z-10 mt-auto flex justify-end gap-3 border-t border-surface-variant pt-4">
+      <div className="relative z-10 mt-auto flex flex-wrap justify-end gap-3 border-t border-surface-variant pt-4">
+        <Link
+          to="/app/influence"
+          className="rounded border border-outline-variant bg-transparent px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
+        >
+          Match Influence
+        </Link>
         <Link
           to={`/app/matches/${nextMatch.id}`}
           className="rounded border border-outline-variant bg-transparent px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
