@@ -38,4 +38,10 @@ public class GameOptions
   public decimal BribeCorruptibleBonus { get; set; } = 0.15m;
   public decimal BribeFavoredGoalMultiplier { get; set; } = 1.18m;
   public decimal BribeOpponentGoalMultiplier { get; set; } = 0.90m;
+
+  public int FacilityMaxLevel { get; set; } = 5;
+  public decimal FacilityBaseUpgradeCost { get; set; } = 25000m;
+  public int FacilityTrainingMoraleBonus { get; set; } = 2;
+  public int FacilityTrainingChemistryBonus { get; set; } = 2;
+  public int FacilityAcademyDisciplineBonus { get; set; } = 1;
 }
