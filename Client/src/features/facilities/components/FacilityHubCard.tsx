@@ -100,10 +100,13 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
             Upgrade
           </Link>
         ) : (
-          <span className="flex cursor-not-allowed items-center gap-2 rounded border border-outline-variant bg-surface-variant px-6 py-2 font-label-caps text-label-caps text-on-surface opacity-50">
+          <Link
+            to={detailPath}
+            className="flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-6 py-2 font-label-caps text-label-caps text-on-surface opacity-70 transition-opacity hover:opacity-100"
+          >
             <MaterialIcon name="lock" className="text-sm" />
             Insufficient Funds
-          </span>
+          </Link>
         )}
       </div>
     </div>
