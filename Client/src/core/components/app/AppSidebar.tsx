@@ -13,6 +13,7 @@ const navItems: AppNavItem[] = [
   { to: "/app/dashboard", label: "Dashboard", icon: "dashboard" },
   { to: "/app/president", label: "President", icon: "account_balance" },
   { to: "/app/club", label: "Club", icon: "shield" },
+  { to: "/app/facilities", label: "Facilities", icon: "domain" },
   { to: "/app/squad", label: "Squad", icon: "groups" },
   { to: "/app/tactics", label: "Tactics", icon: "strategy" },
   { to: "/app/transfers", label: "Transfers", icon: "swap_horiz" },

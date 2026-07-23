@@ -34,6 +34,8 @@ import { MakeOfferPage } from "./features/transfers/pages/MakeOfferPage";
 import { MyDealsPage } from "./features/transfers/pages/MyDealsPage";
 import { MatchInfluencePage } from "./features/bribery/pages/MatchInfluencePage";
 import { ConfirmBribePage } from "./features/bribery/pages/ConfirmBribePage";
+import { FacilitiesHubPage } from "./features/facilities/pages/FacilitiesHubPage";
+import { FacilityUpgradeDetailPage } from "./features/facilities/pages/FacilityUpgradeDetailPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -126,6 +128,14 @@ export const router = createBrowserRouter([
                       {
                         path: "club",
                         element: <ClubOverviewPage />,
+                      },
+                      {
+                        path: "facilities",
+                        element: <FacilitiesHubPage />,
+                      },
+                      {
+                        path: "facilities/:facilityType",
+                        element: <FacilityUpgradeDetailPage />,
                       },
                       {
                         path: "squad",

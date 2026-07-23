@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 
 export const FacilitiesCard = () => {
@@ -8,6 +9,12 @@ export const FacilitiesCard = () => {
           <MaterialIcon name="domain" className="text-[20px] text-on-surface-variant" />
           Facilities & Infrastructure
         </h3>
+        <Link
+          to="/app/facilities"
+          className="font-label-caps text-label-caps text-primary transition-colors hover:text-primary-fixed"
+        >
+          Open Hub
+        </Link>
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
@@ -15,11 +22,14 @@ export const FacilitiesCard = () => {
           <MaterialIcon name="construction" className="text-2xl text-on-surface-variant" />
         </div>
         <p className="text-body-sm text-on-surface-variant">
-          Facility upgrades are not available yet.
+          Manage training grounds and academy levels.
         </p>
-        <p className="text-label-caps text-on-surface-variant">
-          Training grounds and academy levels will appear here.
-        </p>
+        <Link
+          to="/app/facilities"
+          className="rounded bg-primary px-4 py-2 font-label-caps text-label-caps text-on-primary transition-colors hover:bg-primary-fixed"
+        >
+          View Facilities
+        </Link>
       </div>
     </div>
   );
