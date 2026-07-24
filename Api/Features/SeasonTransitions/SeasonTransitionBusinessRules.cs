@@ -3,6 +3,7 @@ using Api.Core.Options;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
 using Api.Features.Matches;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Api.Features.SeasonTransitions;
@@ -16,9 +17,28 @@ public class SeasonTransitionBusinessRules(
 {
   public GameOptions Options => _gameOptions.Value;
 
-  public void AdminRoleRequired(string userRole)
+  public async Task EnsureCanManageSeasonEndAsync(
+    string userRole,
+    Guid currentUserId,
+    int groupNumber,
+    CancellationToken cancellationToken = default)
   {
-    _leagueBusinessRules.AdminRoleRequired(userRole);
+    if (userRole == "Admin")
+    {
+      return;
+    }
+
+    Club? club = await _clubRepository.GetAsync(
+      c => c.President != null && c.President.UserId == currentUserId,
+      include: query => query
+        .Include(c => c.President)
+        .Include(c => c.Division),
+      cancellationToken: cancellationToken);
+
+    if (club == null || club.Division.GroupNumber != groupNumber)
+    {
+      throw new ForbiddenException("Bu sezon sonu işlemi için yetkiniz bulunmamaktadır.");
+    }
   }
 
   public async Task<LeagueDivision> GetDivisionAsync(

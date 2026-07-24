@@ -124,24 +124,24 @@ public class LeagueDivisionsController(
   }
 
   [HttpGet("{id:int}/season-end-preview")]
-  [Authorize(Roles = "Admin")]
   public async Task<IActionResult> SeasonEndPreview(int id, CancellationToken cancellationToken)
   {
     var result = await _seasonTransitionService.PreviewByDivisionIdAsync(
       divisionId: id,
       userRole: GetUserRole(),
+      currentUserId: GetUserId(),
       cancellationToken: cancellationToken);
 
     return CreateActionResult(result);
   }
 
   [HttpPost("{id:int}/process-season-end")]
-  [Authorize(Roles = "Admin")]
   public async Task<IActionResult> ProcessSeasonEnd(int id, CancellationToken cancellationToken)
   {
     var result = await _seasonTransitionService.ProcessByDivisionIdAsync(
       divisionId: id,
       userRole: GetUserRole(),
+      currentUserId: GetUserId(),
       cancellationToken: cancellationToken);
 
     return CreateActionResult(result);

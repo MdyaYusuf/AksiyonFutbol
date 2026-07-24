@@ -20,13 +20,18 @@ public class SeasonTransitionService(
   public async Task<ReturnModel<SeasonEndPreviewDto>> PreviewByDivisionIdAsync(
     int divisionId,
     string userRole,
+    Guid currentUserId,
     CancellationToken cancellationToken = default)
   {
-    _businessRules.AdminRoleRequired(userRole);
-
     LeagueDivision anchor = await _businessRules.GetDivisionAsync(
       divisionId,
       cancellationToken: cancellationToken);
+
+    await _businessRules.EnsureCanManageSeasonEndAsync(
+      userRole,
+      currentUserId,
+      anchor.GroupNumber,
+      cancellationToken);
 
     SeasonEndPreviewDto preview = await BuildPreviewAsync(anchor.GroupNumber, cancellationToken);
 
@@ -44,13 +49,18 @@ public class SeasonTransitionService(
   public async Task<ReturnModel<SeasonEndProcessResultDto>> ProcessByDivisionIdAsync(
     int divisionId,
     string userRole,
+    Guid currentUserId,
     CancellationToken cancellationToken = default)
   {
-    _businessRules.AdminRoleRequired(userRole);
-
     LeagueDivision anchor = await _businessRules.GetDivisionAsync(
       divisionId,
       cancellationToken: cancellationToken);
+
+    await _businessRules.EnsureCanManageSeasonEndAsync(
+      userRole,
+      currentUserId,
+      anchor.GroupNumber,
+      cancellationToken);
 
     SeasonEndPreviewDto preview = await BuildPreviewAsync(anchor.GroupNumber, cancellationToken);
 
