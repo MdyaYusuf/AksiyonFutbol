@@ -37,6 +37,7 @@ import { ConfirmBribePage } from "./features/bribery/pages/ConfirmBribePage";
 import { FacilitiesHubPage } from "./features/facilities/pages/FacilitiesHubPage";
 import { FacilityUpgradeDetailPage } from "./features/facilities/pages/FacilityUpgradeDetailPage";
 import { EndOfSeasonMovementsPage } from "./features/seasonTransitions/pages/EndOfSeasonMovementsPage";
+import { AdminProcessSeasonEndPage } from "./features/seasonTransitions/pages/AdminProcessSeasonEndPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
 import { SupportPage } from "./pages/public/SupportPage";
@@ -212,6 +213,10 @@ export const router = createBrowserRouter([
               {
                 path: "league-divisions",
                 element: <AdminLeagueDivisionsPage />,
+              },
+              {
+                path: "season-end",
+                element: <AdminProcessSeasonEndPage />,
               },
               {
                 path: "base-players",

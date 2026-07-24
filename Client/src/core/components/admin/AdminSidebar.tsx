@@ -11,6 +11,7 @@ interface AdminNavItem {
 const navItems: AdminNavItem[] = [
   { to: "/admin", label: "Dashboard", icon: "dashboard", end: true },
   { to: "/admin/league-divisions", label: "League Divisions", icon: "account_tree" },
+  { to: "/admin/season-end", label: "Season End", icon: "event_repeat" },
   { to: "/admin/base-players", label: "Base Players", icon: "person_search" },
   { to: "/admin/referees", label: "Referees", icon: "gavel" },
   { to: "/admin/clubs", label: "Clubs", icon: "shield" },
