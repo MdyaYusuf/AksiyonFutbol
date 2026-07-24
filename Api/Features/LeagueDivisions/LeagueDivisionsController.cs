@@ -1,5 +1,6 @@
 using Api.Core.Controllers;
 using Api.Core.Requests;
+using Api.Features.SeasonTransitions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,8 @@ namespace Api.Features.LeagueDivisions;
 [Route("api/[controller]")]
 public class LeagueDivisionsController(
   ILeagueDivisionService _leagueDivisionService,
-  IMatchWeekOrchestrationService _matchWeekOrchestrationService) : CustomBaseController
+  IMatchWeekOrchestrationService _matchWeekOrchestrationService,
+  ISeasonTransitionService _seasonTransitionService) : CustomBaseController
 {
   [HttpGet]
   public async Task<IActionResult> GetAll(
@@ -114,6 +116,30 @@ public class LeagueDivisionsController(
   public async Task<IActionResult> ProcessWeek(int id, CancellationToken cancellationToken)
   {
     var result = await _matchWeekOrchestrationService.ProcessCurrentWeekAsync(
+      divisionId: id,
+      userRole: GetUserRole(),
+      cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpGet("{id:int}/season-end-preview")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> SeasonEndPreview(int id, CancellationToken cancellationToken)
+  {
+    var result = await _seasonTransitionService.PreviewByDivisionIdAsync(
+      divisionId: id,
+      userRole: GetUserRole(),
+      cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpPost("{id:int}/process-season-end")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> ProcessSeasonEnd(int id, CancellationToken cancellationToken)
+  {
+    var result = await _seasonTransitionService.ProcessByDivisionIdAsync(
       divisionId: id,
       userRole: GetUserRole(),
       cancellationToken: cancellationToken);

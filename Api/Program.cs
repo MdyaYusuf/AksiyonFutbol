@@ -18,6 +18,7 @@ using Api.Features.Roles;
 using Api.Features.Transfers;
 using Api.Features.Bribery;
 using Api.Features.Facilities;
+using Api.Features.SeasonTransitions;
 using Api.Features.Users;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,7 @@ builder.Services.AddRefereeDependencies();
 builder.Services.AddMatchDependencies();
 builder.Services.AddBriberyDependencies();
 builder.Services.AddFacilitiesDependencies();
+builder.Services.AddSeasonTransitionDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>
@@ -120,6 +122,8 @@ builder.Services.AddOptions<GameOptions>()
   .Validate(options => options.FacilityTrainingMoraleBonus >= 0 && options.FacilityTrainingMoraleBonus <= 100, "FacilityTrainingMoraleBonus 0 ile 100 arasında olmalıdır.")
   .Validate(options => options.FacilityTrainingChemistryBonus >= 0 && options.FacilityTrainingChemistryBonus <= 100, "FacilityTrainingChemistryBonus 0 ile 100 arasında olmalıdır.")
   .Validate(options => options.FacilityAcademyDisciplineBonus >= 0 && options.FacilityAcademyDisciplineBonus <= 100, "FacilityAcademyDisciplineBonus 0 ile 100 arasında olmalıdır.")
+  .Validate(options => options.PromotionSlots >= 1, "PromotionSlots en az 1 olmalıdır.")
+  .Validate(options => options.RelegationSlots >= 1, "RelegationSlots en az 1 olmalıdır.")
   .ValidateOnStart();
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");

@@ -44,4 +44,7 @@ public class GameOptions
   public int FacilityTrainingMoraleBonus { get; set; } = 2;
   public int FacilityTrainingChemistryBonus { get; set; } = 2;
   public int FacilityAcademyDisciplineBonus { get; set; } = 1;
+
+  public int PromotionSlots { get; set; } = 2;
+  public int RelegationSlots { get; set; } = 2;
 }
