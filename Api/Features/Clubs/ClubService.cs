@@ -245,6 +245,9 @@ public class ClubService(
     club.PresidentId = null;
 
     await _clubRepository.AddAsync(club, cancellationToken);
+    await _starterSquadService.AssignAsync(club, cancellationToken);
+    await _unitOfWork.SaveChangesAsync(cancellationToken);
+    await _defaultClubLineupService.EnsureAsync(club.Id, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     CreatedClubResponseDto response = _mapper.EntityToCreatedResponseDto(club);
