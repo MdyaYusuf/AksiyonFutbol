@@ -13,17 +13,17 @@ import {
 
 interface AdminBasePlayersTableProps {
   players: BasePlayerResponse[];
-  pageNumber: number;
+  currentPage: number;
   pageSize: number;
   totalCount: number;
-  onPageChange: (pageNumber: number) => void;
+  onPageChange: (currentPage: number) => void;
   onEdit: (playerId: string) => void;
   onDelete: (playerId: string) => void;
 }
 
 export const AdminBasePlayersTable = ({
   players,
-  pageNumber,
+  currentPage,
   pageSize,
   totalCount,
   onPageChange,
@@ -31,8 +31,8 @@ export const AdminBasePlayersTable = ({
   onDelete,
 }: AdminBasePlayersTableProps) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const rangeStart = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const rangeEnd = Math.min(pageNumber * pageSize, totalCount);
+  const rangeStart = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const rangeEnd = Math.min(currentPage * pageSize, totalCount);
 
   return (
     <div className="overflow-hidden rounded border border-outline-variant bg-surface-container-high">
@@ -148,8 +148,8 @@ export const AdminBasePlayersTable = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => onPageChange(pageNumber - 1)}
-            disabled={pageNumber <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
             className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-variant hover:text-on-surface disabled:opacity-50"
             aria-label="Previous page"
           >
@@ -157,8 +157,8 @@ export const AdminBasePlayersTable = ({
           </button>
           <button
             type="button"
-            onClick={() => onPageChange(pageNumber + 1)}
-            disabled={pageNumber >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
             className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-variant hover:text-on-surface disabled:opacity-50"
             aria-label="Next page"
           >

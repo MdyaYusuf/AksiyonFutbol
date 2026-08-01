@@ -63,15 +63,15 @@ export const AdminMatchesPage = () => {
 
   const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 100,
   });
   const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
   const { data: refereesData, isLoading: isRefereesLoading } = useGetRefereesQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 200,
   });
 

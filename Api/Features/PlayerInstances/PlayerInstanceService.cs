@@ -24,14 +24,14 @@ public class PlayerInstanceService(
     Expression<Func<PlayerInstance, bool>>? filter = null,
     Func<IQueryable<PlayerInstance>, IQueryable<PlayerInstance>>? include = null,
     Func<IQueryable<PlayerInstance>, IOrderedQueryable<PlayerInstance>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
     CancellationToken cancellationToken = default)
   {
     var (players, totalCount) = await _playerInstanceRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       filter,
       include: include ?? IncludePlayerRelations,
@@ -41,7 +41,7 @@ public class PlayerInstanceService(
       cancellationToken);
 
     List<PlayerInstanceResponseDto> responseDtos = _mapper.EntityToResponseDtoList(players);
-    var pagedResponse = new PagedResponse<PlayerInstanceResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    var pagedResponse = new PagedResponse<PlayerInstanceResponseDto>(responseDtos, totalCount, currentPage, pageSize);
 
     return new ReturnModel<PagedResponse<PlayerInstanceResponseDto>>()
     {

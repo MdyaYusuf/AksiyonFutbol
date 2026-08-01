@@ -16,7 +16,7 @@ export const refereesApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "referees",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),

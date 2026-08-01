@@ -14,7 +14,7 @@ export const SquadPage = () => {
   const { data: players = [], isLoading } = useGetCurrentUserClubPlayersQuery();
   const [positionFilter, setPositionFilter] = useState<SquadPositionFilter>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredPlayers = useMemo(
     () => filterSquadPlayers(players, positionFilter, searchQuery),
@@ -24,18 +24,18 @@ export const SquadPage = () => {
   const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / PAGE_SIZE));
 
   useEffect(() => {
-    setPageNumber(1);
+    setCurrentPage(1);
   }, [positionFilter, searchQuery]);
 
   useEffect(() => {
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  }, [pageNumber, totalPages]);
+  }, [currentPage, totalPages]);
 
   const pagePlayers = useMemo(
-    () => paginatePlayers(filteredPlayers, pageNumber, PAGE_SIZE),
-    [filteredPlayers, pageNumber],
+    () => paginatePlayers(filteredPlayers, currentPage, PAGE_SIZE),
+    [filteredPlayers, currentPage],
   );
 
   if (isLoading) {
@@ -58,11 +58,11 @@ export const SquadPage = () => {
       <SquadTable
         players={pagePlayers}
         totalCount={filteredPlayers.length}
-        pageNumber={pageNumber}
+        currentPage={currentPage}
         pageSize={PAGE_SIZE}
-        onPrevPage={() => setPageNumber((current) => Math.max(1, current - 1))}
+        onPrevPage={() => setCurrentPage((current) => Math.max(1, current - 1))}
         onNextPage={() =>
-          setPageNumber((current) => Math.min(totalPages, current + 1))
+          setCurrentPage((current) => Math.min(totalPages, current + 1))
         }
       />
     </div>

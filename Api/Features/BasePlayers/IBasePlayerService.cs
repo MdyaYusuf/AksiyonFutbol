@@ -9,7 +9,7 @@ public interface IBasePlayerService
     Expression<Func<BasePlayer, bool>>? filter = null,
     Func<IQueryable<BasePlayer>, IQueryable<BasePlayer>>? include = null,
     Func<IQueryable<BasePlayer>, IOrderedQueryable<BasePlayer>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

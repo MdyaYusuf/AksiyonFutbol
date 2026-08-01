@@ -9,7 +9,7 @@ public interface IRefereeService
     Expression<Func<Referee, bool>>? filter = null,
     Func<IQueryable<Referee>, IQueryable<Referee>>? include = null,
     Func<IQueryable<Referee>, IOrderedQueryable<Referee>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

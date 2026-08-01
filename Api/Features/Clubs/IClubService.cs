@@ -9,7 +9,7 @@ public interface IClubService
     Expression<Func<Club, bool>>? filter = null,
     Func<IQueryable<Club>, IQueryable<Club>>? include = null,
     Func<IQueryable<Club>, IOrderedQueryable<Club>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
@@ -41,6 +41,9 @@ public interface IClubService
 
   Task<ReturnModel<bool>> CheckCurrentUserHasClubAsync(
     Guid currentUserId,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<ClubCreationDefaultsDto>> GetCreationDefaultsAsync(
     CancellationToken cancellationToken = default);
 
   Task<ReturnModel<CreatedClubResponseDto>> AddAsync(

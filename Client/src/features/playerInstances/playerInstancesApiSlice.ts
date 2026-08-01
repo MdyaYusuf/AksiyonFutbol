@@ -19,7 +19,7 @@ export const playerInstancesApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "playerInstances",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),

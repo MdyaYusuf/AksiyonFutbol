@@ -18,14 +18,14 @@ public class RoleService(
     Expression<Func<Role, bool>>? filter = null,
     Func<IQueryable<Role>, IQueryable<Role>>? include = null,
     Func<IQueryable<Role>, IOrderedQueryable<Role>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
     CancellationToken cancellationToken = default)
   {
     var (roles, totalCount) = await _roleRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       filter,
       include,
@@ -35,7 +35,7 @@ public class RoleService(
       cancellationToken);
 
     List<RoleResponseDto> responseDtos = _mapper.EntityToResponseDtoList(roles);
-    var pagedResponse = new PagedResponse<RoleResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    var pagedResponse = new PagedResponse<RoleResponseDto>(responseDtos, totalCount, currentPage, pageSize);
 
     return new ReturnModel<PagedResponse<RoleResponseDto>>()
     {

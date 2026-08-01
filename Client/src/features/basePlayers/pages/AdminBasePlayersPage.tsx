@@ -70,7 +70,7 @@ export const AdminBasePlayersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [positionFilter, setPositionFilter] =
     useState<BasePlayerPositionFilter>("ALL");
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
@@ -78,7 +78,7 @@ export const AdminBasePlayersPage = () => {
     useState<AdminBasePlayerFormValues>(emptyFormValues);
 
   const { data: playersData, isLoading } = useGetBasePlayersQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
 
@@ -96,21 +96,21 @@ export const AdminBasePlayersPage = () => {
   );
 
   const paginatedPlayers = useMemo(
-    () => paginateItems(filteredPlayers, pageNumber, PAGE_SIZE),
-    [filteredPlayers, pageNumber],
+    () => paginateItems(filteredPlayers, currentPage, PAGE_SIZE),
+    [filteredPlayers, currentPage],
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    setCurrentPage(1);
   }, [searchQuery, positionFilter]);
 
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / PAGE_SIZE));
 
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  }, [pageNumber, filteredPlayers.length]);
+  }, [currentPage, filteredPlayers.length]);
 
   const isSubmitting = isCreating || isUpdating;
 
@@ -245,10 +245,10 @@ export const AdminBasePlayersPage = () => {
 
       <AdminBasePlayersTable
         players={paginatedPlayers}
-        pageNumber={pageNumber}
+        currentPage={currentPage}
         pageSize={PAGE_SIZE}
         totalCount={filteredPlayers.length}
-        onPageChange={setPageNumber}
+        onPageChange={setCurrentPage}
         onEdit={openEditPanel}
         onDelete={handleDelete}
       />

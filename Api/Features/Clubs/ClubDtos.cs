@@ -38,6 +38,13 @@ public sealed record CreatedClubResponseDto
   public int DivisionId { get; init; }
 }
 
+public sealed record ClubCreationDefaultsDto
+{
+  public decimal StartingCash { get; init; }
+  public decimal StartingWageBudget { get; init; }
+  public int StartingClubStatus { get; init; }
+}
+
 // Requests
 public sealed record CreateClubRequest(
   string Name,

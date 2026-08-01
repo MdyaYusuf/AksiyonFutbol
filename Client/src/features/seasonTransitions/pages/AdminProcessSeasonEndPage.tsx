@@ -23,7 +23,7 @@ export const AdminProcessSeasonEndPage = () => {
   const [showAllClubs, setShowAllClubs] = useState(false);
 
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 100,
   });
 

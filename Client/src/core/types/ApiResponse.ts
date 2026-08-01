@@ -9,7 +9,7 @@ export interface ApiResponse<T> {
 export type NoData = null;
 
 export interface PaginationRequest {
-  pageNumber: number;
+  currentPage: number;
   pageSize: number;
 }
 
@@ -24,6 +24,6 @@ export interface CursorPagedResponse<T> {
 export interface PagedResponse<T> {
   items: T[];
   totalCount: number;
-  pageNumber: number;
+  currentPage: number;
   pageSize: number;
 }

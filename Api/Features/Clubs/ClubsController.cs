@@ -16,7 +16,7 @@ public class ClubsController(IClubService _clubService) : CustomBaseController
     CancellationToken cancellationToken = default)
   {
     var result = await _clubService.GetAllAsync(
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 
@@ -73,6 +73,15 @@ public class ClubsController(IClubService _clubService) : CustomBaseController
     var result = await _clubService.GetByDivisionIdAsync(
       divisionId: divisionId,
       cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpGet("creation-defaults")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> GetCreationDefaults(CancellationToken cancellationToken)
+  {
+    var result = await _clubService.GetCreationDefaultsAsync(cancellationToken);
 
     return CreateActionResult(result);
   }

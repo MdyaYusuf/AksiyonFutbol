@@ -55,7 +55,7 @@ public class EfBaseRepository<TContext, TEntity, TId> : IRepository<TEntity, TId
   }
 
   public async Task<(List<TEntity> Items, int TotalCount)> GetPagedListAsync(
-    int pageNumber,
+    int currentPage,
     int pageSize,
     Expression<Func<TEntity, bool>>? filter = null,
     Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
@@ -84,7 +84,7 @@ public class EfBaseRepository<TContext, TEntity, TId> : IRepository<TEntity, TId
     }
 
     var items = await query
-      .Skip((pageNumber - 1) * pageSize)
+      .Skip((currentPage - 1) * pageSize)
       .Take(pageSize)
       .ToListAsync(cancellationToken);
 

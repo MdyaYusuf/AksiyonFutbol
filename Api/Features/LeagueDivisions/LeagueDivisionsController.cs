@@ -20,7 +20,7 @@ public class LeagueDivisionsController(
     CancellationToken cancellationToken = default)
   {
     var result = await _leagueDivisionService.GetAllAsync(
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

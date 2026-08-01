@@ -16,7 +16,7 @@ public class BasePlayersController(IBasePlayerService _basePlayerService) : Cust
     CancellationToken cancellationToken = default)
   {
     var result = await _basePlayerService.GetAllAsync(
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

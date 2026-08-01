@@ -22,7 +22,7 @@ public class RefereeService(
     Expression<Func<Referee, bool>>? filter = null,
     Func<IQueryable<Referee>, IQueryable<Referee>>? include = null,
     Func<IQueryable<Referee>, IOrderedQueryable<Referee>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
@@ -33,15 +33,15 @@ public class RefereeService(
     if (CacheQueryHelper.CanUseDefaultCache<Referee, int>(filter, include, orderBy, enableTracking, withDeleted))
     {
       pagedResponse = await _cache.GetOrCreateAsync(
-        $"referees:page:{pageNumber}:size:{pageSize}",
-        async token => await GetPagedRefereesAsync(pageNumber, pageSize, token),
+        $"referees:page:{currentPage}:size:{pageSize}",
+        async token => await GetPagedRefereesAsync(currentPage, pageSize, token),
         tags: [CacheTag],
         cancellationToken: cancellationToken);
     }
     else
     {
       var (referees, totalCount) = await _refereeRepository.GetPagedListAsync(
-        pageNumber,
+        currentPage,
         pageSize,
         filter,
         include,
@@ -51,7 +51,7 @@ public class RefereeService(
         cancellationToken);
 
       List<RefereeResponseDto> responseDtos = _mapper.EntityToResponseDtoList(referees);
-      pagedResponse = new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+      pagedResponse = new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, currentPage, pageSize);
     }
 
     return new ReturnModel<PagedResponse<RefereeResponseDto>>()
@@ -282,17 +282,17 @@ public class RefereeService(
   }
 
   private async Task<PagedResponse<RefereeResponseDto>> GetPagedRefereesAsync(
-    int pageNumber,
+    int currentPage,
     int pageSize,
     CancellationToken cancellationToken)
   {
     var (referees, totalCount) = await _refereeRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       orderBy: query => query.OrderBy(r => r.Name),
       cancellationToken: cancellationToken);
 
     List<RefereeResponseDto> responseDtos = _mapper.EntityToResponseDtoList(referees);
-    return new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    return new PagedResponse<RefereeResponseDto>(responseDtos, totalCount, currentPage, pageSize);
   }
 }

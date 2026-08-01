@@ -11,7 +11,7 @@ public interface IUserService
     Expression<Func<User, bool>>? filter = null,
     Func<IQueryable<User>, IQueryable<User>>? include = null,
     Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

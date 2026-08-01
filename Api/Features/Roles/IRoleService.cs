@@ -10,7 +10,7 @@ public interface IRoleService
     Expression<Func<Role, bool>>? filter = null,
     Func<IQueryable<Role>, IQueryable<Role>>? include = null,
     Func<IQueryable<Role>, IOrderedQueryable<Role>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

@@ -16,7 +16,7 @@ public class RefereesController(IRefereeService _refereeService) : CustomBaseCon
     CancellationToken cancellationToken = default)
   {
     var result = await _refereeService.GetAllAsync(
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

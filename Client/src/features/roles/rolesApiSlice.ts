@@ -9,7 +9,7 @@ export const rolesApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "roles",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),

@@ -9,7 +9,7 @@ public interface ILeagueDivisionService
     Expression<Func<LeagueDivision, bool>>? filter = null,
     Func<IQueryable<LeagueDivision>, IQueryable<LeagueDivision>>? include = null,
     Func<IQueryable<LeagueDivision>, IOrderedQueryable<LeagueDivision>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

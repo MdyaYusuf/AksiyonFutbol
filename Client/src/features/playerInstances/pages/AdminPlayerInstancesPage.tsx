@@ -107,7 +107,7 @@ export const AdminPlayerInstancesPage = () => {
   const [clubFilter, setClubFilter] = useState<string | "all">("all");
   const [positionFilter, setPositionFilter] = useState<PlayerPositionFilter>("all");
   const [statusFilter, setStatusFilter] = useState<PlayerStatusFilter>("all");
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<PlayerInstancePanelTab>("assign");
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
@@ -120,15 +120,15 @@ export const AdminPlayerInstancesPage = () => {
   const [editValues, setEditValues] = useState<EditPlayerFormValues>(emptyEditValues());
 
   const { data: playersData, isLoading: isPlayersLoading } = useGetPlayerInstancesQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
   const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
   const { data: basePlayersData, isLoading: isBasePlayersLoading } = useGetBasePlayersQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
 
@@ -163,8 +163,8 @@ export const AdminPlayerInstancesPage = () => {
   );
 
   const paginatedPlayers = useMemo(
-    () => paginateItems(filteredPlayers, pageNumber, PAGE_SIZE),
-    [filteredPlayers, pageNumber],
+    () => paginateItems(filteredPlayers, currentPage, PAGE_SIZE),
+    [filteredPlayers, currentPage],
   );
 
   const editingPlayer = useMemo(
@@ -173,16 +173,16 @@ export const AdminPlayerInstancesPage = () => {
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    setCurrentPage(1);
   }, [searchQuery, clubFilter, positionFilter, statusFilter]);
 
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / PAGE_SIZE));
 
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  }, [pageNumber, filteredPlayers.length]);
+  }, [currentPage, filteredPlayers.length]);
 
   const isLoading = isPlayersLoading || isClubsLoading || isBasePlayersLoading;
   const isSubmitting =
@@ -460,10 +460,10 @@ export const AdminPlayerInstancesPage = () => {
 
           <AdminPlayerInstancesTable
             players={paginatedPlayers}
-            pageNumber={pageNumber}
+            currentPage={currentPage}
             pageSize={PAGE_SIZE}
             totalCount={filteredPlayers.length}
-            onPageChange={setPageNumber}
+            onPageChange={setCurrentPage}
             onFilterByClub={(clubId) => setClubFilter(clubId)}
             onEdit={openEditPanel}
             onDelete={handleDelete}

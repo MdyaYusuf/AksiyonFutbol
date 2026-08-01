@@ -23,7 +23,7 @@ public class ClubPresidentService(
     Expression<Func<ClubPresident, bool>>? filter = null,
     Func<IQueryable<ClubPresident>, IQueryable<ClubPresident>>? include = null,
     Func<IQueryable<ClubPresident>, IOrderedQueryable<ClubPresident>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
@@ -32,7 +32,7 @@ public class ClubPresidentService(
     _businessRules.AdminRoleRequired(userRole);
 
     var (clubPresidents, totalCount) = await _clubPresidentRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       filter,
       include: include ?? (query => query.Include(cp => cp.User)),
@@ -42,7 +42,7 @@ public class ClubPresidentService(
       cancellationToken);
 
     List<ClubPresidentResponseDto> responseDtos = _mapper.EntityToResponseDtoList(clubPresidents);
-    var pagedResponse = new PagedResponse<ClubPresidentResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    var pagedResponse = new PagedResponse<ClubPresidentResponseDto>(responseDtos, totalCount, currentPage, pageSize);
 
     return new ReturnModel<PagedResponse<ClubPresidentResponseDto>>()
     {

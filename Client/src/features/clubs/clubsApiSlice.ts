@@ -1,6 +1,7 @@
 import { apiSlice } from "../../core/api/apiSlice";
 import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
 import type {
+  ClubCreationDefaults,
   ClubPreview,
   ClubResponse,
   CreatedClubResponse,
@@ -18,7 +19,7 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "clubs",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),
@@ -62,6 +63,10 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
             { type: "Club", id: `DIVISION-${divisionId}` },
           ]
           : [{ type: "Club", id: `DIVISION-${divisionId}` }],
+    }),
+
+    getClubCreationDefaults: builder.query<ClubCreationDefaults, void>({
+      query: () => ({ url: "clubs/creation-defaults" }),
     }),
 
     createClub: builder.mutation<CreatedClubResponse, CreateClubRequest>({
@@ -153,6 +158,7 @@ export const {
   useCheckCurrentUserHasClubQuery,
   useGetClubByPresidentIdQuery,
   useGetClubsByDivisionIdQuery,
+  useGetClubCreationDefaultsQuery,
   useCreateClubMutation,
   useCreateBotClubMutation,
   useUpdateClubMutation,

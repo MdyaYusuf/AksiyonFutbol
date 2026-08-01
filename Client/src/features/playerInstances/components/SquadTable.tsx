@@ -4,7 +4,7 @@ import { SquadPlayerRow } from "./SquadPlayerRow";
 interface SquadTableProps {
   players: PlayerInstanceResponse[];
   totalCount: number;
-  pageNumber: number;
+  currentPage: number;
   pageSize: number;
   onPrevPage: () => void;
   onNextPage: () => void;
@@ -13,16 +13,16 @@ interface SquadTableProps {
 export const SquadTable = ({
   players,
   totalCount,
-  pageNumber,
+  currentPage,
   pageSize,
   onPrevPage,
   onNextPage,
 }: SquadTableProps) => {
-  const showingFrom = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const showingTo = Math.min(pageNumber * pageSize, totalCount);
+  const showingFrom = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const showingTo = Math.min(currentPage * pageSize, totalCount);
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const canGoPrev = pageNumber > 1;
-  const canGoNext = pageNumber < totalPages;
+  const canGoPrev = currentPage > 1;
+  const canGoNext = currentPage < totalPages;
 
   return (
     <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low/70 shadow-sm backdrop-blur-md">

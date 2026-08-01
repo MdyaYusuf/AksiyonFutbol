@@ -16,7 +16,7 @@ public class PlayerInstancesController(IPlayerInstanceService _playerInstanceSer
     CancellationToken cancellationToken = default)
   {
     var result = await _playerInstanceService.GetAllAsync(
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

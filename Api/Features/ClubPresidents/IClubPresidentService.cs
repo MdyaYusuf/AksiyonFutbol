@@ -11,7 +11,7 @@ public interface IClubPresidentService
     Expression<Func<ClubPresident, bool>>? filter = null,
     Func<IQueryable<ClubPresident>, IQueryable<ClubPresident>>? include = null,
     Func<IQueryable<ClubPresident>, IOrderedQueryable<ClubPresident>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

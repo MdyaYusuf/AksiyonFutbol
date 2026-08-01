@@ -19,7 +19,7 @@ public class UsersController(IUserService _userService) : CustomBaseController
     var result = await _userService.GetAllAsync(
       currentUserId: GetUserId(),
       userRole: GetUserRole(),
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

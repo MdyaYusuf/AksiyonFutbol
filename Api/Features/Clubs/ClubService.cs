@@ -28,14 +28,14 @@ public class ClubService(
     Expression<Func<Club, bool>>? filter = null,
     Func<IQueryable<Club>, IQueryable<Club>>? include = null,
     Func<IQueryable<Club>, IOrderedQueryable<Club>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
     CancellationToken cancellationToken = default)
   {
     var (clubs, totalCount) = await _clubRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       filter,
       include: include ?? IncludeClubRelations,
@@ -45,7 +45,7 @@ public class ClubService(
       cancellationToken);
 
     List<ClubResponseDto> responseDtos = _mapper.EntityToResponseDtoList(clubs);
-    var pagedResponse = new PagedResponse<ClubResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    var pagedResponse = new PagedResponse<ClubResponseDto>(responseDtos, totalCount, currentPage, pageSize);
 
     return new ReturnModel<PagedResponse<ClubResponseDto>>()
     {
@@ -174,6 +174,25 @@ public class ClubService(
       Data = hasClub,
       StatusCode = 200
     };
+  }
+
+  public Task<ReturnModel<ClubCreationDefaultsDto>> GetCreationDefaultsAsync(
+    CancellationToken cancellationToken = default)
+  {
+    ClubCreationDefaultsDto defaults = new()
+    {
+      StartingCash = _gameOptions.Value.StartingCash,
+      StartingWageBudget = _gameOptions.Value.StartingWageBudget,
+      StartingClubStatus = _gameOptions.Value.StartingClubStatus,
+    };
+
+    return Task.FromResult(new ReturnModel<ClubCreationDefaultsDto>()
+    {
+      Success = true,
+      Message = "Kulüp oluşturma varsayılanları başarılı bir şekilde getirildi.",
+      Data = defaults,
+      StatusCode = 200
+    });
   }
 
   public async Task<ReturnModel<CreatedClubResponseDto>> AddAsync(

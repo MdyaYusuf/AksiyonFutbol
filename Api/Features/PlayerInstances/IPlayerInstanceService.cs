@@ -9,7 +9,7 @@ public interface IPlayerInstanceService
     Expression<Func<PlayerInstance, bool>>? filter = null,
     Func<IQueryable<PlayerInstance>, IQueryable<PlayerInstance>>? include = null,
     Func<IQueryable<PlayerInstance>, IOrderedQueryable<PlayerInstance>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,

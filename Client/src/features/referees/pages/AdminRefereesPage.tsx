@@ -48,7 +48,7 @@ export const AdminRefereesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [personalityFilter, setPersonalityFilter] =
     useState<RefereePersonalityFilter>("ALL");
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [editingRefereeId, setEditingRefereeId] = useState<number | null>(null);
@@ -56,7 +56,7 @@ export const AdminRefereesPage = () => {
     useState<AdminRefereeFormValues>(emptyFormValues);
 
   const { data: refereesData, isLoading } = useGetRefereesQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
 
@@ -72,21 +72,21 @@ export const AdminRefereesPage = () => {
   );
 
   const paginatedReferees = useMemo(
-    () => paginateItems(filteredReferees, pageNumber, PAGE_SIZE),
-    [filteredReferees, pageNumber],
+    () => paginateItems(filteredReferees, currentPage, PAGE_SIZE),
+    [filteredReferees, currentPage],
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    setCurrentPage(1);
   }, [searchQuery, personalityFilter]);
 
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(filteredReferees.length / PAGE_SIZE));
 
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  }, [pageNumber, filteredReferees.length]);
+  }, [currentPage, filteredReferees.length]);
 
   const isSubmitting = isCreating || isUpdating;
 
@@ -226,10 +226,10 @@ export const AdminRefereesPage = () => {
 
         <AdminRefereesTable
           referees={paginatedReferees}
-          pageNumber={pageNumber}
+          currentPage={currentPage}
           pageSize={PAGE_SIZE}
           totalCount={filteredReferees.length}
-          onPageChange={setPageNumber}
+          onPageChange={setCurrentPage}
           onEdit={openEditPanel}
           onDelete={handleDelete}
         />

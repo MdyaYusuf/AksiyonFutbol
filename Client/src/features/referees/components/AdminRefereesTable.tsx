@@ -9,17 +9,17 @@ import {
 
 interface AdminRefereesTableProps {
   referees: RefereeResponse[];
-  pageNumber: number;
+  currentPage: number;
   pageSize: number;
   totalCount: number;
-  onPageChange: (pageNumber: number) => void;
+  onPageChange: (currentPage: number) => void;
   onEdit: (refereeId: number) => void;
   onDelete: (refereeId: number) => void;
 }
 
 export const AdminRefereesTable = ({
   referees,
-  pageNumber,
+  currentPage,
   pageSize,
   totalCount,
   onPageChange,
@@ -27,8 +27,8 @@ export const AdminRefereesTable = ({
   onDelete,
 }: AdminRefereesTableProps) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const rangeStart = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const rangeEnd = Math.min(pageNumber * pageSize, totalCount);
+  const rangeStart = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const rangeEnd = Math.min(currentPage * pageSize, totalCount);
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded border border-outline-variant bg-surface-container shadow-sm">
@@ -143,21 +143,21 @@ export const AdminRefereesTable = ({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => onPageChange(pageNumber - 1)}
-            disabled={pageNumber <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
             className="rounded px-2 py-1 transition-colors hover:bg-surface-variant disabled:opacity-50"
           >
             Prev
           </button>
           <span className="rounded bg-surface-variant px-2 py-1 text-on-surface">
-            {pageNumber}
+            {currentPage}
           </span>
           <span className="px-1">/</span>
           <span className="px-1">{totalPages}</span>
           <button
             type="button"
-            onClick={() => onPageChange(pageNumber + 1)}
-            disabled={pageNumber >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
             className="rounded px-2 py-1 transition-colors hover:bg-surface-variant disabled:opacity-50"
           >
             Next

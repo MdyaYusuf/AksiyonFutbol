@@ -17,7 +17,7 @@ export const leagueDivisionsApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "leagueDivisions",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),

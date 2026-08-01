@@ -22,7 +22,7 @@ public class UserService(
     Expression<Func<User, bool>>? filter = null,
     Func<IQueryable<User>, IQueryable<User>>? include = null,
     Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
@@ -31,7 +31,7 @@ public class UserService(
     _businessRules.UserMustBeOwnerOrAdmin(Guid.Empty, currentUserId, userRole);
 
     var (users, totalCount) = await _userRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       filter,
       include: include ?? (query => query.Include(u => u.Role)),
@@ -41,7 +41,7 @@ public class UserService(
       cancellationToken);
 
     List<UserResponseDto> responseDtos = _mapper.EntityToResponseDtoList(users);
-    var pagedResponse = new PagedResponse<UserResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    var pagedResponse = new PagedResponse<UserResponseDto>(responseDtos, totalCount, currentPage, pageSize);
 
     return new ReturnModel<PagedResponse<UserResponseDto>>()
     {

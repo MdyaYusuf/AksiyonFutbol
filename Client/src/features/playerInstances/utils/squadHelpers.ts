@@ -178,9 +178,9 @@ export const filterSquadPlayers = (
 
 export const paginatePlayers = <T>(
   items: T[],
-  pageNumber: number,
+  currentPage: number,
   pageSize: number,
 ): T[] => {
-  const startIndex = (pageNumber - 1) * pageSize;
+  const startIndex = (currentPage - 1) * pageSize;
   return items.slice(startIndex, startIndex + pageSize);
 };

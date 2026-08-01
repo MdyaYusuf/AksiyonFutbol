@@ -15,7 +15,7 @@ export const clubPresidentsApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "clubPresidents",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),

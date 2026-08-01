@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
 import { paginateItems } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
@@ -10,12 +10,13 @@ import { AdminClubsTable } from "../components/AdminClubsTable";
 import {
   useCreateBotClubMutation,
   useDeleteClubMutation,
+  useGetClubCreationDefaultsQuery,
   useGetClubsQuery,
   useUpdateClubFinancesMutation,
   useUpdateClubMutation,
   useUpdateClubStatusMutation,
 } from "../clubsApiSlice";
-import type { ClubResponse } from "../clubTypes";
+import type { ClubCreationDefaults, ClubResponse } from "../clubTypes";
 import {
   filterAdminClubs,
   type ClubTypeFilter,
@@ -23,14 +24,17 @@ import {
 
 const PAGE_SIZE = 15;
 
-const emptyFormValues = (defaultDivisionId: number | "" = ""): AdminClubFormValues => ({
+const emptyFormValues = (
+  defaults: ClubCreationDefaults,
+  defaultDivisionId: number | "" = "",
+): AdminClubFormValues => ({
   name: "",
   divisionId: defaultDivisionId,
-  cash: 5_000_000,
-  wageBudget: 120_000,
-  morale: 50,
-  chemistry: 50,
-  discipline: 100,
+  cash: defaults.startingCash,
+  wageBudget: defaults.startingWageBudget,
+  morale: defaults.startingClubStatus,
+  chemistry: defaults.startingClubStatus,
+  discipline: defaults.startingClubStatus,
 });
 
 const toFormValues = (club: ClubResponse): AdminClubFormValues => ({
@@ -47,20 +51,30 @@ export const AdminClubsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [divisionFilter, setDivisionFilter] = useState<number | "all">("all");
   const [typeFilter, setTypeFilter] = useState<ClubTypeFilter>("all");
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [editingClubId, setEditingClubId] = useState<string | null>(null);
-  const [formValues, setFormValues] = useState<AdminClubFormValues>(emptyFormValues());
+  const [formValues, setFormValues] = useState<AdminClubFormValues>({
+    name: "",
+    divisionId: "",
+    cash: 0,
+    wageBudget: 0,
+    morale: 0,
+    chemistry: 0,
+    discipline: 0,
+  });
 
   const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 100,
   });
+  const { data: creationDefaults, isLoading: isDefaultsLoading } =
+    useGetClubCreationDefaultsQuery();
 
   const [createBotClub, { isLoading: isCreating }] = useCreateBotClubMutation();
   const [updateClub, { isLoading: isUpdatingName }] = useUpdateClubMutation();
@@ -70,6 +84,7 @@ export const AdminClubsPage = () => {
 
   const clubs = clubsData?.items ?? [];
   const divisions = divisionsData?.items ?? [];
+  const hasSeededDefaults = useRef(false);
 
   const filteredClubs = useMemo(
     () => filterAdminClubs(clubs, searchQuery, divisionFilter, typeFilter),
@@ -77,8 +92,8 @@ export const AdminClubsPage = () => {
   );
 
   const paginatedClubs = useMemo(
-    () => paginateItems(filteredClubs, pageNumber, PAGE_SIZE),
-    [filteredClubs, pageNumber],
+    () => paginateItems(filteredClubs, currentPage, PAGE_SIZE),
+    [filteredClubs, currentPage],
   );
 
   const editingClub = useMemo(
@@ -87,26 +102,39 @@ export const AdminClubsPage = () => {
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    setCurrentPage(1);
   }, [searchQuery, divisionFilter, typeFilter]);
 
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(filteredClubs.length / PAGE_SIZE));
 
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  }, [pageNumber, filteredClubs.length]);
+  }, [currentPage, filteredClubs.length]);
+
+  useEffect(() => {
+    if (!creationDefaults || hasSeededDefaults.current) {
+      return;
+    }
+
+    hasSeededDefaults.current = true;
+    setFormValues(emptyFormValues(creationDefaults, divisions[0]?.id ?? ""));
+  }, [creationDefaults, divisions]);
 
   const isSubmitting =
     isCreating || isUpdatingName || isUpdatingFinances || isUpdatingStatus;
-  const isLoading = isClubsLoading || isDivisionsLoading;
+  const isLoading = isClubsLoading || isDivisionsLoading || isDefaultsLoading;
 
   const openCreatePanel = () => {
+    if (!creationDefaults) {
+      return;
+    }
+
     const defaultDivisionId = divisions[0]?.id ?? "";
     setPanelMode("create");
     setEditingClubId(null);
-    setFormValues(emptyFormValues(defaultDivisionId));
+    setFormValues(emptyFormValues(creationDefaults, defaultDivisionId));
     setIsPanelOpen(true);
   };
 
@@ -144,7 +172,9 @@ export const AdminClubsPage = () => {
         discipline: formValues.discipline,
       }).unwrap();
 
-      setFormValues(emptyFormValues(formValues.divisionId));
+      if (creationDefaults) {
+        setFormValues(emptyFormValues(creationDefaults, formValues.divisionId));
+      }
       return;
     }
 
@@ -294,10 +324,10 @@ export const AdminClubsPage = () => {
 
         <AdminClubsTable
           clubs={paginatedClubs}
-          pageNumber={pageNumber}
+          currentPage={currentPage}
           pageSize={PAGE_SIZE}
           totalCount={filteredClubs.length}
-          onPageChange={setPageNumber}
+          onPageChange={setCurrentPage}
           onEdit={openEditPanel}
           onDelete={handleDelete}
         />

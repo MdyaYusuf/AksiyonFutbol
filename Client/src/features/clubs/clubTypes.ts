@@ -33,6 +33,12 @@ export interface CreatedClubResponse {
   divisionId: number;
 }
 
+export interface ClubCreationDefaults {
+  startingCash: number;
+  startingWageBudget: number;
+  startingClubStatus: number;
+}
+
 // Requests
 export interface CreateClubRequest {
   name: string;

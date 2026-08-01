@@ -23,11 +23,11 @@ import {
 
 export const AdminDashboardPage = () => {
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 100,
   });
   const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
   const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();

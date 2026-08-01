@@ -54,7 +54,7 @@ export const buildAdminDivisionTableRows = (
   }));
 };
 
-export const paginateItems = <T,>(items: T[], pageNumber: number, pageSize: number): T[] => {
-  const startIndex = (pageNumber - 1) * pageSize;
+export const paginateItems = <T,>(items: T[], currentPage: number, pageSize: number): T[] => {
+  const startIndex = (currentPage - 1) * pageSize;
   return items.slice(startIndex, startIndex + pageSize);
 };

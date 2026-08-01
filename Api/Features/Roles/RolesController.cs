@@ -17,7 +17,7 @@ public class RolesController(IRoleService _roleService) : CustomBaseController
   {
     var result = await _roleService.GetAllAsync(
       userRole: GetUserRole(),
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

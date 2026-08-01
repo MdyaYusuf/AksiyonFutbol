@@ -18,7 +18,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       query: (params) => ({
         url: "users",
         params: {
-          pageNumber: params.pageNumber,
+          currentPage: params.currentPage,
           pageSize: params.pageSize,
         },
       }),

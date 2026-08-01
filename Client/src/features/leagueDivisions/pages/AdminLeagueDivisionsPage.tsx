@@ -39,7 +39,7 @@ const toFormValues = (division: LeagueDivisionResponse): AdminDivisionFormValues
 
 export const AdminLeagueDivisionsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [editingDivisionId, setEditingDivisionId] = useState<number | null>(null);
@@ -47,11 +47,11 @@ export const AdminLeagueDivisionsPage = () => {
   const [advancingDivisionId, setAdvancingDivisionId] = useState<number | null>(null);
 
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 100,
   });
   const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    pageNumber: 1,
+    currentPage: 1,
     pageSize: 500,
   });
 
@@ -76,8 +76,8 @@ export const AdminLeagueDivisionsPage = () => {
   );
 
   const paginatedRows = useMemo(
-    () => paginateItems(tableRows, pageNumber, PAGE_SIZE),
-    [tableRows, pageNumber],
+    () => paginateItems(tableRows, currentPage, PAGE_SIZE),
+    [tableRows, currentPage],
   );
 
   const editingDivision = useMemo(
@@ -86,16 +86,16 @@ export const AdminLeagueDivisionsPage = () => {
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    setCurrentPage(1);
   }, [searchQuery]);
 
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(tableRows.length / PAGE_SIZE));
 
-    if (pageNumber > totalPages) {
-      setPageNumber(totalPages);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  }, [pageNumber, tableRows.length]);
+  }, [currentPage, tableRows.length]);
 
   const isSubmitting = isCreating || isUpdating || isUpdatingMatchWeek;
   const isLoading = isDivisionsLoading || isClubsLoading;
@@ -240,10 +240,10 @@ export const AdminLeagueDivisionsPage = () => {
 
         <AdminDivisionsTable
           rows={paginatedRows}
-          pageNumber={pageNumber}
+          currentPage={currentPage}
           pageSize={PAGE_SIZE}
           totalCount={tableRows.length}
-          onPageChange={setPageNumber}
+          onPageChange={setCurrentPage}
           onEdit={openEditPanel}
           onDelete={handleDelete}
           onAdvanceWeek={handleAdvanceWeek}

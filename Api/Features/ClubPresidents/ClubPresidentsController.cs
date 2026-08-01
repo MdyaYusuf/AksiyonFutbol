@@ -19,7 +19,7 @@ public class ClubPresidentsController(IClubPresidentService _clubPresidentServic
     var result = await _clubPresidentService.GetAllAsync(
       currentUserId: GetUserId(),
       userRole: GetUserRole(),
-      pageNumber: pagination.PageNumber,
+      currentPage: pagination.CurrentPage,
       pageSize: pagination.PageSize,
       cancellationToken: cancellationToken);
 

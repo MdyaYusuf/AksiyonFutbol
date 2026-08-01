@@ -26,7 +26,7 @@ public class LeagueDivisionService(
     Expression<Func<LeagueDivision, bool>>? filter = null,
     Func<IQueryable<LeagueDivision>, IQueryable<LeagueDivision>>? include = null,
     Func<IQueryable<LeagueDivision>, IOrderedQueryable<LeagueDivision>>? orderBy = null,
-    int pageNumber = 1,
+    int currentPage = 1,
     int pageSize = 10,
     bool enableTracking = false,
     bool withDeleted = false,
@@ -37,15 +37,15 @@ public class LeagueDivisionService(
     if (CacheQueryHelper.CanUseDefaultCache<LeagueDivision, int>(filter, include, orderBy, enableTracking, withDeleted))
     {
       pagedResponse = await _cache.GetOrCreateAsync(
-        $"league-divisions:page:{pageNumber}:size:{pageSize}",
-        async token => await GetPagedLeagueDivisionsAsync(pageNumber, pageSize, token),
+        $"league-divisions:page:{currentPage}:size:{pageSize}",
+        async token => await GetPagedLeagueDivisionsAsync(currentPage, pageSize, token),
         tags: [CacheTag],
         cancellationToken: cancellationToken);
     }
     else
     {
       var (leagueDivisions, totalCount) = await _leagueDivisionRepository.GetPagedListAsync(
-        pageNumber,
+        currentPage,
         pageSize,
         filter,
         include,
@@ -55,7 +55,7 @@ public class LeagueDivisionService(
         cancellationToken);
 
       List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
-      pagedResponse = new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+      pagedResponse = new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, currentPage, pageSize);
     }
 
     return new ReturnModel<PagedResponse<LeagueDivisionResponseDto>>()
@@ -357,17 +357,17 @@ public class LeagueDivisionService(
   }
 
   private async Task<PagedResponse<LeagueDivisionResponseDto>> GetPagedLeagueDivisionsAsync(
-    int pageNumber,
+    int currentPage,
     int pageSize,
     CancellationToken cancellationToken)
   {
     var (leagueDivisions, totalCount) = await _leagueDivisionRepository.GetPagedListAsync(
-      pageNumber,
+      currentPage,
       pageSize,
       orderBy: query => query.OrderBy(ld => ld.Tier).ThenBy(ld => ld.GroupNumber),
       cancellationToken: cancellationToken);
 
     List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
-    return new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, pageNumber, pageSize);
+    return new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, currentPage, pageSize);
   }
 }

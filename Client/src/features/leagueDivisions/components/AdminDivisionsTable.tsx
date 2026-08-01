@@ -8,10 +8,10 @@ import {
 
 interface AdminDivisionsTableProps {
   rows: AdminDivisionTableRow[];
-  pageNumber: number;
+  currentPage: number;
   pageSize: number;
   totalCount: number;
-  onPageChange: (pageNumber: number) => void;
+  onPageChange: (currentPage: number) => void;
   onEdit: (divisionId: number) => void;
   onDelete: (divisionId: number) => void;
   onAdvanceWeek: (divisionId: number) => void;
@@ -20,7 +20,7 @@ interface AdminDivisionsTableProps {
 
 export const AdminDivisionsTable = ({
   rows,
-  pageNumber,
+  currentPage,
   pageSize,
   totalCount,
   onPageChange,
@@ -30,8 +30,8 @@ export const AdminDivisionsTable = ({
   advancingDivisionId,
 }: AdminDivisionsTableProps) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const rangeStart = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const rangeEnd = Math.min(pageNumber * pageSize, totalCount);
+  const rangeStart = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const rangeEnd = Math.min(currentPage * pageSize, totalCount);
 
   return (
     <div className="flex flex-col overflow-hidden rounded-lg border border-outline-variant bg-surface-container-high shadow-sm">
@@ -137,8 +137,8 @@ export const AdminDivisionsTable = ({
         <div className="flex gap-1">
           <button
             type="button"
-            onClick={() => onPageChange(pageNumber - 1)}
-            disabled={pageNumber <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
             className="p-1 transition-colors hover:text-on-surface disabled:opacity-50"
             aria-label="Previous page"
           >
@@ -146,8 +146,8 @@ export const AdminDivisionsTable = ({
           </button>
           <button
             type="button"
-            onClick={() => onPageChange(pageNumber + 1)}
-            disabled={pageNumber >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
             className="p-1 transition-colors hover:text-on-surface disabled:opacity-50"
             aria-label="Next page"
           >
