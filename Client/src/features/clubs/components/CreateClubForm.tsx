@@ -97,19 +97,6 @@ export const CreateClubForm = () => {
                 onChange={(event) => setName(event.target.value)}
                 autoComplete="off"
               />
-
-              <div className="mt-2 grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <span className="text-label-caps text-on-surface-variant">Primary Kit</span>
-                  <div className="h-12 cursor-pointer rounded border border-outline-variant bg-gradient-to-br from-primary to-inverse-primary transition-opacity hover:opacity-90" />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-label-caps text-on-surface-variant">Secondary Kit</span>
-                  <div className="flex h-12 cursor-pointer items-center justify-center rounded border border-outline-variant bg-surface-bright transition-colors hover:bg-surface-variant">
-                    <MaterialIcon name="add" className="text-on-surface-variant" />
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div className="flex flex-col gap-6 rounded-xl border border-outline-variant bg-surface-container/60 p-6 shadow-2xl backdrop-blur-md md:col-span-5">

@@ -32,11 +32,11 @@ export const LeagueStandingsHeader = ({
 
       <div className="flex items-center gap-4">
         <div className="flex items-center rounded border border-outline-variant bg-surface-container px-3 py-1.5 focus-within:border-primary">
-          <span className="mr-2 text-label-caps text-on-surface-variant">MW</span>
+          <span className="mr-2 text-label-caps text-on-surface-variant">Match Week</span>
           <select
             value={selectedMatchWeek}
             onChange={(event) => onMatchWeekChange(Number(event.target.value))}
-            className="cursor-pointer border-none bg-transparent p-0 pr-6 text-stat-value text-on-surface outline-none focus:ring-0"
+            className="cursor-pointer border-none bg-transparent p-0 pr-6 text-body-sm text-on-surface outline-none focus:ring-0"
           >
             {matchWeekOptions.map((week) => (
               <option key={week} value={week} className="bg-surface-container">

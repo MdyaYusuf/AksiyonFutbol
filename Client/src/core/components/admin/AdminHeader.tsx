@@ -26,7 +26,7 @@ export const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
           <input
             type="text"
             placeholder="Search entity ID, club, or manager..."
-            className="w-full rounded border border-outline-variant bg-surface-container-low py-1.5 pr-3 pl-9 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+            className="w-full rounded border border-outline-variant bg-surface-container-low py-1.5 pr-3 pl-9 text-body-sm text-on-surface caret-primary outline-none placeholder:text-on-surface-variant/50 focus:border-outline-variant focus:outline-none focus:ring-0"
           />
         </div>
       </div>

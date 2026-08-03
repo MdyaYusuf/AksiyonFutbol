@@ -1,13 +1,14 @@
 import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MatchDominancePanel } from "../components/MatchDominancePanel";
 import { MatchReportHeader } from "../components/MatchReportHeader";
 import { MatchTimeline } from "../components/MatchTimeline";
 import { useGetMatchByIdQuery } from "../matchesApiSlice";
-import { parseMatchEvents } from "../utils/matchReportHelpers";
+import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
 
 export const MatchDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: match, isLoading, isError } = useGetMatchByIdQuery(id ?? "", {
     skip: !id,
   });
@@ -17,13 +18,19 @@ export const MatchDetailPage = () => {
     [match?.matchLogJson],
   );
 
+  const handleGoBack = () => goBackOrFallback(navigate, "/app/fixtures");
+
   if (!id) {
     return (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-on-surface-variant">
         <p>Match not found.</p>
-        <Link to="/app/fixtures" className="text-primary hover:underline">
-          Back to Fixtures
-        </Link>
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="text-primary hover:underline"
+        >
+          Go back
+        </button>
       </div>
     );
   }
@@ -40,13 +47,16 @@ export const MatchDetailPage = () => {
     return (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-on-surface-variant">
         <p>Maç raporu bulunamadı.</p>
-        <Link to="/app/fixtures" className="text-primary hover:underline">
-          Back to Fixtures
-        </Link>
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="text-primary hover:underline"
+        >
+          Go back
+        </button>
       </div>
     );
   }
-
   return (
     <div className="mx-auto max-w-7xl space-y-gutter">
       <MatchReportHeader match={match} />

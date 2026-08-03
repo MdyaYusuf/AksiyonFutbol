@@ -1,5 +1,6 @@
 import { MatchEventType, type MatchEvent, type MatchResponse } from "../matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
+import type { NavigateFunction } from "react-router-dom";
 
 interface RawMatchEvent {
   minute?: number;
@@ -207,4 +208,19 @@ export const getDominanceBarWidth = (homeValue: number, awayValue: number): numb
   }
 
   return Math.round((homeValue / total) * 100);
+};
+
+/** Uses browser history when available; otherwise navigates to fallback (e.g. cold load / refresh). */
+export const goBackOrFallback = (
+  navigate: NavigateFunction,
+  fallbackPath: string,
+): void => {
+  const historyIndex = (window.history.state as { idx?: number } | null)?.idx;
+
+  if (typeof historyIndex === "number" && historyIndex > 0) {
+    navigate(-1);
+    return;
+  }
+
+  navigate(fallbackPath);
 };

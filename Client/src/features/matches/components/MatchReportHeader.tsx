@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { MatchResponse } from "../matchTypes";
 import {
   formatMatchReportDateTime,
   getMatchStatusLabel,
+  goBackOrFallback,
 } from "../utils/matchReportHelpers";
 
 interface MatchReportHeaderProps {
@@ -11,6 +12,7 @@ interface MatchReportHeaderProps {
 }
 
 export const MatchReportHeader = ({ match }: MatchReportHeaderProps) => {
+  const navigate = useNavigate();
   const statusLabel = getMatchStatusLabel(match);
   const homeScore = match.isPlayed ? (match.homeScore ?? 0) : null;
   const awayScore = match.isPlayed ? (match.awayScore ?? 0) : null;
@@ -18,13 +20,14 @@ export const MatchReportHeader = ({ match }: MatchReportHeaderProps) => {
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center gap-2 text-on-surface-variant">
-        <Link
-          to="/app/fixtures"
+        <button
+          type="button"
+          onClick={() => goBackOrFallback(navigate, "/app/fixtures")}
           className="flex items-center gap-1 transition-colors hover:text-primary"
         >
           <MaterialIcon name="arrow_back" className="text-sm" />
-          <span className="text-label-caps">Back to Fixtures</span>
-        </Link>
+          <span className="text-label-caps">Go back</span>
+        </button>
         <MaterialIcon name="chevron_right" className="text-sm" />
         <span className="text-label-caps text-on-surface">Match Report</span>
       </div>

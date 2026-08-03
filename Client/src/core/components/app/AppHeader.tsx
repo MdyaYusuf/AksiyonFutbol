@@ -12,12 +12,12 @@ export const AppHeader = ({ cash, reputation, onMenuClick }: AppHeaderProps) => 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-6">
       <div className="flex items-center gap-4">
-        <div className="hidden items-center rounded border border-outline-variant bg-background px-3 py-1.5 focus-within:border-primary md:flex">
+        <div className="hidden items-center rounded border border-outline-variant bg-background px-3 py-1.5 md:flex">
           <MaterialIcon name="search" className="mr-2 text-sm text-on-surface-variant" />
           <input
             type="text"
             placeholder="Search players, clubs..."
-            className="w-48 border-none bg-transparent p-0 text-body-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0"
+            className="w-48 border-none bg-transparent p-0 text-body-sm text-on-surface caret-primary outline-none placeholder:text-on-surface-variant focus:outline-none focus:ring-0"
           />
         </div>
         <button
