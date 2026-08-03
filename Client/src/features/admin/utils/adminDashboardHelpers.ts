@@ -1,6 +1,7 @@
 import type { ClubResponse } from "../../clubs/clubTypes";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { MatchResponse } from "../../matches/matchTypes";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 export { getGroupDisplayLabel } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
 
@@ -134,7 +135,7 @@ export const buildRecentActivity = (
       type: "club-created",
       title: `New Club Founded: ${club.name}`,
       subtitle: club.isBot ? "Bot club • Admin" : `Human club • ${club.presidentName ?? "No president"}`,
-      sortDate: new Date(club.createdDate),
+      sortDate: parseApiDate(club.createdDate),
     });
   }
 
@@ -145,7 +146,7 @@ export const buildRecentActivity = (
         type: "match-played",
         title: `Match Played: ${match.homeClubName} ${match.homeScore ?? 0} - ${match.awayScore ?? 0} ${match.awayClubName}`,
         subtitle: `${match.divisionName} • Week ${match.matchWeek}`,
-        sortDate: new Date(match.matchDate),
+        sortDate: parseApiDate(match.matchDate),
       });
       continue;
     }
@@ -155,7 +156,7 @@ export const buildRecentActivity = (
       type: "match-created",
       title: `Match Scheduled: ${match.homeClubName} vs ${match.awayClubName}`,
       subtitle: `${match.divisionName} • Week ${match.matchWeek}`,
-      sortDate: new Date(match.createdDate),
+      sortDate: parseApiDate(match.createdDate),
     });
   }
 

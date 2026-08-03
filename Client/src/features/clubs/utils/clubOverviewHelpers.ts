@@ -1,9 +1,11 @@
+import { parseApiDate } from "../../../core/utils/dateTime";
+
 export const formatCashFull = (amount: number): string => {
   return `$${Math.round(amount).toLocaleString("en-US")}`;
 };
 
 export const formatEstablishedYear = (createdDate: string): string => {
-  return `Est. ${new Date(createdDate).getFullYear()}`;
+  return `Est. ${parseApiDate(createdDate).getFullYear()}`;
 };
 
 export const getMoraleSegmentCount = (morale: number): number => {

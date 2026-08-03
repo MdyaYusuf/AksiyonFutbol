@@ -1,11 +1,12 @@
 import type { MatchPreview } from "../../matches/matchTypes";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 export const getNextMatch = (matches: MatchPreview[]): MatchPreview | undefined => {
   return [...matches]
     .filter((match) => !match.isPlayed)
     .sort(
       (left, right) =>
-        new Date(left.matchDate).getTime() - new Date(right.matchDate).getTime(),
+        parseApiDate(left.matchDate).getTime() - parseApiDate(right.matchDate).getTime(),
     )[0];
 };
 
@@ -17,7 +18,7 @@ export const getRecentMatches = (
     .filter((match) => match.isPlayed)
     .sort(
       (left, right) =>
-        new Date(right.matchDate).getTime() - new Date(left.matchDate).getTime(),
+        parseApiDate(right.matchDate).getTime() - parseApiDate(left.matchDate).getTime(),
     )
     .slice(0, limit);
 };

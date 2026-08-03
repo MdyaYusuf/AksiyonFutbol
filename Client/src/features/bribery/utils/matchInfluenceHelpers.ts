@@ -1,4 +1,5 @@
 import type { BribeStakeOption, BribeStakeTier, BriberyContext } from "../briberyTypes";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 /** Mirrors Api GameOptions defaults used by BriberyBusinessRules.CalculateSuccessChance. */
 const BRIBE_DIFFICULTY_CASH_SCALE = 500;
@@ -120,7 +121,7 @@ export const formatChancePercent = (chance: number): string => {
 };
 
 export const formatInfluenceMatchDate = (matchDate: string): string => {
-  const date = new Date(matchDate);
+  const date = parseApiDate(matchDate);
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const startOfMatch = new Date(date.getFullYear(), date.getMonth(), date.getDate());

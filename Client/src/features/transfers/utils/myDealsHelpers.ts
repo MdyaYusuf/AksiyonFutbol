@@ -1,6 +1,7 @@
 import { TransferOfferStatus, type TransferOfferResponse } from "../transferTypes";
 import { formatMarketPosition } from "./transferMarketHelpers";
 import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 export type DealsTab = "outgoing" | "incoming";
 
@@ -87,7 +88,7 @@ export const summarizeDeals = (offers: TransferOfferResponse[]) => {
 };
 
 export const formatRelativeTime = (isoDate: string): string => {
-  const date = new Date(isoDate);
+  const date = parseApiDate(isoDate);
   const diffMs = Date.now() - date.getTime();
 
   if (Number.isNaN(diffMs)) {

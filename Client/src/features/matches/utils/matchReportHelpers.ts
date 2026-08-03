@@ -1,4 +1,5 @@
 import { MatchEventType, type MatchEvent, type MatchResponse } from "../matchTypes";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 interface RawMatchEvent {
   minute?: number;
@@ -65,7 +66,7 @@ export const parseMatchEvents = (matchLogJson?: string | null): MatchEvent[] => 
 };
 
 export const formatMatchReportDateTime = (matchDate: string): string => {
-  const date = new Date(matchDate);
+  const date = parseApiDate(matchDate);
 
   const datePart = date.toLocaleDateString("en-US", {
     month: "short",

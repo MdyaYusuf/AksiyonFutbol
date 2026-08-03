@@ -1,5 +1,6 @@
 import type { MatchPreview } from "../matchTypes";
 import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 export type FixtureStatusFilter = "all" | "results" | "upcoming";
 
@@ -10,7 +11,7 @@ export interface MatchWeekGroup {
 }
 
 export const formatFixtureDateTime = (matchDate: string): string => {
-  const date = new Date(matchDate);
+  const date = parseApiDate(matchDate);
 
   const dayMonth = date.toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -55,7 +56,7 @@ export const groupMatchesByWeek = (matches: MatchPreview[]): MatchWeekGroup[] =>
     .map(([matchWeek, weekMatches]) => {
       const sortedMatches = [...weekMatches].sort(
         (left, right) =>
-          new Date(left.matchDate).getTime() - new Date(right.matchDate).getTime(),
+          parseApiDate(left.matchDate).getTime() - parseApiDate(right.matchDate).getTime(),
       );
 
       return {

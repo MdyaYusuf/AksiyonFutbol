@@ -1,3 +1,5 @@
+import { parseApiDate } from "../../../core/utils/dateTime";
+
 export const formatCash = (amount: number): string => {
   if (amount >= 1_000_000) {
     return `$${(amount / 1_000_000).toFixed(1)}M`;
@@ -11,7 +13,7 @@ export const formatCash = (amount: number): string => {
 };
 
 export const formatMatchDateTime = (matchDate: string): string => {
-  return new Date(matchDate).toLocaleString("tr-TR", {
+  return parseApiDate(matchDate).toLocaleString("tr-TR", {
     weekday: "short",
     hour: "2-digit",
     minute: "2-digit",

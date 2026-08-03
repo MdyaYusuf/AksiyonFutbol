@@ -1,8 +1,9 @@
 import type { MatchPreview } from "../../matches/matchTypes";
 import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 export const formatMemberSince = (createdDate: string): string => {
-  return new Date(createdDate).toLocaleDateString("en-GB", {
+  return parseApiDate(createdDate).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -10,7 +11,7 @@ export const formatMemberSince = (createdDate: string): string => {
 };
 
 export const formatCareerPeriod = (createdDate: string): string => {
-  const startYear = new Date(createdDate).getFullYear();
+  const startYear = parseApiDate(createdDate).getFullYear();
   return `${startYear} - Present`;
 };
 

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Api.Core.Middlewares;
 using Api.Core.Options;
 using Api.Core.Security;
+using Api.Core.Serialization;
 using Api.Data;
 using Api.Features.Authentication;
 using Api.Features.BasePlayers;
@@ -31,6 +32,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
   options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+  options.JsonSerializerOptions.Converters.Add(new UtcDateTimeJsonConverter());
+  options.JsonSerializerOptions.Converters.Add(new UtcNullableDateTimeJsonConverter());
 });
 
 builder.Services.AddHttpContextAccessor();

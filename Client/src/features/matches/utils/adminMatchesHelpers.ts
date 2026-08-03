@@ -1,4 +1,5 @@
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
+import { parseApiDate } from "../../../core/utils/dateTime";
 import type { MatchResponse } from "../matchTypes";
 
 export type MatchStatusFilter = "all" | "scheduled" | "played";
@@ -11,7 +12,7 @@ export interface UnplayedWeekAlert {
 }
 
 export const formatAdminMatchDateTime = (matchDate: string): string => {
-  const date = new Date(matchDate);
+  const date = parseApiDate(matchDate);
 
   if (Number.isNaN(date.getTime())) {
     return "—";
@@ -27,7 +28,7 @@ export const formatAdminMatchDateTime = (matchDate: string): string => {
 };
 
 export const toDateTimeLocalValue = (matchDate: string): string => {
-  const date = new Date(matchDate);
+  const date = parseApiDate(matchDate);
 
   if (Number.isNaN(date.getTime())) {
     return "";
@@ -47,6 +48,7 @@ export const fromDateTimeLocalValue = (value: string): string => {
     return new Date().toISOString();
   }
 
+  // datetime-local is wall-clock local time; convert to UTC ISO for the API.
   return new Date(value).toISOString();
 };
 
@@ -100,7 +102,7 @@ export const filterAdminMatches = (
         return left.matchWeek - right.matchWeek;
       }
 
-      return new Date(left.matchDate).getTime() - new Date(right.matchDate).getTime();
+      return parseApiDate(left.matchDate).getTime() - parseApiDate(right.matchDate).getTime();
     });
 };
 

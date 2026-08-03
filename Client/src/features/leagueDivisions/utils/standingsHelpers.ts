@@ -1,5 +1,6 @@
 import type { ClubPreview } from "../../clubs/clubTypes";
 import type { MatchResponse } from "../../matches/matchTypes";
+import { parseApiDate } from "../../../core/utils/dateTime";
 
 export type StandingZone = "champions" | "europa" | "relegation" | null;
 export type FormResult = "W" | "D" | "L";
@@ -177,7 +178,7 @@ export const buildStandings = (
     const form = [...stats.results]
       .sort(
         (left, right) =>
-          new Date(right.date).getTime() - new Date(left.date).getTime(),
+          parseApiDate(right.date).getTime() - parseApiDate(left.date).getTime(),
       )
       .slice(0, 5)
       .map((entry) => entry.result)
