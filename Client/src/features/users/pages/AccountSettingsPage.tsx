@@ -8,6 +8,7 @@ import {
 } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { useAppDispatch, useAppSelector } from "../../../core/store/hooks";
+import { resolveMediaUrl } from "../../../core/utils/mediaUrl";
 import { setCredentials } from "../../auth/authSlice";
 import {
   useChangePasswordMutation,
@@ -155,7 +156,7 @@ export const AccountSettingsPage = () => {
     );
   }
 
-  const displayImage = previewUrl ?? user?.profileImageUrl ?? null;
+  const displayImage = previewUrl ?? resolveMediaUrl(user?.profileImageUrl);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">

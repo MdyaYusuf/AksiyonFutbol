@@ -19,8 +19,6 @@ export const OnboardingLayout = () => {
           </span>
         </div>
         <div className="pointer-events-none flex items-center gap-4 opacity-50 grayscale">
-          <MaterialIcon name="notifications" className="text-on-surface-variant" />
-          <MaterialIcon name="settings" className="text-on-surface-variant" />
           <div className="h-8 w-8 rounded-full border border-outline-variant bg-surface-container-highest" />
         </div>
       </header>

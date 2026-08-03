@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
 import { MaterialIcon } from "../ui/MaterialIcon";
-import { useAppSelector } from "../../store/hooks";
+import { UserAccountMenu } from "../ui/UserAccountMenu";
 import { formatCash } from "../../../features/dashboard/utils/dashboardFormatters";
 
 interface AppHeaderProps {
@@ -10,8 +9,6 @@ interface AppHeaderProps {
 }
 
 export const AppHeader = ({ cash, reputation, onMenuClick }: AppHeaderProps) => {
-  const { user } = useAppSelector((state) => state.auth);
-
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-6">
       <div className="flex items-center gap-4">
@@ -42,33 +39,8 @@ export const AppHeader = ({ cash, reputation, onMenuClick }: AppHeaderProps) => 
             Rep: {reputation}
           </div>
         )}
-        <div className="ml-2 flex items-center gap-3 border-l border-outline-variant pl-4">
-          <button
-            type="button"
-            className="relative text-on-surface-variant transition-colors hover:text-primary"
-            aria-label="Notifications"
-          >
-            <MaterialIcon name="notifications" />
-            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary" />
-          </button>
-          <Link
-            to="/app/settings"
-            className="text-on-surface-variant transition-colors hover:text-primary"
-            aria-label="Settings"
-          >
-            <MaterialIcon name="settings" />
-          </Link>
-          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-surface-container-high">
-            {user?.profileImageUrl ? (
-              <img
-                src={user.profileImageUrl}
-                alt={user.username}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <MaterialIcon name="person" className="text-on-surface-variant text-sm" />
-            )}
-          </div>
+        <div className="ml-2 border-l border-outline-variant pl-4">
+          <UserAccountMenu settingsPath="/app/settings" />
         </div>
       </div>
     </header>

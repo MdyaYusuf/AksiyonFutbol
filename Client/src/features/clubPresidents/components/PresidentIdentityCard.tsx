@@ -1,5 +1,6 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { ProgressBar } from "../../../core/components/ui/ProgressBar";
+import { resolveMediaUrl } from "../../../core/utils/mediaUrl";
 import type { ClubResponse } from "../../clubs/clubTypes";
 import type { ClubPresidentResponse } from "../clubPresidentTypes";
 import { getReputationXp } from "../utils/presidentProfileHelpers";
@@ -19,6 +20,7 @@ export const PresidentIdentityCard = ({
 }: PresidentIdentityCardProps) => {
   const reputationXp = getReputationXp(president.reputationPoints);
   const title = president.title?.trim() || "Club President";
+  const avatarUrl = resolveMediaUrl(profileImageUrl);
 
   return (
     <section className="relative flex flex-col items-center gap-8 overflow-hidden rounded-xl border border-outline-variant bg-surface-container-high p-6 shadow-sm md:flex-row md:items-start md:p-8">
@@ -27,9 +29,9 @@ export const PresidentIdentityCard = ({
       <div className="relative">
         <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary via-surface-variant to-secondary-container p-1 md:h-40 md:w-40">
           <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-surface-container-high bg-surface-container-highest">
-            {profileImageUrl ? (
+            {avatarUrl ? (
               <img
-                src={profileImageUrl}
+                src={avatarUrl}
                 alt={president.name}
                 className="h-full w-full object-cover"
               />

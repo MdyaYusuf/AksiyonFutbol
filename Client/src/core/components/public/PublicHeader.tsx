@@ -20,9 +20,6 @@ export const PublicHeader = () => {
             AksiyonFutbol
           </Link>
           <nav className="hidden gap-6 md:flex">
-            <NavLink to="/" end className={navLinkClass}>
-              Landing
-            </NavLink>
             <NavLink to="/login" className={navLinkClass}>
               Login
             </NavLink>
