@@ -7,6 +7,12 @@ import {
   getScoreBadgeClassName,
   getScoreDisplay,
 } from "../utils/fixturesHelpers";
+import {
+  getMatchLivePath,
+  getMatchPresentationPhase,
+  getMatchReportPath,
+  shouldOpenLiveView,
+} from "../utils/matchLiveHelpers";
 
 interface FixtureRowProps {
   match: MatchPreview;
@@ -65,10 +71,14 @@ export const FixtureRow = ({ match, clubId }: FixtureRowProps) => {
   const badgeClassName = getScoreBadgeClassName(match, clubId);
   const isWin = getMatchResultLetter(match, clubId) === "W";
   const isUpcoming = !match.isPlayed;
+  const phase = getMatchPresentationPhase(match, new Date());
+  const href = shouldOpenLiveView(phase)
+    ? getMatchLivePath(match.id)
+    : getMatchReportPath(match.id);
 
   return (
     <Link
-      to={`/app/matches/${match.id}`}
+      to={href}
       className={[
         "grid grid-cols-1 items-center gap-2 border-b border-surface-container-highest px-4 py-4 transition-colors last:border-b-0 hover:bg-surface-container-highest md:grid-cols-12 md:gap-4 md:py-3",
         isUpcoming ? "opacity-80" : "",
