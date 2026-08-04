@@ -1,10 +1,7 @@
-using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
-using Api.Features.ClubLineups;
 using Api.Features.Matches;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
@@ -14,9 +11,7 @@ public class MatchWeekOrchestrationService(
   ILeagueDivisionRepository _leagueDivisionRepository,
   LeagueDivisionBusinessRules _leagueBusinessRules,
   IMatchRepository _matchRepository,
-  IMatchDaySquadResolver _matchDaySquadResolver,
-  IMatchSimulationService _matchSimulationService,
-  IMatchBribeInfluenceProvider _matchBribeInfluenceProvider,
+  IMatchPlayService _matchPlayService,
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions,
   HybridCache _cache) : IMatchWeekOrchestrationService
@@ -39,7 +34,7 @@ public class MatchWeekOrchestrationService(
 
     List<Match> weekMatches = await _matchRepository.GetAllAsync(
       filter: m => m.DivisionId == divisionId && m.MatchWeek == processedMatchWeek,
-      include: IncludeMatchRelations,
+      include: MatchPlayService.IncludeMatchRelations,
       enableTracking: true,
       orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),
       cancellationToken: cancellationToken);
@@ -51,7 +46,7 @@ public class MatchWeekOrchestrationService(
 
     foreach (Match match in unplayedMatches)
     {
-      await SimulateMatchAsync(match, cancellationToken);
+      await _matchPlayService.SimulateInPlaceAsync(match, cancellationToken);
     }
 
     bool weekAdvanced = false;
@@ -86,57 +81,5 @@ public class MatchWeekOrchestrationService(
       Data = result,
       StatusCode = 200
     };
-  }
-
-  private async Task SimulateMatchAsync(Match match, CancellationToken cancellationToken)
-  {
-    if (!match.RefereeId.HasValue || match.Referee == null)
-    {
-      throw new BusinessException(
-        $"{match.HomeClub.Name} - {match.AwayClub.Name} maçı için hakem atanmalıdır.");
-    }
-
-    MatchDaySquad homeSquad = await _matchDaySquadResolver.ResolveAsync(
-      match.HomeClubId,
-      enableTracking: true,
-      cancellationToken: cancellationToken);
-
-    MatchDaySquad awaySquad = await _matchDaySquadResolver.ResolveAsync(
-      match.AwayClubId,
-      enableTracking: true,
-      cancellationToken: cancellationToken);
-
-    if (homeSquad.StartingPlayers.Count == 0 || awaySquad.StartingPlayers.Count == 0)
-    {
-      throw new BusinessException(
-        $"{match.HomeClub.Name} - {match.AwayClub.Name} maçı için her iki kulübün de en az bir uygun oyuncusu bulunmalıdır.");
-    }
-
-    MatchBribeInfluence bribeInfluence = await _matchBribeInfluenceProvider.GetForMatchAsync(
-      match.Id,
-      cancellationToken);
-
-    SimulatedMatchResultDto simulation = _matchSimulationService.Simulate(
-      match,
-      homeSquad,
-      awaySquad,
-      match.Referee,
-      bribeInfluence);
-
-    match.HomeScore = simulation.HomeScore;
-    match.AwayScore = simulation.AwayScore;
-    match.MatchLogJson = simulation.MatchLogJson;
-    match.IsPlayed = true;
-
-    _matchRepository.Update(match);
-  }
-
-  private static IQueryable<Match> IncludeMatchRelations(IQueryable<Match> query)
-  {
-    return query
-      .Include(m => m.Division)
-      .Include(m => m.HomeClub)
-      .Include(m => m.AwayClub)
-      .Include(m => m.Referee);
   }
 }

@@ -1,6 +1,5 @@
 using Api.Core.Repositories;
 using Api.Core.Responses;
-using Api.Features.ClubLineups;
 using Api.Features.Clubs;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +8,9 @@ namespace Api.Features.Matches;
 
 public class MatchService(
   IMatchRepository _matchRepository,
-  IMatchDaySquadResolver _matchDaySquadResolver,
   MatchMapper _mapper,
   MatchBusinessRules _businessRules,
-  IMatchSimulationService _matchSimulationService,
-  IMatchBribeInfluenceProvider _matchBribeInfluenceProvider,
+  IMatchPlayService _matchPlayService,
   IUnitOfWork _unitOfWork,
   IValidator<CreateMatchRequest> _createValidator,
   IValidator<UpdateMatchScheduleRequest> _updateScheduleValidator) : IMatchService
@@ -240,46 +237,7 @@ public class MatchService(
   {
     _businessRules.AdminRoleRequired(userRole);
 
-    Match match = await _businessRules.GetMatchIfExistAsync(
-      id,
-      include: IncludeMatchRelations,
-      enableTracking: true,
-      cancellationToken: cancellationToken);
-
-    _businessRules.MatchMustNotBePlayed(match);
-    _businessRules.MatchMustHaveReferee(match);
-
-    MatchDaySquad homeSquad = await _matchDaySquadResolver.ResolveAsync(
-      match.HomeClubId,
-      enableTracking: true,
-      cancellationToken: cancellationToken);
-
-    MatchDaySquad awaySquad = await _matchDaySquadResolver.ResolveAsync(
-      match.AwayClubId,
-      enableTracking: true,
-      cancellationToken: cancellationToken);
-
-    _businessRules.ClubsMustHaveAvailablePlayers(homeSquad.StartingPlayers.Count, awaySquad.StartingPlayers.Count);
-
-    MatchBribeInfluence bribeInfluence = await _matchBribeInfluenceProvider.GetForMatchAsync(
-      match.Id,
-      cancellationToken);
-
-    SimulatedMatchResultDto result = _matchSimulationService.Simulate(
-      match,
-      homeSquad,
-      awaySquad,
-      match.Referee!,
-      bribeInfluence);
-
-    match.HomeScore = result.HomeScore;
-    match.AwayScore = result.AwayScore;
-    match.MatchLogJson = result.MatchLogJson;
-    match.IsPlayed = true;
-
-    _matchRepository.Update(match);
-    await _unitOfWork.SaveChangesAsync(cancellationToken);
-
+    Match match = await _matchPlayService.PlayAndPersistAsync(id, cancellationToken);
     MatchResponseDto response = _mapper.EntityToResponseDto(match);
 
     return new ReturnModel<MatchResponseDto>()

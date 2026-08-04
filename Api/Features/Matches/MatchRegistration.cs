@@ -9,9 +9,11 @@ public static class MatchRegistration
     services.AddScoped<IMatchRepository, EfMatchRepository>();
     services.AddScoped<MatchBusinessRules>();
     services.AddScoped<IMatchSimulationService, MatchSimulationService>();
+    services.AddScoped<IMatchPlayService, MatchPlayService>();
     services.AddScoped<IMatchService, MatchService>();
     services.TryAddScoped<IMatchBribeInfluenceProvider, NullMatchBribeInfluenceProvider>();
     services.AddSingleton<MatchMapper>();
+    services.AddHostedService<MatchAutoSimulationBackgroundService>();
 
     return services;
   }

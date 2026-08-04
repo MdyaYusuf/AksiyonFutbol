@@ -127,6 +127,8 @@ builder.Services.AddOptions<GameOptions>()
   .Validate(options => options.FacilityAcademyDisciplineBonus >= 0 && options.FacilityAcademyDisciplineBonus <= 100, "FacilityAcademyDisciplineBonus 0 ile 100 arasında olmalıdır.")
   .Validate(options => options.PromotionSlots >= 1, "PromotionSlots en az 1 olmalıdır.")
   .Validate(options => options.RelegationSlots >= 1, "RelegationSlots en az 1 olmalıdır.")
+  .Validate(options => options.MatchLiveReplayDurationSeconds > 0, "MatchLiveReplayDurationSeconds 0'dan büyük olmalıdır.")
+  .Validate(options => options.MatchAutoSimulatePollSeconds > 0, "MatchAutoSimulatePollSeconds 0'dan büyük olmalıdır.")
   .ValidateOnStart();
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");

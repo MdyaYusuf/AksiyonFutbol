@@ -11,6 +11,13 @@ public interface IMatchRepository : IRepository<Match, Guid>
     bool enableTracking = false,
     CancellationToken cancellationToken = default);
 
+  Task<List<Match>> GetDuePlayableAsync(
+    DateTime utcNow,
+    int count,
+    Func<IQueryable<Match>, IQueryable<Match>>? include = null,
+    bool enableTracking = false,
+    CancellationToken cancellationToken = default);
+
   Task<bool> FixtureExistsAsync(
     int divisionId,
     int matchWeek,

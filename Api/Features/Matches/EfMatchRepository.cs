@@ -31,6 +31,27 @@ public class EfMatchRepository : EfBaseRepository<BaseDbContext, Match, Guid>, I
       .ToListAsync(cancellationToken);
   }
 
+  public async Task<List<Match>> GetDuePlayableAsync(
+    DateTime utcNow,
+    int count,
+    Func<IQueryable<Match>, IQueryable<Match>>? include = null,
+    bool enableTracking = false,
+    CancellationToken cancellationToken = default)
+  {
+    IQueryable<Match> query = Query(enableTracking);
+
+    if (include != null)
+    {
+      query = include(query);
+    }
+
+    return await query
+      .Where(m => !m.IsPlayed && m.MatchDate <= utcNow && m.RefereeId != null)
+      .OrderBy(m => m.MatchDate)
+      .Take(count)
+      .ToListAsync(cancellationToken);
+  }
+
   public async Task<bool> FixtureExistsAsync(
     int divisionId,
     int matchWeek,
