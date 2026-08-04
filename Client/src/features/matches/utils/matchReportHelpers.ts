@@ -23,6 +23,19 @@ const eventTypeNameMap: Record<string, MatchEventType> = {
   Injury: MatchEventType.Injury,
   HalfTime: MatchEventType.HalfTime,
   FullTime: MatchEventType.FullTime,
+  Possession: MatchEventType.Possession,
+  BuildUp: MatchEventType.BuildUp,
+  AttackLeft: MatchEventType.AttackLeft,
+  AttackCenter: MatchEventType.AttackCenter,
+  AttackRight: MatchEventType.AttackRight,
+  Cross: MatchEventType.Cross,
+  ThroughBall: MatchEventType.ThroughBall,
+  Shot: MatchEventType.Shot,
+  Save: MatchEventType.Save,
+  Block: MatchEventType.Block,
+  Miss: MatchEventType.Miss,
+  Corner: MatchEventType.Corner,
+  FreeKick: MatchEventType.FreeKick,
   "1": MatchEventType.KickOff,
   "2": MatchEventType.Goal,
   "3": MatchEventType.YellowCard,
@@ -30,6 +43,19 @@ const eventTypeNameMap: Record<string, MatchEventType> = {
   "5": MatchEventType.Injury,
   "6": MatchEventType.HalfTime,
   "7": MatchEventType.FullTime,
+  "8": MatchEventType.Possession,
+  "9": MatchEventType.BuildUp,
+  "10": MatchEventType.AttackLeft,
+  "11": MatchEventType.AttackCenter,
+  "12": MatchEventType.AttackRight,
+  "13": MatchEventType.Cross,
+  "14": MatchEventType.ThroughBall,
+  "15": MatchEventType.Shot,
+  "16": MatchEventType.Save,
+  "17": MatchEventType.Block,
+  "18": MatchEventType.Miss,
+  "19": MatchEventType.Corner,
+  "20": MatchEventType.FreeKick,
 };
 
 export const parseMatchEvents = (matchLogJson?: string | null): MatchEvent[] => {
@@ -108,6 +134,32 @@ export const getEventTitle = (event: MatchEvent): string => {
       return "Half Time";
     case MatchEventType.FullTime:
       return "Full Time";
+    case MatchEventType.Possession:
+      return "Possession";
+    case MatchEventType.BuildUp:
+      return "Build-up";
+    case MatchEventType.AttackLeft:
+      return "Attack Left";
+    case MatchEventType.AttackCenter:
+      return "Attack Center";
+    case MatchEventType.AttackRight:
+      return "Attack Right";
+    case MatchEventType.Cross:
+      return "Cross";
+    case MatchEventType.ThroughBall:
+      return "Through Ball";
+    case MatchEventType.Shot:
+      return "Shot";
+    case MatchEventType.Save:
+      return "Save";
+    case MatchEventType.Block:
+      return "Block";
+    case MatchEventType.Miss:
+      return "Miss";
+    case MatchEventType.Corner:
+      return "Corner";
+    case MatchEventType.FreeKick:
+      return "Free Kick";
     default:
       return "Event";
   }
@@ -128,6 +180,28 @@ export const getEventIcon = (event: MatchEvent): string => {
       return "timer_pause";
     case MatchEventType.FullTime:
       return "sports_score";
+    case MatchEventType.Possession:
+    case MatchEventType.BuildUp:
+      return "sync_alt";
+    case MatchEventType.AttackLeft:
+    case MatchEventType.AttackCenter:
+    case MatchEventType.AttackRight:
+      return "trending_flat";
+    case MatchEventType.Cross:
+    case MatchEventType.ThroughBall:
+      return "swap_calls";
+    case MatchEventType.Shot:
+      return "sports_soccer";
+    case MatchEventType.Save:
+      return "pan_tool";
+    case MatchEventType.Block:
+      return "front_hand";
+    case MatchEventType.Miss:
+      return "close";
+    case MatchEventType.Corner:
+      return "flag";
+    case MatchEventType.FreeKick:
+      return "sports";
     default:
       return "circle";
   }
@@ -143,6 +217,11 @@ export const extractPlayerNameFromDescription = (description: string): string | 
   const goalMatch = description.match(/Gol:\s*(.+?)\.?$/i);
   if (goalMatch?.[1]) {
     return goalMatch[1].trim();
+  }
+
+  const scoresMatch = description.match(/scores for .+ through (.+?)(?:\s*\(|\.|$)/i);
+  if (scoresMatch?.[1]) {
+    return scoresMatch[1].trim();
   }
 
   return null;
