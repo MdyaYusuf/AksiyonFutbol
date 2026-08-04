@@ -82,54 +82,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection("TokenOptions"));
-builder.Services.AddOptions<GameOptions>()
-  .Bind(builder.Configuration.GetSection(GameOptions.SectionName))
-  .Validate(options => options.StartingCash >= 0, "StartingCash negatif olamaz.")
-  .Validate(options => options.StartingWageBudget >= 0, "StartingWageBudget negatif olamaz.")
-  .Validate(options => options.StartingClubStatus >= 0 && options.StartingClubStatus <= 100, "StartingClubStatus 0 ile 100 arasında olmalıdır.")
-  .Validate(options => options.MaximumClubsPerDivision > 0, "MaximumClubsPerDivision 0'dan büyük olmalıdır.")
-  .Validate(options => options.MinimumMatchWeek > 0, "MinimumMatchWeek 0'dan büyük olmalıdır.")
-  .Validate(options => options.MaximumMatchWeek >= options.MinimumMatchWeek, "MaximumMatchWeek, MinimumMatchWeek değerinden küçük olamaz.")
-  .Validate(options => options.StarterSquadGoalkeepers >= 1, "StarterSquadGoalkeepers en az 1 olmalıdır.")
-  .Validate(options => options.StarterSquadDefenders >= 0, "StarterSquadDefenders negatif olamaz.")
-  .Validate(options => options.StarterSquadMidfielders >= 0, "StarterSquadMidfielders negatif olamaz.")
-  .Validate(options => options.StarterSquadForwards >= 0, "StarterSquadForwards negatif olamaz.")
-  .Validate(
-    options =>
-      options.StarterSquadGoalkeepers +
-      options.StarterSquadDefenders +
-      options.StarterSquadMidfielders +
-      options.StarterSquadForwards > 0,
-    "Başlangıç kadrosu toplam oyuncu sayısı 0'dan büyük olmalıdır.")
-  .Validate(options => options.StarterMarketValuePerOverall >= 0, "StarterMarketValuePerOverall negatif olamaz.")
-  .Validate(options => options.StarterWagePerOverall >= 0, "StarterWagePerOverall negatif olamaz.")
-  .Validate(options => options.PostMatchWinMoraleDelta >= -100 && options.PostMatchWinMoraleDelta <= 100, "PostMatchWinMoraleDelta -100 ile 100 arasında olmalıdır.")
-  .Validate(options => options.PostMatchDrawMoraleDelta >= -100 && options.PostMatchDrawMoraleDelta <= 100, "PostMatchDrawMoraleDelta -100 ile 100 arasında olmalıdır.")
-  .Validate(options => options.PostMatchLossMoraleDelta >= -100 && options.PostMatchLossMoraleDelta <= 100, "PostMatchLossMoraleDelta -100 ile 100 arasında olmalıdır.")
-  .Validate(options => options.PostMatchWinCashReward >= 0, "PostMatchWinCashReward negatif olamaz.")
-  .Validate(options => options.PostMatchDrawCashReward >= 0, "PostMatchDrawCashReward negatif olamaz.")
-  .Validate(options => options.PostMatchLossCashReward >= 0, "PostMatchLossCashReward negatif olamaz.")
-  .Validate(options => options.LineupStarterCount == 11, "LineupStarterCount 11 olmalıdır.")
-  .Validate(options => options.LineupMaxBenchSize >= 0 && options.LineupMaxBenchSize <= 12, "LineupMaxBenchSize 0 ile 12 arasında olmalıdır.")
-  .Validate(options => options.TransferMinimumSquadSize >= 11, "TransferMinimumSquadSize en az 11 olmalıdır.")
-  .Validate(options => options.BribeMinAmount > 0, "BribeMinAmount 0'dan büyük olmalıdır.")
-  .Validate(options => options.BribeMaxAmount >= options.BribeMinAmount, "BribeMaxAmount, BribeMinAmount değerinden küçük olamaz.")
-  .Validate(options => options.BribeMinSuccessChance >= 0 && options.BribeMinSuccessChance <= 1, "BribeMinSuccessChance 0 ile 1 arasında olmalıdır.")
-  .Validate(options => options.BribeMaxSuccessChance >= options.BribeMinSuccessChance && options.BribeMaxSuccessChance <= 1, "BribeMaxSuccessChance geçerli bir aralıkta olmalıdır.")
-  .Validate(options => options.BribeDifficultyCashScale > 0, "BribeDifficultyCashScale 0'dan büyük olmalıdır.")
-  .Validate(options => options.BribeCorruptibleBonus >= 0 && options.BribeCorruptibleBonus <= 1, "BribeCorruptibleBonus 0 ile 1 arasında olmalıdır.")
-  .Validate(options => options.BribeFavoredGoalMultiplier >= 1, "BribeFavoredGoalMultiplier 1 veya daha büyük olmalıdır.")
-  .Validate(options => options.BribeOpponentGoalMultiplier > 0 && options.BribeOpponentGoalMultiplier <= 1, "BribeOpponentGoalMultiplier 0 ile 1 arasında olmalıdır.")
-  .Validate(options => options.FacilityMaxLevel >= 1, "FacilityMaxLevel en az 1 olmalıdır.")
-  .Validate(options => options.FacilityBaseUpgradeCost > 0, "FacilityBaseUpgradeCost 0'dan büyük olmalıdır.")
-  .Validate(options => options.FacilityTrainingMoraleBonus >= 0 && options.FacilityTrainingMoraleBonus <= 100, "FacilityTrainingMoraleBonus 0 ile 100 arasında olmalıdır.")
-  .Validate(options => options.FacilityTrainingChemistryBonus >= 0 && options.FacilityTrainingChemistryBonus <= 100, "FacilityTrainingChemistryBonus 0 ile 100 arasında olmalıdır.")
-  .Validate(options => options.FacilityAcademyDisciplineBonus >= 0 && options.FacilityAcademyDisciplineBonus <= 100, "FacilityAcademyDisciplineBonus 0 ile 100 arasında olmalıdır.")
-  .Validate(options => options.PromotionSlots >= 1, "PromotionSlots en az 1 olmalıdır.")
-  .Validate(options => options.RelegationSlots >= 1, "RelegationSlots en az 1 olmalıdır.")
-  .Validate(options => options.MatchLiveReplayDurationSeconds > 0, "MatchLiveReplayDurationSeconds 0'dan büyük olmalıdır.")
-  .Validate(options => options.MatchAutoSimulatePollSeconds > 0, "MatchAutoSimulatePollSeconds 0'dan büyük olmalıdır.")
-  .ValidateOnStart();
+builder.Services.AddGameOptions(builder.Configuration);
 
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");
 

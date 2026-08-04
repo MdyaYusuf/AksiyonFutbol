@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { authService } from "../../../features/auth/authService";
-import { logoutUser } from "../../../features/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppSelector } from "../../store/hooks";
 import { resolveMediaUrl } from "../../utils/mediaUrl";
 import { MaterialIcon } from "./MaterialIcon";
 
@@ -11,7 +10,6 @@ interface UserAccountMenuProps {
 }
 
 export const UserAccountMenu = ({ settingsPath }: UserAccountMenuProps) => {
-  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -46,7 +44,6 @@ export const UserAccountMenu = ({ settingsPath }: UserAccountMenuProps) => {
 
   const handleLogout = () => {
     setIsOpen(false);
-    dispatch(logoutUser());
     authService.logout();
   };
 

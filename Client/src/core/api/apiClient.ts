@@ -130,15 +130,30 @@ const processRefreshToken = async (): Promise<boolean> => {
 };
 
 export const handleLogout = () => {
-
-  if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
-    fetch(`${BASE_URL}/authentication/revoke-refresh-token`, {
-      method: "POST",
-      credentials: "include"
-    }).finally(() => {
-      window.location.href = "/login";
-    });
+  if (
+    window.location.pathname === "/login" ||
+    window.location.pathname === "/register"
+  ) {
+    return;
   }
+
+  const finishLogout = async () => {
+    const { store } = await import("../store/store");
+    const { apiSlice } = await import("./apiSlice");
+    const { logoutUser } = await import("../../features/auth/authSlice");
+    const { router } = await import("../../router");
+
+    store.dispatch(logoutUser());
+    store.dispatch(apiSlice.util.resetApiState());
+    await router.navigate("/login", { replace: true });
+  };
+
+  fetch(`${BASE_URL}/authentication/revoke-refresh-token`, {
+    method: "POST",
+    credentials: "include",
+  }).finally(() => {
+    void finishLogout();
+  });
 };
 
 const handleApiError = (errorResponse: ApiResponse<unknown>) => {
