@@ -54,9 +54,9 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
     }),
 
     getScheduledUnplayedMatches: builder.query<MatchPreview[], number | void>({
-      query: (count = 20) => ({
+      query: (count) => ({
         url: "matches/scheduled-unplayed",
-        params: { count },
+        params: { count: count ?? 20 },
       }),
       providesTags: [{ type: "Match", id: "SCHEDULED-UNPLAYED" }],
     }),
@@ -101,12 +101,26 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
         url: `matches/${id}/simulate`,
         method: "POST",
       }),
-      invalidatesTags: (_result, _error, id) => [
+      invalidatesTags: (result, _error, id) => [
         { type: "Match", id },
         { type: "Match", id: "LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "PlayerInstance", id: "LIST" },
         { type: "PlayerInstance", id: "MY-CLUB" },
+        { type: "Club", id: "LIST" },
+        { type: "Club", id: "ME" },
+        ...(result
+          ? [
+              { type: "Club" as const, id: result.homeClubId },
+              { type: "Club" as const, id: result.awayClubId },
+              { type: "Match" as const, id: `CLUB-${result.homeClubId}` },
+              { type: "Match" as const, id: `CLUB-${result.awayClubId}` },
+              {
+                type: "Match" as const,
+                id: `DIVISION-${result.divisionId}-WEEK-${result.matchWeek}`,
+              },
+            ]
+          : []),
       ],
     }),
 

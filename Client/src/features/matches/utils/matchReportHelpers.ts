@@ -15,6 +15,13 @@ interface RawMatchEvent {
   Description?: string;
 }
 
+/** Sentinel for unrecognized legacy/future event labels — UI falls through to "Event". */
+const UNKNOWN_EVENT_TYPE = 999 as MatchEventType;
+
+const KNOWN_EVENT_TYPE_VALUES = new Set<number>(
+  Object.values(MatchEventType).filter((value): value is MatchEventType => typeof value === "number"),
+);
+
 const eventTypeNameMap: Record<string, MatchEventType> = {
   KickOff: MatchEventType.KickOff,
   Goal: MatchEventType.Goal,
@@ -58,35 +65,67 @@ const eventTypeNameMap: Record<string, MatchEventType> = {
   "20": MatchEventType.FreeKick,
 };
 
+export const isKnownMatchEventType = (value: number): value is MatchEventType => {
+  return KNOWN_EVENT_TYPE_VALUES.has(value);
+};
+
+const resolveMatchEventType = (
+  typeValue: MatchEventType | string | number | undefined,
+): MatchEventType => {
+  if (typeof typeValue === "number") {
+    return isKnownMatchEventType(typeValue) ? typeValue : (typeValue as MatchEventType);
+  }
+
+  if (typeof typeValue === "string" && typeValue.length > 0) {
+    return eventTypeNameMap[typeValue] ?? UNKNOWN_EVENT_TYPE;
+  }
+
+  return UNKNOWN_EVENT_TYPE;
+};
+
 export const parseMatchEvents = (matchLogJson?: string | null): MatchEvent[] => {
   if (!matchLogJson) {
     return [];
   }
 
   try {
-    const parsed = JSON.parse(matchLogJson) as RawMatchEvent[];
+    const parsed = JSON.parse(matchLogJson) as unknown;
 
     if (!Array.isArray(parsed)) {
       return [];
     }
 
-    return parsed
-      .map((event) => {
-        const typeValue = event.type ?? event.Type;
-        const type: MatchEventType =
-          typeof typeValue === "number"
-            ? (typeValue as MatchEventType)
-            : eventTypeNameMap[String(typeValue)] ?? MatchEventType.KickOff;
+    type OrderedMatchEvent = MatchEvent & { _order: number };
 
-        return {
-          minute: event.minute ?? event.Minute ?? 0,
-          type,
-          clubId: event.clubId ?? event.ClubId ?? null,
-          playerId: event.playerId ?? event.PlayerId ?? null,
-          description: event.description ?? event.Description ?? "",
-        };
+    const orderedEvents: OrderedMatchEvent[] = [];
+
+    parsed.forEach((entry, index) => {
+      if (!entry || typeof entry !== "object") {
+        return;
+      }
+
+      const event = entry as RawMatchEvent;
+      const typeValue = event.type ?? event.Type;
+
+      orderedEvents.push({
+        minute: event.minute ?? event.Minute ?? 0,
+        type: resolveMatchEventType(typeValue),
+        clubId: event.clubId ?? event.ClubId ?? null,
+        playerId: event.playerId ?? event.PlayerId ?? null,
+        description: event.description ?? event.Description ?? "",
+        _order: index,
+      });
+    });
+
+    return orderedEvents
+      .sort((left, right) => {
+        if (left.minute !== right.minute) {
+          return left.minute - right.minute;
+        }
+
+        return left._order - right._order;
       })
-      .sort((left, right) => left.minute - right.minute);
+      .map(({ _order: _ignored, ...event }) => event);
   } catch {
     return [];
   }

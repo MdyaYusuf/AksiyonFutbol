@@ -4,6 +4,10 @@ import { MatchDominancePanel } from "../components/MatchDominancePanel";
 import { MatchReportHeader } from "../components/MatchReportHeader";
 import { MatchTimeline } from "../components/MatchTimeline";
 import { useGetMatchByIdQuery } from "../matchesApiSlice";
+import {
+  getMatchLivePath,
+  getMatchPresentationPhase,
+} from "../utils/matchLiveHelpers";
 import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
 
 export const MatchDetailPage = () => {
@@ -16,6 +20,11 @@ export const MatchDetailPage = () => {
   const events = useMemo(
     () => parseMatchEvents(match?.matchLogJson),
     [match?.matchLogJson],
+  );
+
+  const phase = useMemo(
+    () => (match ? getMatchPresentationPhase(match, new Date()) : "upcoming"),
+    [match],
   );
 
   const handleGoBack = () => goBackOrFallback(navigate, "/app/fixtures");
@@ -57,20 +66,41 @@ export const MatchDetailPage = () => {
       </div>
     );
   }
+
+  const livePath = getMatchLivePath(match.id);
+
   return (
     <div className="mx-auto max-w-7xl space-y-gutter">
       <MatchReportHeader match={match} />
 
-      {!match.isPlayed && (
-        <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end gap-3">
+        {!match.isPlayed ? (
           <Link
             to={`/app/matches/${match.id}/lineup`}
             className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
           >
             Set Lineup
           </Link>
-        </div>
-      )}
+        ) : null}
+
+        {phase === "waitingSim" || phase === "live" ? (
+          <Link
+            to={livePath}
+            className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
+          >
+            Watch live
+          </Link>
+        ) : null}
+
+        {phase === "replay" && match.isPlayed ? (
+          <Link
+            to={livePath}
+            className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
+          >
+            Watch replay
+          </Link>
+        ) : null}
+      </div>
 
       <div className="grid grid-cols-1 gap-card-gap lg:grid-cols-12">
         <MatchTimeline match={match} events={events} />
