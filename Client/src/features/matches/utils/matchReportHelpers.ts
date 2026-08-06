@@ -4,19 +4,12 @@ import type { NavigateFunction } from "react-router-dom";
 
 interface RawMatchEvent {
   minute?: number;
-  Minute?: number;
   type?: MatchEventType | string | number;
-  Type?: MatchEventType | string | number;
   clubId?: string | null;
-  ClubId?: string | null;
   playerId?: string | null;
-  PlayerId?: string | null;
   description?: string;
-  Description?: string;
   expectedGoals?: number | null;
-  ExpectedGoals?: number | null;
   isBigChance?: boolean | null;
-  IsBigChance?: boolean | null;
 }
 
 /** Sentinel for unrecognized legacy/future event labels — UI falls through to "Event". */
@@ -54,7 +47,6 @@ const eventTypeNameMap: Record<string, MatchEventType> = {
   Foul: MatchEventType.Foul,
   ThrowIn: MatchEventType.ThrowIn,
   GoalKick: MatchEventType.GoalKick,
-  OutOfPlay: MatchEventType.GoalKick,
   "1": MatchEventType.KickOff,
   "2": MatchEventType.Goal,
   "3": MatchEventType.YellowCard,
@@ -124,16 +116,15 @@ export const parseMatchEvents = (matchLogJson?: string | null): MatchEvent[] => 
       }
 
       const event = entry as RawMatchEvent;
-      const typeValue = event.type ?? event.Type;
 
       orderedEvents.push({
-        minute: event.minute ?? event.Minute ?? 0,
-        type: resolveMatchEventType(typeValue),
-        clubId: event.clubId ?? event.ClubId ?? null,
-        playerId: event.playerId ?? event.PlayerId ?? null,
-        description: event.description ?? event.Description ?? "",
-        expectedGoals: event.expectedGoals ?? event.ExpectedGoals ?? null,
-        isBigChance: event.isBigChance ?? event.IsBigChance ?? null,
+        minute: event.minute ?? 0,
+        type: resolveMatchEventType(event.type),
+        clubId: event.clubId ?? null,
+        playerId: event.playerId ?? null,
+        description: event.description ?? "",
+        expectedGoals: event.expectedGoals ?? null,
+        isBigChance: event.isBigChance ?? null,
         _order: index,
       });
     });

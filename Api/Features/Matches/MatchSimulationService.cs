@@ -34,7 +34,8 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
 
   private static readonly JsonSerializerOptions _jsonOptions = new()
   {
-    Converters = { new JsonStringEnumConverter() }
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    Converters = { new JsonStringEnumConverter() },
   };
 
   public SimulatedMatchResultDto Simulate(

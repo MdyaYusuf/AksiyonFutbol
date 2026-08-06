@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Api.Core.Middlewares;
 using Api.Core.Options;
@@ -31,6 +32,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
+  options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
   options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
   options.JsonSerializerOptions.Converters.Add(new UtcDateTimeJsonConverter());
   options.JsonSerializerOptions.Converters.Add(new UtcNullableDateTimeJsonConverter());
