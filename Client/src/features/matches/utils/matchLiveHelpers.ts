@@ -54,27 +54,6 @@ export const getMatchPresentationPhase = (
   return "replay";
 };
 
-/** Wall-clock seconds into the 180s window for mid-join live playback. */
-export const getPlaybackSeekSeconds = (
-  matchDate: string,
-  now: Date,
-  liveDurationSeconds: number = MATCH_LIVE_REPLAY_DURATION_SECONDS,
-): number => {
-  const kickoff = getMatchKickoff(matchDate);
-
-  if (Number.isNaN(kickoff.getTime())) {
-    return 0;
-  }
-
-  const elapsedMs = now.getTime() - kickoff.getTime();
-
-  if (elapsedMs <= 0) {
-    return 0;
-  }
-
-  return Math.min(liveDurationSeconds, elapsedMs / 1000);
-};
-
 export const matchMinuteToWallSeconds = (
   matchMinute: number,
   liveDurationSeconds: number = MATCH_LIVE_REPLAY_DURATION_SECONDS,
@@ -125,6 +104,45 @@ export const getRunningScoreFromEvents = (
   return { home, away };
 };
 
+export const getMatchEventKey = (event: MatchEvent): string => {
+  return `${event.type}-${event.minute}-${event.description}`;
+};
+
+/** Events fully presented in the live feed — used so scoreboard lags until the Goal line. */
+export const getEventsThroughFeedPresentation = (
+  revealed: MatchEvent[],
+  sequence: MatchEvent[],
+  lineIndex: number,
+): MatchEvent[] => {
+  if (revealed.length === 0) {
+    return [];
+  }
+
+  if (sequence.length === 0) {
+    // Feed has not presented the current minute yet — withhold that minute.
+    const latestMinute = revealed[revealed.length - 1].minute;
+    return revealed.filter((event) => event.minute < latestMinute);
+  }
+
+  const sequenceMinute = sequence[0].minute;
+  const presentedCount = Math.min(lineIndex + 1, sequence.length);
+  const presentedKeys = new Set(
+    sequence.slice(0, presentedCount).map((event) => getMatchEventKey(event)),
+  );
+
+  return revealed.filter((event) => {
+    if (event.minute < sequenceMinute) {
+      return true;
+    }
+
+    if (event.minute > sequenceMinute) {
+      return false;
+    }
+
+    return presentedKeys.has(getMatchEventKey(event));
+  });
+};
+
 const POSSESSION_EVENT_TYPES = new Set<MatchEventType>([
   MatchEventType.Possession,
   MatchEventType.BuildUp,
@@ -141,6 +159,13 @@ const POSSESSION_EVENT_TYPES = new Set<MatchEventType>([
   MatchEventType.FreeKick,
   MatchEventType.Goal,
   MatchEventType.KickOff,
+  MatchEventType.Tackle,
+  MatchEventType.Interception,
+  MatchEventType.Clearance,
+  MatchEventType.LooseBall,
+  MatchEventType.Foul,
+  MatchEventType.ThrowIn,
+  MatchEventType.GoalKick,
 ]);
 
 export type PitchBallPosition = {
@@ -194,10 +219,34 @@ export const getBallPositionFromEvents = (
         break;
       case MatchEventType.Shot:
       case MatchEventType.Miss:
-      case MatchEventType.Block:
-      case MatchEventType.Save:
       case MatchEventType.Goal:
         x = isHome ? 88 : 12;
+        y = 32;
+        break;
+      case MatchEventType.Save:
+      case MatchEventType.Block:
+      case MatchEventType.Clearance:
+        // Club is the defending side — ball is near their own goal.
+        x = isHome ? 12 : 88;
+        y = 32;
+        break;
+      case MatchEventType.Tackle:
+      case MatchEventType.Interception:
+      case MatchEventType.Foul:
+        x = isHome ? 40 : 60;
+        y = 32;
+        break;
+      case MatchEventType.LooseBall:
+        x = isHome ? 48 : 52;
+        y = 28;
+        break;
+      case MatchEventType.ThrowIn:
+        x = isHome ? 55 : 45;
+        y = isHome ? 6 : 58;
+        break;
+      case MatchEventType.GoalKick:
+        // Club taking the kick is defending — ball near their goal.
+        x = isHome ? 8 : 92;
         y = 32;
         break;
       case MatchEventType.Corner:
@@ -233,8 +282,14 @@ export type LiveMatchSideStats = {
   goals: number;
   shots: number;
   shotsOnTarget: number;
+  expectedGoals: number;
+  bigChances: number;
+  bigChancesMissed: number;
   corners: number;
-  attacks: number;
+  tackles: number;
+  interceptions: number;
+  clearances: number;
+  fouls: number;
   yellowCards: number;
   redCards: number;
   possessionEvents: number;
@@ -251,43 +306,65 @@ const emptySideStats = (): LiveMatchSideStats => ({
   goals: 0,
   shots: 0,
   shotsOnTarget: 0,
+  expectedGoals: 0,
+  bigChances: 0,
+  bigChancesMissed: 0,
   corners: 0,
-  attacks: 0,
+  tackles: 0,
+  interceptions: 0,
+  clearances: 0,
+  fouls: 0,
   yellowCards: 0,
   redCards: 0,
   possessionEvents: 0,
 });
 
-const isAttackEvent = (type: MatchEventType): boolean => {
-  return (
-    type === MatchEventType.AttackLeft ||
-    type === MatchEventType.AttackCenter ||
-    type === MatchEventType.AttackRight ||
-    type === MatchEventType.Cross ||
-    type === MatchEventType.ThroughBall
-  );
-};
-
 const isShotEvent = (type: MatchEventType): boolean => {
-  return (
-    type === MatchEventType.Shot ||
-    type === MatchEventType.Miss ||
-    type === MatchEventType.Block ||
-    type === MatchEventType.Save ||
-    type === MatchEventType.Goal
-  );
+  return type === MatchEventType.Shot;
 };
 
-const isShotOnTarget = (type: MatchEventType): boolean => {
-  return (
-    type === MatchEventType.Shot ||
-    type === MatchEventType.Save ||
-    type === MatchEventType.Goal
-  );
+const isShotOnTargetForAttacker = (type: MatchEventType): boolean => {
+  return type === MatchEventType.Goal;
 };
 
 const isPossessionWeighted = (type: MatchEventType): boolean => {
   return POSSESSION_EVENT_TYPES.has(type);
+};
+
+const shotLedToGoal = (
+  events: MatchEvent[],
+  shotIndex: number,
+  clubId: string,
+): boolean => {
+  const shot = events[shotIndex];
+
+  // Prefer forward lookup (Shot then Goal — correct insertion order).
+  for (let index = shotIndex + 1; index < events.length; index += 1) {
+    const next = events[index];
+
+    if (next.minute !== shot.minute) {
+      break;
+    }
+
+    if (next.type === MatchEventType.Goal && next.clubId === clubId) {
+      return true;
+    }
+  }
+
+  // Legacy logs sorted by event type enum, which put Goal (2) before Shot (15).
+  for (let index = shotIndex - 1; index >= 0; index -= 1) {
+    const previous = events[index];
+
+    if (previous.minute !== shot.minute) {
+      break;
+    }
+
+    if (previous.type === MatchEventType.Goal && previous.clubId === clubId) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 export const getLiveMatchStats = (
@@ -298,7 +375,9 @@ export const getLiveMatchStats = (
   const home = emptySideStats();
   const away = emptySideStats();
 
-  for (const event of events) {
+  for (let index = 0; index < events.length; index += 1) {
+    const event = events[index];
+
     if (!event.clubId) {
       continue;
     }
@@ -319,18 +398,48 @@ export const getLiveMatchStats = (
 
     if (isShotEvent(event.type)) {
       side.shots += 1;
+      side.expectedGoals += event.expectedGoals ?? 0;
+
+      if (event.isBigChance) {
+        side.bigChances += 1;
+
+        if (!shotLedToGoal(events, index, event.clubId)) {
+          side.bigChancesMissed += 1;
+        }
+      }
     }
 
-    if (isShotOnTarget(event.type)) {
+    if (isShotOnTargetForAttacker(event.type)) {
       side.shotsOnTarget += 1;
+    }
+
+    // Saves are attributed to the keeper's club; on-target credit goes to the shooters.
+    if (event.type === MatchEventType.Save) {
+      if (event.clubId === homeClubId) {
+        away.shotsOnTarget += 1;
+      } else if (event.clubId === awayClubId) {
+        home.shotsOnTarget += 1;
+      }
     }
 
     if (event.type === MatchEventType.Corner) {
       side.corners += 1;
     }
 
-    if (isAttackEvent(event.type)) {
-      side.attacks += 1;
+    if (event.type === MatchEventType.Tackle) {
+      side.tackles += 1;
+    }
+
+    if (event.type === MatchEventType.Interception) {
+      side.interceptions += 1;
+    }
+
+    if (event.type === MatchEventType.Clearance) {
+      side.clearances += 1;
+    }
+
+    if (event.type === MatchEventType.Foul) {
+      side.fouls += 1;
     }
 
     if (event.type === MatchEventType.YellowCard) {
@@ -345,6 +454,10 @@ export const getLiveMatchStats = (
       side.possessionEvents += 1;
     }
   }
+
+  const roundXg = (value: number): number => Math.round(value * 100) / 100;
+  home.expectedGoals = roundXg(home.expectedGoals);
+  away.expectedGoals = roundXg(away.expectedGoals);
 
   const possessionTotal = home.possessionEvents + away.possessionEvents;
 
@@ -389,8 +502,11 @@ export const getLiveMomentIntensity = (
     event.type === MatchEventType.Shot ||
     event.type === MatchEventType.Save ||
     event.type === MatchEventType.Miss ||
+    event.type === MatchEventType.Block ||
+    event.type === MatchEventType.GoalKick ||
     event.type === MatchEventType.YellowCard ||
     event.type === MatchEventType.Injury ||
+    event.type === MatchEventType.Foul ||
     event.type === MatchEventType.HalfTime ||
     event.type === MatchEventType.FullTime
   ) {
@@ -398,6 +514,59 @@ export const getLiveMomentIntensity = (
   }
 
   return "normal";
+};
+
+/** Same-minute trail that should pause the clock while commentary plays through. */
+export const isKeyAttackSequence = (sequence: MatchEvent[]): boolean => {
+  if (sequence.length === 0) {
+    return false;
+  }
+
+  // Goals and big chances always pause the clock, even as a single feed line.
+  if (
+    sequence.some(
+      (event) => event.type === MatchEventType.Goal || event.isBigChance,
+    )
+  ) {
+    return true;
+  }
+
+  if (sequence.length < 2) {
+    return false;
+  }
+
+  // Only real finishing sequences — not failed attacks or restarts.
+  return sequence.some((event) => {
+    return (
+      event.type === MatchEventType.Shot ||
+      event.type === MatchEventType.Save ||
+      event.type === MatchEventType.Miss ||
+      event.type === MatchEventType.Block ||
+      event.type === MatchEventType.GoalKick ||
+      event.type === MatchEventType.Goal
+    );
+  });
+};
+
+export const getSameMinuteSequence = (events: MatchEvent[]): MatchEvent[] => {
+  if (events.length === 0) {
+    return [];
+  }
+
+  const latest = events[events.length - 1];
+  const sequence: MatchEvent[] = [];
+
+  for (let index = events.length - 1; index >= 0; index -= 1) {
+    const event = events[index];
+
+    if (event.minute !== latest.minute) {
+      break;
+    }
+
+    sequence.unshift(event);
+  }
+
+  return sequence;
 };
 
 export const getLatestLiveEvents = (

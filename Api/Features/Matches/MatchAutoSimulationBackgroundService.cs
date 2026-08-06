@@ -20,26 +20,34 @@ public sealed class MatchAutoSimulationBackgroundService(
       pollSeconds,
       BatchSize);
 
+    // Process due matches immediately so kickoff after restart is not delayed by one full poll.
+    await RunTickSafelyAsync(stoppingToken);
+
     while (await timer.WaitForNextTickAsync(stoppingToken))
     {
-      try
-      {
-        await ProcessDueMatchesAsync(stoppingToken);
-      }
-      catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-      {
-        break;
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, "Match auto-simulation tick failed.");
-      }
+      await RunTickSafelyAsync(stoppingToken);
+    }
+  }
+
+  private async Task RunTickSafelyAsync(CancellationToken stoppingToken)
+  {
+    try
+    {
+      await ProcessDueMatchesAsync(stoppingToken);
+    }
+    catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+    {
+      // Shutting down — let ExecuteAsync exit.
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Match auto-simulation tick failed.");
     }
   }
 
   private async Task ProcessDueMatchesAsync(CancellationToken cancellationToken)
   {
-    using IServiceScope scope = _scopeFactory.CreateScope();
+    await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
     IMatchRepository matchRepository = scope.ServiceProvider.GetRequiredService<IMatchRepository>();
     IMatchPlayService matchPlayService = scope.ServiceProvider.GetRequiredService<IMatchPlayService>();
 

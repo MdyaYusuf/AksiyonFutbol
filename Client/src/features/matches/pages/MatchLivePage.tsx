@@ -1,32 +1,42 @@
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { MatchLiveCommentary } from "../components/MatchLiveCommentary";
 import { MatchLivePitch } from "../components/MatchLivePitch";
 import { MatchLiveScoreboard } from "../components/MatchLiveScoreboard";
 import { MatchLiveStats } from "../components/MatchLiveStats";
-import { useGetMatchByIdQuery } from "../matchesApiSlice";
+import type { MatchEvent, MatchResponse } from "../matchTypes";
+import { useGetMatchByIdQuery, useGetMatchLiveStatusQuery } from "../matchesApiSlice";
 import {
   getBallPositionFromEvents,
-  getLatestLiveEvents,
+  getEventsThroughFeedPresentation,
   getLiveMatchStats,
-  getLiveMomentIntensity,
   getMatchPresentationPhase,
-  getPlaybackSeekSeconds,
   getRevealedEvents,
   getRunningScoreFromEvents,
   MATCH_LIVE_REPLAY_DURATION_SECONDS,
+  matchMinuteToWallSeconds,
   wallSecondsToMatchMinute,
   type MatchPresentationPhase,
 } from "../utils/matchLiveHelpers";
 import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
 
-const WAITING_POLL_MS = 2500;
+const WAITING_POLL_MS = 1000;
 const WAITING_TIMEOUT_MS = 120_000;
+const LOG_HYDRATE_TIMEOUT_MS = 60_000;
+const HALF_TIME_PAUSE_SECONDS = 10;
+const HALF_TIME_MATCH_MINUTE = 45;
+const GOAL_CELEBRATION_MS = 3200;
 
 const getStatusLabel = (
   phase: MatchPresentationPhase,
   playbackComplete: boolean,
+  isHalfTimePause: boolean,
 ): string => {
+  if (isHalfTimePause) {
+    return "Half Time";
+  }
+
   if (phase === "waitingSim") {
     return "Waiting for kickoff";
   }
@@ -46,6 +56,18 @@ const getStatusLabel = (
   return "Scheduled";
 };
 
+const hasUsableMatchLog = (match: MatchResponse | undefined): boolean => {
+  if (!match?.isPlayed) {
+    return false;
+  }
+
+  if (!match.matchLogJson || match.matchLogJson.trim().length === 0) {
+    return false;
+  }
+
+  return true;
+};
+
 export const MatchLivePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -56,14 +78,34 @@ export const MatchLivePage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInitializedSeek, setHasInitializedSeek] = useState(false);
   const [waitingTimedOut, setWaitingTimedOut] = useState(false);
-  const [pollWaiting, setPollWaiting] = useState(false);
+  const [isHydratingLog, setIsHydratingLog] = useState(false);
+  const [logHydrateTimedOut, setLogHydrateTimedOut] = useState(false);
+  const [halfTimePauseRemaining, setHalfTimePauseRemaining] = useState<number | null>(null);
   const waitingStartedAtRef = useRef<number | null>(null);
+  const logHydrateStartedAtRef = useRef<number | null>(null);
+  const halfTimePauseRemainingRef = useRef(0);
+  const halfTimePauseCompletedRef = useRef(false);
+  const commentaryHoldRef = useRef(false);
   const rafRef = useRef<number | null>(null);
   const lastFrameRef = useRef<number | null>(null);
+  const [goalCelebration, setGoalCelebration] = useState<{
+    token: string;
+    scorerLabel: string;
+  } | null>(null);
+  const [feedPresentation, setFeedPresentation] = useState<{
+    sequence: MatchEvent[];
+    lineIndex: number;
+  }>({ sequence: [], lineIndex: 0 });
 
-  const { data: match, isLoading, isError } = useGetMatchByIdQuery(id ?? "", {
+  const {
+    data: match,
+    isLoading,
+    isError,
+    isFetching,
+    refetch: refetchMatch,
+  } = useGetMatchByIdQuery(id ?? "", {
     skip: !id,
-    pollingInterval: pollWaiting ? WAITING_POLL_MS : 0,
+    refetchOnMountOrArgChange: true,
   });
 
   const phase = useMemo(() => {
@@ -74,13 +116,28 @@ export const MatchLivePage = () => {
     return getMatchPresentationPhase(match, new Date(nowMs));
   }, [match, nowMs]);
 
-  useEffect(() => {
-    setPollWaiting(phase === "waitingSim");
-  }, [phase]);
-
   const events = useMemo(
     () => parseMatchEvents(match?.matchLogJson),
     [match?.matchLogJson],
+  );
+
+  const eventsReady = hasUsableMatchLog(match) && events.length > 0;
+  const needsLogHydration = Boolean(match?.isPlayed) && !eventsReady;
+  const isWaitingForSim = phase === "waitingSim";
+  const matchMinute = wallSecondsToMatchMinute(playbackSeconds);
+  const revealedForPlayback = useMemo(
+    () => getRevealedEvents(events, matchMinute),
+    [events, matchMinute],
+  );
+
+  const { data: liveStatus } = useGetMatchLiveStatusQuery(
+    id && match
+      ? { matchId: id, clubId: match.homeClubId }
+      : skipToken,
+    {
+      skip: !isWaitingForSim,
+      pollingInterval: isWaitingForSim ? WAITING_POLL_MS : 0,
+    },
   );
 
   useEffect(() => {
@@ -88,14 +145,64 @@ export const MatchLivePage = () => {
     setPlaybackSeconds(0);
     setIsPlaying(false);
     setWaitingTimedOut(false);
+    setIsHydratingLog(false);
+    setLogHydrateTimedOut(false);
+    setHalfTimePauseRemaining(null);
+    setGoalCelebration(null);
+    setFeedPresentation({ sequence: [], lineIndex: 0 });
     waitingStartedAtRef.current = null;
-    setPollWaiting(false);
+    logHydrateStartedAtRef.current = null;
+    halfTimePauseRemainingRef.current = 0;
+    halfTimePauseCompletedRef.current = false;
+    commentaryHoldRef.current = false;
   }, [id]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  // When status says played, fetch the full match (including matchLogJson) before live UI.
+  useEffect(() => {
+    if (!liveStatus?.isPlayed) {
+      return;
+    }
+
+    if (eventsReady) {
+      return;
+    }
+
+    let cancelled = false;
+
+    setIsHydratingLog(true);
+
+    void refetchMatch()
+      .catch(() => {
+        // Next poll / manual retry will try again.
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsHydratingLog(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [liveStatus?.isPlayed, eventsReady, refetchMatch]);
+
+  // Keep refetching while played but log/events are still missing.
+  useEffect(() => {
+    if (!needsLogHydration) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      void refetchMatch();
+    }, WAITING_POLL_MS);
+
+    return () => window.clearInterval(timer);
+  }, [needsLogHydration, refetchMatch]);
 
   useEffect(() => {
     if (phase !== "waitingSim") {
@@ -119,16 +226,37 @@ export const MatchLivePage = () => {
   }, [phase]);
 
   useEffect(() => {
-    if (!match?.isPlayed || hasInitializedSeek) {
+    if (!needsLogHydration) {
+      logHydrateStartedAtRef.current = null;
+      setLogHydrateTimedOut(false);
+      return;
+    }
+
+    if (logHydrateStartedAtRef.current === null) {
+      logHydrateStartedAtRef.current = Date.now();
+    }
+
+    const startedAt = logHydrateStartedAtRef.current;
+    const timer = window.setInterval(() => {
+      if (Date.now() - startedAt >= LOG_HYDRATE_TIMEOUT_MS) {
+        setLogHydrateTimedOut(true);
+      }
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [needsLogHydration]);
+
+  // Only start the clock once events are actually available.
+  useEffect(() => {
+    if (!eventsReady || !match || hasInitializedSeek) {
       return;
     }
 
     const currentPhase = getMatchPresentationPhase(match, new Date());
 
     if (currentPhase === "live") {
-      const seek = getPlaybackSeekSeconds(match.matchDate, new Date());
-      setPlaybackSeconds(seek);
-      setIsPlaying(seek < MATCH_LIVE_REPLAY_DURATION_SECONDS);
+      setPlaybackSeconds(0);
+      setIsPlaying(true);
       setHasInitializedSeek(true);
       return;
     }
@@ -144,10 +272,10 @@ export const MatchLivePage = () => {
     setPlaybackSeconds(MATCH_LIVE_REPLAY_DURATION_SECONDS);
     setIsPlaying(false);
     setHasInitializedSeek(true);
-  }, [match, hasInitializedSeek, startReplayRequested]);
+  }, [eventsReady, match, hasInitializedSeek, startReplayRequested]);
 
   useEffect(() => {
-    if (!isPlaying || !match?.isPlayed) {
+    if (!isPlaying || !eventsReady) {
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -155,6 +283,8 @@ export const MatchLivePage = () => {
       lastFrameRef.current = null;
       return;
     }
+
+    const halfTimeWallSeconds = matchMinuteToWallSeconds(HALF_TIME_MATCH_MINUTE);
 
     const tick = (timestamp: number) => {
       if (lastFrameRef.current === null) {
@@ -164,8 +294,45 @@ export const MatchLivePage = () => {
       const deltaSeconds = (timestamp - lastFrameRef.current) / 1000;
       lastFrameRef.current = timestamp;
 
+      if (halfTimePauseRemainingRef.current > 0) {
+        halfTimePauseRemainingRef.current = Math.max(
+          0,
+          halfTimePauseRemainingRef.current - deltaSeconds,
+        );
+        setHalfTimePauseRemaining(
+          halfTimePauseRemainingRef.current > 0
+            ? halfTimePauseRemainingRef.current
+            : null,
+        );
+
+        if (halfTimePauseRemainingRef.current <= 0) {
+          halfTimePauseCompletedRef.current = true;
+          setHalfTimePauseRemaining(null);
+        }
+
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      // Hold the clock while a key attack plays out in the live feed.
+      if (commentaryHoldRef.current) {
+        lastFrameRef.current = timestamp;
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
       setPlaybackSeconds((previous) => {
-        const next = previous + deltaSeconds;
+        let next = previous + deltaSeconds;
+
+        if (
+          !halfTimePauseCompletedRef.current
+          && previous < halfTimeWallSeconds
+          && next >= halfTimeWallSeconds
+        ) {
+          next = halfTimeWallSeconds;
+          halfTimePauseRemainingRef.current = HALF_TIME_PAUSE_SECONDS;
+          setHalfTimePauseRemaining(HALF_TIME_PAUSE_SECONDS);
+        }
 
         if (next >= MATCH_LIVE_REPLAY_DURATION_SECONDS) {
           setIsPlaying(false);
@@ -187,13 +354,64 @@ export const MatchLivePage = () => {
       }
       lastFrameRef.current = null;
     };
-  }, [isPlaying, match?.isPlayed]);
+  }, [isPlaying, eventsReady]);
 
   const handleGoBack = () => goBackOrFallback(navigate, "/app/dashboard");
 
   const handleRestart = () => {
+    if (!eventsReady) {
+      return;
+    }
+
+    halfTimePauseRemainingRef.current = 0;
+    halfTimePauseCompletedRef.current = false;
+    commentaryHoldRef.current = false;
+    setHalfTimePauseRemaining(null);
+    setGoalCelebration(null);
+    setFeedPresentation({ sequence: [], lineIndex: 0 });
     setPlaybackSeconds(0);
     setIsPlaying(true);
+  };
+
+  const handleCommentaryHoldChange = (holding: boolean) => {
+    commentaryHoldRef.current = holding;
+  };
+
+  const handleFeedPresentationChange = (
+    sequence: MatchEvent[],
+    lineIndex: number,
+  ) => {
+    setFeedPresentation({ sequence, lineIndex });
+  };
+
+  const handleGoalMomentChange = (scorerLabel: string | null) => {
+    if (!scorerLabel) {
+      return;
+    }
+
+    setGoalCelebration({
+      token: `${Date.now()}-${scorerLabel}`,
+      scorerLabel,
+    });
+  };
+
+  useEffect(() => {
+    if (!goalCelebration) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setGoalCelebration(null);
+    }, GOAL_CELEBRATION_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [goalCelebration?.token]);
+
+  const handleRetryLoad = () => {
+    setLogHydrateTimedOut(false);
+    logHydrateStartedAtRef.current = Date.now();
+    setIsHydratingLog(true);
+    void refetchMatch().finally(() => setIsHydratingLog(false));
   };
 
   if (!id) {
@@ -207,7 +425,7 @@ export const MatchLivePage = () => {
     );
   }
 
-  if (isLoading && !match) {
+  if ((isLoading || isHydratingLog) && !match) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
         Loading live match…
@@ -263,23 +481,74 @@ export const MatchLivePage = () => {
         <div className="h-1.5 w-40 overflow-hidden rounded-full bg-surface-variant">
           <div className="h-full w-1/2 animate-pulse rounded-full bg-primary" />
         </div>
+        {waitingTimedOut ? (
+          <button
+            type="button"
+            onClick={handleRetryLoad}
+            className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
+          >
+            Check again
+          </button>
+        ) : null}
       </div>
     );
   }
 
-  const matchMinute = wallSecondsToMatchMinute(playbackSeconds);
-  const revealed = getRevealedEvents(events, matchMinute);
-  const score = getRunningScoreFromEvents(revealed, match.homeClubId, match.awayClubId);
+  // Played (live/replay) but match log not hydrated yet — never start an empty clock.
+  if (needsLogHydration) {
+    return (
+      <div className="mx-auto flex min-h-[40vh] max-w-lg flex-col items-center justify-center gap-4 text-center">
+        <h1 className="text-headline-md text-on-surface">
+          {logHydrateTimedOut ? "Match events unavailable" : "Loading match events…"}
+        </h1>
+        <p className="text-body-sm text-on-surface-variant">
+          {logHydrateTimedOut
+            ? "The result is ready but the live log could not be loaded. Try again or open the full report."
+            : "Simulation finished. Pulling the full match log before kickoff playback."}
+        </p>
+        {(isHydratingLog || isFetching) && !logHydrateTimedOut ? (
+          <div className="h-1.5 w-40 overflow-hidden rounded-full bg-surface-variant">
+            <div className="h-full w-1/2 animate-pulse rounded-full bg-primary" />
+          </div>
+        ) : null}
+        {logHydrateTimedOut ? (
+          <div className="flex flex-wrap justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleRetryLoad}
+              className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary"
+            >
+              Try again
+            </button>
+            <Link
+              to={`/app/matches/${match.id}`}
+              className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
+            >
+              Open match report
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  const isHalfTimePause = halfTimePauseRemaining !== null;
+  const revealed = revealedForPlayback;
+  const playbackComplete = playbackSeconds >= MATCH_LIVE_REPLAY_DURATION_SECONDS;
+  const scoreEvents = playbackComplete
+    ? revealed
+    : getEventsThroughFeedPresentation(
+        revealed,
+        feedPresentation.sequence,
+        feedPresentation.lineIndex,
+      );
+  const score = getRunningScoreFromEvents(
+    scoreEvents,
+    match.homeClubId,
+    match.awayClubId,
+  );
   const ball = getBallPositionFromEvents(revealed, match.homeClubId);
   const stats = getLiveMatchStats(revealed, match.homeClubId, match.awayClubId);
-  const latestEvents = getLatestLiveEvents(revealed, 1);
-  const headline = latestEvents.length > 0 ? latestEvents[0] : null;
-  const momentIntensity = getLiveMomentIntensity(headline);
-  const flashToken =
-    headline && momentIntensity === "critical"
-      ? `${headline.type}-${headline.minute}-${headline.description}`
-      : null;
-  const playbackComplete = playbackSeconds >= MATCH_LIVE_REPLAY_DURATION_SECONDS;
   const displayPhase: MatchPresentationPhase = playbackComplete ? "result" : phase;
   const progressPercent = Math.min(
     100,
@@ -320,8 +589,14 @@ export const MatchLivePage = () => {
         homeScore={score.home}
         awayScore={score.away}
         matchMinute={playbackComplete ? 90 : matchMinute}
-        statusLabel={getStatusLabel(displayPhase, playbackComplete)}
+        statusLabel={getStatusLabel(displayPhase, playbackComplete, isHalfTimePause)}
       />
+
+      {isHalfTimePause ? (
+        <p className="text-center text-body-sm text-on-surface-variant">
+          Half time — second half in {Math.ceil(halfTimePauseRemaining ?? 0)}s
+        </p>
+      ) : null}
 
       <div className="h-0.5 overflow-hidden rounded-full bg-surface-variant">
         <div
@@ -336,8 +611,11 @@ export const MatchLivePage = () => {
             homeClubName={match.homeClubName}
             awayClubName={match.awayClubName}
             ball={ball}
-            momentIntensity={momentIntensity}
-            flashToken={flashToken}
+            goalCelebration={
+              goalCelebration
+                ? { scorerLabel: goalCelebration.scorerLabel }
+                : null
+            }
           />
         </div>
         <div className="lg:col-span-5">
@@ -351,7 +629,12 @@ export const MatchLivePage = () => {
 
       <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <MatchLiveCommentary events={revealed} />
+          <MatchLiveCommentary
+            events={revealed}
+            onHoldPlaybackChange={handleCommentaryHoldChange}
+            onGoalMomentChange={handleGoalMomentChange}
+            onFeedPresentationChange={handleFeedPresentationChange}
+          />
         </div>
         <div className="lg:col-span-5">
           {playbackComplete ? (

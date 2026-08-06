@@ -11,12 +11,25 @@ interface StatRowProps {
   homeValue: number;
   awayValue: number;
   emphasize?: boolean;
+  formatValue?: (value: number) => string;
 }
 
-const StatRow = ({ label, homeValue, awayValue, emphasize = false }: StatRowProps) => {
+const formatXg = (value: number): string => {
+  return value.toFixed(2);
+};
+
+const StatRow = ({
+  label,
+  homeValue,
+  awayValue,
+  emphasize = false,
+  formatValue,
+}: StatRowProps) => {
   const total = homeValue + awayValue;
   const homeShare = total > 0 ? (homeValue / total) * 100 : 50;
   const awayShare = total > 0 ? (awayValue / total) * 100 : 50;
+  const homeDisplay = formatValue ? formatValue(homeValue) : String(homeValue);
+  const awayDisplay = formatValue ? formatValue(awayValue) : String(awayValue);
 
   return (
     <div className="space-y-1">
@@ -26,7 +39,7 @@ const StatRow = ({ label, homeValue, awayValue, emphasize = false }: StatRowProp
             emphasize ? "text-primary" : "text-on-surface"
           }`}
         >
-          {homeValue}
+          {homeDisplay}
         </span>
         <span className="text-label-caps text-on-surface-variant">{label}</span>
         <span
@@ -34,7 +47,7 @@ const StatRow = ({ label, homeValue, awayValue, emphasize = false }: StatRowProp
             emphasize ? "text-primary" : "text-on-surface"
           }`}
         >
-          {awayValue}
+          {awayDisplay}
         </span>
       </div>
       <div className="flex h-1 overflow-hidden rounded-full bg-surface-variant">
@@ -66,7 +79,7 @@ export const MatchLiveStats = ({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col justify-evenly px-3 py-2">
+      <div className="flex flex-1 flex-col justify-evenly overflow-y-auto px-3 py-2">
         <StatRow
           label="Possession %"
           homeValue={stats.homePossessionPercent}
@@ -80,8 +93,36 @@ export const MatchLiveStats = ({
           homeValue={stats.home.shotsOnTarget}
           awayValue={stats.away.shotsOnTarget}
         />
-        <StatRow label="Attacks" homeValue={stats.home.attacks} awayValue={stats.away.attacks} />
+        <StatRow
+          label="xG"
+          homeValue={stats.home.expectedGoals}
+          awayValue={stats.away.expectedGoals}
+          formatValue={formatXg}
+          emphasize
+        />
+        <StatRow
+          label="Big Chances"
+          homeValue={stats.home.bigChances}
+          awayValue={stats.away.bigChances}
+        />
+        <StatRow
+          label="Big Chances Missed"
+          homeValue={stats.home.bigChancesMissed}
+          awayValue={stats.away.bigChancesMissed}
+        />
         <StatRow label="Corners" homeValue={stats.home.corners} awayValue={stats.away.corners} />
+        <StatRow label="Tackles" homeValue={stats.home.tackles} awayValue={stats.away.tackles} />
+        <StatRow
+          label="Interceptions"
+          homeValue={stats.home.interceptions}
+          awayValue={stats.away.interceptions}
+        />
+        <StatRow
+          label="Clearances"
+          homeValue={stats.home.clearances}
+          awayValue={stats.away.clearances}
+        />
+        <StatRow label="Fouls" homeValue={stats.home.fouls} awayValue={stats.away.fouls} />
       </div>
     </div>
   );

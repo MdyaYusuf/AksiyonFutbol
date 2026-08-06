@@ -55,6 +55,30 @@ public class MatchService(
     };
   }
 
+  public async Task<ReturnModel<MatchLiveStatusDto>> GetLiveStatusAsync(
+    Guid id,
+    CancellationToken cancellationToken = default)
+  {
+    // No club/referee includes — status polls should stay cheap.
+    Match match = await _businessRules.GetMatchIfExistAsync(
+      id,
+      cancellationToken: cancellationToken);
+
+    return new ReturnModel<MatchLiveStatusDto>()
+    {
+      Success = true,
+      Message = "Maç durumu başarılı bir şekilde getirildi.",
+      Data = new MatchLiveStatusDto
+      {
+        Id = match.Id,
+        IsPlayed = match.IsPlayed,
+        HomeScore = match.HomeScore,
+        AwayScore = match.AwayScore
+      },
+      StatusCode = 200
+    };
+  }
+
   public async Task<ReturnModel<List<MatchPreviewDto>>> GetByClubIdAsync(
     Guid clubId,
     CancellationToken cancellationToken = default)

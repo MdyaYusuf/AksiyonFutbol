@@ -49,5 +49,5 @@ public class GameOptions
   public int RelegationSlots { get; set; } = 2;
 
   public int MatchLiveReplayDurationSeconds { get; set; } = 180;
-  public int MatchAutoSimulatePollSeconds { get; set; } = 30;
+  public int MatchAutoSimulatePollSeconds { get; set; } = 5;
 }

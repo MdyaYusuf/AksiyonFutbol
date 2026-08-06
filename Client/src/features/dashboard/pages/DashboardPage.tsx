@@ -1,7 +1,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useEffect, useState } from "react";
 import { useGetCurrentUserClubPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
 import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { useGetMatchesByClubIdQuery } from "../../matches/matchesApiSlice";
+import { useGetMatchLiveStatusQuery, useGetMatchesByClubIdQuery } from "../../matches/matchesApiSlice";
+import {
+  getMatchKickoff,
+  getMatchPresentationPhase,
+} from "../../matches/utils/matchLiveHelpers";
 import { ClubStatusCard } from "../components/ClubStatusCard";
 import { LeagueStandingsCard } from "../components/LeagueStandingsCard";
 import { NextMatchCard } from "../components/NextMatchCard";
@@ -9,7 +14,11 @@ import { PresidentSummaryCard } from "../components/PresidentSummaryCard";
 import { RecentFormCard } from "../components/RecentFormCard";
 import { getNextMatch, getRecentMatches } from "../utils/matchHelpers";
 
+/** Poll live-status only while waiting for simulation to finish. */
+const WAITING_SIM_POLL_MS = 5_000;
+
 export const DashboardPage = () => {
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const { data: club, isLoading: isClubLoading } = useGetCurrentUserClubQuery();
   const { data: president, isLoading: isPresidentLoading } =
     useGetCurrentUserClubPresidentQuery();
@@ -18,6 +27,52 @@ export const DashboardPage = () => {
   );
   const { data: divisionClubs = [], isLoading: isDivisionClubsLoading } =
     useGetClubsByDivisionIdQuery(club?.divisionId ?? skipToken);
+
+  const now = new Date(nowMs);
+  const nextMatch = getNextMatch(matches, now);
+  const nextPhase = nextMatch
+    ? getMatchPresentationPhase(nextMatch, now)
+    : null;
+
+  useGetMatchLiveStatusQuery(
+    nextMatch && club
+      ? { matchId: nextMatch.id, clubId: club.id }
+      : skipToken,
+    {
+      skip: nextPhase !== "waitingSim",
+      pollingInterval: nextPhase === "waitingSim" ? WAITING_SIM_POLL_MS : 0,
+    },
+  );
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  // One-shot wake at kickoff so waitingSim polling can start without a refresh.
+  useEffect(() => {
+    if (!nextMatch || nextMatch.isPlayed) {
+      return;
+    }
+
+    const kickoffMs = getMatchKickoff(nextMatch.matchDate).getTime();
+
+    if (Number.isNaN(kickoffMs)) {
+      return;
+    }
+
+    const delayMs = kickoffMs - Date.now();
+
+    if (delayMs <= 0) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setNowMs(Date.now());
+    }, delayMs);
+
+    return () => window.clearTimeout(timer);
+  }, [nextMatch?.id, nextMatch?.matchDate, nextMatch?.isPlayed]);
 
   const isLoading =
     isClubLoading || isPresidentLoading || isMatchesLoading || isDivisionClubsLoading;
@@ -30,7 +85,6 @@ export const DashboardPage = () => {
     );
   }
 
-  const nextMatch = getNextMatch(matches);
   const recentMatches = getRecentMatches(matches);
 
   return (

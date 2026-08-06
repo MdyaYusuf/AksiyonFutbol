@@ -19,6 +19,13 @@ export const MatchEventType = {
   Miss: 18,
   Corner: 19,
   FreeKick: 20,
+  Tackle: 21,
+  Interception: 22,
+  Clearance: 23,
+  LooseBall: 24,
+  Foul: 25,
+  ThrowIn: 26,
+  GoalKick: 27,
 } as const;
 
 export type MatchEventType = (typeof MatchEventType)[keyof typeof MatchEventType];
@@ -56,6 +63,13 @@ export interface MatchPreview {
   awayScore?: number | null;
 }
 
+export interface MatchLiveStatus {
+  id: string;
+  isPlayed: boolean;
+  homeScore?: number | null;
+  awayScore?: number | null;
+}
+
 export interface CreatedMatchResponse {
   id: string;
   divisionId: number;
@@ -71,6 +85,8 @@ export interface MatchEvent {
   clubId?: string | null;
   playerId?: string | null;
   description: string;
+  expectedGoals?: number | null;
+  isBigChance?: boolean | null;
 }
 
 export interface SimulatedMatchResult {

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { MatchLiveStats } from "../components/MatchLiveStats";
@@ -16,9 +16,15 @@ import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers"
 export const MatchDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const { data: match, isLoading, isError } = useGetMatchByIdQuery(id ?? "", {
     skip: !id,
   });
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const events = useMemo(
     () => parseMatchEvents(match?.matchLogJson),
@@ -26,8 +32,8 @@ export const MatchDetailPage = () => {
   );
 
   const phase = useMemo(
-    () => (match ? getMatchPresentationPhase(match, new Date()) : "upcoming"),
-    [match],
+    () => (match ? getMatchPresentationPhase(match, new Date(nowMs)) : "upcoming"),
+    [match, nowMs],
   );
 
   const stats = useMemo(() => {

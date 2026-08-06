@@ -2,6 +2,7 @@ import { apiSlice } from "../../core/api/apiSlice";
 import type {
   CreatedMatchResponse,
   CreateMatchRequest,
+  MatchLiveStatus,
   MatchPreview,
   MatchResponse,
   UpdateMatchScheduleRequest,
@@ -24,6 +25,40 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
     getMatchById: builder.query<MatchResponse, string>({
       query: (id) => ({ url: `matches/${id}` }),
       providesTags: (_result, _error, id) => [{ type: "Match", id }],
+    }),
+
+    getMatchLiveStatus: builder.query<
+      MatchLiveStatus,
+      { matchId: string; clubId: string }
+    >({
+      query: ({ matchId }) => ({ url: `matches/${matchId}/live-status` }),
+      async onQueryStarted({ matchId, clubId }, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+
+          // Only patch the lightweight club fixture list. Do not touch getMatchById —
+          // that cache needs matchLogJson from a full refetch once play completes.
+          dispatch(
+            matchesApiSlice.util.updateQueryData(
+              "getMatchesByClubId",
+              clubId,
+              (draft) => {
+                const match = draft.find((entry) => entry.id === matchId);
+
+                if (!match) {
+                  return;
+                }
+
+                match.isPlayed = data.isPlayed;
+                match.homeScore = data.homeScore;
+                match.awayScore = data.awayScore;
+              },
+            ),
+          );
+        } catch {
+          // Status poll failures are non-fatal; next tick retries.
+        }
+      },
     }),
 
     getMatchesByClubId: builder.query<MatchPreview[], string>({
@@ -144,6 +179,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetMatchesQuery,
   useGetMatchByIdQuery,
+  useGetMatchLiveStatusQuery,
   useGetMatchesByClubIdQuery,
   useGetMatchesByDivisionAndMatchWeekQuery,
   useGetScheduledUnplayedMatchesQuery,

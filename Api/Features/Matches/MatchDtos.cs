@@ -35,6 +35,15 @@ public sealed record MatchPreviewDto
   public int? AwayScore { get; init; }
 }
 
+/// <summary>Lightweight poll payload for live kickoff / waiting-sim checks.</summary>
+public sealed record MatchLiveStatusDto
+{
+  public Guid Id { get; init; }
+  public bool IsPlayed { get; init; }
+  public int? HomeScore { get; init; }
+  public int? AwayScore { get; init; }
+}
+
 public sealed record CreatedMatchResponseDto
 {
   public Guid Id { get; init; }

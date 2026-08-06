@@ -157,57 +157,37 @@
     border: 2px solid rgba(255, 255, 255, 0.1);
   }
 
-  @keyframes live-goal-flash {
+  @keyframes live-goal-pulse {
     0%,
     100% {
-      background-color: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-container-high));
       box-shadow: 0 0 0 0 transparent;
-      border-color: var(--color-primary);
     }
-    35% {
-      background-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-surface-container-high));
-      box-shadow: 0 0 28px color-mix(in srgb, var(--color-primary) 55%, transparent);
-      border-color: var(--color-primary-fixed);
-    }
-    70% {
-      background-color: color-mix(in srgb, var(--color-primary) 20%, var(--color-surface-container-high));
-      box-shadow: 0 0 16px color-mix(in srgb, var(--color-primary) 35%, transparent);
+    50% {
+      box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 45%, transparent);
     }
   }
 
-  @keyframes live-critical-flash {
-    0%,
-    100% {
-      background-color: color-mix(in srgb, var(--color-error) 10%, var(--color-surface-container-high));
-      box-shadow: 0 0 0 0 transparent;
-      border-color: color-mix(in srgb, var(--color-error) 60%, transparent);
-    }
-    40% {
-      background-color: color-mix(in srgb, var(--color-error) 28%, var(--color-surface-container-high));
-      box-shadow: 0 0 22px color-mix(in srgb, var(--color-error) 45%, transparent);
-    }
-  }
-
-  @keyframes live-pitch-flash {
-    0%,
-    100% {
+  @keyframes live-goal-banner {
+    0% {
       opacity: 0;
+      transform: scale(0.92);
     }
-    40% {
-      opacity: 0.35;
+    15% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 
-  .animate-live-goal-flash {
-    animation: live-goal-flash 0.4s ease-in-out 4;
+  .animate-live-goal-pulse {
+    animation: live-goal-pulse 0.7s ease-in-out 3;
   }
 
-  .animate-live-critical-flash {
-    animation: live-critical-flash 0.4s ease-in-out 4;
-  }
-
-  .animate-live-pitch-flash {
-    animation: live-pitch-flash 0.4s ease-in-out 4;
+  .animate-live-goal-banner {
+    animation: live-goal-banner 0.45s ease-out both;
   }
 
   .scrollbar-theme {

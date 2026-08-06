@@ -2,9 +2,10 @@ import type { MatchPreview } from "../../matches/matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
 import { getMatchPresentationPhase } from "../../matches/utils/matchLiveHelpers";
 
-export const getNextMatch = (matches: MatchPreview[]): MatchPreview | undefined => {
-  const now = new Date();
-
+export const getNextMatch = (
+  matches: MatchPreview[],
+  now: Date = new Date(),
+): MatchPreview | undefined => {
   const byKickoffAsc = (left: MatchPreview, right: MatchPreview) =>
     parseApiDate(left.matchDate).getTime() - parseApiDate(right.matchDate).getTime();
 

@@ -25,6 +25,14 @@ public class MatchesController(IMatchService _matchService) : CustomBaseControll
     return CreateActionResult(result);
   }
 
+  [HttpGet("{id:guid}/live-status")]
+  public async Task<IActionResult> GetLiveStatus(Guid id, CancellationToken cancellationToken)
+  {
+    var result = await _matchService.GetLiveStatusAsync(id, cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
   [HttpGet("club/{clubId:guid}")]
   public async Task<IActionResult> GetByClubId(Guid clubId, CancellationToken cancellationToken)
   {

@@ -10,6 +10,10 @@ public interface IMatchService
     Guid id,
     CancellationToken cancellationToken = default);
 
+  Task<ReturnModel<MatchLiveStatusDto>> GetLiveStatusAsync(
+    Guid id,
+    CancellationToken cancellationToken = default);
+
   Task<ReturnModel<List<MatchPreviewDto>>> GetByClubIdAsync(
     Guid clubId,
     CancellationToken cancellationToken = default);

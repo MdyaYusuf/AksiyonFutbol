@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ConfirmDialog } from "../../../core/components/ui/ConfirmDialog";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
 import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
@@ -60,6 +61,8 @@ export const AdminMatchesPage = () => {
   const [formValues, setFormValues] = useState<AdminMatchFormValues>(emptyFormValues());
   const [simulatingMatchId, setSimulatingMatchId] = useState<string | null>(null);
   const [isSimulatingWeek, setIsSimulatingWeek] = useState(false);
+  const [matchPendingDelete, setMatchPendingDelete] = useState<MatchResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
@@ -219,26 +222,42 @@ export const AdminMatchesPage = () => {
     }
   };
 
-  const handleDelete = async (matchId: string) => {
+  const handleDeleteRequest = (matchId: string) => {
     const match = matches.find((item) => item.id === matchId);
 
     if (!match) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Delete match "${match.homeClubName} vs ${match.awayClubName}"?`,
-    );
+    setMatchPendingDelete(match);
+  };
 
-    if (!confirmed) {
+  const handleConfirmDelete = async () => {
+    if (!matchPendingDelete) {
       return;
     }
 
-    await deleteMatch(matchId).unwrap();
+    setIsDeleting(true);
 
-    if (editingMatchId === matchId) {
-      closePanel();
+    try {
+      await deleteMatch(matchPendingDelete.id).unwrap();
+
+      if (editingMatchId === matchPendingDelete.id) {
+        closePanel();
+      }
+
+      setMatchPendingDelete(null);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    if (isDeleting) {
+      return;
+    }
+
+    setMatchPendingDelete(null);
   };
 
   if (isLoading) {
@@ -379,7 +398,7 @@ export const AdminMatchesPage = () => {
           simulatingMatchId={simulatingMatchId}
           onSimulate={handleSimulate}
           onEdit={openEditPanel}
-          onDelete={handleDelete}
+          onDelete={handleDeleteRequest}
         />
       </div>
 
@@ -397,6 +416,23 @@ export const AdminMatchesPage = () => {
           onSubmit={handleSubmit}
         />
       )}
+
+      <ConfirmDialog
+        open={matchPendingDelete != null}
+        title="Delete match"
+        message={
+          matchPendingDelete
+            ? `Delete "${matchPendingDelete.homeClubName} vs ${matchPendingDelete.awayClubName}"? This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        confirmTone="danger"
+        isConfirming={isDeleting}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };

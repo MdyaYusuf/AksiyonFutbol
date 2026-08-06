@@ -8,6 +8,8 @@ public sealed record MatchEventDto
   public Guid? ClubId { get; init; }
   public Guid? PlayerId { get; init; }
   public string Description { get; init; } = default!;
+  public double? ExpectedGoals { get; init; }
+  public bool? IsBigChance { get; init; }
 }
 
 public sealed record SimulatedMatchResultDto

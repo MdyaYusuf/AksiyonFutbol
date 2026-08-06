@@ -13,6 +13,10 @@ interface RawMatchEvent {
   PlayerId?: string | null;
   description?: string;
   Description?: string;
+  expectedGoals?: number | null;
+  ExpectedGoals?: number | null;
+  isBigChance?: boolean | null;
+  IsBigChance?: boolean | null;
 }
 
 /** Sentinel for unrecognized legacy/future event labels — UI falls through to "Event". */
@@ -43,6 +47,14 @@ const eventTypeNameMap: Record<string, MatchEventType> = {
   Miss: MatchEventType.Miss,
   Corner: MatchEventType.Corner,
   FreeKick: MatchEventType.FreeKick,
+  Tackle: MatchEventType.Tackle,
+  Interception: MatchEventType.Interception,
+  Clearance: MatchEventType.Clearance,
+  LooseBall: MatchEventType.LooseBall,
+  Foul: MatchEventType.Foul,
+  ThrowIn: MatchEventType.ThrowIn,
+  GoalKick: MatchEventType.GoalKick,
+  OutOfPlay: MatchEventType.GoalKick,
   "1": MatchEventType.KickOff,
   "2": MatchEventType.Goal,
   "3": MatchEventType.YellowCard,
@@ -63,6 +75,13 @@ const eventTypeNameMap: Record<string, MatchEventType> = {
   "18": MatchEventType.Miss,
   "19": MatchEventType.Corner,
   "20": MatchEventType.FreeKick,
+  "21": MatchEventType.Tackle,
+  "22": MatchEventType.Interception,
+  "23": MatchEventType.Clearance,
+  "24": MatchEventType.LooseBall,
+  "25": MatchEventType.Foul,
+  "26": MatchEventType.ThrowIn,
+  "27": MatchEventType.GoalKick,
 };
 
 export const isKnownMatchEventType = (value: number): value is MatchEventType => {
@@ -113,6 +132,8 @@ export const parseMatchEvents = (matchLogJson?: string | null): MatchEvent[] => 
         clubId: event.clubId ?? event.ClubId ?? null,
         playerId: event.playerId ?? event.PlayerId ?? null,
         description: event.description ?? event.Description ?? "",
+        expectedGoals: event.expectedGoals ?? event.ExpectedGoals ?? null,
+        isBigChance: event.isBigChance ?? event.IsBigChance ?? null,
         _order: index,
       });
     });
@@ -188,17 +209,31 @@ export const getEventTitle = (event: MatchEvent): string => {
     case MatchEventType.ThroughBall:
       return "Through Ball";
     case MatchEventType.Shot:
-      return "Shot";
+      return event.isBigChance ? "Big Chance" : "Shot";
     case MatchEventType.Save:
       return "Save";
     case MatchEventType.Block:
       return "Block";
     case MatchEventType.Miss:
       return "Miss";
+    case MatchEventType.GoalKick:
+      return "Goal Kick";
     case MatchEventType.Corner:
       return "Corner";
     case MatchEventType.FreeKick:
       return "Free Kick";
+    case MatchEventType.Tackle:
+      return "Tackle";
+    case MatchEventType.Interception:
+      return "Interception";
+    case MatchEventType.Clearance:
+      return "Clearance";
+    case MatchEventType.LooseBall:
+      return "Loose Ball";
+    case MatchEventType.Foul:
+      return "Foul";
+    case MatchEventType.ThrowIn:
+      return "Throw-in";
     default:
       return "Event";
   }
@@ -237,10 +272,24 @@ export const getEventIcon = (event: MatchEvent): string => {
       return "front_hand";
     case MatchEventType.Miss:
       return "close";
+    case MatchEventType.GoalKick:
+      return "sports_soccer";
     case MatchEventType.Corner:
       return "flag";
     case MatchEventType.FreeKick:
       return "sports";
+    case MatchEventType.Tackle:
+      return "front_hand";
+    case MatchEventType.Interception:
+      return "pan_tool";
+    case MatchEventType.Clearance:
+      return "north";
+    case MatchEventType.LooseBall:
+      return "blur_on";
+    case MatchEventType.Foul:
+      return "report";
+    case MatchEventType.ThrowIn:
+      return "redo";
     default:
       return "circle";
   }

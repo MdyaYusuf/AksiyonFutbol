@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { MatchPreview } from "../../matches/matchTypes";
@@ -51,6 +52,13 @@ const TeamBadge = ({
 );
 
 export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   if (!nextMatch) {
     return (
       <div className="relative col-span-1 flex flex-col overflow-hidden rounded-lg border border-outline-variant bg-surface-container-high p-4 md:col-span-8 lg:col-span-8">
@@ -64,7 +72,7 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
   }
 
   const userIsHome = nextMatch.homeClubId === clubId;
-  const phase = getMatchPresentationPhase(nextMatch, new Date());
+  const phase = getMatchPresentationPhase(nextMatch, new Date(nowMs));
   const livePath = getMatchLivePath(nextMatch.id);
   const replayPath = getMatchLiveReplayPath(nextMatch.id);
   const reportPath = getMatchReportPath(nextMatch.id);

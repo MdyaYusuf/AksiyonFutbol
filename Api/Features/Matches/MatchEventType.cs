@@ -21,5 +21,12 @@ public enum MatchEventType
   Block = 17,
   Miss = 18,
   Corner = 19,
-  FreeKick = 20
+  FreeKick = 20,
+  Tackle = 21,
+  Interception = 22,
+  Clearance = 23,
+  LooseBall = 24,
+  Foul = 25,
+  ThrowIn = 26,
+  GoalKick = 27
 }

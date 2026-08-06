@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Features.BasePlayers;
 using Api.Features.ClubLineups;
 using Api.Features.Clubs;
 using Api.Features.PlayerInstances;
@@ -12,12 +13,24 @@ namespace Api.Features.Matches;
 
 public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatchSimulationService
 {
-  private const int AttackSlotCount = 72;
-  private const double BaseGoalRate = 0.075;
-  private const double DeliveryChance = 0.40;
-  private const double YellowCardChance = 0.04;
-  private const double InjuryChance = 0.015;
-  private const double SetPieceChance = 0.18;
+  /// <summary>Chance a given minute becomes a real attack attempt.</summary>
+  private const double AttackMinuteChance = 0.48;
+
+  /// <summary>Chance a quiet/contested minute still gets soft possession flavor.</summary>
+  private const double QuietPossessionChance = 0.42;
+
+  /// <summary>Chance a non-attack minute is a midfield battle instead of pure idle.</summary>
+  private const double ContestedMinuteChance = 0.38;
+
+  private const double ProgressPastMidfieldChance = 0.68;
+  private const double ProgressToFinalThirdChance = 0.65;
+  private const double DeliveryChance = 0.42;
+  private const double DeliverySuccessChance = 0.58;
+  private const double CreateShotChance = 0.68;
+  private const double YellowCardChance = 0.035;
+  private const double InjuryChance = 0.012;
+  private const double FoulInsteadOfTackleChance = 0.22;
+  private const double BigChanceXgThreshold = 0.18;
 
   private static readonly JsonSerializerOptions _jsonOptions = new()
   {
@@ -46,24 +59,22 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     TeamPower homePower = CalculateTeamPower(homePlayers, homeClub, homeSquad.Mentality, isHome: true);
     TeamPower awayPower = CalculateTeamPower(awayPlayers, awayClub, awaySquad.Mentality, isHome: false);
 
-    List<MatchEventDto> events = new()
-    {
+    List<MatchEventDto> events =
+    [
       new MatchEventDto
       {
         Minute = 1,
         Type = MatchEventType.KickOff,
         Description = $"{homeClub.Name} - {awayClub.Name} maçı başladı."
       }
-    };
+    ];
 
     int homeScore = 0;
     int awayScore = 0;
 
-    for (int slot = 1; slot <= AttackSlotCount; slot++)
+    for (int minute = 2; minute <= 89; minute++)
     {
-      int minute = Math.Min(90, (int)Math.Ceiling(slot * 90d / AttackSlotCount));
-
-      if (minute == 45 && events.All(e => e.Type != MatchEventType.HalfTime))
+      if (minute == 45)
       {
         events.Add(new MatchEventDto
         {
@@ -71,33 +82,60 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
           Type = MatchEventType.HalfTime,
           Description = $"İlk yarı sonucu: {homeClub.Name} {homeScore} - {awayScore} {awayClub.Name}."
         });
+        continue;
       }
 
-      bool homeControlsAttack = RollWeighted(homePower.MidfieldControl, awayPower.MidfieldControl);
+      bool homeControls = RollWeighted(homePower.MidfieldControl, awayPower.MidfieldControl);
+      TeamPower attackingPower = homeControls ? homePower : awayPower;
+      TeamPower defendingPower = homeControls ? awayPower : homePower;
+      List<PlayerInstance> attackingPlayers = homeControls ? homePlayers : awayPlayers;
+      List<PlayerInstance> defendingPlayers = homeControls ? awayPlayers : homePlayers;
+      Club attackingClub = homeControls ? homeClub : awayClub;
+      Club defendingClub = homeControls ? awayClub : homeClub;
 
-      TeamPower attackingPower = homeControlsAttack ? homePower : awayPower;
-      TeamPower defendingPower = homeControlsAttack ? awayPower : homePower;
-      List<PlayerInstance> attackingPlayers = homeControlsAttack ? homePlayers : awayPlayers;
-      List<PlayerInstance> defendingPlayers = homeControlsAttack ? awayPlayers : homePlayers;
-      Club attackingClub = homeControlsAttack ? homeClub : awayClub;
+      double attackBias = attackingPower.AttackPower
+        / (attackingPower.AttackPower + defendingPower.DefenseStrength);
+      double minuteAttackChance = AttackMinuteChance * (0.85 + attackBias * 0.30);
 
-      double attackSuccessChance = attackingPower.AttackPower / (attackingPower.AttackPower + defendingPower.DefenseStrength);
-      double goalChance = attackSuccessChance * BaseGoalRate * GetRefereeGoalModifier(referee);
-      goalChance *= GetBribeGoalModifier(attackingClub.Id, influence);
+      if (Random.Shared.NextDouble() < minuteAttackChance)
+      {
+        AppendAttackFunnel(
+          events,
+          minute,
+          attackingClub,
+          defendingClub,
+          attackingPlayers,
+          defendingPlayers,
+          attackingPower,
+          defendingPower,
+          referee,
+          influence,
+          ref homeScore,
+          ref awayScore,
+          homeControls);
+        continue;
+      }
 
-      Club defendingClub = homeControlsAttack ? awayClub : homeClub;
+      if (Random.Shared.NextDouble() < ContestedMinuteChance)
+      {
+        AppendContestedMinute(
+          events,
+          minute,
+          attackingClub,
+          defendingClub,
+          attackingPlayers,
+          defendingPlayers);
+        continue;
+      }
 
-      AppendAttackSequence(
-        events,
-        minute,
-        attackingClub,
-        defendingClub,
-        attackingPlayers,
-        defendingPlayers,
-        goalChance,
-        ref homeScore,
-        ref awayScore,
-        homeControlsAttack);
+      if (Random.Shared.NextDouble() < QuietPossessionChance)
+      {
+        events.Add(CreateEvent(
+          minute,
+          Random.Shared.NextDouble() < 0.55 ? MatchEventType.Possession : MatchEventType.BuildUp,
+          attackingClub,
+          PickRandomPlayer(attackingPlayers)));
+      }
     }
 
     events.Add(new MatchEventDto
@@ -113,33 +151,77 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     {
       HomeScore = homeScore,
       AwayScore = awayScore,
-      MatchLogJson = JsonSerializer.Serialize(events.OrderBy(e => e.Minute).ToList(), _jsonOptions)
+      MatchLogJson = JsonSerializer.Serialize(
+        events
+          .Select((matchEvent, index) => (Event: matchEvent, Index: index))
+          .OrderBy(entry => entry.Event.Minute)
+          .ThenBy(entry => entry.Index)
+          .Select(entry => entry.Event)
+          .ToList(),
+        _jsonOptions)
     };
   }
 
-  private static void AppendAttackSequence(
+  private void AppendAttackFunnel(
     List<MatchEventDto> events,
     int minute,
     Club attackingClub,
     Club defendingClub,
     List<PlayerInstance> attackingPlayers,
     List<PlayerInstance> defendingPlayers,
-    double goalChance,
+    TeamPower attackingPower,
+    TeamPower defendingPower,
+    Referee referee,
+    MatchBribeInfluence influence,
     ref int homeScore,
     ref int awayScore,
     bool homeControlsAttack)
   {
-    PlayerInstance carrier = PickRandomPlayer(attackingPlayers);
+    int attackStartIndex = events.Count;
 
-    MatchEventType openPlay = Random.Shared.NextDouble() < 0.55
-      ? MatchEventType.BuildUp
-      : MatchEventType.Possession;
+    void CollapseFailedAttack(Action appendOutcome)
+    {
+      if (events.Count > attackStartIndex)
+      {
+        events.RemoveRange(attackStartIndex, events.Count - attackStartIndex);
+      }
 
-    events.Add(CreateEvent(minute, openPlay, attackingClub, carrier));
+      appendOutcome();
+    }
 
-    MatchEventType channel = PickAttackChannel();
-    PlayerInstance channelPlayer = PickRandomPlayer(attackingPlayers);
-    events.Add(CreateEvent(minute, channel, attackingClub, channelPlayer));
+    events.Add(CreateEvent(
+      minute,
+      Random.Shared.NextDouble() < 0.55 ? MatchEventType.BuildUp : MatchEventType.Possession,
+      attackingClub,
+      PickRandomPlayer(attackingPlayers)));
+
+    double progressBias = attackingPower.MidfieldControl
+      / (attackingPower.MidfieldControl + defendingPower.MidfieldControl);
+
+    if (Random.Shared.NextDouble() > ProgressPastMidfieldChance * (0.75 + progressBias * 0.5))
+    {
+      CollapseFailedAttack(() =>
+      {
+        AppendDefensiveStop(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers, early: true);
+        TryAppendDiscipline(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      });
+      return;
+    }
+
+    events.Add(CreateEvent(minute, PickAttackChannel(), attackingClub, PickRandomPlayer(attackingPlayers)));
+
+    double finalThirdBias = attackingPower.AttackPower
+      / (attackingPower.AttackPower + defendingPower.DefenseStrength);
+
+    if (Random.Shared.NextDouble() > ProgressToFinalThirdChance * (0.70 + finalThirdBias * 0.6))
+    {
+      CollapseFailedAttack(() =>
+      {
+        AppendDefensiveStop(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers, early: false);
+        TryAppendDiscipline(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      });
+      return;
+    }
 
     if (Random.Shared.NextDouble() < DeliveryChance)
     {
@@ -147,14 +229,91 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
         ? MatchEventType.Cross
         : MatchEventType.ThroughBall;
       events.Add(CreateEvent(minute, delivery, attackingClub, PickRandomPlayer(attackingPlayers)));
+
+      if (Random.Shared.NextDouble() > DeliverySuccessChance * (0.75 + finalThirdBias * 0.5))
+      {
+        CollapseFailedAttack(() =>
+        {
+          AppendBrokenDelivery(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+          TryAppendDiscipline(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+        });
+        return;
+      }
     }
+    else
+    {
+      // Ensure a clear final approach beat before the shot so live commentary can breathe.
+      events.Add(CreateEvent(
+        minute,
+        Random.Shared.NextDouble() < 0.5 ? MatchEventType.ThroughBall : MatchEventType.AttackCenter,
+        attackingClub,
+        PickRandomPlayer(attackingPlayers)));
+    }
+
+    if (Random.Shared.NextDouble() > CreateShotChance * (0.70 + finalThirdBias * 0.6))
+    {
+      CollapseFailedAttack(() =>
+      {
+        AppendChanceWasted(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+        TryAppendDiscipline(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      });
+      return;
+    }
+
+    // Real chance: keep the multi-line build-up through the shot.
+    AppendShotSequence(
+      events,
+      minute,
+      attackingClub,
+      defendingClub,
+      attackingPlayers,
+      defendingPlayers,
+      finalThirdBias,
+      referee,
+      influence,
+      ref homeScore,
+      ref awayScore,
+      homeControlsAttack);
+
+    TryAppendDiscipline(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+  }
+
+  private void AppendShotSequence(
+    List<MatchEventDto> events,
+    int minute,
+    Club attackingClub,
+    Club defendingClub,
+    List<PlayerInstance> attackingPlayers,
+    List<PlayerInstance> defendingPlayers,
+    double chanceQuality,
+    Referee referee,
+    MatchBribeInfluence influence,
+    ref int homeScore,
+    ref int awayScore,
+    bool homeControlsAttack)
+  {
+    PlayerInstance shooter = PickScorer(attackingPlayers);
+
+    double goalChance = Math.Clamp(
+      (0.10 + chanceQuality * 0.36)
+        * GetRefereeGoalModifier(referee)
+        * GetBribeGoalModifier(attackingClub.Id, influence),
+      0.06,
+      0.62);
+
+    bool isBigChance = goalChance >= BigChanceXgThreshold;
+
+    events.Add(CreateEvent(
+      minute,
+      MatchEventType.Shot,
+      attackingClub,
+      shooter,
+      expectedGoals: goalChance,
+      isBigChance: isBigChance));
 
     if (Random.Shared.NextDouble() <= goalChance)
     {
-      PlayerInstance scorer = PickScorer(attackingPlayers);
-      events.Add(CreateEvent(minute, MatchEventType.Shot, attackingClub, scorer));
-
-      scorer.SeasonGoals++;
+      shooter.SeasonGoals++;
 
       if (homeControlsAttack)
       {
@@ -165,60 +324,264 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
         awayScore++;
       }
 
-      events.Add(CreateEvent(minute, MatchEventType.Goal, attackingClub, scorer));
-      TryAppendDiscipline(
-        events,
-        minute,
-        attackingClub,
-        defendingClub,
-        attackingPlayers,
-        defendingPlayers);
+      events.Add(CreateEvent(minute, MatchEventType.Goal, attackingClub, shooter));
       return;
     }
 
-    AppendNonGoalOutcome(events, minute, attackingClub, attackingPlayers, defendingPlayers);
-    TryAppendDiscipline(
-      events,
+    double finishRoll = Random.Shared.NextDouble();
+
+    if (finishRoll < 0.34)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Save, defendingClub, PickGoalkeeperOrDefender(defendingPlayers)));
+      return;
+    }
+
+    if (finishRoll < 0.58)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Block, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (finishRoll < 0.72)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Corner, attackingClub, PickRandomPlayer(attackingPlayers)));
+      return;
+    }
+
+    if (finishRoll < 0.88)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Miss, attackingClub, shooter));
+      return;
+    }
+
+    events.Add(CreateEvent(
       minute,
-      attackingClub,
+      MatchEventType.GoalKick,
       defendingClub,
-      attackingPlayers,
-      defendingPlayers);
+      PickGoalkeeperOrDefender(defendingPlayers),
+      descriptionOverride: MatchSimulationCommentary.FormatGoalKick(defendingClub, shooter)));
   }
 
-  private static void AppendNonGoalOutcome(
+  private static void AppendContestedMinute(
     List<MatchEventDto> events,
     int minute,
     Club attackingClub,
+    Club defendingClub,
     List<PlayerInstance> attackingPlayers,
     List<PlayerInstance> defendingPlayers)
   {
     double roll = Random.Shared.NextDouble();
 
-    if (roll < SetPieceChance)
+    if (roll < 0.34)
     {
-      MatchEventType setPiece = Random.Shared.NextDouble() < 0.6
-        ? MatchEventType.Corner
-        : MatchEventType.FreeKick;
-      events.Add(CreateEvent(minute, setPiece, attackingClub, PickRandomPlayer(attackingPlayers)));
+      events.Add(CreateEvent(minute, MatchEventType.Tackle, defendingClub, PickRandomPlayer(defendingPlayers)));
       return;
     }
 
-    PlayerInstance shooter = PickRandomPlayer(attackingPlayers);
-    events.Add(CreateEvent(minute, MatchEventType.Shot, attackingClub, shooter));
-
-    MatchEventType finish = roll switch
+    if (roll < 0.58)
     {
-      < 0.45 => MatchEventType.Save,
-      < 0.70 => MatchEventType.Block,
-      _ => MatchEventType.Miss
-    };
+      events.Add(CreateEvent(minute, MatchEventType.Interception, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
 
-    PlayerInstance? involved = finish == MatchEventType.Miss
-      ? shooter
-      : PickRandomPlayer(defendingPlayers);
+    if (roll < 0.74)
+    {
+      Club looseClub = Random.Shared.NextDouble() < 0.5 ? attackingClub : defendingClub;
+      List<PlayerInstance> loosePool = looseClub.Id == attackingClub.Id ? attackingPlayers : defendingPlayers;
+      events.Add(CreateEvent(minute, MatchEventType.LooseBall, looseClub, PickRandomPlayer(loosePool)));
+      return;
+    }
 
-    events.Add(CreateEvent(minute, finish, attackingClub, involved ?? shooter));
+    if (roll < 0.88)
+    {
+      AppendThrowIn(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      return;
+    }
+
+    AppendFoulFreeKick(events, minute, defendingClub, attackingClub, defendingPlayers, attackingPlayers);
+  }
+
+  private static void AppendDefensiveStop(
+    List<MatchEventDto> events,
+    int minute,
+    Club attackingClub,
+    Club defendingClub,
+    List<PlayerInstance> attackingPlayers,
+    List<PlayerInstance> defendingPlayers,
+    bool early)
+  {
+    double roll = Random.Shared.NextDouble();
+
+    if (roll < FoulInsteadOfTackleChance)
+    {
+      AppendFoulFreeKick(events, minute, defendingClub, attackingClub, defendingPlayers, attackingPlayers);
+      return;
+    }
+
+    if (early)
+    {
+      if (roll < 0.42)
+      {
+        events.Add(CreateEvent(minute, MatchEventType.Tackle, defendingClub, PickRandomPlayer(defendingPlayers)));
+        return;
+      }
+
+      if (roll < 0.72)
+      {
+        events.Add(CreateEvent(minute, MatchEventType.Interception, defendingClub, PickRandomPlayer(defendingPlayers)));
+        return;
+      }
+
+      AppendThrowIn(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      return;
+    }
+
+    if (roll < 0.38)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Tackle, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.62)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Clearance, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.80)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.LooseBall, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    AppendThrowIn(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+  }
+
+  private static void AppendBrokenDelivery(
+    List<MatchEventDto> events,
+    int minute,
+    Club attackingClub,
+    Club defendingClub,
+    List<PlayerInstance> attackingPlayers,
+    List<PlayerInstance> defendingPlayers)
+  {
+    double roll = Random.Shared.NextDouble();
+
+    if (roll < 0.34)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Interception, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.58)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Clearance, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.72)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.LooseBall, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.88)
+    {
+      AppendThrowIn(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      return;
+    }
+
+    events.Add(CreateEvent(minute, MatchEventType.Corner, attackingClub, PickRandomPlayer(attackingPlayers)));
+  }
+
+  private static void AppendChanceWasted(
+    List<MatchEventDto> events,
+    int minute,
+    Club attackingClub,
+    Club defendingClub,
+    List<PlayerInstance> attackingPlayers,
+    List<PlayerInstance> defendingPlayers)
+  {
+    double roll = Random.Shared.NextDouble();
+
+    if (roll < 0.30)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Clearance, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.48)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.Tackle, defendingClub, PickRandomPlayer(defendingPlayers)));
+      return;
+    }
+
+    if (roll < 0.64)
+    {
+      events.Add(CreateEvent(minute, MatchEventType.LooseBall, attackingClub, PickRandomPlayer(attackingPlayers)));
+      return;
+    }
+
+    if (roll < 0.82)
+    {
+      AppendThrowIn(events, minute, attackingClub, defendingClub, attackingPlayers, defendingPlayers);
+      return;
+    }
+
+    events.Add(CreateEvent(minute, MatchEventType.Corner, attackingClub, PickRandomPlayer(attackingPlayers)));
+  }
+
+  /// <summary>
+  /// Attacking side misplaces the ball into touch; defending side takes the throw-in.
+  /// Stored as one event so live feed does not pause on mundane restarts.
+  /// </summary>
+  private static void AppendThrowIn(
+    List<MatchEventDto> events,
+    int minute,
+    Club attackingClub,
+    Club defendingClub,
+    List<PlayerInstance> attackingPlayers,
+    List<PlayerInstance> defendingPlayers)
+  {
+    PlayerInstance? outPlayer = PickRandomPlayer(attackingPlayers);
+    PlayerInstance? throwPlayer = PickRandomPlayer(defendingPlayers);
+
+    events.Add(CreateEvent(
+      minute,
+      MatchEventType.ThrowIn,
+      defendingClub,
+      throwPlayer,
+      descriptionOverride: MatchSimulationCommentary.FormatThrowInRestart(
+        attackingClub,
+        outPlayer,
+        defendingClub,
+        throwPlayer)));
+  }
+
+  /// <summary>
+  /// Foul plus free-kick restart as a single commentary beat.
+  /// </summary>
+  private static void AppendFoulFreeKick(
+    List<MatchEventDto> events,
+    int minute,
+    Club foulingClub,
+    Club freeKickClub,
+    List<PlayerInstance> foulingPlayers,
+    List<PlayerInstance> freeKickPlayers)
+  {
+    PlayerInstance? foulPlayer = PickRandomPlayer(foulingPlayers);
+    PlayerInstance? freeKickPlayer = PickRandomPlayer(freeKickPlayers);
+
+    events.Add(CreateEvent(
+      minute,
+      MatchEventType.FreeKick,
+      freeKickClub,
+      freeKickPlayer,
+      descriptionOverride: MatchSimulationCommentary.FormatFoulFreeKick(
+        foulingClub,
+        foulPlayer,
+        freeKickClub,
+        freeKickPlayer)));
   }
 
   private static void TryAppendDiscipline(
@@ -242,7 +605,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
 
     if (roll < InjuryChance + YellowCardChance)
     {
-      bool attackerBooked = Random.Shared.NextDouble() < 0.45;
+      bool attackerBooked = Random.Shared.NextDouble() < 0.40;
       Club club = attackerBooked ? attackingClub : defendingClub;
       List<PlayerInstance> pool = attackerBooked ? attackingPlayers : defendingPlayers;
       events.Add(CreateEvent(minute, MatchEventType.YellowCard, club, PickRandomPlayer(pool)));
@@ -253,7 +616,10 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     int minute,
     MatchEventType type,
     Club club,
-    PlayerInstance? player)
+    PlayerInstance? player,
+    double? expectedGoals = null,
+    bool? isBigChance = null,
+    string? descriptionOverride = null)
   {
     return new MatchEventDto
     {
@@ -261,7 +627,15 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       Type = type,
       ClubId = club.Id,
       PlayerId = player?.Id,
-      Description = MatchSimulationCommentary.Format(type, club, player, minute)
+      Description = descriptionOverride
+        ?? MatchSimulationCommentary.Format(
+          type,
+          club,
+          player,
+          minute,
+          isBigChance: isBigChance == true),
+      ExpectedGoals = expectedGoals,
+      IsBigChance = isBigChance
     };
   }
 
@@ -393,6 +767,18 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     }
 
     return players[0];
+  }
+
+  private static PlayerInstance PickGoalkeeperOrDefender(List<PlayerInstance> players)
+  {
+    PlayerInstance? goalkeeper = players.FirstOrDefault(p => p.Position == PlayerPosition.Goalkeeper);
+
+    if (goalkeeper != null)
+    {
+      return goalkeeper;
+    }
+
+    return PickRandomPlayer(players);
   }
 
   private static PlayerInstance PickRandomPlayer(List<PlayerInstance> players)
