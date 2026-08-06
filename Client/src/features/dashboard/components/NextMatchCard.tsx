@@ -3,6 +3,7 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { MatchPreview } from "../../matches/matchTypes";
 import {
   getMatchLivePath,
+  getMatchLiveReplayPath,
   getMatchPresentationPhase,
   getMatchReportPath,
 } from "../../matches/utils/matchLiveHelpers";
@@ -65,6 +66,7 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
   const userIsHome = nextMatch.homeClubId === clubId;
   const phase = getMatchPresentationPhase(nextMatch, new Date());
   const livePath = getMatchLivePath(nextMatch.id);
+  const replayPath = getMatchLiveReplayPath(nextMatch.id);
   const reportPath = getMatchReportPath(nextMatch.id);
   const scoreLabel =
     nextMatch.isPlayed && nextMatch.homeScore != null && nextMatch.awayScore != null
@@ -99,7 +101,7 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
               {scoreLabel ?? "VS"}
             </span>
             <span className="font-data-mono text-[10px] text-on-surface-variant">
-              GW {nextMatch.matchWeek}
+              Game Week {nextMatch.matchWeek}
             </span>
           </div>
           <TeamBadge
@@ -154,7 +156,7 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
               Match Report
             </Link>
             <Link
-              to={livePath}
+              to={replayPath}
               className="flex items-center gap-2 rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
             >
               <MaterialIcon name="replay" className="text-sm" />

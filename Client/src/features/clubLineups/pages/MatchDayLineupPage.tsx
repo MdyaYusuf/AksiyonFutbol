@@ -4,6 +4,11 @@ import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { formatMatchDateTime } from "../../dashboard/utils/dashboardFormatters";
 import { useGetMatchByIdQuery } from "../../matches/matchesApiSlice";
+import {
+  getMatchLivePath,
+  getMatchPresentationPhase,
+  shouldOpenLiveView,
+} from "../../matches/utils/matchLiveHelpers";
 import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
 import { MatchDayContextBar } from "../components/MatchDayContextBar";
@@ -44,6 +49,7 @@ export const MatchDayLineupPage = () => {
   const [starterIds, setStarterIds] = useState<(string | null)[]>(createEmptyStarterSlots);
   const [benchIds, setBenchIds] = useState<(string | null)[]>(createEmptyBenchSlots);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const playersById = useMemo(() => {
     const map = new Map<string, PlayerInstanceResponse>();
@@ -141,6 +147,7 @@ export const MatchDayLineupPage = () => {
     setStarterIds(nextStarters);
     setBenchIds(nextBench);
     setSelectedIndex(null);
+    setIsConfirmed(false);
   };
 
   const handleClearSelection = () => {
@@ -148,7 +155,7 @@ export const MatchDayLineupPage = () => {
   };
 
   const handleConfirm = async () => {
-    if (!canConfirm || formation == null || mentality == null) {
+    if (!canConfirm || formation == null || mentality == null || !match) {
       return;
     }
 
@@ -162,7 +169,14 @@ export const MatchDayLineupPage = () => {
         starterPlayerIds: payloadStarters,
         benchPlayerIds: payloadBench,
       }).unwrap();
-      navigate(matchId ? `/app/matches/${matchId}` : "/app/fixtures");
+
+      const phase = getMatchPresentationPhase(match, new Date());
+      if (shouldOpenLiveView(phase)) {
+        navigate(getMatchLivePath(match.id), { replace: true });
+        return;
+      }
+
+      setIsConfirmed(true);
     } catch {
       /* Toasts via apiClient */
     }
@@ -273,6 +287,8 @@ export const MatchDayLineupPage = () => {
         hasInjuredStarters={injuredStarterCount > 0}
         canConfirm={canConfirm}
         isSaving={isSaving}
+        isConfirmed={isConfirmed}
+        kickoffLabel={formatMatchDateTime(match.matchDate)}
         onClearSelection={handleClearSelection}
         onConfirm={handleConfirm}
       />

@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { MatchLiveCommentary } from "../components/MatchLiveCommentary";
 import { MatchLivePitch } from "../components/MatchLivePitch";
 import { MatchLiveScoreboard } from "../components/MatchLiveScoreboard";
+import { MatchLiveStats } from "../components/MatchLiveStats";
 import { useGetMatchByIdQuery } from "../matchesApiSlice";
 import {
   getBallPositionFromEvents,
+  getLatestLiveEvents,
+  getLiveMatchStats,
+  getLiveMomentIntensity,
   getMatchPresentationPhase,
   getPlaybackSeekSeconds,
   getRevealedEvents,
@@ -45,6 +49,8 @@ const getStatusLabel = (
 export const MatchLivePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const startReplayRequested = searchParams.get("replay") === "1";
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [playbackSeconds, setPlaybackSeconds] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -118,15 +124,27 @@ export const MatchLivePage = () => {
     }
 
     const currentPhase = getMatchPresentationPhase(match, new Date());
-    const seek =
-      currentPhase === "live"
-        ? getPlaybackSeekSeconds(match.matchDate, new Date())
-        : 0;
 
-    setPlaybackSeconds(seek);
-    setIsPlaying(seek < MATCH_LIVE_REPLAY_DURATION_SECONDS);
+    if (currentPhase === "live") {
+      const seek = getPlaybackSeekSeconds(match.matchDate, new Date());
+      setPlaybackSeconds(seek);
+      setIsPlaying(seek < MATCH_LIVE_REPLAY_DURATION_SECONDS);
+      setHasInitializedSeek(true);
+      return;
+    }
+
+    if (startReplayRequested) {
+      setPlaybackSeconds(0);
+      setIsPlaying(true);
+      setHasInitializedSeek(true);
+      return;
+    }
+
+    // Finished match without an explicit replay request: stay on full time.
+    setPlaybackSeconds(MATCH_LIVE_REPLAY_DURATION_SECONDS);
+    setIsPlaying(false);
     setHasInitializedSeek(true);
-  }, [match, hasInitializedSeek]);
+  }, [match, hasInitializedSeek, startReplayRequested]);
 
   useEffect(() => {
     if (!isPlaying || !match?.isPlayed) {
@@ -253,6 +271,14 @@ export const MatchLivePage = () => {
   const revealed = getRevealedEvents(events, matchMinute);
   const score = getRunningScoreFromEvents(revealed, match.homeClubId, match.awayClubId);
   const ball = getBallPositionFromEvents(revealed, match.homeClubId);
+  const stats = getLiveMatchStats(revealed, match.homeClubId, match.awayClubId);
+  const latestEvents = getLatestLiveEvents(revealed, 1);
+  const headline = latestEvents.length > 0 ? latestEvents[0] : null;
+  const momentIntensity = getLiveMomentIntensity(headline);
+  const flashToken =
+    headline && momentIntensity === "critical"
+      ? `${headline.type}-${headline.minute}-${headline.description}`
+      : null;
   const playbackComplete = playbackSeconds >= MATCH_LIVE_REPLAY_DURATION_SECONDS;
   const displayPhase: MatchPresentationPhase = playbackComplete ? "result" : phase;
   const progressPercent = Math.min(
@@ -261,8 +287,8 @@ export const MatchLivePage = () => {
   );
 
   return (
-    <div className="mx-auto max-w-7xl space-y-gutter">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="mx-auto max-w-7xl space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <button
           type="button"
           onClick={handleGoBack}
@@ -275,13 +301,13 @@ export const MatchLivePage = () => {
           <button
             type="button"
             onClick={handleRestart}
-            className="rounded border border-outline-variant px-3 py-1.5 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
+            className="rounded border border-outline-variant px-3 py-1 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
           >
             Restart
           </button>
           <Link
             to={`/app/matches/${match.id}`}
-            className="rounded border border-outline-variant px-3 py-1.5 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
+            className="rounded border border-outline-variant px-3 py-1 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
           >
             Full report
           </Link>
@@ -297,49 +323,62 @@ export const MatchLivePage = () => {
         statusLabel={getStatusLabel(displayPhase, playbackComplete)}
       />
 
-      <div className="h-1 overflow-hidden rounded-full bg-surface-variant">
+      <div className="h-0.5 overflow-hidden rounded-full bg-surface-variant">
         <div
           className="h-full bg-primary transition-[width] duration-100 ease-linear"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-card-gap lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <MatchLivePitch
             homeClubName={match.homeClubName}
             awayClubName={match.awayClubName}
             ball={ball}
+            momentIntensity={momentIntensity}
+            flashToken={flashToken}
           />
         </div>
         <div className="lg:col-span-5">
-          <MatchLiveCommentary events={revealed} />
+          <MatchLiveStats
+            homeClubName={match.homeClubName}
+            awayClubName={match.awayClubName}
+            stats={stats}
+          />
         </div>
       </div>
 
-      {playbackComplete ? (
-        <div className="rounded-lg border border-outline-variant bg-surface-container-high p-4 text-center">
-          <p className="mb-3 text-body-sm text-on-surface-variant">
-            Final score: {match.homeClubName} {match.homeScore ?? score.home} -{" "}
-            {match.awayScore ?? score.away} {match.awayClubName}
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              type="button"
-              onClick={handleRestart}
-              className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary"
-            >
-              Watch replay
-            </button>
-            <Link
-              to={`/app/matches/${match.id}`}
-              className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
-            >
-              Open match report
-            </Link>
-          </div>
+      <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <MatchLiveCommentary events={revealed} />
         </div>
-      ) : null}
+        <div className="lg:col-span-5">
+          {playbackComplete ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface-container-high px-3 py-2 text-center">
+              <p className="text-body-sm text-on-surface-variant">
+                Final score: {match.homeClubName} {match.homeScore ?? score.home} -{" "}
+                {match.awayScore ?? score.away} {match.awayClubName}
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleRestart}
+                  className="rounded bg-primary px-4 py-1.5 text-body-sm font-semibold text-on-primary"
+                >
+                  Watch replay
+                </button>
+                <Link
+                  to={`/app/matches/${match.id}`}
+                  className="rounded border border-outline-variant px-4 py-1.5 text-body-sm text-on-surface"
+                >
+                  Open match report
+                </Link>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 };

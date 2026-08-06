@@ -266,68 +266,6 @@ export const extractPlayerNameFromDescription = (description: string): string | 
   return null;
 };
 
-export interface MatchSideStats {
-  goals: number;
-  yellowCards: number;
-  redCards: number;
-  injuries: number;
-}
-
-export const buildMatchSideStats = (
-  match: MatchResponse,
-  events: MatchEvent[],
-): { home: MatchSideStats; away: MatchSideStats } => {
-  const home: MatchSideStats = {
-    goals: match.homeScore ?? 0,
-    yellowCards: 0,
-    redCards: 0,
-    injuries: 0,
-  };
-
-  const away: MatchSideStats = {
-    goals: match.awayScore ?? 0,
-    yellowCards: 0,
-    redCards: 0,
-    injuries: 0,
-  };
-
-  for (const event of events) {
-    if (!event.clubId) {
-      continue;
-    }
-
-    const side = event.clubId === match.homeClubId ? home : away;
-
-    if (event.clubId !== match.homeClubId && event.clubId !== match.awayClubId) {
-      continue;
-    }
-
-    if (event.type === MatchEventType.YellowCard) {
-      side.yellowCards += 1;
-    }
-
-    if (event.type === MatchEventType.RedCard) {
-      side.redCards += 1;
-    }
-
-    if (event.type === MatchEventType.Injury) {
-      side.injuries += 1;
-    }
-  }
-
-  return { home, away };
-};
-
-export const getDominanceBarWidth = (homeValue: number, awayValue: number): number => {
-  const total = homeValue + awayValue;
-
-  if (total <= 0) {
-    return 50;
-  }
-
-  return Math.round((homeValue / total) * 100);
-};
-
 /** Uses browser history when available; otherwise navigates to fallback (e.g. cold load / refresh). */
 export const goBackOrFallback = (
   navigate: NavigateFunction,

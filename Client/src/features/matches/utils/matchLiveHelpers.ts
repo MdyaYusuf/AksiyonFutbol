@@ -220,8 +220,193 @@ export const getBallPositionFromEvents = (
 
 export const getMatchLivePath = (matchId: string): string => `/app/matches/${matchId}/live`;
 
+export const getMatchLiveReplayPath = (matchId: string): string =>
+  `/app/matches/${matchId}/live?replay=1`;
+
 export const getMatchReportPath = (matchId: string): string => `/app/matches/${matchId}`;
 
 export const shouldOpenLiveView = (phase: MatchPresentationPhase): boolean => {
-  return phase === "waitingSim" || phase === "live" || phase === "replay";
+  return phase === "waitingSim" || phase === "live";
+};
+
+export type LiveMatchSideStats = {
+  goals: number;
+  shots: number;
+  shotsOnTarget: number;
+  corners: number;
+  attacks: number;
+  yellowCards: number;
+  redCards: number;
+  possessionEvents: number;
+};
+
+export type LiveMatchStats = {
+  home: LiveMatchSideStats;
+  away: LiveMatchSideStats;
+  homePossessionPercent: number;
+  awayPossessionPercent: number;
+};
+
+const emptySideStats = (): LiveMatchSideStats => ({
+  goals: 0,
+  shots: 0,
+  shotsOnTarget: 0,
+  corners: 0,
+  attacks: 0,
+  yellowCards: 0,
+  redCards: 0,
+  possessionEvents: 0,
+});
+
+const isAttackEvent = (type: MatchEventType): boolean => {
+  return (
+    type === MatchEventType.AttackLeft ||
+    type === MatchEventType.AttackCenter ||
+    type === MatchEventType.AttackRight ||
+    type === MatchEventType.Cross ||
+    type === MatchEventType.ThroughBall
+  );
+};
+
+const isShotEvent = (type: MatchEventType): boolean => {
+  return (
+    type === MatchEventType.Shot ||
+    type === MatchEventType.Miss ||
+    type === MatchEventType.Block ||
+    type === MatchEventType.Save ||
+    type === MatchEventType.Goal
+  );
+};
+
+const isShotOnTarget = (type: MatchEventType): boolean => {
+  return (
+    type === MatchEventType.Shot ||
+    type === MatchEventType.Save ||
+    type === MatchEventType.Goal
+  );
+};
+
+const isPossessionWeighted = (type: MatchEventType): boolean => {
+  return POSSESSION_EVENT_TYPES.has(type);
+};
+
+export const getLiveMatchStats = (
+  events: MatchEvent[],
+  homeClubId: string,
+  awayClubId: string,
+): LiveMatchStats => {
+  const home = emptySideStats();
+  const away = emptySideStats();
+
+  for (const event of events) {
+    if (!event.clubId) {
+      continue;
+    }
+
+    const side = event.clubId === homeClubId
+      ? home
+      : event.clubId === awayClubId
+        ? away
+        : null;
+
+    if (!side) {
+      continue;
+    }
+
+    if (event.type === MatchEventType.Goal) {
+      side.goals += 1;
+    }
+
+    if (isShotEvent(event.type)) {
+      side.shots += 1;
+    }
+
+    if (isShotOnTarget(event.type)) {
+      side.shotsOnTarget += 1;
+    }
+
+    if (event.type === MatchEventType.Corner) {
+      side.corners += 1;
+    }
+
+    if (isAttackEvent(event.type)) {
+      side.attacks += 1;
+    }
+
+    if (event.type === MatchEventType.YellowCard) {
+      side.yellowCards += 1;
+    }
+
+    if (event.type === MatchEventType.RedCard) {
+      side.redCards += 1;
+    }
+
+    if (isPossessionWeighted(event.type)) {
+      side.possessionEvents += 1;
+    }
+  }
+
+  const possessionTotal = home.possessionEvents + away.possessionEvents;
+
+  if (possessionTotal <= 0) {
+    return {
+      home,
+      away,
+      homePossessionPercent: 50,
+      awayPossessionPercent: 50,
+    };
+  }
+
+  const homePossessionPercent = Math.round(
+    (home.possessionEvents / possessionTotal) * 100,
+  );
+
+  return {
+    home,
+    away,
+    homePossessionPercent,
+    awayPossessionPercent: 100 - homePossessionPercent,
+  };
+};
+
+export type LiveMomentIntensity = "normal" | "notable" | "critical";
+
+export const getLiveMomentIntensity = (
+  event: MatchEvent | null | undefined,
+): LiveMomentIntensity => {
+  if (!event) {
+    return "normal";
+  }
+
+  if (
+    event.type === MatchEventType.Goal ||
+    event.type === MatchEventType.RedCard
+  ) {
+    return "critical";
+  }
+
+  if (
+    event.type === MatchEventType.Shot ||
+    event.type === MatchEventType.Save ||
+    event.type === MatchEventType.Miss ||
+    event.type === MatchEventType.YellowCard ||
+    event.type === MatchEventType.Injury ||
+    event.type === MatchEventType.HalfTime ||
+    event.type === MatchEventType.FullTime
+  ) {
+    return "notable";
+  }
+
+  return "normal";
+};
+
+export const getLatestLiveEvents = (
+  events: MatchEvent[],
+  count = 2,
+): MatchEvent[] => {
+  if (events.length === 0) {
+    return [];
+  }
+
+  return events.slice(-Math.max(1, count));
 };

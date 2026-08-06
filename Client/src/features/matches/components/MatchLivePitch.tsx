@@ -1,19 +1,50 @@
-import type { PitchBallPosition } from "../utils/matchLiveHelpers";
+import { useEffect, useState } from "react";
+import type { LiveMomentIntensity, PitchBallPosition } from "../utils/matchLiveHelpers";
 
 interface MatchLivePitchProps {
   homeClubName: string;
   awayClubName: string;
   ball: PitchBallPosition;
+  momentIntensity?: LiveMomentIntensity;
+  flashToken?: string | null;
 }
 
 export const MatchLivePitch = ({
   homeClubName,
   awayClubName,
   ball,
+  momentIntensity = "normal",
+  flashToken = null,
 }: MatchLivePitchProps) => {
+  const isCritical = momentIntensity === "critical";
+  const isNotable = momentIntensity === "notable";
+  const [isFlashing, setIsFlashing] = useState(false);
+
+  useEffect(() => {
+    if (!flashToken || momentIntensity !== "critical") {
+      return;
+    }
+
+    setIsFlashing(true);
+    const timer = window.setTimeout(() => setIsFlashing(false), 1600);
+    return () => window.clearTimeout(timer);
+  }, [flashToken, momentIntensity]);
+
   return (
-    <div className="relative overflow-hidden rounded-lg border border-outline-variant bg-[#0c1a11]">
-      <div className="flex items-center justify-between px-4 py-2 text-label-caps text-on-surface-variant">
+    <div
+      className={`relative overflow-hidden rounded-lg border bg-[#0c1a11] transition-[border-color,box-shadow] duration-300 ${
+        isCritical
+          ? "border-primary shadow-[0_0_20px_rgba(74,222,128,0.3)]"
+          : isNotable
+            ? "border-primary/50"
+            : "border-outline-variant"
+      }`}
+    >
+      {isFlashing ? (
+        <div className="pointer-events-none absolute inset-0 z-10 animate-live-pitch-flash bg-primary" />
+      ) : null}
+
+      <div className="flex items-center justify-between px-3 py-1 text-label-caps text-on-surface-variant">
         <span className="truncate text-primary">{homeClubName}</span>
         <span className="truncate text-right">{awayClubName}</span>
       </div>
@@ -93,16 +124,16 @@ export const MatchLivePitch = ({
         <circle
           cx={ball.x}
           cy={ball.y}
-          r="2.2"
+          r={isCritical ? 2.8 : 2.2}
           className="fill-primary"
           style={{
-            transition: "cx 0.45s ease, cy 0.45s ease",
+            transition: "cx 0.45s ease, cy 0.45s ease, r 0.3s ease",
           }}
         >
           <animate
             attributeName="opacity"
             values="1;0.7;1"
-            dur="1.4s"
+            dur={isCritical ? "0.7s" : "1.4s"}
             repeatCount="indefinite"
           />
         </circle>
