@@ -1,17 +1,22 @@
 import { Link } from "react-router-dom";
-import type { ClubPreview } from "../../clubs/clubTypes";
+import {
+  formatGoalDifference,
+  type StandingRow,
+} from "../../leagueDivisions/utils/standingsHelpers";
 
 interface LeagueStandingsCardProps {
   divisionName?: string;
-  clubs: ClubPreview[];
+  standings: StandingRow[];
   currentClubId?: string;
 }
 
 export const LeagueStandingsCard = ({
   divisionName,
-  clubs,
+  standings,
   currentClubId,
 }: LeagueStandingsCardProps) => {
+  const rows = standings.slice(0, 5);
+
   return (
     <div className="col-span-1 flex flex-col rounded-lg border border-outline-variant bg-surface-container-high p-4 md:col-span-4 lg:col-span-4">
       <div className="mb-4 flex items-center justify-between">
@@ -32,17 +37,17 @@ export const LeagueStandingsCard = ({
           <div className="w-8 text-right font-bold">Pts</div>
         </div>
 
-        {clubs.length === 0 ? (
+        {rows.length === 0 ? (
           <p className="py-6 text-center text-body-sm text-on-surface-variant">
             No clubs in this division yet.
           </p>
         ) : (
-          clubs.slice(0, 5).map((club, index) => {
-            const isCurrentClub = club.id === currentClubId;
+          rows.map((row) => {
+            const isCurrentClub = row.clubId === currentClubId;
 
             return (
               <div
-                key={club.id}
+                key={row.clubId}
                 className={[
                   "flex items-center border-b border-surface-variant py-2 transition-colors last:border-b-0 hover:bg-surface-variant",
                   isCurrentClub
@@ -50,16 +55,32 @@ export const LeagueStandingsCard = ({
                     : "",
                 ].join(" ")}
               >
-                <div className={`w-8 ${isCurrentClub ? "font-bold text-primary" : "text-on-surface-variant"}`}>
-                  {index + 1}
+                <div
+                  className={`w-8 ${
+                    isCurrentClub ? "font-bold text-primary" : "text-on-surface-variant"
+                  }`}
+                >
+                  {row.position}
                 </div>
-                <div className={`flex-1 ${isCurrentClub ? "font-bold text-primary" : "text-on-surface"}`}>
-                  {club.name}
+                <div
+                  className={`flex-1 truncate ${
+                    isCurrentClub ? "font-bold text-primary" : "text-on-surface"
+                  }`}
+                >
+                  {row.clubName}
                 </div>
-                <div className="w-8 text-center text-on-surface-variant">—</div>
-                <div className="w-8 text-center text-on-surface-variant">—</div>
-                <div className={`w-8 text-right font-bold ${isCurrentClub ? "text-primary" : "text-on-surface"}`}>
-                  —
+                <div className="w-8 text-center text-on-surface-variant">
+                  {row.played}
+                </div>
+                <div className="w-8 text-center text-on-surface-variant">
+                  {formatGoalDifference(row.goalDifference)}
+                </div>
+                <div
+                  className={`w-8 text-right font-bold ${
+                    isCurrentClub ? "text-primary" : "text-on-surface"
+                  }`}
+                >
+                  {row.points}
                 </div>
               </div>
             );

@@ -1,5 +1,9 @@
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { formatShortName } from "../utils/tacticsHelpers";
+import {
+  formatShortName,
+  getPitchAccentClass,
+  getPitchHoverClass,
+} from "../utils/tacticsHelpers";
 
 interface TacticsBenchProps {
   slotIds: (string | null)[];
@@ -22,6 +26,12 @@ export const TacticsBench = ({
       {slotIds.map((playerId, index) => {
         const player = playerId ? playersById.get(playerId) : undefined;
         const isSelected = selectedIndex === index;
+        const accent = player
+          ? getPitchAccentClass(player.position)
+          : "border-outline-variant text-on-surface-variant";
+        const hover = player
+          ? getPitchHoverClass(player.position)
+          : "group-hover:border-primary";
 
         return (
           <button
@@ -33,10 +43,8 @@ export const TacticsBench = ({
             }`}
           >
             <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full border bg-surface-container-lowest font-data-mono text-data-mono transition-colors ${
-                isSelected
-                  ? "border-primary text-primary"
-                  : "border-outline-variant text-on-surface-variant group-hover:border-primary"
+              className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-surface-container-lowest font-data-mono text-data-mono transition-colors ${accent} ${hover} ${
+                isSelected ? "ring-2 ring-primary/40" : ""
               }`}
             >
               {player ? index + 12 : "·"}

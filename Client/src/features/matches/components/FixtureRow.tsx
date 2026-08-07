@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
 import type { MatchPreview } from "../matchTypes";
 import {
   formatFixtureDateTime,
@@ -69,7 +68,6 @@ const TeamCell = ({
 export const FixtureRow = ({ match, clubId }: FixtureRowProps) => {
   const scoreDisplay = getScoreDisplay(match);
   const badgeClassName = getScoreBadgeClassName(match, clubId);
-  const isWin = getMatchResultLetter(match, clubId) === "W";
   const isUpcoming = !match.isPlayed;
   const phase = getMatchPresentationPhase(match, new Date());
   const href = shouldOpenLiveView(phase)
@@ -96,8 +94,7 @@ export const FixtureRow = ({ match, clubId }: FixtureRowProps) => {
       />
 
       <div className="col-span-2 flex items-center justify-center md:col-span-2">
-        <div className={`flex items-center gap-2 rounded px-3 py-1 ${badgeClassName}`}>
-          {isWin && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />}
+        <div className={`rounded px-3 py-1 ${badgeClassName}`}>
           {scoreDisplay}
         </div>
       </div>

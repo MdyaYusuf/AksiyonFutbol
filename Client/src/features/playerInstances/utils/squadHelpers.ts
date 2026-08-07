@@ -42,27 +42,27 @@ export const getPositionBadgeClassName = (position: PlayerPosition): string => {
     return "bg-tertiary-container text-on-tertiary-container";
   }
 
-  if (position === PlayerPosition.Goalkeeper) {
-    return "border border-outline-variant bg-surface-bright text-on-surface";
+  if (position === PlayerPosition.Defender) {
+    return "bg-sky-700 text-sky-100";
   }
 
-  return "bg-surface-variant text-on-surface";
+  return "bg-primary-container text-on-primary-container";
 };
 
 export const getDetailPositionBadgeClassName = (position: PlayerPosition): string => {
-  if (position === PlayerPosition.Midfielder) {
-    return "bg-secondary text-on-secondary";
-  }
-
   if (position === PlayerPosition.Forward) {
     return "bg-secondary-container text-on-secondary-container";
   }
 
-  if (position === PlayerPosition.Goalkeeper) {
-    return "border border-outline-variant bg-surface-bright text-on-surface";
+  if (position === PlayerPosition.Midfielder) {
+    return "bg-tertiary-container text-on-tertiary-container";
   }
 
-  return "bg-surface-variant text-on-surface";
+  if (position === PlayerPosition.Defender) {
+    return "bg-sky-700 text-sky-100";
+  }
+
+  return "bg-primary-container text-on-primary-container";
 };
 
 export const getOverallBadgeClassName = (overallRating: number): string => {

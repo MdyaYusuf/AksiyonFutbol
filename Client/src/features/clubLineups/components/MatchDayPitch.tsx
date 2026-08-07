@@ -4,7 +4,11 @@ import {
   formatPitchSurname,
   getPlayerFitnessPercent,
 } from "../utils/matchDayHelpers";
-import { buildPitchRows } from "../utils/tacticsHelpers";
+import {
+  buildPitchRows,
+  getPitchAccentClass,
+  getPitchHoverClass,
+} from "../utils/tacticsHelpers";
 
 interface MatchDayPitchProps {
   formation: TeamFormation;
@@ -37,30 +41,47 @@ export const MatchDayPitch = ({
           <div
             key={row.label}
             className={`flex w-full justify-evenly ${
+              row.label === "FWD" && row.slotIndexes.length === 2
+                ? "justify-center gap-3"
+                : ""
+            } ${row.label === "AM" ? "px-6" : ""} ${row.label === "DMC" ? "px-16" : ""} ${
               row.label === "DEF" ? "justify-between px-2" : ""
             }`}
           >
-            {row.slotIndexes.map((slotIndex) => {
+            {row.slotIndexes.map((slotIndex, visualIndex) => {
               const playerId = starterIds[slotIndex] ?? null;
               const player = playerId ? playersById.get(playerId) : undefined;
               const isSelected = selectedIndex === slotIndex;
               const fitness = player ? getPlayerFitnessPercent(player) : 0;
               const isInjured = player?.isInjured === true;
+              const accent = player
+                ? getPitchAccentClass(player.position)
+                : "border-outline-variant text-on-surface-variant";
+              const hover = player
+                ? getPitchHoverClass(player.position)
+                : "group-hover:border-primary";
+              const centerIndex = Math.floor(row.slotIndexes.length / 2);
+              const raiseSlot =
+                row.label === "AM" && visualIndex === centerIndex
+                  ? "-mt-2"
+                  : row.label === "AM" && visualIndex !== centerIndex
+                    ? "mt-3"
+                    : "";
 
               return (
                 <button
                   key={`md-slot-${slotIndex}`}
                   type="button"
                   onClick={() => onSlotClick(slotIndex)}
-                  className="group flex cursor-pointer flex-col items-center gap-1"
+                  className={`group flex cursor-pointer flex-col items-center gap-1 ${raiseSlot}`}
                 >
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border bg-surface font-data-mono text-data-mono text-on-surface shadow-sm transition-colors group-hover:border-primary ${
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 bg-surface font-data-mono text-data-mono shadow-sm transition-colors ${accent} ${hover} ${
                       isSelected
-                        ? "border-primary ring-2 ring-primary/40"
+                        ? "ring-2 ring-primary/40"
                         : isInjured
-                          ? "border-error"
-                          : "border-outline-variant"
+                          ? "border-error text-error"
+                          : ""
                     }`}
                   >
                     {player ? slotIndex + 1 : "·"}

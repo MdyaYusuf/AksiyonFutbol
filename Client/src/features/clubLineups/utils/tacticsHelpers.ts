@@ -59,41 +59,50 @@ export const formatShortName = (firstName: string, lastName: string): string => 
 
 export const getPitchAccentClass = (position: PlayerPosition): string => {
   if (position === PlayerPosition.Forward) {
-    return "border-primary text-primary";
-  }
-  if (position === PlayerPosition.Midfielder) {
     return "border-secondary text-secondary";
   }
-  if (position === PlayerPosition.Goalkeeper) {
+
+  if (position === PlayerPosition.Midfielder) {
     return "border-tertiary text-tertiary";
   }
-  return "border-surface-tint text-surface-tint";
+
+  if (position === PlayerPosition.Defender) {
+    return "border-sky-400 text-sky-300";
+  }
+
+  return "border-primary text-primary";
 };
 
 export const getPitchRatingTextClass = (position: PlayerPosition): string => {
   if (position === PlayerPosition.Forward) {
-    return "text-primary";
-  }
-  if (position === PlayerPosition.Midfielder) {
     return "text-secondary";
   }
-  if (position === PlayerPosition.Goalkeeper) {
+
+  if (position === PlayerPosition.Midfielder) {
     return "text-tertiary";
   }
-  return "text-surface-tint";
+
+  if (position === PlayerPosition.Defender) {
+    return "text-sky-300";
+  }
+
+  return "text-primary";
 };
 
 export const getPitchHoverClass = (position: PlayerPosition): string => {
   if (position === PlayerPosition.Forward) {
-    return "group-hover:bg-primary-container group-hover:text-on-primary-container";
-  }
-  if (position === PlayerPosition.Midfielder) {
     return "group-hover:bg-secondary group-hover:text-on-secondary";
   }
-  if (position === PlayerPosition.Goalkeeper) {
-    return "group-hover:bg-tertiary group-hover:text-on-tertiary";
+
+  if (position === PlayerPosition.Midfielder) {
+    return "group-hover:bg-tertiary-container group-hover:text-on-tertiary-container";
   }
-  return "group-hover:bg-surface-tint group-hover:text-on-primary";
+
+  if (position === PlayerPosition.Defender) {
+    return "group-hover:bg-sky-700 group-hover:text-sky-100";
+  }
+
+  return "group-hover:bg-primary-container group-hover:text-on-primary-container";
 };
 
 export const groupPlayersByPosition = (players: PlayerInstanceResponse[]) => {
@@ -122,6 +131,20 @@ export const buildPitchRows = (
   const def = take(shape.defenders);
   const mid = take(shape.midfielders);
   const fwd = take(shape.forwards);
+
+  // 4-2-3-1: ST, then AML-AMC-AMR, then twin DMCs, then back four.
+  if (formation === TeamFormation.FourTwoThreeOne && mid.length === 5) {
+    const dmc = mid.slice(0, 2);
+    const amLine = mid.slice(2, 5);
+
+    return [
+      { label: "FWD", slotIndexes: fwd },
+      { label: "AM", slotIndexes: amLine },
+      { label: "DMC", slotIndexes: dmc },
+      { label: "DEF", slotIndexes: def },
+      { label: "GK", slotIndexes: gk },
+    ];
+  }
 
   return [
     { label: "FWD", slotIndexes: fwd },

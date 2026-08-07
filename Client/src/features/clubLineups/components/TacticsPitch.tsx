@@ -38,7 +38,11 @@ export const TacticsPitch = ({
           <div
             key={row.label}
             className={`z-10 flex w-full justify-evenly px-6 md:px-12 ${
-              row.label === "MID" ? "px-10 md:px-16" : ""
+              row.label === "FWD" && row.slotIndexes.length === 2
+                ? "justify-center gap-3 md:gap-4"
+                : ""
+            } ${row.label === "MID" || row.label === "AM" ? "px-8 md:px-14" : ""} ${
+              row.label === "DMC" ? "px-16 md:px-28" : ""
             } ${row.label === "DEF" ? "justify-between px-4 md:px-8" : ""}`}
           >
             {row.slotIndexes.map((slotIndex, visualIndex) => {
@@ -51,14 +55,22 @@ export const TacticsPitch = ({
               const hover = player
                 ? getPitchHoverClass(player.position)
                 : "group-hover:border-primary";
+              const centerIndex = Math.floor(row.slotIndexes.length / 2);
               const raiseMid =
-                row.label === "FWD" && visualIndex === Math.floor(row.slotIndexes.length / 2)
-                  ? "mt-3"
-                  : row.label === "MID" && visualIndex === Math.floor(row.slotIndexes.length / 2)
-                    ? "mt-5"
-                    : row.label === "DEF" && (visualIndex === 0 || visualIndex === row.slotIndexes.length - 1)
-                      ? "-mt-3"
-                      : "";
+                row.label === "FWD" && visualIndex === centerIndex
+                  ? "mt-2"
+                  : row.label === "AM" && visualIndex === centerIndex
+                    ? "-mt-3"
+                    : row.label === "AM" && visualIndex !== centerIndex
+                      ? "mt-4"
+                      : row.label === "DMC"
+                        ? "mt-1"
+                        : row.label === "MID" && visualIndex === centerIndex
+                          ? "mt-5"
+                          : row.label === "DEF" &&
+                              (visualIndex === 0 || visualIndex === row.slotIndexes.length - 1)
+                            ? "-mt-3"
+                            : "";
 
               return (
                 <button
@@ -82,7 +94,7 @@ export const TacticsPitch = ({
                     {player ? (
                       <>
                         {formatShortName(player.firstName, player.lastName)}
-                        <span className={`ml-1 ${getPitchRatingTextClass(player.position)}`}>
+                        <span className={`ml-2 ${getPitchRatingTextClass(player.position)}`}>
                           {player.overallRating}
                         </span>
                       </>

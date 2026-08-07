@@ -84,9 +84,9 @@ export const MatchDayStartingXi = ({
                   </div>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="ml-3 flex shrink-0 items-center gap-3">
                 {player && (
-                  <div className="rounded border border-outline-variant bg-surface px-2 py-0.5 text-[10px] font-bold text-on-surface">
+                  <div className="rounded border border-outline-variant bg-surface px-2.5 py-1 text-[10px] font-bold text-on-surface">
                     OVR {player.overallRating}
                   </div>
                 )}

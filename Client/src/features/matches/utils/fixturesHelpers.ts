@@ -85,7 +85,7 @@ export const getScoreBadgeClassName = (
     return "border border-error/40 bg-error/10 text-error text-stat-value tracking-wider";
   }
 
-  return "bg-surface-variant text-on-surface text-stat-value tracking-wider";
+  return "border border-secondary/40 bg-secondary-container/25 text-secondary-fixed text-stat-value tracking-wider";
 };
 
 export const getScoreDisplay = (match: MatchPreview): string => {

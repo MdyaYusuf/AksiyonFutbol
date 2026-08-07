@@ -1,8 +1,14 @@
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGetCurrentUserClubPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
 import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { useGetMatchLiveStatusQuery, useGetMatchesByClubIdQuery } from "../../matches/matchesApiSlice";
+import { useGetLeagueDivisionByIdQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
+import { buildStandings } from "../../leagueDivisions/utils/standingsHelpers";
+import {
+  useGetMatchLiveStatusQuery,
+  useGetMatchesByClubIdQuery,
+  useGetMatchesQuery,
+} from "../../matches/matchesApiSlice";
 import {
   getMatchKickoff,
   getMatchPresentationPhase,
@@ -27,6 +33,9 @@ export const DashboardPage = () => {
   );
   const { data: divisionClubs = [], isLoading: isDivisionClubsLoading } =
     useGetClubsByDivisionIdQuery(club?.divisionId ?? skipToken);
+  const { data: division, isLoading: isDivisionLoading } =
+    useGetLeagueDivisionByIdQuery(club?.divisionId ?? skipToken);
+  const { data: allMatches = [], isLoading: isAllMatchesLoading } = useGetMatchesQuery();
 
   const now = new Date(nowMs);
   const nextMatch = getNextMatch(matches, now);
@@ -74,8 +83,26 @@ export const DashboardPage = () => {
     return () => window.clearTimeout(timer);
   }, [nextMatch?.id, nextMatch?.matchDate, nextMatch?.isPlayed]);
 
+  const standings = useMemo(() => {
+    if (!club || !division) {
+      return [];
+    }
+
+    return buildStandings(
+      divisionClubs,
+      allMatches,
+      division.id,
+      Math.max(1, division.currentMatchWeek),
+    );
+  }, [allMatches, club, division, divisionClubs]);
+
   const isLoading =
-    isClubLoading || isPresidentLoading || isMatchesLoading || isDivisionClubsLoading;
+    isClubLoading
+    || isPresidentLoading
+    || isMatchesLoading
+    || isDivisionClubsLoading
+    || isDivisionLoading
+    || isAllMatchesLoading;
 
   if (isLoading) {
     return (
@@ -96,7 +123,7 @@ export const DashboardPage = () => {
       <ClubStatusCard club={club} />
       <LeagueStandingsCard
         divisionName={club?.divisionName}
-        clubs={divisionClubs}
+        standings={standings}
         currentClubId={club?.id}
       />
       {club && <RecentFormCard clubId={club.id} matches={recentMatches} />}

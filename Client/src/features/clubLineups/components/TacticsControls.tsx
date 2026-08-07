@@ -20,8 +20,8 @@ export const TacticsControls = ({
   onReset,
 }: TacticsControlsProps) => {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low p-3">
-      <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-outline-variant bg-surface-container-low p-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
         <select
           value={formation}
           onChange={(event) =>
@@ -50,11 +50,15 @@ export const TacticsControls = ({
             </option>
           ))}
         </select>
+        <p className="text-xs text-on-surface-variant">
+          Players are colored according to their positions.
+        </p>
       </div>
+
       <button
         type="button"
         onClick={onReset}
-        className="rounded border border-outline-variant px-3 py-1.5 font-label-caps text-label-caps text-on-surface-variant transition-colors hover:bg-surface-variant hover:text-on-surface"
+        className="shrink-0 rounded border border-outline-variant px-3 py-1.5 font-label-caps text-label-caps text-on-surface-variant transition-colors hover:bg-surface-variant hover:text-on-surface"
       >
         Reset
       </button>
