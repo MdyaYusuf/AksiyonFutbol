@@ -40,6 +40,7 @@ public partial class FacilitiesMapper
       Morale = club.Morale,
       Chemistry = club.Chemistry,
       Discipline = club.Discipline,
+      Suspicion = club.Suspicion,
       Facilities = facilities
     };
   }

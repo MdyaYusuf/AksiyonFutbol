@@ -295,6 +295,11 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<Guid?>("PresidentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Suspicion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedDate");

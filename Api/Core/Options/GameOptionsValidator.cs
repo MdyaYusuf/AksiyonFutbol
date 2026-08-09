@@ -161,6 +161,51 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("BribeOpponentGoalMultiplier 0 ile 1 arasında olmalıdır.");
     }
 
+    if (options.StartingSuspicion < 0 || options.StartingSuspicion > 100)
+    {
+      failures.Add("StartingSuspicion 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.MaxSuspicion < 1 || options.MaxSuspicion > 100)
+    {
+      failures.Add("MaxSuspicion 1 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.StartingSuspicion > options.MaxSuspicion)
+    {
+      failures.Add("StartingSuspicion, MaxSuspicion değerinden büyük olamaz.");
+    }
+
+    if (options.SuspicionDecayPerMatch < 0)
+    {
+      failures.Add("SuspicionDecayPerMatch negatif olamaz.");
+    }
+
+    if (options.SuspicionDetectionScale < 0 || options.SuspicionDetectionScale > 1)
+    {
+      failures.Add("SuspicionDetectionScale 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.SuspicionMaxDetectionChance < 0 || options.SuspicionMaxDetectionChance > 1)
+    {
+      failures.Add("SuspicionMaxDetectionChance 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.ScandalFineCashRatio < 0 || options.ScandalFineCashRatio > 1)
+    {
+      failures.Add("ScandalFineCashRatio 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.ScandalMoralePenalty < 0 || options.ScandalMoralePenalty > 100)
+    {
+      failures.Add("ScandalMoralePenalty 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.ScandalReputationPenalty < 0)
+    {
+      failures.Add("ScandalReputationPenalty negatif olamaz.");
+    }
+
     if (options.FacilityMaxLevel < 1)
     {
       failures.Add("FacilityMaxLevel en az 1 olmalıdır.");

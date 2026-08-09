@@ -20,6 +20,7 @@ public class Club : Entity<Guid>
     Morale = 50;
     Chemistry = 50;
     Discipline = 50;
+    Suspicion = 0;
   }
 
   public required string Name { get; set; }
@@ -29,6 +30,10 @@ public class Club : Entity<Guid>
   public int Morale { get; set; }
   public int Chemistry { get; set; }
   public int Discipline { get; set; }
+
+  // Accumulated "Heat" from shady actions. Higher values increase detection risk
+  // and scale investigation consequences; decays over time after matches.
+  public int Suspicion { get; set; }
 
   // Relationship properties
   public Guid? PresidentId { get; set; }

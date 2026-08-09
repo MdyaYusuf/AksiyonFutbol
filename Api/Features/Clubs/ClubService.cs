@@ -222,6 +222,7 @@ public class ClubService(
     club.Morale = _gameOptions.Value.StartingClubStatus;
     club.Chemistry = _gameOptions.Value.StartingClubStatus;
     club.Discipline = _gameOptions.Value.StartingClubStatus;
+    club.Suspicion = _gameOptions.Value.StartingSuspicion;
 
     await _clubRepository.AddAsync(club, cancellationToken);
     await _starterSquadService.AssignAsync(club, cancellationToken);

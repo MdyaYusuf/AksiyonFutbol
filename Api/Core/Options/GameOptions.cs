@@ -39,6 +39,21 @@ public class GameOptions
   public decimal BribeFavoredGoalMultiplier { get; set; } = 1.18m;
   public decimal BribeOpponentGoalMultiplier { get; set; } = 0.90m;
 
+  // Suspicion / "Heat" foundation. Shady actions raise Suspicion, which increases
+  // detection risk and scales investigation consequences. It decays after matches.
+  public int StartingSuspicion { get; set; } = 0;
+  public int MaxSuspicion { get; set; } = 100;
+  public int SuspicionDecayPerMatch { get; set; } = 5;
+  // Added to an action's base detection chance per point of current Suspicion
+  // (e.g. 0.005 means Suspicion 100 adds +0.50 detection chance).
+  public decimal SuspicionDetectionScale { get; set; } = 0.005m;
+  public decimal SuspicionMaxDetectionChance { get; set; } = 0.95m;
+
+  // Investigation consequences applied when a shady action is detected.
+  public decimal ScandalFineCashRatio { get; set; } = 0.15m;
+  public int ScandalMoralePenalty { get; set; } = 10;
+  public int ScandalReputationPenalty { get; set; } = 25;
+
   public int FacilityMaxLevel { get; set; } = 5;
   public decimal FacilityBaseUpgradeCost { get; set; } = 25000m;
   public int FacilityTrainingMoraleBonus { get; set; } = 2;

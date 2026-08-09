@@ -23,5 +23,6 @@ public sealed class ClubFacilitiesOverviewDto
   public int Morale { get; init; }
   public int Chemistry { get; init; }
   public int Discipline { get; init; }
+  public int Suspicion { get; init; }
   public IReadOnlyList<ClubFacilityResponseDto> Facilities { get; init; } = [];
 }

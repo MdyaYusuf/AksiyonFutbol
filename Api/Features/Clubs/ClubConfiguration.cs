@@ -53,6 +53,10 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
       .HasDefaultValue(50)
       .IsRequired();
 
+    builder.Property(c => c.Suspicion)
+      .HasDefaultValue(0)
+      .IsRequired();
+
     builder.Property(c => c.PresidentId)
       .IsRequired(false);
 
