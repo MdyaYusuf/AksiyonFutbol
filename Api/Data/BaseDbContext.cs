@@ -12,6 +12,7 @@ using Api.Features.Referees;
 using Api.Features.Roles;
 using Api.Features.Transfers;
 using Api.Features.Bribery;
+using Api.Features.Actions;
 using Api.Features.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,7 @@ public class BaseDbContext : DbContext
   public DbSet<TransferOffer> TransferOffers { get; set; }
   public DbSet<BribeAttempt> BribeAttempts { get; set; }
   public DbSet<ClubFacility> ClubFacilities { get; set; }
+  public DbSet<ClubAction> ClubActions { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

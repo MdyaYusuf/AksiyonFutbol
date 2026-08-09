@@ -1,0 +1,20 @@
+namespace Api.Features.Actions;
+
+// Static, code-owned descriptive data for an action: display text and structural
+// flags that define how the action behaves. Balancing numbers (cost, heat,
+// chances, cooldown) live in GameOptions and are merged in at runtime by
+// ClubActionProvider into a ClubActionDefinition.
+public sealed record ClubActionMetadata
+{
+  public required ClubActionType Type { get; init; }
+  public required ClubActionCategory Category { get; init; }
+  public required string DisplayName { get; init; }
+  public required string Description { get; init; }
+
+  // Shady actions generate Heat and carry detection risk; legit ones do not.
+  public bool IsShady { get; init; }
+
+  // Match-scoped actions target the next unplayed fixture and allow a single
+  // attempt per match. Non match-scoped actions use a cooldown instead.
+  public bool IsMatchScoped { get; init; }
+}

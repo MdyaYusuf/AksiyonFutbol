@@ -54,6 +54,11 @@ public class GameOptions
   public int ScandalMoralePenalty { get; set; } = 10;
   public int ScandalReputationPenalty { get; set; } = 25;
 
+  // Per-action balancing overrides keyed by action name (e.g. "MatchFixing").
+  // Code defaults are owned by the Actions feature and merged in at runtime, so
+  // this only needs to contain the values you want to override.
+  public Dictionary<string, ClubActionBalance> ClubActionBalances { get; set; } = new();
+
   public int FacilityMaxLevel { get; set; } = 5;
   public decimal FacilityBaseUpgradeCost { get; set; } = 25000m;
   public int FacilityTrainingMoraleBonus { get; set; } = 2;

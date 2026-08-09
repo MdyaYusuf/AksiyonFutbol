@@ -206,6 +206,36 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("ScandalReputationPenalty negatif olamaz.");
     }
 
+    foreach (var balance in options.ClubActionBalances)
+    {
+      string key = balance.Key;
+
+      if (balance.Value.Cost < 0)
+      {
+        failures.Add($"ClubActionBalances[{key}].Cost negatif olamaz.");
+      }
+
+      if (balance.Value.HeatGenerated < 0 || balance.Value.HeatGenerated > 100)
+      {
+        failures.Add($"ClubActionBalances[{key}].HeatGenerated 0 ile 100 arasında olmalıdır.");
+      }
+
+      if (balance.Value.BaseSuccessChance < 0 || balance.Value.BaseSuccessChance > 1)
+      {
+        failures.Add($"ClubActionBalances[{key}].BaseSuccessChance 0 ile 1 arasında olmalıdır.");
+      }
+
+      if (balance.Value.BaseDetectionChance < 0 || balance.Value.BaseDetectionChance > 1)
+      {
+        failures.Add($"ClubActionBalances[{key}].BaseDetectionChance 0 ile 1 arasında olmalıdır.");
+      }
+
+      if (balance.Value.CooldownDays < 0)
+      {
+        failures.Add($"ClubActionBalances[{key}].CooldownDays negatif olamaz.");
+      }
+    }
+
     if (options.FacilityMaxLevel < 1)
     {
       failures.Add("FacilityMaxLevel en az 1 olmalıdır.");
