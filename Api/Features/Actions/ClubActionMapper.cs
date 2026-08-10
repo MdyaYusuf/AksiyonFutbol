@@ -17,6 +17,7 @@ public class ClubActionMapper
       DisplayName = metadata.DisplayName,
       MatchId = action.MatchId,
       MatchWeek = action.Match?.MatchWeek,
+      TargetPlayerInstanceId = action.TargetPlayerInstanceId,
       Outcome = action.Outcome,
       WasDetected = action.WasDetected,
       HeatGenerated = action.HeatGenerated,
@@ -36,7 +37,8 @@ public class ClubActionMapper
       NewSuspicion = club.Suspicion,
       NewMorale = club.Morale,
       NewChemistry = club.Chemistry,
-      NewDiscipline = club.Discipline
+      NewDiscipline = club.Discipline,
+      NewReputationPoints = club.President?.ReputationPoints
     };
   }
 

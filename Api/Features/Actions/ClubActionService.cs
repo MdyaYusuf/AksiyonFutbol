@@ -3,6 +3,7 @@ using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
 using Api.Features.Matches;
+using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace Api.Features.Actions;
 public class ClubActionService(
   IClubActionRepository _clubActionRepository,
   IClubRepository _clubRepository,
+  IPlayerInstanceRepository _playerInstanceRepository,
   IClubActionProvider _actionProvider,
   ClubActionBusinessRules _businessRules,
   ClubActionMapper _mapper,
@@ -77,6 +79,8 @@ public class ClubActionService(
 
     Match? match = null;
     decimal pledgedWinBonus = 0m;
+    Guid? targetPlayerInstanceId = null;
+    Club? mediaSpinOpponent = null;
 
     if (definition.IsMatchScoped)
     {
@@ -114,6 +118,24 @@ public class ClubActionService(
         pledgedWinBonus = _businessRules.GetPromiseWinBonusAmount();
         _businessRules.ClubMustAfford(club, pledgedWinBonus);
       }
+      else if (definition.Type == ClubActionType.MediaSpin)
+      {
+        (match, mediaSpinOpponent) = await PrepareMediaSpinAsync(
+          request,
+          club,
+          cancellationToken);
+      }
+      else if (definition.Type == ClubActionType.LobbyFederation)
+      {
+        _businessRules.EnsurePresidentCanAffordLobby(club);
+      }
+      else if (definition.Type == ClubActionType.TapUpTarget)
+      {
+        targetPlayerInstanceId = await ValidateTapUpTargetAsync(
+          club.Id,
+          request.TargetPlayerInstanceId,
+          cancellationToken);
+      }
     }
 
     _businessRules.ClubMustAfford(club, definition.Cost);
@@ -133,7 +155,21 @@ public class ClubActionService(
       _businessRules.ApplySquadEffects(club, definition.Type);
     }
 
+    if (succeeded && definition.Category == ClubActionCategory.Politics)
+    {
+      ApplyPoliticsEffects(
+        definition.Type,
+        request.MediaSpinMode,
+        club,
+        mediaSpinOpponent);
+    }
+
     _clubRepository.Update(club);
+
+    if (mediaSpinOpponent != null)
+    {
+      _clubRepository.Update(mediaSpinOpponent);
+    }
 
     decimal cashRecorded = definition.Type == ClubActionType.PromiseWinBonus && succeeded
       ? pledgedWinBonus
@@ -143,6 +179,7 @@ public class ClubActionService(
     {
       ClubId = club.Id,
       MatchId = match?.Id,
+      TargetPlayerInstanceId = targetPlayerInstanceId,
       ActionType = definition.Type,
       Outcome = succeeded ? ClubActionOutcome.Succeeded : ClubActionOutcome.Failed,
       WasDetected = wasDetected,
@@ -161,7 +198,7 @@ public class ClubActionService(
     return new ReturnModel<ClubActionResultDto>()
     {
       Success = true,
-      Message = BuildResultMessage(definition, succeeded, match),
+      Message = BuildResultMessage(definition, succeeded, match, request.MediaSpinMode),
       Data = _mapper.ToResultDto(action, club),
       StatusCode = 201
     };
@@ -252,6 +289,16 @@ public class ClubActionService(
         {
           isAvailable = false;
           unavailableReason = "Insufficient funds for the promised bonus.";
+        }
+      }
+      else if (definition.Type == ClubActionType.LobbyFederation)
+      {
+        int reputationCost = _businessRules.Options.LobbyFederationReputationCost;
+
+        if (club.President == null || club.President.ReputationPoints < reputationCost)
+        {
+          isAvailable = false;
+          unavailableReason = "Insufficient reputation.";
         }
       }
     }
@@ -351,7 +398,8 @@ public class ClubActionService(
   private static string BuildResultMessage(
     ClubActionDefinition definition,
     bool succeeded,
-    Match? match)
+    Match? match,
+    MediaSpinMode? mediaSpinMode)
   {
     if (!definition.IsShady)
     {
@@ -367,9 +415,143 @@ public class ClubActionService(
       return "Tehdit geri tepti. Hakem rakibe yanaşacak.";
     }
 
+    if (succeeded && definition.Type == ClubActionType.MediaSpin)
+    {
+      return mediaSpinMode == MediaSpinMode.ReputationRepair
+        ? "Medya spin başarılı. İtibar onarıldı."
+        : "Medya spin başarılı. Rakip moral düşürüldü.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.LobbyFederation)
+    {
+      return "Federasyon lobiciliği başarılı. Şüphe azaltıldı.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.DodgySponsorship)
+    {
+      return "Şüpheli sponsorluk başarılı. Kasaya nakit girdi.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.TapUpTarget)
+    {
+      return "Tap-up başarılı. Hedef oyuncu için transfer indirimi aktif.";
+    }
+
     return succeeded
       ? "Aksiyon başarılı oldu."
       : "Aksiyon başarısız oldu. Harcanan tutar kasadan düşüldü.";
+  }
+
+  private async Task<(Match? Match, Club? Opponent)> PrepareMediaSpinAsync(
+    ExecuteClubActionRequest request,
+    Club club,
+    CancellationToken cancellationToken)
+  {
+    if (request.MediaSpinMode == MediaSpinMode.ReputationRepair)
+    {
+      if (club.President == null)
+      {
+        throw new BusinessException("İtibar onarımı için başkan bilgisi bulunamadı.");
+      }
+
+      return (null, null);
+    }
+
+    if (request.MediaSpinMode != MediaSpinMode.OpponentMorale)
+    {
+      throw new BusinessException("Geçerli bir medya spin modu belirtilmelidir.");
+    }
+
+    Match? upcoming = await _businessRules.GetNextUnplayedMatchForClubOrNullAsync(
+      club.Id,
+      cancellationToken);
+
+    if (upcoming == null)
+    {
+      throw new BusinessException("Rakip moral düşürmek için yaklaşan bir maç bulunamadı.");
+    }
+
+    Guid opponentId = upcoming.HomeClubId == club.Id
+      ? upcoming.AwayClubId
+      : upcoming.HomeClubId;
+
+    Club opponent = await _businessRules.GetClubByIdIfExistAsync(
+      opponentId,
+      enableTracking: true,
+      cancellationToken: cancellationToken);
+
+    return (upcoming, opponent);
+  }
+
+  private void ApplyPoliticsEffects(
+    ClubActionType actionType,
+    MediaSpinMode? mediaSpinMode,
+    Club club,
+    Club? mediaSpinOpponent)
+  {
+    switch (actionType)
+    {
+      case ClubActionType.MediaSpin when mediaSpinMode == MediaSpinMode.ReputationRepair:
+        _businessRules.ApplyMediaSpinReputationRepair(club);
+        break;
+      case ClubActionType.MediaSpin when mediaSpinMode == MediaSpinMode.OpponentMorale:
+        if (mediaSpinOpponent == null)
+        {
+          throw new BusinessException("Rakip kulüp bulunamadı.");
+        }
+
+        _businessRules.ApplyMediaSpinOpponentMorale(mediaSpinOpponent);
+        break;
+      case ClubActionType.LobbyFederation:
+        _businessRules.ApplyLobbyFederation(club);
+        break;
+      case ClubActionType.DodgySponsorship:
+        _businessRules.ApplyDodgySponsorship(club);
+        break;
+      case ClubActionType.TapUpTarget:
+        // Effect is deferred: discount applies at transfer accept time.
+        break;
+    }
+  }
+
+  private async Task<Guid> ValidateTapUpTargetAsync(
+    Guid clubId,
+    Guid? targetPlayerInstanceId,
+    CancellationToken cancellationToken)
+  {
+    if (!targetPlayerInstanceId.HasValue)
+    {
+      throw new BusinessException("Tap-up için bir oyuncu seçilmelidir.");
+    }
+
+    PlayerInstance? player = await _playerInstanceRepository.GetByIdAsync(
+      targetPlayerInstanceId.Value,
+      cancellationToken: cancellationToken);
+
+    if (player == null)
+    {
+      throw new NotFoundException("Tap-up hedef oyuncu bulunamadı.");
+    }
+
+    if (player.ClubId == clubId)
+    {
+      throw new BusinessException("Kendi oyuncunuza tap-up yapamazsınız.");
+    }
+
+    bool alreadyTapped = await _clubActionRepository.AnyAsync(
+      a =>
+        a.ClubId == clubId &&
+        a.TargetPlayerInstanceId == player.Id &&
+        a.ActionType == ClubActionType.TapUpTarget &&
+        a.Outcome == ClubActionOutcome.Succeeded,
+      cancellationToken);
+
+    if (alreadyTapped)
+    {
+      throw new BusinessException("Bu oyuncu için zaten aktif bir tap-up mevcut.");
+    }
+
+    return player.Id;
   }
 
   private static void EnsureSabotageIsHome(Match match, Guid clubId)

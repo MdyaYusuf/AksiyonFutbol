@@ -101,7 +101,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.MediaSpin,
         Category = ClubActionCategory.Politics,
         DisplayName = "Media Spin",
-        Description = "Work the press to unsettle a rival or repair your reputation.",
+        Description = "Work the press to unsettle the next opponent's morale, or repair your own reputation.",
         IsShady = true
       },
       new()
@@ -109,7 +109,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.LobbyFederation,
         Category = ClubActionCategory.Politics,
         DisplayName = "Lobby the Federation",
-        Description = "Pull strings at the federation for a favorable outcome.",
+        Description = "Spend reputation to reduce club suspicion at the federation.",
         IsShady = true
       },
       new()
@@ -125,7 +125,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.TapUpTarget,
         Category = ClubActionCategory.Politics,
         DisplayName = "Tap Up a Target",
-        Description = "Illegally approach a transfer target to lower their asking price.",
+        Description = "Illegally approach a transfer target to unlock a fee discount when you buy them.",
         IsShady = true
       }
     }.ToDictionary(d => d.Type);

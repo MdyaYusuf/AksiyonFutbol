@@ -3,7 +3,9 @@ namespace Api.Features.Actions;
 // Requests
 public sealed record ExecuteClubActionRequest(
   ClubActionType ActionType,
-  Guid? MatchId);
+  Guid? MatchId = null,
+  MediaSpinMode? MediaSpinMode = null,
+  Guid? TargetPlayerInstanceId = null);
 
 // Responses
 public sealed class ClubActionsContextResponseDto
@@ -54,6 +56,7 @@ public sealed class ClubActionDto
   public string DisplayName { get; init; } = default!;
   public Guid? MatchId { get; init; }
   public int? MatchWeek { get; init; }
+  public Guid? TargetPlayerInstanceId { get; init; }
   public ClubActionOutcome Outcome { get; init; }
   public bool WasDetected { get; init; }
   public int HeatGenerated { get; init; }
@@ -71,4 +74,5 @@ public sealed class ClubActionResultDto
   public int NewMorale { get; init; }
   public int NewChemistry { get; init; }
   public int NewDiscipline { get; init; }
+  public int? NewReputationPoints { get; init; }
 }

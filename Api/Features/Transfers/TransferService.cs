@@ -1,6 +1,7 @@
 using Api.Core.Exceptions;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.Actions;
 using Api.Features.BasePlayers;
 using Api.Features.ClubLineups;
 using Api.Features.Clubs;
@@ -16,6 +17,7 @@ public class TransferService(
   IPlayerInstanceRepository _playerInstanceRepository,
   IClubRepository _clubRepository,
   IClubLineupSelectionRepository _clubLineupSelectionRepository,
+  ITapUpDiscountService _tapUpDiscountService,
   TransferBusinessRules _businessRules,
   TransferMapper _mapper,
   IUnitOfWork _unitOfWork,
@@ -337,11 +339,18 @@ public class TransferService(
 
     _businessRules.PlayerMustBelongToClub(player, sellingClub.Id);
     await _businessRules.EnsureSellerKeepsMinimumSquadAsync(sellingClub.Id, cancellationToken);
-    _businessRules.BuyerMustAffordFee(buyingClub, offer.OfferFee);
+
+    decimal feeToPay = await _tapUpDiscountService.GetDiscountedFeeAsync(
+      buyingClub.Id,
+      player.Id,
+      offer.OfferFee,
+      cancellationToken);
+
+    _businessRules.BuyerMustAffordFee(buyingClub, feeToPay);
     await _businessRules.BuyerMustAffordWageAsync(buyingClub, offer.ProposedWage, cancellationToken);
 
-    buyingClub.Cash -= offer.OfferFee;
-    sellingClub.Cash += offer.OfferFee;
+    buyingClub.Cash -= feeToPay;
+    sellingClub.Cash += feeToPay;
 
     player.ClubId = buyingClub.Id;
     player.Wage = offer.ProposedWage;

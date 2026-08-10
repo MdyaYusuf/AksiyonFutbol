@@ -63,6 +63,14 @@ public class GameOptions
   public int PromiseWinBonusMoraleBonus { get; set; } = 8;
   public decimal PromiseWinBonusAmount { get; set; } = 10000m;
 
+  // Politics action effect sizes.
+  public int MediaSpinOpponentMoralePenalty { get; set; } = 8;
+  public int MediaSpinReputationRepair { get; set; } = 15;
+  public int LobbyFederationSuspicionReduction { get; set; } = 20;
+  public int LobbyFederationReputationCost { get; set; } = 10;
+  public decimal DodgySponsorshipCashGain { get; set; } = 50000m;
+  public decimal TapUpTransferFeeDiscountRatio { get; set; } = 0.15m;
+
   // Suspicion / "Heat" foundation. Shady actions raise Suspicion, which increases
   // detection risk and scales investigation consequences. It decays after matches.
   public int StartingSuspicion { get; set; } = 0;

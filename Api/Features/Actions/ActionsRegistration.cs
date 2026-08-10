@@ -14,6 +14,7 @@ public static class ActionsRegistration
     // Overrides Matches' NullMatchInfluenceProvider; folds bribery + ClubActions.
     services.AddScoped<IMatchInfluenceProvider, MatchInfluenceProvider>();
     services.AddScoped<IPromiseWinBonusSettler, PromiseWinBonusSettler>();
+    services.AddScoped<ITapUpDiscountService, TapUpDiscountService>();
 
     return services;
   }

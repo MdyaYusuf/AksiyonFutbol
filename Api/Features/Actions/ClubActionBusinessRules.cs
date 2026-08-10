@@ -22,12 +22,31 @@ public class ClubActionBusinessRules(
   {
     Club? club = await _clubRepository.GetAsync(
       c => c.President != null && c.President.UserId == userId,
+      include: query => query.Include(c => c.President),
       enableTracking: enableTracking,
       cancellationToken: cancellationToken);
 
     if (club == null)
     {
       throw new NotFoundException("Kullanıcıya ait kulüp bulunamadı.");
+    }
+
+    return club;
+  }
+
+  public async Task<Club> GetClubByIdIfExistAsync(
+    Guid clubId,
+    bool enableTracking = false,
+    CancellationToken cancellationToken = default)
+  {
+    Club? club = await _clubRepository.GetByIdAsync(
+      clubId,
+      enableTracking: enableTracking,
+      cancellationToken: cancellationToken);
+
+    if (club == null)
+    {
+      throw new NotFoundException("Kulüp bulunamadı.");
     }
 
     return club;
@@ -198,7 +217,61 @@ public class ClubActionBusinessRules(
     }
   }
 
+  public void ApplyLobbyFederation(Club club)
+  {
+    GameOptions options = Options;
+
+    if (club.President == null)
+    {
+      throw new BusinessException("Federasyon lobiciliği için başkan bilgisi bulunamadı.");
+    }
+
+    if (club.President.ReputationPoints < options.LobbyFederationReputationCost)
+    {
+      throw new BusinessException("Federasyon lobiciliği için yeterli itibar puanı yok.");
+    }
+
+    club.President.ReputationPoints -= options.LobbyFederationReputationCost;
+    club.Suspicion = Math.Max(0, club.Suspicion - options.LobbyFederationSuspicionReduction);
+  }
+
+  public void ApplyDodgySponsorship(Club club)
+  {
+    club.Cash += Options.DodgySponsorshipCashGain;
+  }
+
+  public void ApplyMediaSpinReputationRepair(Club club)
+  {
+    if (club.President == null)
+    {
+      throw new BusinessException("İtibar onarımı için başkan bilgisi bulunamadı.");
+    }
+
+    club.President.ReputationPoints += Options.MediaSpinReputationRepair;
+  }
+
+  public void ApplyMediaSpinOpponentMorale(Club opponentClub)
+  {
+    opponentClub.Morale = ClampStatus(
+      opponentClub.Morale - Options.MediaSpinOpponentMoralePenalty);
+  }
+
+  public void EnsurePresidentCanAffordLobby(Club club)
+  {
+    if (club.President == null)
+    {
+      throw new BusinessException("Federasyon lobiciliği için başkan bilgisi bulunamadı.");
+    }
+
+    if (club.President.ReputationPoints < Options.LobbyFederationReputationCost)
+    {
+      throw new BusinessException("Federasyon lobiciliği için yeterli itibar puanı yok.");
+    }
+  }
+
   public decimal GetPromiseWinBonusAmount() => Options.PromiseWinBonusAmount;
+
+  public decimal GetTapUpDiscountRatio() => Options.TapUpTransferFeeDiscountRatio;
 
   public int ApplyHeat(Club club, ClubActionDefinition definition)
   {

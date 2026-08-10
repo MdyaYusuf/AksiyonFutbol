@@ -246,6 +246,36 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("PromiseWinBonusAmount negatif olamaz.");
     }
 
+    if (options.MediaSpinOpponentMoralePenalty < 0 || options.MediaSpinOpponentMoralePenalty > 100)
+    {
+      failures.Add("MediaSpinOpponentMoralePenalty 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.MediaSpinReputationRepair < 0)
+    {
+      failures.Add("MediaSpinReputationRepair negatif olamaz.");
+    }
+
+    if (options.LobbyFederationSuspicionReduction < 0 || options.LobbyFederationSuspicionReduction > 100)
+    {
+      failures.Add("LobbyFederationSuspicionReduction 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.LobbyFederationReputationCost < 0)
+    {
+      failures.Add("LobbyFederationReputationCost negatif olamaz.");
+    }
+
+    if (options.DodgySponsorshipCashGain < 0)
+    {
+      failures.Add("DodgySponsorshipCashGain negatif olamaz.");
+    }
+
+    if (options.TapUpTransferFeeDiscountRatio < 0 || options.TapUpTransferFeeDiscountRatio >= 1)
+    {
+      failures.Add("TapUpTransferFeeDiscountRatio 0 ile 1 arasında olmalıdır.");
+    }
+
     if (options.StartingSuspicion < 0 || options.StartingSuspicion > 100)
     {
       failures.Add("StartingSuspicion 0 ile 100 arasında olmalıdır.");

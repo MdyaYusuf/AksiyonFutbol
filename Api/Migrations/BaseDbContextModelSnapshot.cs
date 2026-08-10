@@ -62,6 +62,9 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
 
+                    b.Property<Guid?>("TargetPlayerInstanceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedDate");
@@ -77,9 +80,13 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.HasIndex("MatchId");
 
+                    b.HasIndex("TargetPlayerInstanceId");
+
                     b.HasIndex("ClubId", "ActionType");
 
                     b.HasIndex("ClubId", "MatchId");
+
+                    b.HasIndex("ClubId", "TargetPlayerInstanceId", "ActionType");
 
                     b.ToTable("ClubActions", (string)null);
                 });
@@ -879,9 +886,16 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasForeignKey("MatchId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Api.Features.PlayerInstances.PlayerInstance", "TargetPlayerInstance")
+                        .WithMany()
+                        .HasForeignKey("TargetPlayerInstanceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Club");
 
                     b.Navigation("Match");
+
+                    b.Navigation("TargetPlayerInstance");
                 });
 
             modelBuilder.Entity("Api.Features.Bribery.BribeAttempt", b =>

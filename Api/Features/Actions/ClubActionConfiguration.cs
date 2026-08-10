@@ -57,6 +57,9 @@ public class ClubActionConfiguration : IEntityTypeConfiguration<ClubAction>
     builder.Property(a => a.MatchId)
       .IsRequired(false);
 
+    builder.Property(a => a.TargetPlayerInstanceId)
+      .IsRequired(false);
+
     builder.HasOne(a => a.Club)
       .WithMany()
       .HasForeignKey(a => a.ClubId)
@@ -67,9 +70,15 @@ public class ClubActionConfiguration : IEntityTypeConfiguration<ClubAction>
       .HasForeignKey(a => a.MatchId)
       .OnDelete(DeleteBehavior.Restrict);
 
+    builder.HasOne(a => a.TargetPlayerInstance)
+      .WithMany()
+      .HasForeignKey(a => a.TargetPlayerInstanceId)
+      .OnDelete(DeleteBehavior.Restrict);
+
     builder.HasIndex(a => a.ClubId);
     builder.HasIndex(a => new { a.ClubId, a.ActionType });
     builder.HasIndex(a => new { a.ClubId, a.MatchId });
     builder.HasIndex(a => a.MatchId);
+    builder.HasIndex(a => new { a.ClubId, a.TargetPlayerInstanceId, a.ActionType });
   }
 }

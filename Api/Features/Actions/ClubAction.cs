@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Api.Core.Entities;
 using Api.Features.Clubs;
 using Api.Features.Matches;
+using Api.Features.PlayerInstances;
 
 namespace Api.Features.Actions;
 
@@ -26,7 +27,10 @@ public class ClubAction : Entity<Guid>
   public Guid ClubId { get; set; }
   // Null for non match-scoped actions (squad, most politics).
   public Guid? MatchId { get; set; }
+  // Used by TapUpTarget to flag a transfer target for a later buy-time discount.
+  public Guid? TargetPlayerInstanceId { get; set; }
 
   public virtual Club Club { get; set; } = default!;
   public virtual Match? Match { get; set; }
+  public virtual PlayerInstance? TargetPlayerInstance { get; set; }
 }

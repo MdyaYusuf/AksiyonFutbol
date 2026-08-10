@@ -88,7 +88,7 @@ public static class ClubActionBalanceDefaults
       [ClubActionType.LobbyFederation] = new()
       {
         Cost = 12000m,
-        HeatGenerated = 15,
+        HeatGenerated = 0,
         BaseSuccessChance = 0.60m,
         BaseDetectionChance = 0.25m,
         CooldownDays = 14
