@@ -171,6 +171,36 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("EspionageEdgeMultiplier 1 veya daha büyük olmalıdır.");
     }
 
+    if (options.DopingPowerMultiplier < 1)
+    {
+      failures.Add("DopingPowerMultiplier 1 veya daha büyük olmalıdır.");
+    }
+
+    if (options.SabotageAwayPowerMultiplier <= 0 || options.SabotageAwayPowerMultiplier > 1)
+    {
+      failures.Add("SabotageAwayPowerMultiplier 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.IntimidateStrictSuccessPenalty < 0 || options.IntimidateStrictSuccessPenalty > 1)
+    {
+      failures.Add("IntimidateStrictSuccessPenalty 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.IntimidateShowmanSuccessPenalty < 0 || options.IntimidateShowmanSuccessPenalty > 1)
+    {
+      failures.Add("IntimidateShowmanSuccessPenalty 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.IntimidateLenientSuccessBonus < 0 || options.IntimidateLenientSuccessBonus > 1)
+    {
+      failures.Add("IntimidateLenientSuccessBonus 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.IntimidateCorruptibleSuccessBonus < 0 || options.IntimidateCorruptibleSuccessBonus > 1)
+    {
+      failures.Add("IntimidateCorruptibleSuccessBonus 0 ile 1 arasında olmalıdır.");
+    }
+
     if (options.StartingSuspicion < 0 || options.StartingSuspicion > 100)
     {
       failures.Add("StartingSuspicion 0 ile 100 arasında olmalıdır.");

@@ -43,7 +43,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.Sabotage,
         Category = ClubActionCategory.Match,
         DisplayName = "Sabotage the Away Side",
-        Description = "Disrupt the opponent's travel and rest to blunt their sharpness.",
+        Description = "Disrupt the visiting side's travel and rest. Only available when you are the home club.",
         IsShady = true,
         IsMatchScoped = true
       },
@@ -52,7 +52,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.IntimidateReferee,
         Category = ClubActionCategory.Match,
         DisplayName = "Intimidate the Referee",
-        Description = "Lean on the referee for favorable calls. Backfires with strict officials.",
+        Description = "Lean on the referee for favorable calls. Backfires against strict or showman officials.",
         IsShady = true,
         IsMatchScoped = true
       },

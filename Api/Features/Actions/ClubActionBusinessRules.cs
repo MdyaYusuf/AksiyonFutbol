@@ -2,6 +2,7 @@ using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Features.Clubs;
 using Api.Features.Matches;
+using Api.Features.Referees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -129,11 +130,45 @@ public class ClubActionBusinessRules(
     return Math.Round(scaled, 4);
   }
 
-  // Base success chance. Kept as an extension point for per-action modifiers
-  // (referee personality, opponent strength, etc.) added in later steps.
-  public decimal CalculateSuccessChance(ClubActionDefinition definition)
+  // Base success chance, with per-action modifiers (e.g. referee personality for intimidation).
+  public decimal CalculateSuccessChance(ClubActionDefinition definition, Match? match = null)
   {
-    return Math.Round(definition.BaseSuccessChance, 4);
+    decimal chance = definition.BaseSuccessChance;
+
+    if (definition.Type == ClubActionType.IntimidateReferee && match?.Referee != null)
+    {
+      chance = ApplyIntimidatePersonalityModifier(chance, match.Referee.PersonalityType);
+    }
+
+    if (chance < 0m)
+    {
+      return 0m;
+    }
+
+    if (chance > 1m)
+    {
+      return 1m;
+    }
+
+    return Math.Round(chance, 4);
+  }
+
+  public decimal ApplyIntimidatePersonalityModifier(
+    decimal baseChance,
+    RefereePersonalityType personality)
+  {
+    GameOptions options = Options;
+
+    decimal adjusted = personality switch
+    {
+      RefereePersonalityType.Strict => baseChance - options.IntimidateStrictSuccessPenalty,
+      RefereePersonalityType.Showman => baseChance - options.IntimidateShowmanSuccessPenalty,
+      RefereePersonalityType.Lenient => baseChance + options.IntimidateLenientSuccessBonus,
+      RefereePersonalityType.Corruptible => baseChance + options.IntimidateCorruptibleSuccessBonus,
+      _ => baseChance
+    };
+
+    return adjusted;
   }
 
   public int ApplyHeat(Club club, ClubActionDefinition definition)

@@ -3,6 +3,7 @@ using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
 using Api.Features.Matches;
+using Api.Features.Referees;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -82,6 +83,11 @@ public class ClubActionService(
       _businessRules.MatchMustBeUnplayed(match);
       _businessRules.MatchMustBelongToClub(match, club.Id);
       await EnsureMatchActionNotRepeatedAsync(club.Id, match.Id, definition.Type, cancellationToken);
+
+      if (definition.Type == ClubActionType.Sabotage)
+      {
+        EnsureSabotageIsHome(match, club.Id);
+      }
     }
     else
     {
@@ -91,7 +97,7 @@ public class ClubActionService(
     _businessRules.ClubMustAfford(club, definition.Cost);
 
     int suspicionBefore = club.Suspicion;
-    decimal successChance = _businessRules.CalculateSuccessChance(definition);
+    decimal successChance = _businessRules.CalculateSuccessChance(definition, match);
     decimal detectionChance = _businessRules.CalculateDetectionChance(definition, suspicionBefore);
 
     club.Cash -= definition.Cost;
@@ -123,7 +129,7 @@ public class ClubActionService(
     return new ReturnModel<ClubActionResultDto>()
     {
       Success = true,
-      Message = BuildResultMessage(definition, succeeded),
+      Message = BuildResultMessage(definition, succeeded, match),
       Data = _mapper.ToResultDto(action, club.Cash, club.Suspicion),
       StatusCode = 201
     };
@@ -163,7 +169,7 @@ public class ClubActionService(
     List<ClubAction> actions)
   {
     decimal detectionChance = _businessRules.CalculateDetectionChance(definition, club.Suspicion);
-    decimal successChance = _businessRules.CalculateSuccessChance(definition);
+    decimal successChance = _businessRules.CalculateSuccessChance(definition, upcomingMatch);
 
     bool isAvailable = true;
     string? unavailableReason = null;
@@ -180,6 +186,11 @@ public class ClubActionService(
       {
         isAvailable = false;
         unavailableReason = "Already used for this fixture.";
+      }
+      else if (definition.Type == ClubActionType.Sabotage && upcomingMatch.HomeClubId != club.Id)
+      {
+        isAvailable = false;
+        unavailableReason = "Only available when playing at home.";
       }
     }
     else
@@ -281,15 +292,35 @@ public class ClubActionService(
     }
   }
 
-  private static string BuildResultMessage(ClubActionDefinition definition, bool succeeded)
+  private static string BuildResultMessage(
+    ClubActionDefinition definition,
+    bool succeeded,
+    Match? match)
   {
     if (!definition.IsShady)
     {
       return "Aksiyon gerçekleştirildi.";
     }
 
+    if (!succeeded &&
+        definition.Type == ClubActionType.IntimidateReferee &&
+        match?.Referee != null &&
+        (match.Referee.PersonalityType == RefereePersonalityType.Strict ||
+         match.Referee.PersonalityType == RefereePersonalityType.Showman))
+    {
+      return "Tehdit geri tepti. Hakem rakibe yanaşacak.";
+    }
+
     return succeeded
       ? "Aksiyon başarılı oldu."
       : "Aksiyon başarısız oldu. Harcanan tutar kasadan düşüldü.";
+  }
+
+  private static void EnsureSabotageIsHome(Match match, Guid clubId)
+  {
+    if (match.HomeClubId != clubId)
+    {
+      throw new BusinessException("Deplasman sabotajı yalnızca ev sahibi olduğunuz maçlarda kullanılabilir.");
+    }
   }
 }

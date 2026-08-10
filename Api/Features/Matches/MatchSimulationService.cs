@@ -62,13 +62,15 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       homeClub,
       homeSquad.Mentality,
       isHome: true,
-      hasEspionageEdge: influence.HasEspionage(homeClub.Id));
+      influence: influence,
+      opponentClubId: awayClub.Id);
     TeamPower awayPower = CalculateTeamPower(
       awayPlayers,
       awayClub,
       awaySquad.Mentality,
       isHome: false,
-      hasEspionageEdge: influence.HasEspionage(awayClub.Id));
+      influence: influence,
+      opponentClubId: homeClub.Id);
 
     List<MatchEventDto> events =
     [
@@ -707,28 +709,51 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     Club club,
     TeamMentality mentality,
     bool isHome,
-    bool hasEspionageEdge)
+    MatchInfluence influence,
+    Guid opponentClubId)
   {
     double matchDayVariance = Random.Shared.NextDouble() * 0.30 + 0.85;
     double homeAdvantage = isHome ? 1.05 : 1.0;
     double clubStatusModifier = (club.Morale + club.Chemistry + club.Discipline) / 300d;
     double finalModifier = matchDayVariance * homeAdvantage * (0.90 + clubStatusModifier * 0.20);
     MentalityModifiers mentalityModifiers = GetMentalityModifiers(mentality);
-    double espionageModifier = hasEspionageEdge
+
+    double dopingModifier = influence.HasDoping(club.Id)
+      ? (double)_gameOptions.Value.DopingPowerMultiplier
+      : 1.0;
+    double espionageModifier = influence.HasEspionage(club.Id)
       ? (double)_gameOptions.Value.EspionageEdgeMultiplier
       : 1.0;
+
+    // Sabotage targets the away side: if the opponent successfully sabotaged and
+    // this club is away, apply the travel/rest penalty.
+    if (!isHome && influence.HasSabotage(opponentClubId))
+    {
+      finalModifier *= (double)_gameOptions.Value.SabotageAwayPowerMultiplier;
+    }
 
     return new TeamPower
     {
       AttackPower = Math.Max(
         1,
-        players.Average(p => p.AttackPower) * finalModifier * mentalityModifiers.Attack * espionageModifier),
+        players.Average(p => p.AttackPower)
+          * finalModifier
+          * mentalityModifiers.Attack
+          * dopingModifier
+          * espionageModifier),
       DefenseStrength = Math.Max(
         1,
-        players.Average(p => p.DefenseStrength) * finalModifier * mentalityModifiers.Defense),
+        players.Average(p => p.DefenseStrength)
+          * finalModifier
+          * mentalityModifiers.Defense
+          * dopingModifier),
       MidfieldControl = Math.Max(
         1,
-        players.Average(p => p.MidfieldControl) * finalModifier * mentalityModifiers.Midfield * espionageModifier)
+        players.Average(p => p.MidfieldControl)
+          * finalModifier
+          * mentalityModifiers.Midfield
+          * dopingModifier
+          * espionageModifier)
     };
   }
 

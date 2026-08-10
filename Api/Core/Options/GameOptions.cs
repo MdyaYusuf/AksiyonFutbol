@@ -42,6 +42,15 @@ public class GameOptions
   // Match-scoped ClubAction effect sizes consumed by MatchInfluence / the sim.
   public decimal MatchFixingOpponentGoalMultiplier { get; set; } = 0.85m;
   public decimal EspionageEdgeMultiplier { get; set; } = 1.05m;
+  public decimal DopingPowerMultiplier { get; set; } = 1.08m;
+  public decimal SabotageAwayPowerMultiplier { get; set; } = 0.92m;
+
+  // Intimidate Referee: success chance deltas by personality (added to base).
+  // Strict/Showman also reverse favor onto the opponent when the attempt fails.
+  public decimal IntimidateStrictSuccessPenalty { get; set; } = 0.25m;
+  public decimal IntimidateShowmanSuccessPenalty { get; set; } = 0.15m;
+  public decimal IntimidateLenientSuccessBonus { get; set; } = 0.10m;
+  public decimal IntimidateCorruptibleSuccessBonus { get; set; } = 0.05m;
 
   // Suspicion / "Heat" foundation. Shady actions raise Suspicion, which increases
   // detection risk and scales investigation consequences. It decays after matches.
