@@ -68,4 +68,7 @@ public sealed class ClubActionResultDto
   public ClubActionDto Action { get; init; } = default!;
   public decimal NewCash { get; init; }
   public int NewSuspicion { get; init; }
+  public int NewMorale { get; init; }
+  public int NewChemistry { get; init; }
+  public int NewDiscipline { get; init; }
 }

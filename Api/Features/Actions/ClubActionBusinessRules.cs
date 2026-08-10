@@ -171,6 +171,35 @@ public class ClubActionBusinessRules(
     return adjusted;
   }
 
+  public void ApplySquadEffects(Club club, ClubActionType actionType)
+  {
+    GameOptions options = Options;
+
+    switch (actionType)
+    {
+      case ClubActionType.TeamBonding:
+        club.Chemistry = ClampStatus(club.Chemistry + options.TeamBondingChemistryBonus);
+        club.Discipline = ClampStatus(club.Discipline - options.TeamBondingDisciplinePenalty);
+        break;
+      case ClubActionType.FinePlayer:
+        club.Discipline = ClampStatus(club.Discipline + options.FinePlayerDisciplineBonus);
+        club.Morale = ClampStatus(club.Morale - options.FinePlayerMoralePenalty);
+        break;
+      case ClubActionType.MotivationalTalk:
+        club.Morale = ClampStatus(club.Morale + options.MotivationalTalkMoraleBonus);
+        break;
+      case ClubActionType.BrutalTraining:
+        club.Morale = ClampStatus(club.Morale - options.BrutalTrainingMoralePenalty);
+        club.Discipline = ClampStatus(club.Discipline + options.BrutalTrainingDisciplineBonus);
+        break;
+      case ClubActionType.PromiseWinBonus:
+        club.Morale = ClampStatus(club.Morale + options.PromiseWinBonusMoraleBonus);
+        break;
+    }
+  }
+
+  public decimal GetPromiseWinBonusAmount() => Options.PromiseWinBonusAmount;
+
   public int ApplyHeat(Club club, ClubActionDefinition definition)
   {
     if (!definition.IsShady || definition.HeatGenerated <= 0)
@@ -188,4 +217,6 @@ public class ClubActionBusinessRules(
 
     return applied;
   }
+
+  private static int ClampStatus(int value) => Math.Clamp(value, 0, 100);
 }

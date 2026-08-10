@@ -13,6 +13,7 @@ public static class ActionsRegistration
     services.AddSingleton<ClubActionMapper>();
     // Overrides Matches' NullMatchInfluenceProvider; folds bribery + ClubActions.
     services.AddScoped<IMatchInfluenceProvider, MatchInfluenceProvider>();
+    services.AddScoped<IPromiseWinBonusSettler, PromiseWinBonusSettler>();
 
     return services;
   }

@@ -1,3 +1,4 @@
+using Api.Features.Clubs;
 using Api.Features.Matches;
 
 namespace Api.Features.Actions;
@@ -26,13 +27,16 @@ public class ClubActionMapper
     };
   }
 
-  public ClubActionResultDto ToResultDto(ClubAction action, decimal newCash, int newSuspicion)
+  public ClubActionResultDto ToResultDto(ClubAction action, Club club)
   {
     return new ClubActionResultDto
     {
       Action = ToDto(action),
-      NewCash = newCash,
-      NewSuspicion = newSuspicion
+      NewCash = club.Cash,
+      NewSuspicion = club.Suspicion,
+      NewMorale = club.Morale,
+      NewChemistry = club.Chemistry,
+      NewDiscipline = club.Discipline
     };
   }
 

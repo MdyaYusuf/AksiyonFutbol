@@ -61,7 +61,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.TeamBonding,
         Category = ClubActionCategory.Squad,
         DisplayName = "Team Bonding",
-        Description = "Organize a squad event to build chemistry.",
+        Description = "Organize a squad event to build chemistry. Small discipline risk.",
         IsShady = false
       },
       new()
@@ -85,7 +85,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.BrutalTraining,
         Category = ClubActionCategory.Squad,
         DisplayName = "Brutal Training Week",
-        Description = "Push the squad hard for short-term sharpness at the cost of morale.",
+        Description = "Push the squad hard for short-term sharpness (discipline) at the cost of morale.",
         IsShady = false
       },
       new()
@@ -93,7 +93,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.PromiseWinBonus,
         Category = ClubActionCategory.Squad,
         DisplayName = "Promise Win Bonus",
-        Description = "Promise a bonus to raise morale now, paid out on a win.",
+        Description = "Promise a cash bonus for the next fixture to raise morale now. Paid only if you win.",
         IsShady = false
       },
       new()

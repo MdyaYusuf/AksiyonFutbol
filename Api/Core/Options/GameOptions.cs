@@ -52,6 +52,17 @@ public class GameOptions
   public decimal IntimidateLenientSuccessBonus { get; set; } = 0.10m;
   public decimal IntimidateCorruptibleSuccessBonus { get; set; } = 0.05m;
 
+  // Squad action effect sizes (immediate Club stat mutations).
+  public int TeamBondingChemistryBonus { get; set; } = 8;
+  public int TeamBondingDisciplinePenalty { get; set; } = 2;
+  public int FinePlayerDisciplineBonus { get; set; } = 6;
+  public int FinePlayerMoralePenalty { get; set; } = 4;
+  public int MotivationalTalkMoraleBonus { get; set; } = 5;
+  public int BrutalTrainingMoralePenalty { get; set; } = 6;
+  public int BrutalTrainingDisciplineBonus { get; set; } = 4;
+  public int PromiseWinBonusMoraleBonus { get; set; } = 8;
+  public decimal PromiseWinBonusAmount { get; set; } = 10000m;
+
   // Suspicion / "Heat" foundation. Shady actions raise Suspicion, which increases
   // detection risk and scales investigation consequences. It decays after matches.
   public int StartingSuspicion { get; set; } = 0;

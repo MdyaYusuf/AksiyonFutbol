@@ -1,4 +1,5 @@
 using Api.Core.Repositories;
+using Api.Features.Actions;
 using Api.Features.ClubLineups;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ public class MatchPlayService(
   MatchBusinessRules _businessRules,
   IMatchSimulationService _matchSimulationService,
   IMatchInfluenceProvider _matchInfluenceProvider,
+  IPromiseWinBonusSettler _promiseWinBonusSettler,
   IUnitOfWork _unitOfWork) : IMatchPlayService
 {
   public async Task<Match> PlayAndPersistAsync(
@@ -64,6 +66,12 @@ public class MatchPlayService(
     match.AwayScore = result.AwayScore;
     match.MatchLogJson = result.MatchLogJson;
     match.IsPlayed = true;
+
+    await _promiseWinBonusSettler.SettleAsync(
+      match,
+      result.HomeScore,
+      result.AwayScore,
+      cancellationToken);
 
     _matchRepository.Update(match);
   }

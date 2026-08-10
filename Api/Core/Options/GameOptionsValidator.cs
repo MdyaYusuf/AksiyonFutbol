@@ -201,6 +201,51 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("IntimidateCorruptibleSuccessBonus 0 ile 1 arasında olmalıdır.");
     }
 
+    if (options.TeamBondingChemistryBonus < 0 || options.TeamBondingChemistryBonus > 100)
+    {
+      failures.Add("TeamBondingChemistryBonus 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.TeamBondingDisciplinePenalty < 0 || options.TeamBondingDisciplinePenalty > 100)
+    {
+      failures.Add("TeamBondingDisciplinePenalty 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.FinePlayerDisciplineBonus < 0 || options.FinePlayerDisciplineBonus > 100)
+    {
+      failures.Add("FinePlayerDisciplineBonus 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.FinePlayerMoralePenalty < 0 || options.FinePlayerMoralePenalty > 100)
+    {
+      failures.Add("FinePlayerMoralePenalty 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.MotivationalTalkMoraleBonus < 0 || options.MotivationalTalkMoraleBonus > 100)
+    {
+      failures.Add("MotivationalTalkMoraleBonus 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.BrutalTrainingMoralePenalty < 0 || options.BrutalTrainingMoralePenalty > 100)
+    {
+      failures.Add("BrutalTrainingMoralePenalty 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.BrutalTrainingDisciplineBonus < 0 || options.BrutalTrainingDisciplineBonus > 100)
+    {
+      failures.Add("BrutalTrainingDisciplineBonus 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.PromiseWinBonusMoraleBonus < 0 || options.PromiseWinBonusMoraleBonus > 100)
+    {
+      failures.Add("PromiseWinBonusMoraleBonus 0 ile 100 arasında olmalıdır.");
+    }
+
+    if (options.PromiseWinBonusAmount < 0)
+    {
+      failures.Add("PromiseWinBonusAmount negatif olamaz.");
+    }
+
     if (options.StartingSuspicion < 0 || options.StartingSuspicion > 100)
     {
       failures.Add("StartingSuspicion 0 ile 100 arasında olmalıdır.");

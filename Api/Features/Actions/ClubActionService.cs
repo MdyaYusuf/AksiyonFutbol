@@ -76,6 +76,7 @@ public class ClubActionService(
       cancellationToken: cancellationToken);
 
     Match? match = null;
+    decimal pledgedWinBonus = 0m;
 
     if (definition.IsMatchScoped)
     {
@@ -92,6 +93,27 @@ public class ClubActionService(
     else
     {
       await EnsureNotOnCooldownAsync(club.Id, definition, cancellationToken);
+
+      if (definition.Type == ClubActionType.PromiseWinBonus)
+      {
+        match = await _businessRules.GetNextUnplayedMatchForClubOrNullAsync(
+          club.Id,
+          cancellationToken);
+
+        if (match == null)
+        {
+          throw new BusinessException("Galibiyet primi için yaklaşan bir maç bulunamadı.");
+        }
+
+        await EnsureMatchActionNotRepeatedAsync(
+          club.Id,
+          match.Id,
+          ClubActionType.PromiseWinBonus,
+          cancellationToken);
+
+        pledgedWinBonus = _businessRules.GetPromiseWinBonusAmount();
+        _businessRules.ClubMustAfford(club, pledgedWinBonus);
+      }
     }
 
     _businessRules.ClubMustAfford(club, definition.Cost);
@@ -102,10 +124,20 @@ public class ClubActionService(
 
     club.Cash -= definition.Cost;
     int heatApplied = _businessRules.ApplyHeat(club, definition);
-    _clubRepository.Update(club);
 
     bool succeeded = Random.Shared.NextDouble() <= (double)successChance;
     bool wasDetected = definition.IsShady && Random.Shared.NextDouble() <= (double)detectionChance;
+
+    if (succeeded && definition.Category == ClubActionCategory.Squad)
+    {
+      _businessRules.ApplySquadEffects(club, definition.Type);
+    }
+
+    _clubRepository.Update(club);
+
+    decimal cashRecorded = definition.Type == ClubActionType.PromiseWinBonus && succeeded
+      ? pledgedWinBonus
+      : definition.Cost;
 
     ClubAction action = new()
     {
@@ -115,7 +147,7 @@ public class ClubActionService(
       Outcome = succeeded ? ClubActionOutcome.Succeeded : ClubActionOutcome.Failed,
       WasDetected = wasDetected,
       HeatGenerated = heatApplied,
-      CashSpent = definition.Cost,
+      CashSpent = cashRecorded,
       SuccessChance = successChance,
       DetectionChance = detectionChance
     };
@@ -130,7 +162,7 @@ public class ClubActionService(
     {
       Success = true,
       Message = BuildResultMessage(definition, succeeded, match),
-      Data = _mapper.ToResultDto(action, club.Cash, club.Suspicion),
+      Data = _mapper.ToResultDto(action, club),
       StatusCode = 201
     };
   }
@@ -202,6 +234,26 @@ public class ClubActionService(
         isAvailable = false;
         unavailableReason = $"On cooldown ({cooldownRemainingDays} day(s) left).";
       }
+      else if (definition.Type == ClubActionType.PromiseWinBonus)
+      {
+        if (upcomingMatch == null)
+        {
+          isAvailable = false;
+          unavailableReason = "No upcoming fixture available.";
+        }
+        else if (actions.Any(a =>
+          a.MatchId == upcomingMatch.Id &&
+          a.ActionType == ClubActionType.PromiseWinBonus))
+        {
+          isAvailable = false;
+          unavailableReason = "Already promised for this fixture.";
+        }
+        else if (club.Cash < _businessRules.GetPromiseWinBonusAmount())
+        {
+          isAvailable = false;
+          unavailableReason = "Insufficient funds for the promised bonus.";
+        }
+      }
     }
 
     if (isAvailable && club.Cash < definition.Cost)
@@ -210,18 +262,22 @@ public class ClubActionService(
       unavailableReason = "Insufficient funds.";
     }
 
+    decimal displayCost = definition.Type == ClubActionType.PromiseWinBonus
+      ? _businessRules.GetPromiseWinBonusAmount()
+      : definition.Cost;
+
     return new ClubActionAvailabilityDto
     {
       ActionType = definition.Type,
       Category = definition.Category,
       DisplayName = definition.DisplayName,
       Description = definition.Description,
-      Cost = definition.Cost,
+      Cost = displayCost,
       HeatGenerated = definition.IsShady ? definition.HeatGenerated : 0,
       SuccessChance = successChance,
       DetectionChance = detectionChance,
       IsShady = definition.IsShady,
-      RequiresMatch = definition.IsMatchScoped,
+      RequiresMatch = definition.IsMatchScoped || definition.Type == ClubActionType.PromiseWinBonus,
       IsAvailable = isAvailable,
       UnavailableReason = unavailableReason,
       CooldownRemainingDays = cooldownRemainingDays
