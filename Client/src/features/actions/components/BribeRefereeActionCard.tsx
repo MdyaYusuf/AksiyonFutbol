@@ -15,7 +15,8 @@ export const BribeRefereeActionCard = ({
   isLoading,
 }: BribeRefereeActionCardProps) => {
   const alreadyAttempted = briberyContext?.alreadyAttempted ?? false;
-  const canOpen = !!briberyContext && !alreadyAttempted;
+  const canAttempt = briberyContext?.canAttempt ?? false;
+  const canOpen = canAttempt && !alreadyAttempted;
 
   const outcomeLabel =
     briberyContext?.existingOutcome === BribeAttemptOutcome.Succeeded
@@ -50,8 +51,8 @@ export const BribeRefereeActionCard = ({
         <Stat
           label="Success"
           value={
-            briberyContext
-              ? formatChancePercent(briberyContext.estimatedSuccessChance)
+            canAttempt
+              ? formatChancePercent(briberyContext!.estimatedSuccessChance)
               : "—"
           }
         />
@@ -70,10 +71,11 @@ export const BribeRefereeActionCard = ({
           Already used for this fixture
           {outcomeLabel ? ` (${outcomeLabel})` : ""}.
         </div>
-      ) : !briberyContext && !isLoading ? (
+      ) : !canAttempt && !isLoading ? (
         <div className="mt-auto flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
-          <MaterialIcon name="info" className="text-sm" />
-          No upcoming fixture with a referee assigned.
+          <MaterialIcon name="lock" className="text-sm" />
+          {briberyContext?.unavailableReason ??
+            "No upcoming fixture with a referee assigned."}
         </div>
       ) : (
         <div className="mt-auto flex justify-end">

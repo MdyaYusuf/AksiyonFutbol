@@ -9,6 +9,13 @@ interface ActionCardProps {
 }
 
 export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
+  const cooldownValue =
+    action.cooldownDays > 0
+      ? action.cooldownRemainingDays > 0
+        ? `${action.cooldownRemainingDays}d left`
+        : `${action.cooldownDays}d`
+      : "None";
+
   return (
     <div className="flex flex-col rounded-xl border border-outline-variant bg-surface-container p-5">
       <div className="mb-4 flex items-start gap-3">
@@ -32,7 +39,7 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
         </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Stat
           label="Cost"
           value={action.cost > 0 ? formatCashFull(action.cost) : "Free"}
@@ -42,14 +49,11 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
           label="Heat"
           value={action.heatGenerated > 0 ? `+${action.heatGenerated}` : "None"}
         />
+        <Stat label="Cooldown" value={cooldownValue} />
         <Stat
-          label={action.cooldownRemainingDays > 0 ? "Cooldown" : "Detection"}
+          label="Detection"
           value={
-            action.cooldownRemainingDays > 0
-              ? `${action.cooldownRemainingDays}d`
-              : action.isShady
-                ? formatChancePercent(action.detectionChance)
-                : "—"
+            action.isShady ? formatChancePercent(action.detectionChance) : "—"
           }
         />
       </div>

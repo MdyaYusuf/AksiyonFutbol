@@ -65,6 +65,7 @@ export interface ClubActionAvailability {
   requiresMatch: boolean;
   isAvailable: boolean;
   unavailableReason?: string | null;
+  cooldownDays: number;
   cooldownRemainingDays: number;
 }
 

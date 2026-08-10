@@ -31,6 +31,16 @@ export const estimateSuccessChance = (
 };
 
 export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] => {
+  if (
+    !context.canAttempt ||
+    context.briberyDifficulty == null ||
+    !context.refereePersonality
+  ) {
+    return [];
+  }
+
+  const difficulty = context.briberyDifficulty;
+  const personality = context.refereePersonality;
   const min = context.minAmount;
   const max = Math.max(min, context.maxAmount);
   const span = max - min;
@@ -74,11 +84,7 @@ export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] =
 
   return defs.map((def) => ({
     ...def,
-    successChance: estimateSuccessChance(
-      def.amount,
-      context.briberyDifficulty,
-      context.refereePersonality,
-    ),
+    successChance: estimateSuccessChance(def.amount, difficulty, personality),
   }));
 };
 
@@ -151,12 +157,16 @@ export const formatInfluenceMatchDate = (matchDate: string): string => {
 };
 
 export const getOpponentLabel = (context: BriberyContext): string => {
-  return context.isHome ? context.awayClubName : context.homeClubName;
+  if (context.isHome) {
+    return context.awayClubName ?? "Opponent";
+  }
+
+  return context.homeClubName ?? "Opponent";
 };
 
 export const formatFixtureHeadline = (context: BriberyContext): string => {
   const venue = context.isHome ? "Home" : "Away";
-  return `Match Week ${context.matchWeek} • ${venue} vs ${getOpponentLabel(context)}`;
+  return `Match Week ${context.matchWeek ?? "—"} • ${venue} vs ${getOpponentLabel(context)}`;
 };
 
 export const getAmountToneClass = (tier: BribeStakeTier): string => {

@@ -105,6 +105,10 @@ export const ExecuteActionModal = ({
               value={action.heatGenerated > 0 ? `+${action.heatGenerated}` : "None"}
             />
             <SummaryStat
+              label="Cooldown"
+              value={action.cooldownDays > 0 ? `${action.cooldownDays}d` : "None"}
+            />
+            <SummaryStat
               label="Detection"
               value={
                 action.isShady

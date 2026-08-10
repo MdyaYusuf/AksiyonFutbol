@@ -23,8 +23,43 @@ public class BriberyService(
       currentUserId,
       cancellationToken: cancellationToken);
 
-    Match match = await _businessRules.GetNextUnplayedMatchForClubAsync(club.Id, cancellationToken);
-    _businessRules.MatchMustHaveReferee(match);
+    ClubContext clubContext = new(club.Id, club.Name, club.Cash);
+    decimal minAmount = _businessRules.Options.BribeMinAmount;
+    decimal maxAmount = _businessRules.Options.BribeMaxAmount;
+
+    Match? match = await _businessRules.GetNextUnplayedMatchForClubOrNullAsync(
+      club.Id,
+      cancellationToken);
+
+    if (match == null)
+    {
+      return new ReturnModel<BriberyContextResponseDto>()
+      {
+        Success = true,
+        Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+        Data = _mapper.ToUnavailableContextDto(
+          clubContext,
+          "No upcoming fixture available.",
+          minAmount,
+          maxAmount),
+        StatusCode = 200
+      };
+    }
+
+    if (!match.RefereeId.HasValue || match.Referee == null)
+    {
+      return new ReturnModel<BriberyContextResponseDto>()
+      {
+        Success = true,
+        Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+        Data = _mapper.ToUnavailableContextDto(
+          clubContext,
+          "No referee assigned to the upcoming fixture.",
+          minAmount,
+          maxAmount),
+        StatusCode = 200
+      };
+    }
 
     BribeAttempt? existing = await _bribeAttemptRepository.GetAsync(
       a => a.ClubId == club.Id && a.MatchId == match.Id,
@@ -32,20 +67,20 @@ public class BriberyService(
 
     decimal previewAmount = Math.Clamp(
       club.Cash * 0.1m,
-      _businessRules.Options.BribeMinAmount,
-      _businessRules.Options.BribeMaxAmount);
+      minAmount,
+      maxAmount);
 
-    decimal estimatedChance = _businessRules.CalculateSuccessChance(previewAmount, match.Referee!);
+    decimal estimatedChance = _businessRules.CalculateSuccessChance(previewAmount, match.Referee);
 
     BriberyContextResponseDto response = _mapper.ToContextDto(
-      new ClubContext(club.Id, club.Name, club.Cash),
+      clubContext,
       match,
-      match.Referee!,
+      match.Referee,
       alreadyAttempted: existing != null,
       existingOutcome: existing?.Outcome,
       estimatedSuccessChance: estimatedChance,
-      minAmount: _businessRules.Options.BribeMinAmount,
-      maxAmount: _businessRules.Options.BribeMaxAmount);
+      minAmount: minAmount,
+      maxAmount: maxAmount);
 
     return new ReturnModel<BriberyContextResponseDto>()
     {

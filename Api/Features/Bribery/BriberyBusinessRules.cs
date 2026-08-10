@@ -36,7 +36,7 @@ public class BriberyBusinessRules(
     return club;
   }
 
-  public async Task<Match> GetNextUnplayedMatchForClubAsync(
+  public async Task<Match?> GetNextUnplayedMatchForClubOrNullAsync(
     Guid clubId,
     CancellationToken cancellationToken = default)
   {
@@ -51,7 +51,14 @@ public class BriberyBusinessRules(
       orderBy: query => query.OrderBy(m => m.MatchDate),
       cancellationToken: cancellationToken);
 
-    Match? match = matches.FirstOrDefault();
+    return matches.FirstOrDefault();
+  }
+
+  public async Task<Match> GetNextUnplayedMatchForClubAsync(
+    Guid clubId,
+    CancellationToken cancellationToken = default)
+  {
+    Match? match = await GetNextUnplayedMatchForClubOrNullAsync(clubId, cancellationToken);
 
     if (match == null)
     {

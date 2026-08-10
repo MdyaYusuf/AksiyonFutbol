@@ -342,6 +342,7 @@ public class ClubActionService(
       RequiresMatch = definition.IsMatchScoped || definition.Type == ClubActionType.PromiseWinBonus,
       IsAvailable = isAvailable,
       UnavailableReason = unavailableReason,
+      CooldownDays = definition.CooldownDays,
       CooldownRemainingDays = cooldownRemainingDays
     };
   }

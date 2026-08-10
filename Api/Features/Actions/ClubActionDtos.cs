@@ -45,6 +45,7 @@ public sealed class ClubActionAvailabilityDto
   public bool RequiresMatch { get; init; }
   public bool IsAvailable { get; init; }
   public string? UnavailableReason { get; init; }
+  public int CooldownDays { get; init; }
   public int CooldownRemainingDays { get; init; }
 }
 

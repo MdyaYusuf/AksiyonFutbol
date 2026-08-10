@@ -28,6 +28,24 @@ public partial class BriberyMapper
     };
   }
 
+  public BriberyContextResponseDto ToUnavailableContextDto(
+    ClubContext club,
+    string unavailableReason,
+    decimal minAmount,
+    decimal maxAmount)
+  {
+    return new BriberyContextResponseDto
+    {
+      ClubId = club.Id,
+      ClubName = club.Name,
+      ClubCash = club.Cash,
+      CanAttempt = false,
+      UnavailableReason = unavailableReason,
+      MinAmount = minAmount,
+      MaxAmount = maxAmount
+    };
+  }
+
   public BriberyContextResponseDto ToContextDto(
     ClubContext club,
     Match match,
@@ -45,6 +63,7 @@ public partial class BriberyMapper
       ClubId = club.Id,
       ClubName = club.Name,
       ClubCash = club.Cash,
+      CanAttempt = true,
       MatchId = match.Id,
       MatchWeek = match.MatchWeek,
       MatchDate = match.MatchDate,

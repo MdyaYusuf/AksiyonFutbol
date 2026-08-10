@@ -60,7 +60,7 @@ export const MatchInfluencePage = () => {
     selectedOption.amount <= context.clubCash;
 
   const handleContinue = () => {
-    if (!context || !selectedOption || !canContinue) {
+    if (!context || !selectedOption || !canContinue || !context.matchId) {
       return;
     }
 
@@ -71,11 +71,11 @@ export const MatchInfluencePage = () => {
       title: selectedOption.title,
       successChance: selectedOption.successChance,
       detectionChance: selectedOption.detectionChance,
-      refereeName: context.refereeName,
-      refereePersonality: context.refereePersonality,
-      matchWeek: context.matchWeek,
-      homeClubName: context.homeClubName,
-      awayClubName: context.awayClubName,
+      refereeName: context.refereeName ?? "",
+      refereePersonality: context.refereePersonality ?? "",
+      matchWeek: context.matchWeek ?? 0,
+      homeClubName: context.homeClubName ?? "",
+      awayClubName: context.awayClubName ?? "",
     };
 
     navigate("/app/actions/bribe/confirm", { state });
@@ -89,12 +89,13 @@ export const MatchInfluencePage = () => {
     );
   }
 
-  if (isError || !context) {
+  if (isError || !context || !context.canAttempt) {
     return (
       <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 py-16 text-center">
         <MaterialIcon name="gavel" className="text-4xl text-on-surface-variant" />
         <p className="font-body-lg text-body-lg text-on-surface-variant">
-          No upcoming fixture available to bribe, or the match has no assigned referee.
+          {context?.unavailableReason ??
+            "No upcoming fixture available to bribe, or the match has no assigned referee."}
         </p>
         <Link to="/app/actions" className="text-primary hover:underline">
           Back to Actions

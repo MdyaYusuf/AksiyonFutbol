@@ -14,8 +14,10 @@ interface MatchInfluenceContextCardProps {
 export const MatchInfluenceContextCard = ({
   context,
 }: MatchInfluenceContextCardProps) => {
-  const difficultyLabel = getDifficultyLabel(context.briberyDifficulty);
-  const difficultyPercent = Math.min(100, Math.max(0, context.briberyDifficulty));
+  const difficulty = context.briberyDifficulty ?? 0;
+  const personality = context.refereePersonality ?? "";
+  const difficultyLabel = getDifficultyLabel(difficulty);
+  const difficultyPercent = Math.min(100, Math.max(0, difficulty));
 
   return (
     <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-high">
@@ -29,7 +31,7 @@ export const MatchInfluenceContextCard = ({
           </span>
         </div>
         <span className="rounded border border-outline-variant bg-surface px-3 py-1 font-data-mono text-data-mono text-on-surface-variant">
-          {formatInfluenceMatchDate(context.matchDate)}
+          {context.matchDate ? formatInfluenceMatchDate(context.matchDate) : "—"}
         </span>
       </div>
 
@@ -44,12 +46,12 @@ export const MatchInfluenceContextCard = ({
             </div>
             <div className="flex flex-col gap-1">
               <span className="font-stat-value text-stat-value text-on-background">
-                {context.refereeName}
+                {context.refereeName ?? "—"}
               </span>
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-secondary" />
                 <span className="font-body-sm text-body-sm text-secondary">
-                  Personality: {context.refereePersonality}
+                  Personality: {personality || "—"}
                 </span>
               </div>
             </div>
@@ -72,7 +74,7 @@ export const MatchInfluenceContextCard = ({
             />
           </div>
           <p className="mt-1 font-body-sm text-body-sm italic text-on-surface-variant">
-            &ldquo;{getPersonalityBlurb(context.refereePersonality)}&rdquo;
+            &ldquo;{getPersonalityBlurb(personality)}&rdquo;
           </p>
         </div>
       </div>
