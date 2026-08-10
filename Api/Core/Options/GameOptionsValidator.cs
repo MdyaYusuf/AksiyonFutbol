@@ -161,6 +161,16 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("BribeOpponentGoalMultiplier 0 ile 1 arasında olmalıdır.");
     }
 
+    if (options.MatchFixingOpponentGoalMultiplier <= 0 || options.MatchFixingOpponentGoalMultiplier > 1)
+    {
+      failures.Add("MatchFixingOpponentGoalMultiplier 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.EspionageEdgeMultiplier < 1)
+    {
+      failures.Add("EspionageEdgeMultiplier 1 veya daha büyük olmalıdır.");
+    }
+
     if (options.StartingSuspicion < 0 || options.StartingSuspicion > 100)
     {
       failures.Add("StartingSuspicion 0 ile 100 arasında olmalıdır.");

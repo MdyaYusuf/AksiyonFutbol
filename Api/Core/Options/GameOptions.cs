@@ -39,6 +39,10 @@ public class GameOptions
   public decimal BribeFavoredGoalMultiplier { get; set; } = 1.18m;
   public decimal BribeOpponentGoalMultiplier { get; set; } = 0.90m;
 
+  // Match-scoped ClubAction effect sizes consumed by MatchInfluence / the sim.
+  public decimal MatchFixingOpponentGoalMultiplier { get; set; } = 0.85m;
+  public decimal EspionageEdgeMultiplier { get; set; } = 1.05m;
+
   // Suspicion / "Heat" foundation. Shady actions raise Suspicion, which increases
   // detection risk and scales investigation consequences. It decays after matches.
   public int StartingSuspicion { get; set; } = 0;

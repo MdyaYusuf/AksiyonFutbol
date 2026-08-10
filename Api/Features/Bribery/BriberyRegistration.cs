@@ -1,5 +1,3 @@
-using Api.Features.Matches;
-
 namespace Api.Features.Bribery;
 
 public static class BriberyRegistration
@@ -10,7 +8,6 @@ public static class BriberyRegistration
     services.AddScoped<BriberyBusinessRules>();
     services.AddScoped<IBriberyService, BriberyService>();
     services.AddSingleton<BriberyMapper>();
-    services.AddScoped<IMatchBribeInfluenceProvider, MatchBribeInfluenceProvider>();
 
     return services;
   }

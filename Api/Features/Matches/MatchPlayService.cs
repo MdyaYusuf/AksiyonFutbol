@@ -9,7 +9,7 @@ public class MatchPlayService(
   IMatchDaySquadResolver _matchDaySquadResolver,
   MatchBusinessRules _businessRules,
   IMatchSimulationService _matchSimulationService,
-  IMatchBribeInfluenceProvider _matchBribeInfluenceProvider,
+  IMatchInfluenceProvider _matchInfluenceProvider,
   IUnitOfWork _unitOfWork) : IMatchPlayService
 {
   public async Task<Match> PlayAndPersistAsync(
@@ -49,7 +49,7 @@ public class MatchPlayService(
       homeSquad.StartingPlayers.Count,
       awaySquad.StartingPlayers.Count);
 
-    MatchBribeInfluence bribeInfluence = await _matchBribeInfluenceProvider.GetForMatchAsync(
+    MatchInfluence influence = await _matchInfluenceProvider.GetForMatchAsync(
       match.Id,
       cancellationToken);
 
@@ -58,7 +58,7 @@ public class MatchPlayService(
       homeSquad,
       awaySquad,
       match.Referee!,
-      bribeInfluence);
+      influence);
 
     match.HomeScore = result.HomeScore;
     match.AwayScore = result.AwayScore;

@@ -1,3 +1,5 @@
+using Api.Features.Matches;
+
 namespace Api.Features.Actions;
 
 public static class ActionsRegistration
@@ -9,6 +11,8 @@ public static class ActionsRegistration
     services.AddScoped<IClubActionService, ClubActionService>();
     services.AddSingleton<IClubActionProvider, ClubActionProvider>();
     services.AddSingleton<ClubActionMapper>();
+    // Overrides Matches' NullMatchInfluenceProvider; folds bribery + ClubActions.
+    services.AddScoped<IMatchInfluenceProvider, MatchInfluenceProvider>();
 
     return services;
   }

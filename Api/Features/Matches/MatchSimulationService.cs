@@ -43,9 +43,9 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     MatchDaySquad homeSquad,
     MatchDaySquad awaySquad,
     Referee referee,
-    MatchBribeInfluence? bribeInfluence = null)
+    MatchInfluence? matchInfluence = null)
   {
-    MatchBribeInfluence influence = bribeInfluence ?? MatchBribeInfluence.None;
+    MatchInfluence influence = matchInfluence ?? MatchInfluence.None;
     List<PlayerInstance> homePlayers = homeSquad.StartingPlayers;
     List<PlayerInstance> awayPlayers = awaySquad.StartingPlayers;
 
@@ -57,8 +57,18 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     Club homeClub = match.HomeClub;
     Club awayClub = match.AwayClub;
 
-    TeamPower homePower = CalculateTeamPower(homePlayers, homeClub, homeSquad.Mentality, isHome: true);
-    TeamPower awayPower = CalculateTeamPower(awayPlayers, awayClub, awaySquad.Mentality, isHome: false);
+    TeamPower homePower = CalculateTeamPower(
+      homePlayers,
+      homeClub,
+      homeSquad.Mentality,
+      isHome: true,
+      hasEspionageEdge: influence.HasEspionage(homeClub.Id));
+    TeamPower awayPower = CalculateTeamPower(
+      awayPlayers,
+      awayClub,
+      awaySquad.Mentality,
+      isHome: false,
+      hasEspionageEdge: influence.HasEspionage(awayClub.Id));
 
     List<MatchEventDto> events =
     [
@@ -173,7 +183,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     TeamPower attackingPower,
     TeamPower defendingPower,
     Referee referee,
-    MatchBribeInfluence influence,
+    MatchInfluence influence,
     ref int homeScore,
     ref int awayScore,
     bool homeControlsAttack)
@@ -288,7 +298,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     List<PlayerInstance> defendingPlayers,
     double chanceQuality,
     Referee referee,
-    MatchBribeInfluence influence,
+    MatchInfluence influence,
     ref int homeScore,
     ref int awayScore,
     bool homeControlsAttack)
@@ -298,7 +308,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     double goalChance = Math.Clamp(
       (0.10 + chanceQuality * 0.36)
         * GetRefereeGoalModifier(referee)
-        * GetBribeGoalModifier(attackingClub.Id, influence),
+        * GetInfluenceGoalModifier(attackingClub.Id, defendingClub.Id, influence),
       0.06,
       0.62);
 
@@ -683,29 +693,42 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     ApplyClubDeltas(awayClub, options.PostMatchDrawMoraleDelta, options.PostMatchDrawCashReward);
   }
 
-  private static void ApplyClubDeltas(Club club, int moraleDelta, decimal cashReward)
+  private void ApplyClubDeltas(Club club, int moraleDelta, decimal cashReward)
   {
     club.Morale = Math.Clamp(club.Morale + moraleDelta, 0, 100);
     club.Cash += cashReward;
+    club.Suspicion = Math.Max(
+      0,
+      club.Suspicion - _gameOptions.Value.SuspicionDecayPerMatch);
   }
 
-  private static TeamPower CalculateTeamPower(
+  private TeamPower CalculateTeamPower(
     List<PlayerInstance> players,
     Club club,
     TeamMentality mentality,
-    bool isHome)
+    bool isHome,
+    bool hasEspionageEdge)
   {
     double matchDayVariance = Random.Shared.NextDouble() * 0.30 + 0.85;
     double homeAdvantage = isHome ? 1.05 : 1.0;
     double clubStatusModifier = (club.Morale + club.Chemistry + club.Discipline) / 300d;
     double finalModifier = matchDayVariance * homeAdvantage * (0.90 + clubStatusModifier * 0.20);
     MentalityModifiers mentalityModifiers = GetMentalityModifiers(mentality);
+    double espionageModifier = hasEspionageEdge
+      ? (double)_gameOptions.Value.EspionageEdgeMultiplier
+      : 1.0;
 
     return new TeamPower
     {
-      AttackPower = Math.Max(1, players.Average(p => p.AttackPower) * finalModifier * mentalityModifiers.Attack),
-      DefenseStrength = Math.Max(1, players.Average(p => p.DefenseStrength) * finalModifier * mentalityModifiers.Defense),
-      MidfieldControl = Math.Max(1, players.Average(p => p.MidfieldControl) * finalModifier * mentalityModifiers.Midfield)
+      AttackPower = Math.Max(
+        1,
+        players.Average(p => p.AttackPower) * finalModifier * mentalityModifiers.Attack * espionageModifier),
+      DefenseStrength = Math.Max(
+        1,
+        players.Average(p => p.DefenseStrength) * finalModifier * mentalityModifiers.Defense),
+      MidfieldControl = Math.Max(
+        1,
+        players.Average(p => p.MidfieldControl) * finalModifier * mentalityModifiers.Midfield * espionageModifier)
     };
   }
 
@@ -736,19 +759,30 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     };
   }
 
-  private double GetBribeGoalModifier(Guid attackingClubId, MatchBribeInfluence influence)
+  private double GetInfluenceGoalModifier(
+    Guid attackingClubId,
+    Guid defendingClubId,
+    MatchInfluence influence)
   {
-    if (!influence.Favors(attackingClubId))
-    {
-      if (influence.FavoredClubIds.Count == 0)
-      {
-        return 1.0;
-      }
+    double modifier = 1.0;
 
-      return (double)_gameOptions.Value.BribeOpponentGoalMultiplier;
+    if (influence.Favors(attackingClubId))
+    {
+      modifier *= (double)_gameOptions.Value.BribeFavoredGoalMultiplier;
+    }
+    else if (influence.FavoredClubIds.Count > 0)
+    {
+      // Someone else is favored: this attack is slightly harder.
+      modifier *= (double)_gameOptions.Value.BribeOpponentGoalMultiplier;
     }
 
-    return (double)_gameOptions.Value.BribeFavoredGoalMultiplier;
+    // Match-fixing makes the opponent underperform when they attack.
+    if (influence.HasMatchFixing(defendingClubId))
+    {
+      modifier *= (double)_gameOptions.Value.MatchFixingOpponentGoalMultiplier;
+    }
+
+    return modifier;
   }
 
   private static PlayerInstance PickScorer(List<PlayerInstance> players)
