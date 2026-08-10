@@ -78,13 +78,13 @@ export const MatchInfluencePage = () => {
       awayClubName: context.awayClubName,
     };
 
-    navigate("/app/influence/confirm", { state });
+    navigate("/app/actions/bribe/confirm", { state });
   };
 
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
-        Loading match influence...
+        Loading bribe referee...
       </div>
     );
   }
@@ -94,10 +94,10 @@ export const MatchInfluencePage = () => {
       <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 py-16 text-center">
         <MaterialIcon name="gavel" className="text-4xl text-on-surface-variant" />
         <p className="font-body-lg text-body-lg text-on-surface-variant">
-          No upcoming fixture available for influence, or the match has no assigned referee.
+          No upcoming fixture available to bribe, or the match has no assigned referee.
         </p>
-        <Link to="/app/fixtures" className="text-primary hover:underline">
-          Back to Fixtures
+        <Link to="/app/actions" className="text-primary hover:underline">
+          Back to Actions
         </Link>
       </div>
     );
@@ -112,7 +112,7 @@ export const MatchInfluencePage = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <MatchInfluenceHeader />
+      <MatchInfluenceHeader backTo="/app/actions" title="Bribe Referee" />
 
       <MatchInfluenceContextCard context={context} />
 
@@ -155,7 +155,7 @@ export const MatchInfluencePage = () => {
 
       <div className="mt-6 flex justify-end gap-4 border-t border-outline-variant pt-6">
         <Link
-          to="/app/fixtures"
+          to="/app/actions"
           className="rounded border border-outline-variant px-6 py-2 font-label-caps text-label-caps text-on-surface-variant transition-colors hover:bg-surface-variant"
         >
           Cancel

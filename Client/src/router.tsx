@@ -35,6 +35,7 @@ import { MakeOfferPage } from "./features/transfers/pages/MakeOfferPage";
 import { MyDealsPage } from "./features/transfers/pages/MyDealsPage";
 import { MatchInfluencePage } from "./features/bribery/pages/MatchInfluencePage";
 import { ConfirmBribePage } from "./features/bribery/pages/ConfirmBribePage";
+import { ActionsHubPage } from "./features/actions/pages/ActionsHubPage";
 import { FacilitiesHubPage } from "./features/facilities/pages/FacilitiesHubPage";
 import { FacilityUpgradeDetailPage } from "./features/facilities/pages/FacilityUpgradeDetailPage";
 import { EndOfSeasonMovementsPage } from "./features/seasonTransitions/pages/EndOfSeasonMovementsPage";
@@ -177,12 +178,24 @@ export const router = createBrowserRouter([
                         element: <FixturesPage />,
                       },
                       {
-                        path: "influence",
+                        path: "actions",
+                        element: <ActionsHubPage />,
+                      },
+                      {
+                        path: "actions/bribe",
                         element: <MatchInfluencePage />,
                       },
                       {
-                        path: "influence/confirm",
+                        path: "actions/bribe/confirm",
                         element: <ConfirmBribePage />,
+                      },
+                      {
+                        path: "influence",
+                        element: <Navigate to="/app/actions" replace />,
+                      },
+                      {
+                        path: "influence/confirm",
+                        element: <Navigate to="/app/actions/bribe" replace />,
                       },
                       {
                         path: "matches/:id/lineup",

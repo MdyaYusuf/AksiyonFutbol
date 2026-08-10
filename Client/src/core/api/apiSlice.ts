@@ -65,6 +65,7 @@ export const apiSlice = createApi({
     "Match",
     "Transfer",
     "Bribery",
+    "Actions",
     "Facility",
   ],
   endpoints: () => ({}),

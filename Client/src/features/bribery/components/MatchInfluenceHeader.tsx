@@ -3,10 +3,14 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 
 interface MatchInfluenceHeaderProps {
   backTo?: string;
+  title?: string;
+  subtitle?: string;
 }
 
 export const MatchInfluenceHeader = ({
-  backTo = "/app/fixtures",
+  backTo = "/app/actions",
+  title = "Bribe Referee",
+  subtitle = "Weigh risk against reward before kickoff",
 }: MatchInfluenceHeaderProps) => {
   return (
     <div className="flex flex-col gap-2 border-b border-outline-variant pb-6">
@@ -19,11 +23,11 @@ export const MatchInfluenceHeader = ({
           <MaterialIcon name="arrow_back" />
         </Link>
         <h1 className="font-headline-md text-headline-md text-on-background">
-          Match Influence
+          {title}
         </h1>
       </div>
       <p className="ml-10 font-body-lg text-body-lg text-on-surface-variant">
-        Weigh risk against reward before kickoff
+        {subtitle}
       </p>
     </div>
   );

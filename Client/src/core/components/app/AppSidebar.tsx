@@ -19,7 +19,7 @@ const navItems: AppNavItem[] = [
   { to: "/app/transfers", label: "Transfers", icon: "swap_horiz" },
   { to: "/app/league", label: "League", icon: "military_tech" },
   { to: "/app/fixtures", label: "Fixtures", icon: "calendar_month" },
-  { to: "/app/influence", label: "Influence", icon: "gavel" },
+  { to: "/app/actions", label: "Actions", icon: "bolt" },
   { to: "/admin", label: "Admin", icon: "admin_panel_settings", adminOnly: true },
 ];
 

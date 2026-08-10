@@ -15,7 +15,7 @@ export const ConfirmBribePage = () => {
   const [createAttempt, { isLoading }] = useCreateBribeAttemptMutation();
 
   if (!state) {
-    return <Navigate to="/app/influence" replace />;
+    return <Navigate to="/app/actions/bribe" replace />;
   }
 
   const handleConfirm = async () => {
@@ -24,7 +24,7 @@ export const ConfirmBribePage = () => {
         matchId: state.matchId,
         amount: state.amount,
       }).unwrap();
-      navigate("/app/influence", { replace: true });
+      navigate("/app/actions", { replace: true });
     } catch {
       /* Toasts via apiClient */
     }
@@ -39,7 +39,7 @@ export const ConfirmBribePage = () => {
         <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-high px-6 py-4">
           <div>
             <h1 className="font-headline-sm text-headline-sm text-on-background">
-              Confirm Influence Attempt
+              Confirm Bribe Attempt
             </h1>
             <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
               Please review the details of this action carefully.
@@ -57,7 +57,7 @@ export const ConfirmBribePage = () => {
           <Link to="/app/fixtures" className={secondaryButtonClass}>
             Abort
           </Link>
-          <Link to="/app/influence" className={secondaryButtonClass}>
+          <Link to="/app/actions/bribe" className={secondaryButtonClass}>
             Go Back
           </Link>
           <button

@@ -124,10 +124,10 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
         {phase === "upcoming" ? (
           <>
             <Link
-              to="/app/influence"
+              to="/app/actions"
               className="rounded border border-outline-variant bg-transparent px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
             >
-              Match Influence
+              Actions
             </Link>
             <Link
               to={reportPath}

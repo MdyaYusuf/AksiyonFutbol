@@ -1,0 +1,89 @@
+import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
+import type { ClubActionAvailability } from "../actionTypes";
+import { formatChancePercent, getActionIcon } from "../utils/actionsHubHelpers";
+
+interface ActionCardProps {
+  action: ClubActionAvailability;
+  onExecute: (action: ClubActionAvailability) => void;
+}
+
+export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
+  return (
+    <div className="flex flex-col rounded-xl border border-outline-variant bg-surface-container p-5">
+      <div className="mb-4 flex items-start gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-outline-variant bg-surface-container-low text-primary">
+          <MaterialIcon name={getActionIcon(action.actionType)} className="text-2xl" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">
+              {action.displayName}
+            </h3>
+            {action.isShady ? (
+              <span className="rounded border border-secondary/30 bg-secondary/10 px-2 py-0.5 font-label-caps text-label-caps text-secondary">
+                Shady
+              </span>
+            ) : null}
+          </div>
+          <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
+            {action.description}
+          </p>
+        </div>
+      </div>
+
+      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat
+          label="Cost"
+          value={action.cost > 0 ? formatCashFull(action.cost) : "Free"}
+        />
+        <Stat label="Success" value={formatChancePercent(action.successChance)} />
+        <Stat
+          label="Heat"
+          value={action.heatGenerated > 0 ? `+${action.heatGenerated}` : "None"}
+        />
+        <Stat
+          label={action.cooldownRemainingDays > 0 ? "Cooldown" : "Detection"}
+          value={
+            action.cooldownRemainingDays > 0
+              ? `${action.cooldownRemainingDays}d`
+              : action.isShady
+                ? formatChancePercent(action.detectionChance)
+                : "—"
+          }
+        />
+      </div>
+
+      {!action.isAvailable ? (
+        <div className="mt-auto flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
+          <MaterialIcon name="lock" className="text-sm" />
+          {action.unavailableReason ?? "Unavailable"}
+        </div>
+      ) : (
+        <div className="mt-auto flex justify-end">
+          <button
+            type="button"
+            onClick={() => {
+              onExecute(action);
+            }}
+            className="flex items-center gap-2 rounded bg-primary px-5 py-2 font-label-caps text-label-caps text-on-primary transition-colors hover:bg-primary-fixed"
+          >
+            <MaterialIcon name="bolt" className="text-sm" />
+            Execute
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Stat = ({ label, value }: { label: string; value: string }) => {
+  return (
+    <div>
+      <div className="mb-0.5 font-label-caps text-label-caps text-on-surface-variant">
+        {label}
+      </div>
+      <div className="font-data-mono text-data-mono text-on-surface">{value}</div>
+    </div>
+  );
+};
