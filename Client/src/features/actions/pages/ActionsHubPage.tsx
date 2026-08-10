@@ -1,14 +1,20 @@
 import { useMemo, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
 import { useGetBriberyContextQuery } from "../../bribery/briberyApiSlice";
 import {
   useExecuteClubActionMutation,
   useGetActionsContextQuery,
   useGetMyActionHistoryQuery,
 } from "../actionsApiSlice";
-import type { ClubActionAvailability, MediaSpinMode } from "../actionTypes";
+import type {
+  ClubActionAvailability,
+  ClubActionResult,
+  MediaSpinMode,
+} from "../actionTypes";
 import { ClubActionOutcome } from "../actionTypes";
 import { ActionCategorySection } from "../components/ActionCategorySection";
+import { ActionResultBanner } from "../components/ActionResultBanner";
 import { ActionsHubHeader } from "../components/ActionsHubHeader";
 import { ExecuteActionModal } from "../components/ExecuteActionModal";
 import { groupActionsByCategory } from "../utils/actionsHubHelpers";
@@ -26,6 +32,7 @@ export const ActionsHubPage = () => {
   const [selectedAction, setSelectedAction] = useState<ClubActionAvailability | null>(
     null,
   );
+  const [lastResult, setLastResult] = useState<ClubActionResult | null>(null);
 
   const grouped = useMemo(
     () => (context ? groupActionsByCategory(context.actions) : []),
@@ -43,13 +50,14 @@ export const ActionsHubPage = () => {
     }
 
     try {
-      await executeAction({
+      const result = await executeAction({
         actionType: selectedAction.actionType,
         matchId: context?.upcomingMatch?.matchId ?? null,
         mediaSpinMode: options.mediaSpinMode ?? null,
         targetPlayerInstanceId: options.targetPlayerInstanceId ?? null,
       }).unwrap();
       setSelectedAction(null);
+      setLastResult(result);
     } catch {
       /* Toasts via apiClient */
     }
@@ -78,6 +86,15 @@ export const ActionsHubPage = () => {
         suspicion={context.suspicion}
         maxSuspicion={context.maxSuspicion}
       />
+
+      {lastResult ? (
+        <ActionResultBanner
+          result={lastResult}
+          onDismiss={() => {
+            setLastResult(null);
+          }}
+        />
+      ) : null}
 
       {context.upcomingMatch ? (
         <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -121,9 +138,18 @@ export const ActionsHubPage = () => {
                   <div className="font-body-sm text-body-sm font-semibold text-on-surface">
                     {item.displayName}
                   </div>
-                  <div className="font-body-sm text-body-sm text-on-surface-variant">
+                  <div
+                    className={[
+                      "font-body-sm text-body-sm",
+                      item.wasDetected ? "text-error" : "text-on-surface-variant",
+                    ].join(" ")}
+                  >
                     {item.outcome === ClubActionOutcome.Succeeded ? "Succeeded" : "Failed"}
                     {item.wasDetected ? " · Detected" : ""}
+                    {item.fineAmount > 0
+                      ? ` · Fine ${formatCashFull(item.fineAmount)}`
+                      : ""}
+                    {item.matchPenaltyApplied ? " · Match penalty" : ""}
                     {item.matchWeek != null ? ` · Week ${item.matchWeek}` : ""}
                   </div>
                 </div>

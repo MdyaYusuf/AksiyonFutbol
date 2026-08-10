@@ -63,6 +63,10 @@ public sealed class ClubActionDto
   public decimal CashSpent { get; init; }
   public decimal SuccessChance { get; init; }
   public decimal DetectionChance { get; init; }
+  public decimal FineAmount { get; init; }
+  public int ScandalMoralePenaltyApplied { get; init; }
+  public int ScandalReputationPenaltyApplied { get; init; }
+  public bool MatchPenaltyApplied { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 
@@ -75,4 +79,13 @@ public sealed class ClubActionResultDto
   public int NewChemistry { get; init; }
   public int NewDiscipline { get; init; }
   public int? NewReputationPoints { get; init; }
+  public InvestigationConsequenceDto? Investigation { get; init; }
+}
+
+public sealed class InvestigationConsequenceDto
+{
+  public decimal FineAmount { get; init; }
+  public int MoralePenalty { get; init; }
+  public int ReputationPenalty { get; init; }
+  public bool MatchPenaltyApplied { get; init; }
 }

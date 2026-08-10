@@ -321,6 +321,11 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("ScandalReputationPenalty negatif olamaz.");
     }
 
+    if (options.MatchPenaltyPowerMultiplier <= 0 || options.MatchPenaltyPowerMultiplier > 1)
+    {
+      failures.Add("MatchPenaltyPowerMultiplier 0 ile 1 arasında olmalıdır.");
+    }
+
     foreach (var balance in options.ClubActionBalances)
     {
       string key = balance.Key;

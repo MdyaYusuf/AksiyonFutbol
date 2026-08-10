@@ -24,6 +24,12 @@ public class ClubAction : Entity<Guid>
   public decimal SuccessChance { get; set; }
   public decimal DetectionChance { get; set; }
 
+  // Populated when WasDetected is true (investigation consequences).
+  public decimal FineAmount { get; set; }
+  public int ScandalMoralePenaltyApplied { get; set; }
+  public int ScandalReputationPenaltyApplied { get; set; }
+  public bool MatchPenaltyApplied { get; set; }
+
   public Guid ClubId { get; set; }
   // Null for non match-scoped actions (squad, most politics).
   public Guid? MatchId { get; set; }

@@ -732,6 +732,11 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       finalModifier *= (double)_gameOptions.Value.SabotageAwayPowerMultiplier;
     }
 
+    if (influence.HasMatchPenalty(club.Id))
+    {
+      finalModifier *= (double)_gameOptions.Value.MatchPenaltyPowerMultiplier;
+    }
+
     return new TeamPower
     {
       AttackPower = Math.Max(

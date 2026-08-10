@@ -125,6 +125,24 @@ public class ClubActionBusinessRules(
     }
   }
 
+  public void EnsurePresidentExists(Club club)
+  {
+    if (club.President == null)
+    {
+      throw new BusinessException("Bu işlem için başkan bilgisi bulunamadı.");
+    }
+  }
+
+  public void EnsurePresidentCanAffordLobby(Club club)
+  {
+    EnsurePresidentExists(club);
+
+    if (club.President!.ReputationPoints < Options.LobbyFederationReputationCost)
+    {
+      throw new BusinessException("Federasyon lobiciliği için yeterli itibar puanı yok.");
+    }
+  }
+
   // Effective detection chance after scaling by the club's current Suspicion.
   public decimal CalculateDetectionChance(ClubActionDefinition definition, int currentSuspicion)
   {
@@ -172,7 +190,11 @@ public class ClubActionBusinessRules(
     return Math.Round(chance, 4);
   }
 
-  public decimal ApplyIntimidatePersonalityModifier(
+  public decimal GetPromiseWinBonusAmount() => Options.PromiseWinBonusAmount;
+
+  public decimal GetTapUpDiscountRatio() => Options.TapUpTransferFeeDiscountRatio;
+
+  private decimal ApplyIntimidatePersonalityModifier(
     decimal baseChance,
     RefereePersonalityType personality)
   {
@@ -189,107 +211,4 @@ public class ClubActionBusinessRules(
 
     return adjusted;
   }
-
-  public void ApplySquadEffects(Club club, ClubActionType actionType)
-  {
-    GameOptions options = Options;
-
-    switch (actionType)
-    {
-      case ClubActionType.TeamBonding:
-        club.Chemistry = ClampStatus(club.Chemistry + options.TeamBondingChemistryBonus);
-        club.Discipline = ClampStatus(club.Discipline - options.TeamBondingDisciplinePenalty);
-        break;
-      case ClubActionType.FinePlayer:
-        club.Discipline = ClampStatus(club.Discipline + options.FinePlayerDisciplineBonus);
-        club.Morale = ClampStatus(club.Morale - options.FinePlayerMoralePenalty);
-        break;
-      case ClubActionType.MotivationalTalk:
-        club.Morale = ClampStatus(club.Morale + options.MotivationalTalkMoraleBonus);
-        break;
-      case ClubActionType.BrutalTraining:
-        club.Morale = ClampStatus(club.Morale - options.BrutalTrainingMoralePenalty);
-        club.Discipline = ClampStatus(club.Discipline + options.BrutalTrainingDisciplineBonus);
-        break;
-      case ClubActionType.PromiseWinBonus:
-        club.Morale = ClampStatus(club.Morale + options.PromiseWinBonusMoraleBonus);
-        break;
-    }
-  }
-
-  public void ApplyLobbyFederation(Club club)
-  {
-    GameOptions options = Options;
-
-    if (club.President == null)
-    {
-      throw new BusinessException("Federasyon lobiciliği için başkan bilgisi bulunamadı.");
-    }
-
-    if (club.President.ReputationPoints < options.LobbyFederationReputationCost)
-    {
-      throw new BusinessException("Federasyon lobiciliği için yeterli itibar puanı yok.");
-    }
-
-    club.President.ReputationPoints -= options.LobbyFederationReputationCost;
-    club.Suspicion = Math.Max(0, club.Suspicion - options.LobbyFederationSuspicionReduction);
-  }
-
-  public void ApplyDodgySponsorship(Club club)
-  {
-    club.Cash += Options.DodgySponsorshipCashGain;
-  }
-
-  public void ApplyMediaSpinReputationRepair(Club club)
-  {
-    if (club.President == null)
-    {
-      throw new BusinessException("İtibar onarımı için başkan bilgisi bulunamadı.");
-    }
-
-    club.President.ReputationPoints += Options.MediaSpinReputationRepair;
-  }
-
-  public void ApplyMediaSpinOpponentMorale(Club opponentClub)
-  {
-    opponentClub.Morale = ClampStatus(
-      opponentClub.Morale - Options.MediaSpinOpponentMoralePenalty);
-  }
-
-  public void EnsurePresidentCanAffordLobby(Club club)
-  {
-    if (club.President == null)
-    {
-      throw new BusinessException("Federasyon lobiciliği için başkan bilgisi bulunamadı.");
-    }
-
-    if (club.President.ReputationPoints < Options.LobbyFederationReputationCost)
-    {
-      throw new BusinessException("Federasyon lobiciliği için yeterli itibar puanı yok.");
-    }
-  }
-
-  public decimal GetPromiseWinBonusAmount() => Options.PromiseWinBonusAmount;
-
-  public decimal GetTapUpDiscountRatio() => Options.TapUpTransferFeeDiscountRatio;
-
-  public int ApplyHeat(Club club, ClubActionDefinition definition)
-  {
-    if (!definition.IsShady || definition.HeatGenerated <= 0)
-    {
-      return 0;
-    }
-
-    int newSuspicion = Math.Clamp(
-      club.Suspicion + definition.HeatGenerated,
-      0,
-      Options.MaxSuspicion);
-
-    int applied = newSuspicion - club.Suspicion;
-    club.Suspicion = newSuspicion;
-
-    return applied;
-  }
-
-  private static int ClampStatus(int value) => Math.Clamp(value, 0, 100);
 }

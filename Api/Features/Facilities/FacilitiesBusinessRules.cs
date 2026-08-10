@@ -109,21 +109,6 @@ public class FacilitiesBusinessRules(
     }
   }
 
-  public void ApplyUpgradeEffects(Club club, FacilityType facilityType)
-  {
-    if (facilityType == FacilityType.TrainingGround)
-    {
-      club.Morale = ClampStatus(club.Morale + Options.FacilityTrainingMoraleBonus);
-      club.Chemistry = ClampStatus(club.Chemistry + Options.FacilityTrainingChemistryBonus);
-      return;
-    }
-
-    if (facilityType == FacilityType.YouthAcademy)
-    {
-      club.Discipline = ClampStatus(club.Discipline + Options.FacilityAcademyDisciplineBonus);
-    }
-  }
-
   public string GetFacilityTypeName(FacilityType facilityType)
   {
     return facilityType switch
@@ -137,20 +122,5 @@ public class FacilitiesBusinessRules(
   public Func<IQueryable<ClubFacility>, IQueryable<ClubFacility>> FacilityDetailInclude()
   {
     return query => query.Include(f => f.Club);
-  }
-
-  private static int ClampStatus(int value)
-  {
-    if (value < 0)
-    {
-      return 0;
-    }
-
-    if (value > 100)
-    {
-      return 100;
-    }
-
-    return value;
   }
 }

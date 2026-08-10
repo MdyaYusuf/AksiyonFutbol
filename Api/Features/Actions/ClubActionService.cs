@@ -1,4 +1,5 @@
 using Api.Core.Exceptions;
+using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
@@ -145,14 +146,14 @@ public class ClubActionService(
     decimal detectionChance = _businessRules.CalculateDetectionChance(definition, suspicionBefore);
 
     club.Cash -= definition.Cost;
-    int heatApplied = _businessRules.ApplyHeat(club, definition);
+    int heatApplied = ApplyHeat(club, definition);
 
     bool succeeded = Random.Shared.NextDouble() <= (double)successChance;
     bool wasDetected = definition.IsShady && Random.Shared.NextDouble() <= (double)detectionChance;
 
     if (succeeded && definition.Category == ClubActionCategory.Squad)
     {
-      _businessRules.ApplySquadEffects(club, definition.Type);
+      ApplySquadEffects(club, definition.Type);
     }
 
     if (succeeded && definition.Category == ClubActionCategory.Politics)
@@ -162,6 +163,16 @@ public class ClubActionService(
         request.MediaSpinMode,
         club,
         mediaSpinOpponent);
+    }
+
+    InvestigationConsequence? investigation = null;
+
+    if (wasDetected)
+    {
+      investigation = ApplyDetectionConsequences(
+        club,
+        definition.Type,
+        definition.IsMatchScoped);
     }
 
     _clubRepository.Update(club);
@@ -186,7 +197,11 @@ public class ClubActionService(
       HeatGenerated = heatApplied,
       CashSpent = cashRecorded,
       SuccessChance = successChance,
-      DetectionChance = detectionChance
+      DetectionChance = detectionChance,
+      FineAmount = investigation?.FineAmount ?? 0m,
+      ScandalMoralePenaltyApplied = investigation?.MoralePenalty ?? 0,
+      ScandalReputationPenaltyApplied = investigation?.ReputationPenalty ?? 0,
+      MatchPenaltyApplied = investigation?.MatchPenaltyApplied ?? false
     };
 
     await _clubActionRepository.AddAsync(action, cancellationToken);
@@ -198,8 +213,8 @@ public class ClubActionService(
     return new ReturnModel<ClubActionResultDto>()
     {
       Success = true,
-      Message = BuildResultMessage(definition, succeeded, match, request.MediaSpinMode),
-      Data = _mapper.ToResultDto(action, club),
+      Message = BuildResultMessage(definition, succeeded, wasDetected, match, request.MediaSpinMode),
+      Data = _mapper.ToResultDto(action, club, investigation),
       StatusCode = 201
     };
   }
@@ -398,9 +413,17 @@ public class ClubActionService(
   private static string BuildResultMessage(
     ClubActionDefinition definition,
     bool succeeded,
+    bool wasDetected,
     Match? match,
     MediaSpinMode? mediaSpinMode)
   {
+    if (wasDetected)
+    {
+      return succeeded
+        ? "Aksiyon başarılı oldu ancak yakalandınız. Soruşturma sonuçları uygulandı."
+        : "Aksiyon başarısız oldu ve yakalandınız. Soruşturma sonuçları uygulandı.";
+    }
+
     if (!definition.IsShady)
     {
       return "Aksiyon gerçekleştirildi.";
@@ -449,11 +472,7 @@ public class ClubActionService(
   {
     if (request.MediaSpinMode == MediaSpinMode.ReputationRepair)
     {
-      if (club.President == null)
-      {
-        throw new BusinessException("İtibar onarımı için başkan bilgisi bulunamadı.");
-      }
-
+      _businessRules.EnsurePresidentExists(club);
       return (null, null);
     }
 
@@ -489,10 +508,13 @@ public class ClubActionService(
     Club club,
     Club? mediaSpinOpponent)
   {
+    GameOptions options = _businessRules.Options;
+
     switch (actionType)
     {
       case ClubActionType.MediaSpin when mediaSpinMode == MediaSpinMode.ReputationRepair:
-        _businessRules.ApplyMediaSpinReputationRepair(club);
+        _businessRules.EnsurePresidentExists(club);
+        club.President!.ReputationPoints += options.MediaSpinReputationRepair;
         break;
       case ClubActionType.MediaSpin when mediaSpinMode == MediaSpinMode.OpponentMorale:
         if (mediaSpinOpponent == null)
@@ -500,19 +522,112 @@ public class ClubActionService(
           throw new BusinessException("Rakip kulüp bulunamadı.");
         }
 
-        _businessRules.ApplyMediaSpinOpponentMorale(mediaSpinOpponent);
+        mediaSpinOpponent.Morale = ClampStatus(
+          mediaSpinOpponent.Morale - options.MediaSpinOpponentMoralePenalty);
         break;
       case ClubActionType.LobbyFederation:
-        _businessRules.ApplyLobbyFederation(club);
+        _businessRules.EnsurePresidentCanAffordLobby(club);
+        club.President!.ReputationPoints -= options.LobbyFederationReputationCost;
+        club.Suspicion = Math.Max(0, club.Suspicion - options.LobbyFederationSuspicionReduction);
         break;
       case ClubActionType.DodgySponsorship:
-        _businessRules.ApplyDodgySponsorship(club);
+        club.Cash += options.DodgySponsorshipCashGain;
         break;
       case ClubActionType.TapUpTarget:
         // Effect is deferred: discount applies at transfer accept time.
         break;
     }
   }
+
+  private void ApplySquadEffects(Club club, ClubActionType actionType)
+  {
+    GameOptions options = _businessRules.Options;
+
+    switch (actionType)
+    {
+      case ClubActionType.TeamBonding:
+        club.Chemistry = ClampStatus(club.Chemistry + options.TeamBondingChemistryBonus);
+        club.Discipline = ClampStatus(club.Discipline - options.TeamBondingDisciplinePenalty);
+        break;
+      case ClubActionType.FinePlayer:
+        club.Discipline = ClampStatus(club.Discipline + options.FinePlayerDisciplineBonus);
+        club.Morale = ClampStatus(club.Morale - options.FinePlayerMoralePenalty);
+        break;
+      case ClubActionType.MotivationalTalk:
+        club.Morale = ClampStatus(club.Morale + options.MotivationalTalkMoraleBonus);
+        break;
+      case ClubActionType.BrutalTraining:
+        club.Morale = ClampStatus(club.Morale - options.BrutalTrainingMoralePenalty);
+        club.Discipline = ClampStatus(club.Discipline + options.BrutalTrainingDisciplineBonus);
+        break;
+      case ClubActionType.PromiseWinBonus:
+        club.Morale = ClampStatus(club.Morale + options.PromiseWinBonusMoraleBonus);
+        break;
+    }
+  }
+
+  private int ApplyHeat(Club club, ClubActionDefinition definition)
+  {
+    if (!definition.IsShady || definition.HeatGenerated <= 0)
+    {
+      return 0;
+    }
+
+    int newSuspicion = Math.Clamp(
+      club.Suspicion + definition.HeatGenerated,
+      0,
+      _businessRules.Options.MaxSuspicion);
+
+    int applied = newSuspicion - club.Suspicion;
+    club.Suspicion = newSuspicion;
+
+    return applied;
+  }
+
+  private InvestigationConsequence ApplyDetectionConsequences(
+    Club club,
+    ClubActionType actionType,
+    bool isMatchScoped)
+  {
+    GameOptions options = _businessRules.Options;
+
+    decimal fineAmount = Math.Round(club.Cash * options.ScandalFineCashRatio, 2);
+
+    if (fineAmount < 0m)
+    {
+      fineAmount = 0m;
+    }
+
+    club.Cash = Math.Max(0m, club.Cash - fineAmount);
+
+    int moraleBefore = club.Morale;
+    club.Morale = ClampStatus(club.Morale - options.ScandalMoralePenalty);
+    int moralePenalty = moraleBefore - club.Morale;
+
+    int reputationPenalty = 0;
+
+    if (club.President != null && options.ScandalReputationPenalty > 0)
+    {
+      int reputationBefore = club.President.ReputationPoints;
+      club.President.ReputationPoints = Math.Max(
+        0,
+        club.President.ReputationPoints - options.ScandalReputationPenalty);
+      reputationPenalty = reputationBefore - club.President.ReputationPoints;
+    }
+
+    bool matchPenaltyApplied = isMatchScoped &&
+      (actionType == ClubActionType.Doping || actionType == ClubActionType.MatchFixing);
+
+    return new InvestigationConsequence
+    {
+      FineAmount = fineAmount,
+      MoralePenalty = moralePenalty,
+      ReputationPenalty = reputationPenalty,
+      MatchPenaltyApplied = matchPenaltyApplied
+    };
+  }
+
+  private static int ClampStatus(int value) => Math.Clamp(value, 0, 100);
 
   private async Task<Guid> ValidateTapUpTargetAsync(
     Guid clubId,

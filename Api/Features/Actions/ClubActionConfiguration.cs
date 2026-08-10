@@ -51,6 +51,23 @@ public class ClubActionConfiguration : IEntityTypeConfiguration<ClubAction>
       .HasPrecision(5, 4)
       .IsRequired();
 
+    builder.Property(a => a.FineAmount)
+      .HasPrecision(18, 2)
+      .HasDefaultValue(0m)
+      .IsRequired();
+
+    builder.Property(a => a.ScandalMoralePenaltyApplied)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(a => a.ScandalReputationPenaltyApplied)
+      .HasDefaultValue(0)
+      .IsRequired();
+
+    builder.Property(a => a.MatchPenaltyApplied)
+      .HasDefaultValue(false)
+      .IsRequired();
+
     builder.Property(a => a.ClubId)
       .IsRequired();
 

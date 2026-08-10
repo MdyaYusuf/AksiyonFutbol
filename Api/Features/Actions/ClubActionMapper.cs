@@ -24,11 +24,18 @@ public class ClubActionMapper
       CashSpent = action.CashSpent,
       SuccessChance = action.SuccessChance,
       DetectionChance = action.DetectionChance,
+      FineAmount = action.FineAmount,
+      ScandalMoralePenaltyApplied = action.ScandalMoralePenaltyApplied,
+      ScandalReputationPenaltyApplied = action.ScandalReputationPenaltyApplied,
+      MatchPenaltyApplied = action.MatchPenaltyApplied,
       CreatedDate = action.CreatedDate
     };
   }
 
-  public ClubActionResultDto ToResultDto(ClubAction action, Club club)
+  public ClubActionResultDto ToResultDto(
+    ClubAction action,
+    Club club,
+    InvestigationConsequence? investigation = null)
   {
     return new ClubActionResultDto
     {
@@ -38,7 +45,16 @@ public class ClubActionMapper
       NewMorale = club.Morale,
       NewChemistry = club.Chemistry,
       NewDiscipline = club.Discipline,
-      NewReputationPoints = club.President?.ReputationPoints
+      NewReputationPoints = club.President?.ReputationPoints,
+      Investigation = investigation == null
+        ? null
+        : new InvestigationConsequenceDto
+        {
+          FineAmount = investigation.FineAmount,
+          MoralePenalty = investigation.MoralePenalty,
+          ReputationPenalty = investigation.ReputationPenalty,
+          MatchPenaltyApplied = investigation.MatchPenaltyApplied
+        }
     };
   }
 

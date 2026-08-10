@@ -47,6 +47,7 @@ public class MatchInfluenceProvider(
     HashSet<Guid> espionageClubIds = new();
     HashSet<Guid> dopingClubIds = new();
     HashSet<Guid> sabotageClubIds = new();
+    HashSet<Guid> matchPenaltyClubIds = new();
 
     RefereePersonalityType? refereePersonality = match.Referee?.PersonalityType;
 
@@ -61,14 +62,30 @@ public class MatchInfluenceProvider(
             refereePersonality,
             favoredClubIds);
           break;
-        case ClubActionType.MatchFixing when action.Outcome == ClubActionOutcome.Succeeded:
-          matchFixingClubIds.Add(action.ClubId);
+        case ClubActionType.MatchFixing:
+          if (action.WasDetected || action.MatchPenaltyApplied)
+          {
+            matchPenaltyClubIds.Add(action.ClubId);
+          }
+          else if (action.Outcome == ClubActionOutcome.Succeeded)
+          {
+            matchFixingClubIds.Add(action.ClubId);
+          }
+
           break;
         case ClubActionType.Espionage when action.Outcome == ClubActionOutcome.Succeeded:
           espionageClubIds.Add(action.ClubId);
           break;
-        case ClubActionType.Doping when action.Outcome == ClubActionOutcome.Succeeded:
-          dopingClubIds.Add(action.ClubId);
+        case ClubActionType.Doping:
+          if (action.WasDetected || action.MatchPenaltyApplied)
+          {
+            matchPenaltyClubIds.Add(action.ClubId);
+          }
+          else if (action.Outcome == ClubActionOutcome.Succeeded)
+          {
+            dopingClubIds.Add(action.ClubId);
+          }
+
           break;
         case ClubActionType.Sabotage when action.Outcome == ClubActionOutcome.Succeeded:
           sabotageClubIds.Add(action.ClubId);
@@ -80,7 +97,8 @@ public class MatchInfluenceProvider(
         matchFixingClubIds.Count == 0 &&
         espionageClubIds.Count == 0 &&
         dopingClubIds.Count == 0 &&
-        sabotageClubIds.Count == 0)
+        sabotageClubIds.Count == 0 &&
+        matchPenaltyClubIds.Count == 0)
     {
       return MatchInfluence.None;
     }
@@ -91,7 +109,8 @@ public class MatchInfluenceProvider(
       MatchFixingClubIds = matchFixingClubIds,
       EspionageClubIds = espionageClubIds,
       DopingClubIds = dopingClubIds,
-      SabotageClubIds = sabotageClubIds
+      SabotageClubIds = sabotageClubIds,
+      MatchPenaltyClubIds = matchPenaltyClubIds
     };
   }
 

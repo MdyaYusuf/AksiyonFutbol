@@ -85,6 +85,8 @@ public class GameOptions
   public decimal ScandalFineCashRatio { get; set; } = 0.15m;
   public int ScandalMoralePenalty { get; set; } = 10;
   public int ScandalReputationPenalty { get; set; } = 25;
+  // Applied in the sim when doping or match-fixing is detected for that fixture.
+  public decimal MatchPenaltyPowerMultiplier { get; set; } = 0.88m;
 
   // Per-action balancing overrides keyed by action name (e.g. "MatchFixing").
   // Code defaults are owned by the Actions feature and merged in at runtime, so

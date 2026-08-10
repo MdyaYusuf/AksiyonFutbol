@@ -47,6 +47,12 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
 
+                    b.Property<decimal>("FineAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<int>("HeatGenerated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -55,8 +61,23 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<Guid?>("MatchId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("MatchPenaltyApplied")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("Outcome")
                         .HasColumnType("int");
+
+                    b.Property<int>("ScandalMoralePenaltyApplied")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("ScandalReputationPenaltyApplied")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<decimal>("SuccessChance")
                         .HasPrecision(5, 4)

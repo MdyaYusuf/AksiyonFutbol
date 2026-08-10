@@ -67,7 +67,7 @@ public class FacilitiesService(
     club.Cash -= cost;
     facility.Level += 1;
     facility.UpdatedDate = DateTime.UtcNow;
-    _businessRules.ApplyUpgradeEffects(club, facility.FacilityType);
+    ApplyUpgradeEffects(club, facility.FacilityType);
 
     _clubRepository.Update(club);
     _clubFacilityRepository.Update(facility);
@@ -82,6 +82,38 @@ public class FacilitiesService(
       Data = overview,
       StatusCode = 200
     };
+  }
+
+  private void ApplyUpgradeEffects(Club club, FacilityType facilityType)
+  {
+    var options = _businessRules.Options;
+
+    if (facilityType == FacilityType.TrainingGround)
+    {
+      club.Morale = ClampStatus(club.Morale + options.FacilityTrainingMoraleBonus);
+      club.Chemistry = ClampStatus(club.Chemistry + options.FacilityTrainingChemistryBonus);
+      return;
+    }
+
+    if (facilityType == FacilityType.YouthAcademy)
+    {
+      club.Discipline = ClampStatus(club.Discipline + options.FacilityAcademyDisciplineBonus);
+    }
+  }
+
+  private static int ClampStatus(int value)
+  {
+    if (value < 0)
+    {
+      return 0;
+    }
+
+    if (value > 100)
+    {
+      return 100;
+    }
+
+    return value;
   }
 
   private async Task<ClubFacilitiesOverviewDto> BuildOverviewAsync(

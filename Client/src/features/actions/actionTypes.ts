@@ -92,7 +92,18 @@ export interface ClubActionHistoryItem {
   cashSpent: number;
   successChance: number;
   detectionChance: number;
+  fineAmount: number;
+  scandalMoralePenaltyApplied: number;
+  scandalReputationPenaltyApplied: number;
+  matchPenaltyApplied: boolean;
   createdDate: string;
+}
+
+export interface InvestigationConsequence {
+  fineAmount: number;
+  moralePenalty: number;
+  reputationPenalty: number;
+  matchPenaltyApplied: boolean;
 }
 
 export interface ClubActionResult {
@@ -103,6 +114,7 @@ export interface ClubActionResult {
   newChemistry: number;
   newDiscipline: number;
   newReputationPoints?: number | null;
+  investigation?: InvestigationConsequence | null;
 }
 
 export interface ExecuteClubActionRequest {

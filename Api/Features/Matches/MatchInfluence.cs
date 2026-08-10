@@ -32,6 +32,12 @@ public sealed class MatchInfluence
   /// </summary>
   public IReadOnlySet<Guid> SabotageClubIds { get; init; } = new HashSet<Guid>();
 
+  /// <summary>
+  /// Clubs caught doping or match-fixing for this fixture. They receive a power penalty
+  /// and lose any related positive influence from those actions.
+  /// </summary>
+  public IReadOnlySet<Guid> MatchPenaltyClubIds { get; init; } = new HashSet<Guid>();
+
   public bool Favors(Guid clubId) => FavoredClubIds.Contains(clubId);
 
   public bool HasMatchFixing(Guid clubId) => MatchFixingClubIds.Contains(clubId);
@@ -41,6 +47,8 @@ public sealed class MatchInfluence
   public bool HasDoping(Guid clubId) => DopingClubIds.Contains(clubId);
 
   public bool HasSabotage(Guid clubId) => SabotageClubIds.Contains(clubId);
+
+  public bool HasMatchPenalty(Guid clubId) => MatchPenaltyClubIds.Contains(clubId);
 }
 
 public interface IMatchInfluenceProvider
