@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
 import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { TacticsAvailableSquad } from "../components/TacticsAvailableSquad";
+import { getPositionLabel } from "../../playerInstances/utils/squadHelpers";
 import { TacticsBench } from "../components/TacticsBench";
 import { TacticsControls } from "../components/TacticsControls";
 import { TacticsPitch } from "../components/TacticsPitch";
+import { TacticsSlotPicker } from "../components/TacticsSlotPicker";
 import {
   useGetMyClubLineupQuery,
   useUpsertMyClubLineupMutation,
@@ -14,15 +15,19 @@ import { TeamFormation, TeamMentality } from "../clubLineupTypes";
 import {
   createEmptyBenchSlots,
   createEmptyStarterSlots,
+  getBenchCandidates,
+  getSlotCandidates,
+  getStarterSlotPosition,
   LINEUP_STARTER_COUNT,
   lineupToSlots,
   redistributeByFormation,
 } from "../utils/tacticsHelpers";
 
-type SlotSelection =
-  | { kind: "starter"; index: number }
-  | { kind: "bench"; index: number }
-  | null;
+interface SlotPickerState {
+  kind: "starter" | "bench";
+  slotIndex: number;
+  anchor: DOMRect;
+}
 
 export const TacticsBoardPage = () => {
   const { data: squad = [], isLoading: isSquadLoading } =
@@ -34,7 +39,7 @@ export const TacticsBoardPage = () => {
   const [mentality, setMentality] = useState<TeamMentality>(TeamMentality.Balanced);
   const [starterIds, setStarterIds] = useState<(string | null)[]>(createEmptyStarterSlots);
   const [benchIds, setBenchIds] = useState<(string | null)[]>(createEmptyBenchSlots);
-  const [selection, setSelection] = useState<SlotSelection>(null);
+  const [picker, setPicker] = useState<SlotPickerState | null>(null);
   const [baselineKey, setBaselineKey] = useState("");
 
   const playersById = useMemo(() => {
@@ -53,7 +58,7 @@ export const TacticsBoardPage = () => {
     setMentality(lineup.mentality);
     setStarterIds(slots.starters);
     setBenchIds(slots.bench);
-    setSelection(null);
+    setPicker(null);
     setBaselineKey(
       JSON.stringify({
         formation: lineup.formation,
@@ -63,26 +68,6 @@ export const TacticsBoardPage = () => {
       }),
     );
   }, [lineup, squad, playersById]);
-
-  const usedIds = useMemo(() => {
-    const ids = new Set<string>();
-    starterIds.forEach((id) => {
-      if (id) {
-        ids.add(id);
-      }
-    });
-    benchIds.forEach((id) => {
-      if (id) {
-        ids.add(id);
-      }
-    });
-    return ids;
-  }, [starterIds, benchIds]);
-
-  const availablePlayers = useMemo(
-    () => squad.filter((player) => !usedIds.has(player.id)),
-    [squad, usedIds],
-  );
 
   const filledStarterCount = starterIds.filter(Boolean).length;
   const hasGoalkeeper = starterIds.some((id) => {
@@ -114,149 +99,111 @@ export const TacticsBoardPage = () => {
   });
   const isDirty = currentKey !== baselineKey;
 
-  const clearPlayerFromSlots = (playerId: string) => {
-    setStarterIds((current) => current.map((id) => (id === playerId ? null : id)));
-    setBenchIds((current) => current.map((id) => (id === playerId ? null : id)));
-  };
+  const pickerCandidates = useMemo(() => {
+    if (!picker) {
+      return [];
+    }
 
-  const assignToStarter = (index: number, playerId: string) => {
+    if (picker.kind === "bench") {
+      return getBenchCandidates(picker.slotIndex, starterIds, benchIds, squad);
+    }
+
+    return getSlotCandidates(
+      formation,
+      picker.slotIndex,
+      starterIds,
+      benchIds,
+      squad,
+    );
+  }, [picker, formation, starterIds, benchIds, squad]);
+
+  const movePlayerToStarter = (playerId: string, targetIndex: number) => {
     const player = playersById.get(playerId);
     if (!player || player.isInjured) {
       return;
     }
 
-    clearPlayerFromSlots(playerId);
-    setStarterIds((current) => {
-      const next = [...current];
-      next[index] = playerId;
-      return next;
-    });
-    setSelection(null);
+    const occupantId = starterIds[targetIndex] ?? null;
+    if (occupantId === playerId) {
+      return;
+    }
+
+    const fromStarter = starterIds.findIndex((id) => id === playerId);
+    const fromBench = benchIds.findIndex((id) => id === playerId);
+    const nextStarters = [...starterIds];
+    const nextBench = [...benchIds];
+
+    nextStarters[targetIndex] = playerId;
+
+    if (fromStarter >= 0) {
+      nextStarters[fromStarter] = occupantId;
+    } else if (fromBench >= 0) {
+      nextBench[fromBench] = occupantId;
+    } else if (occupantId) {
+      const emptyBench = nextBench.findIndex((id) => id == null);
+      if (emptyBench >= 0) {
+        nextBench[emptyBench] = occupantId;
+      }
+    }
+
+    setStarterIds(nextStarters);
+    setBenchIds(nextBench);
+    setPicker(null);
   };
 
-  const assignToBench = (index: number, playerId: string) => {
-    clearPlayerFromSlots(playerId);
-    setBenchIds((current) => {
-      const next = [...current];
-      next[index] = playerId;
-      return next;
-    });
-    setSelection(null);
+  const movePlayerToBench = (playerId: string, targetIndex: number) => {
+    const occupantId = benchIds[targetIndex] ?? null;
+    if (occupantId === playerId) {
+      return;
+    }
+
+    const occupant = occupantId ? playersById.get(occupantId) : undefined;
+    const fromStarter = starterIds.findIndex((id) => id === playerId);
+    const fromBench = benchIds.findIndex((id) => id === playerId);
+
+    if (fromStarter >= 0 && occupant?.isInjured) {
+      return;
+    }
+
+    const nextStarters = [...starterIds];
+    const nextBench = [...benchIds];
+
+    nextBench[targetIndex] = playerId;
+
+    if (fromStarter >= 0) {
+      nextStarters[fromStarter] = occupantId;
+    } else if (fromBench >= 0) {
+      nextBench[fromBench] = occupantId;
+    }
+
+    setStarterIds(nextStarters);
+    setBenchIds(nextBench);
+    setPicker(null);
   };
 
-  const handleStarterSlotClick = (index: number) => {
-    const currentId = starterIds[index];
-
-    if (selection?.kind === "starter" && selection.index === index) {
-      if (currentId) {
-        setStarterIds((prev) => {
-          const next = [...prev];
-          next[index] = null;
-          return next;
-        });
-      }
-      setSelection(null);
+  const handleStarterSlotClick = (index: number, anchor: DOMRect) => {
+    if (picker?.kind === "starter" && picker.slotIndex === index) {
+      setPicker(null);
       return;
     }
 
-    if (selection?.kind === "bench") {
-      const benchPlayerId = benchIds[selection.index];
-      if (benchPlayerId) {
-        const starterPlayerId = currentId;
-        setBenchIds((prev) => {
-          const next = [...prev];
-          next[selection.index] = starterPlayerId;
-          return next;
-        });
-        setStarterIds((prev) => {
-          const next = [...prev];
-          next[index] = benchPlayerId;
-          return next;
-        });
-        setSelection(null);
-        return;
-      }
-    }
-
-    setSelection({ kind: "starter", index });
+    setPicker({ kind: "starter", slotIndex: index, anchor });
   };
 
-  const handleBenchSlotClick = (index: number) => {
-    const currentId = benchIds[index];
-
-    if (selection?.kind === "bench" && selection.index === index) {
-      if (currentId) {
-        setBenchIds((prev) => {
-          const next = [...prev];
-          next[index] = null;
-          return next;
-        });
-      }
-      setSelection(null);
+  const handleBenchSlotClick = (index: number, anchor: DOMRect) => {
+    if (picker?.kind === "bench" && picker.slotIndex === index) {
+      setPicker(null);
       return;
     }
 
-    if (selection?.kind === "starter") {
-      const starterPlayerId = starterIds[selection.index];
-      if (starterPlayerId) {
-        const benchPlayerId = currentId;
-        setStarterIds((prev) => {
-          const next = [...prev];
-          next[selection.index] = benchPlayerId;
-          return next;
-        });
-        setBenchIds((prev) => {
-          const next = [...prev];
-          next[index] = starterPlayerId;
-          return next;
-        });
-        setSelection(null);
-        return;
-      }
-    }
-
-    setSelection({ kind: "bench", index });
-  };
-
-  const handleAvailablePlayerClick = (playerId: string) => {
-    const player = playersById.get(playerId);
-    if (!player) {
-      return;
-    }
-
-    if (selection?.kind === "starter") {
-      if (player.isInjured) {
-        return;
-      }
-
-      assignToStarter(selection.index, playerId);
-      return;
-    }
-
-    if (selection?.kind === "bench") {
-      assignToBench(selection.index, playerId);
-      return;
-    }
-
-    if (!player.isInjured) {
-      const emptyStarter = starterIds.findIndex((id) => id == null);
-      if (emptyStarter >= 0) {
-        assignToStarter(emptyStarter, playerId);
-        return;
-      }
-    }
-
-    const emptyBench = benchIds.findIndex((id) => id == null);
-    if (emptyBench >= 0) {
-      assignToBench(emptyBench, playerId);
-    }
+    setPicker({ kind: "bench", slotIndex: index, anchor });
   };
 
   const handleFormationChange = (nextFormation: TeamFormation) => {
     const currentPlayers = starterIds.filter((id): id is string => Boolean(id));
     setFormation(nextFormation);
     setStarterIds(redistributeByFormation(currentPlayers, nextFormation, playersById));
-    setSelection(null);
+    setPicker(null);
   };
 
   const handleReset = () => {
@@ -269,7 +216,7 @@ export const TacticsBoardPage = () => {
     setMentality(lineup.mentality);
     setStarterIds(slots.starters);
     setBenchIds(slots.bench);
-    setSelection(null);
+    setPicker(null);
   };
 
   const handleSave = async () => {
@@ -301,7 +248,7 @@ export const TacticsBoardPage = () => {
           bench: slots.bench,
         }),
       );
-      setSelection(null);
+      setPicker(null);
     } catch {
       /* Toasts via apiClient */
     }
@@ -313,6 +260,37 @@ export const TacticsBoardPage = () => {
         Loading tactics board...
       </div>
     );
+  }
+
+  let pickerOccupantId: string | null = null;
+  if (picker) {
+    if (picker.kind === "starter") {
+      pickerOccupantId = starterIds[picker.slotIndex] ?? null;
+    } else {
+      pickerOccupantId = benchIds[picker.slotIndex] ?? null;
+    }
+  }
+
+  const pickerOccupant = pickerOccupantId
+    ? playersById.get(pickerOccupantId)
+    : undefined;
+
+  let pickerSlotLabel = "";
+  if (picker) {
+    if (picker.kind === "bench") {
+      pickerSlotLabel = "Bench";
+    } else {
+      pickerSlotLabel = getPositionLabel(
+        getStarterSlotPosition(formation, picker.slotIndex),
+      );
+    }
+  }
+
+  let pickerEmptyMessage = "";
+  if (picker?.kind === "bench") {
+    pickerEmptyMessage = "There aren't any more players in the squad.";
+  } else if (pickerSlotLabel) {
+    pickerEmptyMessage = `No ${pickerSlotLabel.toLowerCase()} available to swap in.`;
   }
 
   return (
@@ -349,25 +327,51 @@ export const TacticsBoardPage = () => {
             formation={formation}
             starterIds={starterIds}
             playersById={playersById}
-            selectedIndex={selection?.kind === "starter" ? selection.index : null}
+            selectedIndex={
+              picker?.kind === "starter" ? picker.slotIndex : null
+            }
             onSlotClick={handleStarterSlotClick}
-          />
-          <TacticsBench
-            slotIds={benchIds}
-            playersById={playersById}
-            selectedIndex={selection?.kind === "bench" ? selection.index : null}
-            onSlotClick={handleBenchSlotClick}
+            onDropOnSlot={(index, playerId) => {
+              movePlayerToStarter(playerId, index);
+            }}
           />
         </div>
 
-        <TacticsAvailableSquad
-          players={availablePlayers}
-          onPlayerClick={handleAvailablePlayerClick}
+        <TacticsBench
+          slotIds={benchIds}
+          playersById={playersById}
+          selectedIndex={picker?.kind === "bench" ? picker.slotIndex : null}
+          onSlotClick={handleBenchSlotClick}
+          onDropOnSlot={(index, playerId) => {
+            movePlayerToBench(playerId, index);
+          }}
           onSave={handleSave}
           isSaving={isSaving}
           canSave={canSave}
         />
       </div>
+
+      {picker ? (
+        <TacticsSlotPicker
+          anchor={picker.anchor}
+          slotLabel={pickerSlotLabel}
+          occupant={pickerOccupant}
+          candidates={pickerCandidates}
+          emptyMessage={pickerEmptyMessage}
+          allowInjured={picker.kind === "bench"}
+          onPick={(playerId) => {
+            if (picker.kind === "bench") {
+              movePlayerToBench(playerId, picker.slotIndex);
+              return;
+            }
+
+            movePlayerToStarter(playerId, picker.slotIndex);
+          }}
+          onClose={() => {
+            setPicker(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

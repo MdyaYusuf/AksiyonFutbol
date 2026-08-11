@@ -24,9 +24,9 @@ export const TacticsControls = ({
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <select
           value={formation}
-          onChange={(event) =>
-            onFormationChange(Number(event.target.value) as TeamFormation)
-          }
+          onChange={(event) => {
+            onFormationChange(Number(event.target.value) as TeamFormation);
+          }}
           className="h-8 rounded border-outline-variant bg-surface-container-highest px-3 py-1 font-data-mono text-data-mono text-on-background focus:border-primary focus:ring-1 focus:ring-primary"
           aria-label="Formation"
         >
@@ -38,9 +38,9 @@ export const TacticsControls = ({
         </select>
         <select
           value={mentality}
-          onChange={(event) =>
-            onMentalityChange(Number(event.target.value) as TeamMentality)
-          }
+          onChange={(event) => {
+            onMentalityChange(Number(event.target.value) as TeamMentality);
+          }}
           className="h-8 rounded border-outline-variant bg-surface-container-highest px-3 py-1 font-label-caps text-label-caps text-on-background focus:border-primary focus:ring-1 focus:ring-primary"
           aria-label="Mentality"
         >
@@ -51,7 +51,8 @@ export const TacticsControls = ({
           ))}
         </select>
         <p className="text-xs text-on-surface-variant">
-          Players are colored according to their positions.
+          Players are colored according to their positions. Drag to swap, or click a
+          pitch slot to pick a player for that position.
         </p>
       </div>
 

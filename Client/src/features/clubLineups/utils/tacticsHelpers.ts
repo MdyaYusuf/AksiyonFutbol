@@ -154,6 +154,169 @@ export const buildPitchRows = (
   ];
 };
 
+export const getStarterSlotPosition = (
+  formation: TeamFormation,
+  slotIndex: number,
+): PlayerPosition => {
+  const rows = buildPitchRows(formation);
+
+  for (const row of rows) {
+    if (!row.slotIndexes.includes(slotIndex)) {
+      continue;
+    }
+
+    if (row.label === "GK") {
+      return PlayerPosition.Goalkeeper;
+    }
+
+    if (row.label === "DEF") {
+      return PlayerPosition.Defender;
+    }
+
+    if (row.label === "FWD") {
+      return PlayerPosition.Forward;
+    }
+
+    return PlayerPosition.Midfielder;
+  }
+
+  return PlayerPosition.Midfielder;
+};
+
+export type LineupDragKind = "starter" | "bench";
+
+export interface LineupDragPayload {
+  kind: LineupDragKind;
+  index: number;
+  playerId: string;
+}
+
+const LINEUP_DRAG_PREFIX = "aksiyon-lineup:";
+
+export const serializeLineupDrag = (payload: LineupDragPayload): string => {
+  return `${LINEUP_DRAG_PREFIX}${JSON.stringify(payload)}`;
+};
+
+export const parseLineupDrag = (raw: string): LineupDragPayload | null => {
+  if (!raw.startsWith(LINEUP_DRAG_PREFIX)) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw.slice(LINEUP_DRAG_PREFIX.length)) as LineupDragPayload;
+    if (
+      (parsed.kind !== "starter" && parsed.kind !== "bench") ||
+      typeof parsed.index !== "number" ||
+      typeof parsed.playerId !== "string"
+    ) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+export type SlotCandidateSource = "bench" | "unused" | "starter";
+
+export interface SlotCandidate {
+  player: PlayerInstanceResponse;
+  source: SlotCandidateSource;
+  starterIndex?: number;
+  benchIndex?: number;
+}
+
+export const getSlotCandidates = (
+  formation: TeamFormation,
+  slotIndex: number,
+  starterIds: (string | null)[],
+  benchIds: (string | null)[],
+  squad: PlayerInstanceResponse[],
+): SlotCandidate[] => {
+  const required = getStarterSlotPosition(formation, slotIndex);
+  const occupantId = starterIds[slotIndex];
+  const candidates: SlotCandidate[] = [];
+
+  squad.forEach((player) => {
+    if (player.position !== required) {
+      return;
+    }
+
+    if (player.id === occupantId) {
+      return;
+    }
+
+    const starterIndex = starterIds.findIndex((id) => id === player.id);
+    if (starterIndex >= 0) {
+      candidates.push({ player, source: "starter", starterIndex });
+      return;
+    }
+
+    const benchIndex = benchIds.findIndex((id) => id === player.id);
+    if (benchIndex >= 0) {
+      candidates.push({ player, source: "bench", benchIndex });
+      return;
+    }
+
+    candidates.push({ player, source: "unused" });
+  });
+
+  const sourceRank = (source: SlotCandidateSource) => {
+    if (source === "bench") {
+      return 0;
+    }
+
+    if (source === "unused") {
+      return 1;
+    }
+
+    return 2;
+  };
+
+  return candidates.sort((a, b) => {
+    const bySource = sourceRank(a.source) - sourceRank(b.source);
+    if (bySource !== 0) {
+      return bySource;
+    }
+
+    return b.player.overallRating - a.player.overallRating;
+  });
+};
+
+export const getBenchCandidates = (
+  benchIndex: number,
+  starterIds: (string | null)[],
+  benchIds: (string | null)[],
+  squad: PlayerInstanceResponse[],
+): SlotCandidate[] => {
+  const occupantId = benchIds[benchIndex];
+  const assignedIds = new Set<string>();
+
+  starterIds.forEach((id) => {
+    if (id) {
+      assignedIds.add(id);
+    }
+  });
+
+  benchIds.forEach((id, index) => {
+    if (id && index !== benchIndex) {
+      assignedIds.add(id);
+    }
+  });
+
+  return squad
+    .filter((player) => {
+      if (player.id === occupantId) {
+        return false;
+      }
+
+      return !assignedIds.has(player.id);
+    })
+    .sort((a, b) => b.overallRating - a.overallRating)
+    .map((player) => ({ player, source: "unused" as const }));
+};
+
 export const createEmptyStarterSlots = (): (string | null)[] =>
   Array.from({ length: LINEUP_STARTER_COUNT }, () => null);
 
