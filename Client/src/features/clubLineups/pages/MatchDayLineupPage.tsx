@@ -7,7 +7,9 @@ import { useGetMatchByIdQuery } from "../../matches/matchesApiSlice";
 import {
   getMatchLivePath,
   getMatchPresentationPhase,
+  getMatchReportPath,
   shouldOpenLiveView,
+  shouldOpenMatchReport,
 } from "../../matches/utils/matchLiveHelpers";
 import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
@@ -218,6 +220,10 @@ export const MatchDayLineupPage = () => {
   const userIsHome = match.homeClubId === club.id;
   const opponentName = userIsHome ? match.awayClubName : match.homeClubName;
   const venueLabel = userIsHome ? "Home" : "Away";
+  const phase = getMatchPresentationPhase(match, new Date());
+  const detailsPath = shouldOpenLiveView(phase)
+    ? getMatchLivePath(match.id)
+    : getMatchReportPath(match.id);
 
   if (match.isPlayed) {
     return (
@@ -225,12 +231,22 @@ export const MatchDayLineupPage = () => {
         <p className="text-body-sm text-on-surface-variant">
           This match has already been played. Lineup changes are no longer available.
         </p>
-        <Link
-          to={`/app/matches/${match.id}`}
-          className="inline-flex text-primary hover:underline"
-        >
-          View match report
-        </Link>
+        {shouldOpenLiveView(phase) ? (
+          <Link
+            to={getMatchLivePath(match.id)}
+            className="inline-flex text-primary hover:underline"
+          >
+            Watch live
+          </Link>
+        ) : null}
+        {shouldOpenMatchReport(phase) ? (
+          <Link
+            to={getMatchReportPath(match.id)}
+            className="inline-flex text-primary hover:underline"
+          >
+            View match report
+          </Link>
+        ) : null}
       </div>
     );
   }
@@ -242,7 +258,7 @@ export const MatchDayLineupPage = () => {
           Match Day Lineup
         </h1>
         <Link
-          to={`/app/matches/${match.id}`}
+          to={detailsPath}
           className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary"
         >
           Match details

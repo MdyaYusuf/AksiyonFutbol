@@ -13,7 +13,8 @@ public class BriberyService(
   BriberyBusinessRules _businessRules,
   BriberyMapper _mapper,
   IUnitOfWork _unitOfWork,
-  IValidator<CreateBribeAttemptRequest> _createValidator) : IBriberyService
+  IValidator<CreateBribeAttemptRequest> _createValidator,
+  IMatchSettlementGate _settlementGate) : IBriberyService
 {
   public async Task<ReturnModel<BriberyContextResponseDto>> GetContextForCurrentUserAsync(
     Guid currentUserId,
@@ -23,9 +24,25 @@ public class BriberyService(
       currentUserId,
       cancellationToken: cancellationToken);
 
-    ClubContext clubContext = new(club.Id, club.Name, club.Cash);
+    ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
+    ClubContext clubContext = new(club.Id, club.Name, view.Cash);
     decimal minAmount = _businessRules.Options.BribeMinAmount;
     decimal maxAmount = _businessRules.Options.BribeMaxAmount;
+
+    if (view.CashSpendLocked)
+    {
+      return new ReturnModel<BriberyContextResponseDto>()
+      {
+        Success = true,
+        Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+        Data = _mapper.ToUnavailableContextDto(
+          clubContext,
+          MatchLiveWindow.SpendLockedReason,
+          minAmount,
+          maxAmount),
+        StatusCode = 200
+      };
+    }
 
     Match? match = await _businessRules.GetNextUnplayedMatchForClubOrNullAsync(
       club.Id,
@@ -103,6 +120,8 @@ public class BriberyService(
       include: query => query.Include(c => c.President),
       enableTracking: true,
       cancellationToken: cancellationToken);
+
+    await _settlementGate.MustAllowClubSpendAsync(club.Id, cancellationToken);
 
     Match match = request.MatchId.HasValue
       ? await _businessRules.GetMatchIfExistAsync(request.MatchId.Value, cancellationToken)

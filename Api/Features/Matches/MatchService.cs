@@ -11,6 +11,7 @@ public class MatchService(
   MatchMapper _mapper,
   MatchBusinessRules _businessRules,
   IMatchPlayService _matchPlayService,
+  IMatchSettlementGate _settlementGate,
   IUnitOfWork _unitOfWork,
   IValidator<CreateMatchRequest> _createValidator,
   IValidator<UpdateMatchScheduleRequest> _updateScheduleValidator) : IMatchService
@@ -25,6 +26,7 @@ public class MatchService(
       cancellationToken: cancellationToken);
 
     List<MatchResponseDto> response = _mapper.EntityToResponseDtoList(matches);
+    _settlementGate.ConcealResponseScores(matches, response);
 
     return new ReturnModel<List<MatchResponseDto>>()
     {
@@ -64,6 +66,8 @@ public class MatchService(
       id,
       cancellationToken: cancellationToken);
 
+    bool hideScores = _settlementGate.ShouldHideScores(match);
+
     return new ReturnModel<MatchLiveStatusDto>()
     {
       Success = true,
@@ -72,8 +76,8 @@ public class MatchService(
       {
         Id = match.Id,
         IsPlayed = match.IsPlayed,
-        HomeScore = match.HomeScore,
-        AwayScore = match.AwayScore
+        HomeScore = hideScores ? null : match.HomeScore,
+        AwayScore = hideScores ? null : match.AwayScore
       },
       StatusCode = 200
     };
@@ -92,6 +96,7 @@ public class MatchService(
       cancellationToken: cancellationToken);
 
     List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);
+    _settlementGate.ConcealPreviewScores(matches, response);
 
     return new ReturnModel<List<MatchPreviewDto>>()
     {
@@ -116,6 +121,7 @@ public class MatchService(
       cancellationToken: cancellationToken);
 
     List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);
+    _settlementGate.ConcealPreviewScores(matches, response);
 
     return new ReturnModel<List<MatchPreviewDto>>()
     {
@@ -139,6 +145,7 @@ public class MatchService(
       cancellationToken: cancellationToken);
 
     List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);
+    _settlementGate.ConcealPreviewScores(matches, response);
 
     return new ReturnModel<List<MatchPreviewDto>>()
     {

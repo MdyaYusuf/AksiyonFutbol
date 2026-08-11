@@ -18,7 +18,8 @@ interface FacilityHubCardProps {
 }
 
 export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) => {
-  const canAfford = !facility.isMaxLevel && clubCash >= facility.nextUpgradeCost;
+  const canAfford =
+    !facility.isMaxLevel && facility.canUpgrade && clubCash >= facility.nextUpgradeCost;
   const detailPath = getFacilityDetailPath(facility.facilityType);
 
   return (

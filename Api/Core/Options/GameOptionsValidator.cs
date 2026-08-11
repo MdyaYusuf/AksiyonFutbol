@@ -326,6 +326,20 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("MatchPenaltyPowerMultiplier 0 ile 1 arasında olmalıdır.");
     }
 
+    ValidateMentalityMultiplier(failures, options.MentalityAttackingAttack, "MentalityAttackingAttack");
+    ValidateMentalityMultiplier(failures, options.MentalityAttackingDefense, "MentalityAttackingDefense");
+    ValidateMentalityMultiplier(failures, options.MentalityAttackingMidfield, "MentalityAttackingMidfield");
+    ValidateMentalityMultiplier(failures, options.MentalityAttackingTempo, "MentalityAttackingTempo");
+    ValidateMentalityMultiplier(failures, options.MentalityDefensiveAttack, "MentalityDefensiveAttack");
+    ValidateMentalityMultiplier(failures, options.MentalityDefensiveDefense, "MentalityDefensiveDefense");
+    ValidateMentalityMultiplier(failures, options.MentalityDefensiveMidfield, "MentalityDefensiveMidfield");
+    ValidateMentalityMultiplier(failures, options.MentalityDefensiveTempo, "MentalityDefensiveTempo");
+
+    if (options.FormationShapeBonusPerPlayer < 0 || options.FormationShapeBonusPerPlayer > 0.1m)
+    {
+      failures.Add("FormationShapeBonusPerPlayer 0 ile 0.1 arasında olmalıdır.");
+    }
+
     foreach (var balance in options.ClubActionBalances)
     {
       string key = balance.Key;
@@ -404,5 +418,16 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
     return failures.Count > 0
       ? ValidateOptionsResult.Fail(failures)
       : ValidateOptionsResult.Success;
+  }
+
+  private static void ValidateMentalityMultiplier(
+    List<string> failures,
+    decimal value,
+    string name)
+  {
+    if (value <= 0 || value > 2)
+    {
+      failures.Add($"{name} 0'dan büyük ve 2'den küçük veya eşit olmalıdır.");
+    }
   }
 }

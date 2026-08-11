@@ -5,6 +5,7 @@ using Api.Features.Actions;
 using Api.Features.BasePlayers;
 using Api.Features.ClubLineups;
 using Api.Features.Clubs;
+using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ public class TransferService(
   TransferMapper _mapper,
   IUnitOfWork _unitOfWork,
   IValidator<CreateTransferListingRequest> _createListingValidator,
-  IValidator<CreateTransferOfferRequest> _createOfferValidator) : ITransferService
+  IValidator<CreateTransferOfferRequest> _createOfferValidator,
+  IMatchSettlementGate _settlementGate) : ITransferService
 {
   public async Task<ReturnModel<List<TransferMarketItemDto>>> GetMarketAsync(
     TransferMarketQuery query,
@@ -232,6 +234,8 @@ public class TransferService(
       enableTracking: true,
       cancellationToken: cancellationToken);
 
+    await _settlementGate.MustAllowClubSpendAsync(buyingClub.Id, cancellationToken);
+
     TransferListing listing = await _businessRules.GetListingIfExistAsync(
       request.TransferListingId,
       include: _businessRules.ListingDetailInclude(),
@@ -331,6 +335,9 @@ public class TransferService(
       offer.BuyingClubId,
       enableTracking: true,
       cancellationToken: cancellationToken);
+
+    await _settlementGate.MustAllowClubSpendAsync(buyingClub.Id, cancellationToken);
+    await _settlementGate.MustAllowClubSpendAsync(sellingClub.Id, cancellationToken);
 
     PlayerInstance player = await _businessRules.GetPlayerIfExistAsync(
       offer.TransferListing.PlayerInstanceId,

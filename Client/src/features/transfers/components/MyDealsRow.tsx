@@ -18,6 +18,7 @@ interface MyDealsRowProps {
   offer: TransferOfferResponse;
   tab: DealsTab;
   isBusy: boolean;
+  cashSpendLocked?: boolean;
   onAccept: (offerId: string) => void;
   onReject: (offerId: string) => void;
   onWithdraw: (offerId: string) => void;
@@ -27,6 +28,7 @@ export const MyDealsRow = ({
   offer,
   tab,
   isBusy,
+  cashSpendLocked = false,
   onAccept,
   onReject,
   onWithdraw,
@@ -85,7 +87,7 @@ export const MyDealsRow = ({
             <button
               type="button"
               title="Accept"
-              disabled={isBusy}
+              disabled={isBusy || cashSpendLocked}
               onClick={() => onAccept(offer.id)}
               className="rounded border border-primary/30 bg-surface p-1.5 text-primary transition-colors hover:bg-surface-bright disabled:opacity-50"
             >

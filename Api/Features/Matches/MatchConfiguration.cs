@@ -42,6 +42,26 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
     builder.Property(m => m.MatchLogJson)
       .IsRequired(false);
 
+    builder.Property(m => m.HomeCashBefore)
+      .HasColumnType("decimal(18,2)")
+      .IsRequired(false);
+
+    builder.Property(m => m.AwayCashBefore)
+      .HasColumnType("decimal(18,2)")
+      .IsRequired(false);
+
+    builder.Property(m => m.HomeMoraleBefore)
+      .IsRequired(false);
+
+    builder.Property(m => m.AwayMoraleBefore)
+      .IsRequired(false);
+
+    builder.Property(m => m.HomeSuspicionBefore)
+      .IsRequired(false);
+
+    builder.Property(m => m.AwaySuspicionBefore)
+      .IsRequired(false);
+
     builder.Property(m => m.DivisionId)
       .IsRequired();
 

@@ -4,11 +4,17 @@ import { formatCash } from "../../../features/dashboard/utils/dashboardFormatter
 
 interface AppHeaderProps {
   cash?: number;
+  cashSpendLocked?: boolean;
   reputation?: number;
   onMenuClick: () => void;
 }
 
-export const AppHeader = ({ cash, reputation, onMenuClick }: AppHeaderProps) => {
+export const AppHeader = ({
+  cash,
+  cashSpendLocked,
+  reputation,
+  onMenuClick,
+}: AppHeaderProps) => {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-6">
       <div className="flex items-center gap-4">
@@ -32,7 +38,12 @@ export const AppHeader = ({ cash, reputation, onMenuClick }: AppHeaderProps) => 
 
       <div className="flex items-center gap-6">
         {cash !== undefined && (
-          <div className="font-data-mono text-data-mono text-primary">{formatCash(cash)}</div>
+          <div className="flex items-center gap-1 font-data-mono text-data-mono text-primary">
+            {cashSpendLocked ? (
+              <MaterialIcon name="lock" className="text-sm text-on-surface-variant" />
+            ) : null}
+            {formatCash(cash)}
+          </div>
         )}
         {reputation !== undefined && (
           <div className="font-data-mono text-data-mono text-on-surface-variant">

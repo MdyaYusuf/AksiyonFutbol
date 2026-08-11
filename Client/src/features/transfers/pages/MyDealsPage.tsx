@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
+import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import { MyDealsSummary } from "../components/MyDealsSummary";
 import { MyDealsTable } from "../components/MyDealsTable";
 import {
@@ -18,6 +20,8 @@ import {
 
 export const MyDealsPage = () => {
   const { data, isLoading } = useGetMyTransferDealsQuery();
+  const { data: club } = useGetCurrentUserClubQuery();
+  const cashSpendLocked = Boolean(club?.cashSpendLocked);
   const [tab, setTab] = useState<DealsTab>("outgoing");
   const [statusFilters, setStatusFilters] = useState<DealStatusFilter[]>(
     DEFAULT_DEAL_STATUS_FILTERS,
@@ -134,6 +138,8 @@ export const MyDealsPage = () => {
         </div>
       </div>
 
+      {cashSpendLocked ? <CashSpendLockBanner /> : null}
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <div className="xl:col-span-3">
           <MyDealsSummary
@@ -150,6 +156,7 @@ export const MyDealsPage = () => {
             offers={filteredOffers}
             tab={tab}
             isBusy={isBusy}
+            cashSpendLocked={cashSpendLocked}
             onAccept={handleAccept}
             onReject={handleReject}
             onWithdraw={handleWithdraw}

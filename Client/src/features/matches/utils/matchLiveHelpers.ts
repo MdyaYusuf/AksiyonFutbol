@@ -278,6 +278,10 @@ export const shouldOpenLiveView = (phase: MatchPresentationPhase): boolean => {
   return phase === "waitingSim" || phase === "live";
 };
 
+export const shouldOpenMatchReport = (phase: MatchPresentationPhase): boolean => {
+  return phase === "replay";
+};
+
 export type LiveMatchSideStats = {
   goals: number;
   shots: number;

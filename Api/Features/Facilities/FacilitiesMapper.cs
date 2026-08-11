@@ -30,17 +30,22 @@ public partial class FacilitiesMapper
 
   public ClubFacilitiesOverviewDto ToOverviewDto(
     Clubs.Club club,
-    IReadOnlyList<ClubFacilityResponseDto> facilities)
+    IReadOnlyList<ClubFacilityResponseDto> facilities,
+    decimal clubCash,
+    int morale,
+    int suspicion,
+    bool cashSpendLocked)
   {
     return new ClubFacilitiesOverviewDto
     {
       ClubId = club.Id,
       ClubName = club.Name,
-      ClubCash = club.Cash,
-      Morale = club.Morale,
+      ClubCash = clubCash,
+      Morale = morale,
       Chemistry = club.Chemistry,
       Discipline = club.Discipline,
-      Suspicion = club.Suspicion,
+      Suspicion = suspicion,
+      CashSpendLocked = cashSpendLocked,
       Facilities = facilities
     };
   }

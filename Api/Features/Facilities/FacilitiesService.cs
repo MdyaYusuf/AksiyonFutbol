@@ -2,6 +2,7 @@ using Api.Core.Exceptions;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
+using Api.Features.Matches;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,8 @@ public class FacilitiesService(
   FacilitiesBusinessRules _businessRules,
   FacilitiesMapper _mapper,
   IUnitOfWork _unitOfWork,
-  IValidator<UpgradeFacilityRequest> _upgradeValidator) : IFacilitiesService
+  IValidator<UpgradeFacilityRequest> _upgradeValidator,
+  IMatchSettlementGate _settlementGate) : IFacilitiesService
 {
   public async Task<ReturnModel<ClubFacilitiesOverviewDto>> GetForCurrentUserAsync(
     Guid currentUserId,
@@ -60,6 +62,7 @@ public class FacilitiesService(
       cancellationToken: cancellationToken);
 
     _businessRules.FacilityMustNotBeMaxLevel(facility);
+    await _settlementGate.MustAllowClubSpendAsync(club.Id, cancellationToken);
 
     decimal cost = _businessRules.CalculateUpgradeCost(facility.Level);
     _businessRules.ClubMustAffordUpgrade(club, cost);
@@ -123,6 +126,8 @@ public class FacilitiesService(
     Club club = await _clubRepository.GetByIdAsync(clubId, cancellationToken: cancellationToken)
       ?? throw new NotFoundException("Kulüp bulunamadı.");
 
+    ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
+
     List<ClubFacility> facilities = await _clubFacilityRepository.GetAllAsync(
       filter: f => f.ClubId == clubId,
       orderBy: query => query.OrderBy(f => f.FacilityType),
@@ -133,7 +138,7 @@ public class FacilitiesService(
       .Select(facility =>
       {
         decimal nextCost = _businessRules.CalculateUpgradeCost(facility.Level);
-        bool canAfford = club.Cash >= nextCost;
+        bool canAfford = !view.CashSpendLocked && view.Cash >= nextCost;
 
         return _mapper.ToFacilityDto(
           facility,
@@ -144,6 +149,12 @@ public class FacilitiesService(
       })
       .ToList();
 
-    return _mapper.ToOverviewDto(club, facilityDtos);
+    return _mapper.ToOverviewDto(
+      club,
+      facilityDtos,
+      view.Cash,
+      view.Morale,
+      view.Suspicion,
+      view.CashSpendLocked);
   }
 }

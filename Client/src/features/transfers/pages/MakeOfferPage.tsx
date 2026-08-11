@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
+import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import {
   useGetCurrentUserClubPlayersQuery,
   useGetPlayerInstanceByIdQuery,
@@ -114,6 +115,8 @@ export const MakeOfferPage = () => {
         <span className="text-on-surface">Transfer Offer</span>
       </div>
 
+      {club?.cashSpendLocked ? <CashSpendLockBanner /> : null}
+
       <MakeOfferPlayerHeader player={player} listing={listing} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -127,6 +130,7 @@ export const MakeOfferPage = () => {
             listing={listing}
             clubCash={club?.cash ?? 0}
             wageSpace={wageSpace}
+            cashSpendLocked={Boolean(club?.cashSpendLocked)}
             isSubmitting={isSubmitting}
             onCancel={() => navigate("/app/transfers")}
             onSubmit={handleSubmit}

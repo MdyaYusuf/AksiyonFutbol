@@ -12,6 +12,7 @@ public sealed record ClubResponseDto
   public int Chemistry { get; init; }
   public int Discipline { get; init; }
   public int Suspicion { get; init; }
+  public bool CashSpendLocked { get; init; }
   public Guid? PresidentId { get; init; }
   public string? PresidentName { get; init; }
   public int DivisionId { get; init; }

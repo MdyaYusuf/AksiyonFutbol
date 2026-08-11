@@ -499,10 +499,19 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Id");
 
+                    b.Property<decimal?>("AwayCashBefore")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid>("AwayClubId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("AwayMoraleBefore")
+                        .HasColumnType("int");
+
                     b.Property<int?>("AwayScore")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AwaySuspicionBefore")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -512,10 +521,19 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("DivisionId")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("HomeCashBefore")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid>("HomeClubId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("HomeMoraleBefore")
+                        .HasColumnType("int");
+
                     b.Property<int?>("HomeScore")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HomeSuspicionBefore")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsPlayed")

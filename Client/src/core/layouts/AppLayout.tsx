@@ -21,6 +21,7 @@ export const AppLayout = () => {
       <div className="flex min-h-screen flex-col lg:pl-[280px]">
         <AppHeader
           cash={club?.cash}
+          cashSpendLocked={club?.cashSpendLocked}
           reputation={president?.reputationPoints}
           onMenuClick={() => setMobileNavOpen(true)}
         />

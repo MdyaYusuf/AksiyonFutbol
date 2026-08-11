@@ -10,6 +10,7 @@ import {
   useGetMyFacilitiesQuery,
   useUpgradeFacilityMutation,
 } from "../facilitiesApiSlice";
+import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import {
   getFacilityPerformanceStats,
   getProjectedImpactRows,
@@ -67,11 +68,13 @@ export const FacilityUpgradeDetailPage = () => {
   const performanceStats = getFacilityPerformanceStats(facility, overview);
   const impactRows = getProjectedImpactRows(facility, overview);
   const canAfford =
-    !facility.isMaxLevel && overview.clubCash >= facility.nextUpgradeCost;
+    !facility.isMaxLevel &&
+    !overview.cashSpendLocked &&
+    overview.clubCash >= facility.nextUpgradeCost;
   const targetLevel = facility.isMaxLevel ? facility.level : facility.level + 1;
 
   const handleConfirm = async () => {
-    if (!canAfford || facility.isMaxLevel) {
+    if (!canAfford || facility.isMaxLevel || overview.cashSpendLocked) {
       return;
     }
 
@@ -86,6 +89,8 @@ export const FacilityUpgradeDetailPage = () => {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
       <FacilityUpgradeDetailHeader facilityName={facility.facilityTypeName} />
+
+      {overview.cashSpendLocked ? <CashSpendLockBanner /> : null}
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         <div className="col-span-1 flex flex-col gap-4 lg:col-span-5">
@@ -103,6 +108,7 @@ export const FacilityUpgradeDetailPage = () => {
               <FacilityUpgradeActions
                 upgradeCost={facility.nextUpgradeCost}
                 canAfford={canAfford}
+                cashSpendLocked={Boolean(overview.cashSpendLocked)}
                 isMaxLevel={facility.isMaxLevel}
                 isSubmitting={isSubmitting}
                 onConfirm={handleConfirm}

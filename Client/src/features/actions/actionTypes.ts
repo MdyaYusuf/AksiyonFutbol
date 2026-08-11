@@ -75,6 +75,7 @@ export interface ClubActionsContext {
   clubCash: number;
   suspicion: number;
   maxSuspicion: number;
+  cashSpendLocked?: boolean;
   upcomingMatch?: UpcomingMatchSummary | null;
   actions: ClubActionAvailability[];
 }

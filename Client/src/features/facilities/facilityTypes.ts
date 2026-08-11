@@ -24,6 +24,7 @@ export interface ClubFacilitiesOverview {
   morale: number;
   chemistry: number;
   discipline: number;
+  cashSpendLocked?: boolean;
   facilities: ClubFacility[];
 }
 

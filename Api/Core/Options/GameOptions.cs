@@ -88,6 +88,21 @@ public class GameOptions
   // Applied in the sim when doping or match-fixing is detected for that fixture.
   public decimal MatchPenaltyPowerMultiplier { get; set; } = 0.88m;
 
+  // Mentality is the risk slider. Balanced stays 1.0 on every axis.
+  // Tempo scales how often a side turns possession into an attack minute.
+  public decimal MentalityAttackingAttack { get; set; } = 1.10m;
+  public decimal MentalityAttackingDefense { get; set; } = 0.90m;
+  public decimal MentalityAttackingMidfield { get; set; } = 1.06m;
+  public decimal MentalityAttackingTempo { get; set; } = 1.06m;
+  public decimal MentalityDefensiveAttack { get; set; } = 0.90m;
+  public decimal MentalityDefensiveDefense { get; set; } = 1.12m;
+  public decimal MentalityDefensiveMidfield { get; set; } = 0.96m;
+  public decimal MentalityDefensiveTempo { get; set; } = 0.94m;
+
+  // Formation is the shape slider vs a 4-3-3 baseline (4 DEF / 3 MID / 3 FWD).
+  // Each extra or missing outfield player in a band shifts that axis by this amount.
+  public decimal FormationShapeBonusPerPlayer { get; set; } = 0.025m;
+
   // Per-action balancing overrides keyed by action name (e.g. "MatchFixing").
   // Code defaults are owned by the Actions feature and merged in at runtime, so
   // this only needs to contain the values you want to override.

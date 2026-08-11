@@ -8,6 +8,7 @@ export interface ClubResponse {
   morale: number;
   chemistry: number;
   discipline: number;
+  cashSpendLocked?: boolean;
   presidentId?: string | null;
   presidentName?: string | null;
   divisionId: number;

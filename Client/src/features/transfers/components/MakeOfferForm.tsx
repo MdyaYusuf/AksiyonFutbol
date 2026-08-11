@@ -14,6 +14,7 @@ interface MakeOfferFormProps {
   listing: TransferMarketItem;
   clubCash: number;
   wageSpace: number;
+  cashSpendLocked?: boolean;
   isSubmitting: boolean;
   onCancel: () => void;
   onSubmit: (offerFee: number, proposedWage: number) => void;
@@ -23,6 +24,7 @@ export const MakeOfferForm = ({
   listing,
   clubCash,
   wageSpace,
+  cashSpendLocked = false,
   isSubmitting,
   onCancel,
   onSubmit,
@@ -47,6 +49,7 @@ export const MakeOfferForm = ({
     offerFee > 0 &&
     proposedWage >= 0 &&
     remainingCash >= 0 &&
+    !cashSpendLocked &&
     !isSubmitting;
 
   const handleFeeChange = (value: number) => {

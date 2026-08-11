@@ -61,6 +61,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       homePlayers,
       homeClub,
       homeSquad.Mentality,
+      homeSquad.Formation,
       isHome: true,
       influence: influence,
       opponentClubId: awayClub.Id);
@@ -68,6 +69,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       awayPlayers,
       awayClub,
       awaySquad.Mentality,
+      awaySquad.Formation,
       isHome: false,
       influence: influence,
       opponentClubId: homeClub.Id);
@@ -108,7 +110,9 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
 
       double attackBias = attackingPower.AttackPower
         / (attackingPower.AttackPower + defendingPower.DefenseStrength);
-      double minuteAttackChance = AttackMinuteChance * (0.85 + attackBias * 0.30);
+      double minuteAttackChance = AttackMinuteChance
+        * (0.85 + attackBias * 0.30)
+        * attackingPower.AttackTempo;
 
       if (Random.Shared.NextDouble() < minuteAttackChance)
       {
@@ -708,6 +712,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     List<PlayerInstance> players,
     Club club,
     TeamMentality mentality,
+    TeamFormation formation,
     bool isHome,
     MatchInfluence influence,
     Guid opponentClubId)
@@ -717,6 +722,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     double clubStatusModifier = (club.Morale + club.Chemistry + club.Discipline) / 300d;
     double finalModifier = matchDayVariance * homeAdvantage * (0.90 + clubStatusModifier * 0.20);
     MentalityModifiers mentalityModifiers = GetMentalityModifiers(mentality);
+    FormationModifiers formationModifiers = GetFormationModifiers(formation);
 
     double dopingModifier = influence.HasDoping(club.Id)
       ? (double)_gameOptions.Value.DopingPowerMultiplier
@@ -744,6 +750,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
         players.Average(p => p.AttackPower)
           * finalModifier
           * mentalityModifiers.Attack
+          * formationModifiers.Attack
           * dopingModifier
           * espionageModifier),
       DefenseStrength = Math.Max(
@@ -751,25 +758,50 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
         players.Average(p => p.DefenseStrength)
           * finalModifier
           * mentalityModifiers.Defense
+          * formationModifiers.Defense
           * dopingModifier),
       MidfieldControl = Math.Max(
         1,
         players.Average(p => p.MidfieldControl)
           * finalModifier
           * mentalityModifiers.Midfield
+          * formationModifiers.Midfield
           * dopingModifier
-          * espionageModifier)
+          * espionageModifier),
+      AttackTempo = mentalityModifiers.Tempo
     };
   }
 
-  private static MentalityModifiers GetMentalityModifiers(TeamMentality mentality)
+  private MentalityModifiers GetMentalityModifiers(TeamMentality mentality)
   {
+    GameOptions options = _gameOptions.Value;
+
     return mentality switch
     {
-      TeamMentality.Attacking => new MentalityModifiers(1.08, 0.94, 1.02),
-      TeamMentality.Defensive => new MentalityModifiers(0.94, 1.08, 1.02),
-      _ => new MentalityModifiers(1.0, 1.0, 1.0)
+      TeamMentality.Attacking => new MentalityModifiers(
+        (double)options.MentalityAttackingAttack,
+        (double)options.MentalityAttackingDefense,
+        (double)options.MentalityAttackingMidfield,
+        (double)options.MentalityAttackingTempo),
+      TeamMentality.Defensive => new MentalityModifiers(
+        (double)options.MentalityDefensiveAttack,
+        (double)options.MentalityDefensiveDefense,
+        (double)options.MentalityDefensiveMidfield,
+        (double)options.MentalityDefensiveTempo),
+      _ => new MentalityModifiers(1.0, 1.0, 1.0, 1.0)
     };
+  }
+
+  private FormationModifiers GetFormationModifiers(TeamFormation formation)
+  {
+    FormationShape shape = FormationShapes.Get(formation);
+    FormationShape baseline = FormationShapes.Get(TeamFormation.FourThreeThree);
+    double perPlayer = (double)_gameOptions.Value.FormationShapeBonusPerPlayer;
+
+    return new FormationModifiers(
+      Attack: 1.0 + (shape.Forwards - baseline.Forwards) * perPlayer,
+      Defense: 1.0 + (shape.Defenders - baseline.Defenders) * perPlayer,
+      Midfield: 1.0 + (shape.Midfielders - baseline.Midfielders) * perPlayer);
   }
 
   private static bool RollWeighted(double firstWeight, double secondWeight)
@@ -856,7 +888,10 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     public double AttackPower { get; init; }
     public double DefenseStrength { get; init; }
     public double MidfieldControl { get; init; }
+    public double AttackTempo { get; init; }
   }
 
-  private sealed record MentalityModifiers(double Attack, double Defense, double Midfield);
+  private sealed record MentalityModifiers(double Attack, double Defense, double Midfield, double Tempo);
+
+  private sealed record FormationModifiers(double Attack, double Defense, double Midfield);
 }

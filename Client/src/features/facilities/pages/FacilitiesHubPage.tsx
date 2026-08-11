@@ -1,3 +1,4 @@
+import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import { FacilitiesHubHeader } from "../components/FacilitiesHubHeader";
 import { FacilityHubCard } from "../components/FacilityHubCard";
 import { useGetMyFacilitiesQuery } from "../facilitiesApiSlice";
@@ -24,6 +25,8 @@ export const FacilitiesHubPage = () => {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
       <FacilitiesHubHeader clubCash={overview.clubCash} morale={overview.morale} />
+
+      {overview.cashSpendLocked ? <CashSpendLockBanner /> : null}
 
       <div className="grid grid-cols-1 gap-card-gap md:grid-cols-2">
         {overview.facilities.map((facility) => (

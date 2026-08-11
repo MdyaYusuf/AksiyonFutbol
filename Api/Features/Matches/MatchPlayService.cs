@@ -55,6 +55,8 @@ public class MatchPlayService(
       match.Id,
       cancellationToken);
 
+    CaptureSettlementSnapshots(match);
+
     SimulatedMatchResultDto result = _matchSimulationService.Simulate(
       match,
       homeSquad,
@@ -74,6 +76,23 @@ public class MatchPlayService(
       cancellationToken);
 
     _matchRepository.Update(match);
+  }
+
+  private static void CaptureSettlementSnapshots(Match match)
+  {
+    if (match.HomeClub != null)
+    {
+      match.HomeCashBefore = match.HomeClub.Cash;
+      match.HomeMoraleBefore = match.HomeClub.Morale;
+      match.HomeSuspicionBefore = match.HomeClub.Suspicion;
+    }
+
+    if (match.AwayClub != null)
+    {
+      match.AwayCashBefore = match.AwayClub.Cash;
+      match.AwayMoraleBefore = match.AwayClub.Morale;
+      match.AwaySuspicionBefore = match.AwayClub.Suspicion;
+    }
   }
 
   internal static IQueryable<Match> IncludeMatchRelations(IQueryable<Match> query)

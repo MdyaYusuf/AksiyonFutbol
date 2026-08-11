@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
 import { useGetBriberyContextQuery } from "../../bribery/briberyApiSlice";
+import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import {
   useExecuteClubActionMutation,
   useGetActionsContextQuery,
@@ -86,6 +87,8 @@ export const ActionsHubPage = () => {
         suspicion={context.suspicion}
         maxSuspicion={context.maxSuspicion}
       />
+
+      {context.cashSpendLocked ? <CashSpendLockBanner /> : null}
 
       {lastResult ? (
         <ActionResultBanner

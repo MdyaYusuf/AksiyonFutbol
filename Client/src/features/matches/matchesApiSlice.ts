@@ -36,8 +36,8 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
 
-          // Only patch the lightweight club fixture list. Do not touch getMatchById —
-          // that cache needs matchLogJson from a full refetch once play completes.
+          // Mark the fixture as kicked off so live UI can start. Do not write the
+          // final score or invalidate club cash — that would spoil the replay.
           dispatch(
             matchesApiSlice.util.updateQueryData(
               "getMatchesByClubId",
@@ -50,8 +50,6 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
                 }
 
                 match.isPlayed = data.isPlayed;
-                match.homeScore = data.homeScore;
-                match.awayScore = data.awayScore;
               },
             ),
           );
@@ -144,6 +142,9 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
         { type: "PlayerInstance", id: "MY-CLUB" },
         { type: "Club", id: "LIST" },
         { type: "Club", id: "ME" },
+        { type: "Facility", id: "ME" },
+        { type: "Actions", id: "CONTEXT" },
+        { type: "Bribery", id: "CONTEXT" },
         ...(result
           ? [
               { type: "Club" as const, id: result.homeClubId },

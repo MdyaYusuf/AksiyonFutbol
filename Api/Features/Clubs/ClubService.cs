@@ -4,6 +4,7 @@ using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
+using Api.Features.Matches;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,8 @@ public class ClubService(
   IValidator<UpdateClubRequest> _updateValidator,
   IValidator<UpdateClubFinancesRequest> _updateFinancesValidator,
   IValidator<UpdateClubStatusRequest> _updateStatusValidator,
-  IOptions<GameOptions> _gameOptions) : IClubService
+  IOptions<GameOptions> _gameOptions,
+  IMatchSettlementGate _settlementGate) : IClubService
 {
   public async Task<ReturnModel<PagedResponse<ClubResponseDto>>> GetAllAsync(
     Expression<Func<Club, bool>>? filter = null,
@@ -44,7 +46,10 @@ public class ClubService(
       withDeleted,
       cancellationToken);
 
-    List<ClubResponseDto> responseDtos = _mapper.EntityToResponseDtoList(clubs);
+    List<ClubResponseDto> responseDtos = await OverlayClubResponsesAsync(
+      clubs,
+      _mapper.EntityToResponseDtoList(clubs),
+      cancellationToken);
     var pagedResponse = new PagedResponse<ClubResponseDto>(responseDtos, totalCount, currentPage, pageSize);
 
     return new ReturnModel<PagedResponse<ClubResponseDto>>()
@@ -81,7 +86,7 @@ public class ClubService(
       };
     }
 
-    ClubResponseDto response = _mapper.EntityToResponseDto(club);
+    ClubResponseDto response = await OverlayClubResponseAsync(club, cancellationToken);
 
     return new ReturnModel<ClubResponseDto>()
     {
@@ -106,7 +111,7 @@ public class ClubService(
       enableTracking,
       cancellationToken);
 
-    ClubResponseDto response = _mapper.EntityToResponseDto(club);
+    ClubResponseDto response = await OverlayClubResponseAsync(club, cancellationToken);
 
     return new ReturnModel<ClubResponseDto>()
     {
@@ -126,7 +131,7 @@ public class ClubService(
       include: IncludeClubRelations,
       cancellationToken: cancellationToken);
 
-    ClubResponseDto response = _mapper.EntityToResponseDto(club);
+    ClubResponseDto response = await OverlayClubResponseAsync(club, cancellationToken);
 
     return new ReturnModel<ClubResponseDto>()
     {
@@ -406,6 +411,46 @@ public class ClubService(
       Success = true,
       Message = "Kulüp başarılı bir şekilde silindi.",
       StatusCode = 200
+    };
+  }
+
+  private async Task<ClubResponseDto> OverlayClubResponseAsync(
+    Club club,
+    CancellationToken cancellationToken)
+  {
+    ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
+    return ApplyPublicView(_mapper.EntityToResponseDto(club), view);
+  }
+
+  private async Task<List<ClubResponseDto>> OverlayClubResponsesAsync(
+    IReadOnlyList<Club> clubs,
+    List<ClubResponseDto> dtos,
+    CancellationToken cancellationToken)
+  {
+    IReadOnlyDictionary<Guid, ClubPublicView> views =
+      await _settlementGate.GetPublicViewsAsync(clubs, cancellationToken);
+
+    for (int i = 0; i < dtos.Count; i++)
+    {
+      if (!views.TryGetValue(dtos[i].Id, out ClubPublicView? view))
+      {
+        continue;
+      }
+
+      dtos[i] = ApplyPublicView(dtos[i], view);
+    }
+
+    return dtos;
+  }
+
+  private static ClubResponseDto ApplyPublicView(ClubResponseDto dto, ClubPublicView view)
+  {
+    return dto with
+    {
+      Cash = view.Cash,
+      Morale = view.Morale,
+      Suspicion = view.Suspicion,
+      CashSpendLocked = view.CashSpendLocked
     };
   }
 

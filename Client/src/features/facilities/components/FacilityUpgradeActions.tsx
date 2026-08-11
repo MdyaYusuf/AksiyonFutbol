@@ -4,6 +4,7 @@ import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
 interface FacilityUpgradeActionsProps {
   upgradeCost: number;
   canAfford: boolean;
+  cashSpendLocked?: boolean;
   isMaxLevel: boolean;
   isSubmitting: boolean;
   onConfirm: () => void;
@@ -12,6 +13,7 @@ interface FacilityUpgradeActionsProps {
 export const FacilityUpgradeActions = ({
   upgradeCost,
   canAfford,
+  cashSpendLocked = false,
   isMaxLevel,
   isSubmitting,
   onConfirm,
@@ -55,7 +57,13 @@ export const FacilityUpgradeActions = ({
               ? "Max Level"
               : "Confirm Upgrade"}
         </button>
-        {!isMaxLevel && !canAfford ? (
+        {!isMaxLevel && cashSpendLocked ? (
+          <div className="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+            <MaterialIcon name="lock" className="text-[14px]" />
+            Locked during your live match.
+          </div>
+        ) : null}
+        {!isMaxLevel && !canAfford && !cashSpendLocked ? (
           <div className="flex items-center gap-1 font-body-sm text-body-sm text-error">
             <MaterialIcon name="error" className="text-[14px]" />
             Insufficient funds.

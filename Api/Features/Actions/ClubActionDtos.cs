@@ -15,6 +15,7 @@ public sealed class ClubActionsContextResponseDto
   public decimal ClubCash { get; init; }
   public int Suspicion { get; init; }
   public int MaxSuspicion { get; init; }
+  public bool CashSpendLocked { get; init; }
   public UpcomingMatchSummaryDto? UpcomingMatch { get; init; }
   public IReadOnlyList<ClubActionAvailabilityDto> Actions { get; init; } = [];
 }

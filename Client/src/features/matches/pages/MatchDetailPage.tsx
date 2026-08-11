@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { MatchLiveStats } from "../components/MatchLiveStats";
 import { MatchReportHeader } from "../components/MatchReportHeader";
@@ -10,6 +10,7 @@ import {
   getMatchLivePath,
   getMatchLiveReplayPath,
   getMatchPresentationPhase,
+  shouldOpenLiveView,
 } from "../utils/matchLiveHelpers";
 import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
 
@@ -69,7 +70,7 @@ export const MatchDetailPage = () => {
     );
   }
 
-  if (isError || !match || !stats) {
+  if (isError || !match) {
     return (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-on-surface-variant">
         <p>Maç raporu bulunamadı.</p>
@@ -84,7 +85,25 @@ export const MatchDetailPage = () => {
     );
   }
 
-  const livePath = getMatchLivePath(match.id);
+  if (shouldOpenLiveView(phase)) {
+    return <Navigate to={getMatchLivePath(match.id)} replace />;
+  }
+
+  if (!stats) {
+    return (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-on-surface-variant">
+        <p>Maç raporu bulunamadı.</p>
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="text-primary hover:underline"
+        >
+          Go back
+        </button>
+      </div>
+    );
+  }
+
   const replayPath = getMatchLiveReplayPath(match.id);
 
   return (
@@ -100,15 +119,6 @@ export const MatchDetailPage = () => {
             className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
           >
             Set Lineup
-          </Link>
-        ) : null}
-
-        {phase === "waitingSim" || phase === "live" ? (
-          <Link
-            to={livePath}
-            className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-fixed"
-          >
-            Watch live
           </Link>
         ) : null}
 

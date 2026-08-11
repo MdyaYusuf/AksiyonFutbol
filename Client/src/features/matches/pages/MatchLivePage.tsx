@@ -1,24 +1,32 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useAppDispatch } from "../../../core/store/hooks";
 import { MatchLiveCommentary } from "../components/MatchLiveCommentary";
 import { MatchLivePitch } from "../components/MatchLivePitch";
 import { MatchLiveScoreboard } from "../components/MatchLiveScoreboard";
 import { MatchLiveStats } from "../components/MatchLiveStats";
 import type { MatchEvent, MatchResponse } from "../matchTypes";
-import { useGetMatchByIdQuery, useGetMatchLiveStatusQuery } from "../matchesApiSlice";
+import {
+  matchesApiSlice,
+  useGetMatchByIdQuery,
+  useGetMatchLiveStatusQuery,
+} from "../matchesApiSlice";
 import {
   getBallPositionFromEvents,
   getEventsThroughFeedPresentation,
   getLiveMatchStats,
   getMatchPresentationPhase,
   getRevealedEvents,
+  getMatchReportPath,
   getRunningScoreFromEvents,
   MATCH_LIVE_REPLAY_DURATION_SECONDS,
   matchMinuteToWallSeconds,
+  shouldOpenMatchReport,
   wallSecondsToMatchMinute,
   type MatchPresentationPhase,
 } from "../utils/matchLiveHelpers";
+import { matchSettlementRevealTags } from "../utils/matchSettlementTags";
 import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
 
 const WAITING_POLL_MS = 1000;
@@ -71,6 +79,7 @@ const hasUsableMatchLog = (match: MatchResponse | undefined): boolean => {
 export const MatchLivePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const startReplayRequested = searchParams.get("replay") === "1";
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -107,6 +116,26 @@ export const MatchLivePage = () => {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
+
+  const hasReachedFullTime = playbackSeconds >= MATCH_LIVE_REPLAY_DURATION_SECONDS;
+
+  useEffect(() => {
+    if (!hasReachedFullTime || !id || !match?.homeClubId || !match.awayClubId) {
+      return;
+    }
+
+    dispatch(
+      matchesApiSlice.util.invalidateTags(
+        matchSettlementRevealTags(id, [match.homeClubId, match.awayClubId]),
+      ),
+    );
+  }, [
+    hasReachedFullTime,
+    id,
+    match?.homeClubId,
+    match?.awayClubId,
+    dispatch,
+  ]);
 
   const phase = useMemo(() => {
     if (!match) {
@@ -520,12 +549,14 @@ export const MatchLivePage = () => {
             >
               Try again
             </button>
-            <Link
-              to={`/app/matches/${match.id}`}
-              className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
-            >
-              Open match report
-            </Link>
+            {shouldOpenMatchReport(phase) ? (
+              <Link
+                to={getMatchReportPath(match.id)}
+                className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
+              >
+                Open match report
+              </Link>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -574,12 +605,14 @@ export const MatchLivePage = () => {
           >
             Restart
           </button>
-          <Link
-            to={`/app/matches/${match.id}`}
-            className="rounded border border-outline-variant px-3 py-1 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
-          >
-            Full report
-          </Link>
+          {shouldOpenMatchReport(phase) ? (
+            <Link
+              to={getMatchReportPath(match.id)}
+              className="rounded border border-outline-variant px-3 py-1 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
+            >
+              Full report
+            </Link>
+          ) : null}
         </div>
       </div>
 
@@ -651,12 +684,14 @@ export const MatchLivePage = () => {
                 >
                   Watch replay
                 </button>
-                <Link
-                  to={`/app/matches/${match.id}`}
-                  className="rounded border border-outline-variant px-4 py-1.5 text-body-sm text-on-surface"
-                >
-                  Open match report
-                </Link>
+                {shouldOpenMatchReport(phase) ? (
+                  <Link
+                    to={getMatchReportPath(match.id)}
+                    className="rounded border border-outline-variant px-4 py-1.5 text-body-sm text-on-surface"
+                  >
+                    Open match report
+                  </Link>
+                ) : null}
               </div>
             </div>
           ) : null}

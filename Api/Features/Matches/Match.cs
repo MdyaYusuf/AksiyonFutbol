@@ -14,6 +14,14 @@ public class Match : Entity<Guid>
   public int? AwayScore { get; set; }
   public string? MatchLogJson { get; set; }
 
+  // Pre-sim club stats so GETs can hide settlement until the live window ends.
+  public decimal? HomeCashBefore { get; set; }
+  public decimal? AwayCashBefore { get; set; }
+  public int? HomeMoraleBefore { get; set; }
+  public int? AwayMoraleBefore { get; set; }
+  public int? HomeSuspicionBefore { get; set; }
+  public int? AwaySuspicionBefore { get; set; }
+
   // Relationship properties
   public int DivisionId { get; set; }
   public Guid HomeClubId { get; set; }

@@ -19,7 +19,8 @@ public class ClubActionService(
   ClubActionBusinessRules _businessRules,
   ClubActionMapper _mapper,
   IUnitOfWork _unitOfWork,
-  IValidator<ExecuteClubActionRequest> _executeValidator) : IClubActionService
+  IValidator<ExecuteClubActionRequest> _executeValidator,
+  IMatchSettlementGate _settlementGate) : IClubActionService
 {
   public async Task<ReturnModel<ClubActionsContextResponseDto>> GetContextForCurrentUserAsync(
     Guid currentUserId,
@@ -38,17 +39,26 @@ public class ClubActionService(
       orderBy: query => query.OrderByDescending(a => a.CreatedDate),
       cancellationToken: cancellationToken);
 
+    ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
+
     List<ClubActionAvailabilityDto> availabilities = _actionProvider.All()
-      .Select(definition => BuildAvailability(definition, club, upcomingMatch, actions))
+      .Select(definition => BuildAvailability(
+        definition,
+        club,
+        upcomingMatch,
+        actions,
+        view.Cash,
+        view.CashSpendLocked))
       .ToList();
 
     ClubActionsContextResponseDto response = new()
     {
       ClubId = club.Id,
       ClubName = club.Name,
-      ClubCash = club.Cash,
-      Suspicion = club.Suspicion,
+      ClubCash = view.Cash,
+      Suspicion = view.Suspicion,
       MaxSuspicion = _businessRules.Options.MaxSuspicion,
+      CashSpendLocked = view.CashSpendLocked,
       UpcomingMatch = upcomingMatch == null
         ? null
         : _mapper.ToUpcomingMatchSummary(upcomingMatch, club.Id),
@@ -77,6 +87,8 @@ public class ClubActionService(
       currentUserId,
       enableTracking: true,
       cancellationToken: cancellationToken);
+
+    await _settlementGate.MustAllowClubSpendAsync(club.Id, cancellationToken);
 
     Match? match = null;
     decimal pledgedWinBonus = 0m;
@@ -250,7 +262,9 @@ public class ClubActionService(
     ClubActionDefinition definition,
     Club club,
     Match? upcomingMatch,
-    List<ClubAction> actions)
+    List<ClubAction> actions,
+    decimal displayCash,
+    bool cashSpendLocked)
   {
     decimal detectionChance = _businessRules.CalculateDetectionChance(definition, club.Suspicion);
     decimal successChance = _businessRules.CalculateSuccessChance(definition, upcomingMatch);
@@ -300,7 +314,7 @@ public class ClubActionService(
           isAvailable = false;
           unavailableReason = "Already promised for this fixture.";
         }
-        else if (club.Cash < _businessRules.GetPromiseWinBonusAmount())
+        else if (displayCash < _businessRules.GetPromiseWinBonusAmount())
         {
           isAvailable = false;
           unavailableReason = "Insufficient funds for the promised bonus.";
@@ -318,10 +332,16 @@ public class ClubActionService(
       }
     }
 
-    if (isAvailable && club.Cash < definition.Cost)
+    if (isAvailable && displayCash < definition.Cost)
     {
       isAvailable = false;
       unavailableReason = "Insufficient funds.";
+    }
+
+    if (cashSpendLocked)
+    {
+      isAvailable = false;
+      unavailableReason = MatchLiveWindow.SpendLockedReason;
     }
 
     decimal displayCost = definition.Type == ClubActionType.PromiseWinBonus
