@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { PlayerAttributePopover } from "../../playerInstances/components/PlayerAttributePopover";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
 import type { TeamFormation } from "../clubLineupTypes";
 import {
@@ -81,96 +82,102 @@ export const TacticsPitch = ({
                             : "";
 
               return (
-                <div
+                <PlayerAttributePopover
                   key={`slot-${slotIndex}`}
-                  role="button"
-                  tabIndex={0}
-                  data-tactics-slot={slotIndex}
-                  draggable={Boolean(player)}
-                  onClick={(event) => {
-                    if (dragOccurredRef.current) {
-                      return;
-                    }
-
-                    onSlotClick(slotIndex, event.currentTarget.getBoundingClientRect());
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key !== "Enter" && event.key !== " ") {
-                      return;
-                    }
-
-                    event.preventDefault();
-                    onSlotClick(slotIndex, event.currentTarget.getBoundingClientRect());
-                  }}
-                  onDragStart={(event) => {
-                    if (!playerId) {
-                      event.preventDefault();
-                      return;
-                    }
-
-                    dragOccurredRef.current = true;
-                    event.dataTransfer.effectAllowed = "move";
-                    event.dataTransfer.setData(
-                      "text/plain",
-                      serializeLineupDrag({
-                        kind: "starter",
-                        index: slotIndex,
-                        playerId,
-                      }),
-                    );
-                  }}
-                  onDragEnd={() => {
-                    setDropIndex(null);
-                    window.setTimeout(() => {
-                      dragOccurredRef.current = false;
-                    }, 0);
-                  }}
-                  onDragOver={(event) => {
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = "move";
-                    setDropIndex(slotIndex);
-                  }}
-                  onDragLeave={() => {
-                    setDropIndex((current) => (current === slotIndex ? null : current));
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    setDropIndex(null);
-                    const payload = parseLineupDrag(
-                      event.dataTransfer.getData("text/plain"),
-                    );
-                    if (!payload) {
-                      return;
-                    }
-
-                    onDropOnSlot(slotIndex, payload.playerId);
-                  }}
-                  className={`group flex cursor-pointer flex-col items-center gap-1 ${raiseMid}`}
+                  player={player}
+                  disabled={isSelected}
+                  className={raiseMid}
                 >
                   <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-full border-2 bg-surface-container-highest font-data-mono text-data-mono text-on-surface shadow-sm transition-colors ${accent} ${hover} ${
-                      isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
-                    } ${isDropTarget ? "ring-2 ring-secondary ring-offset-2 ring-offset-background" : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    data-tactics-slot={slotIndex}
+                    draggable={Boolean(player)}
+                    onClick={(event) => {
+                      if (dragOccurredRef.current) {
+                        return;
+                      }
+
+                      onSlotClick(slotIndex, event.currentTarget.getBoundingClientRect());
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key !== "Enter" && event.key !== " ") {
+                        return;
+                      }
+
+                      event.preventDefault();
+                      onSlotClick(slotIndex, event.currentTarget.getBoundingClientRect());
+                    }}
+                    onDragStart={(event) => {
+                      if (!playerId) {
+                        event.preventDefault();
+                        return;
+                      }
+
+                      dragOccurredRef.current = true;
+                      event.dataTransfer.effectAllowed = "move";
+                      event.dataTransfer.setData(
+                        "text/plain",
+                        serializeLineupDrag({
+                          kind: "starter",
+                          index: slotIndex,
+                          playerId,
+                        }),
+                      );
+                    }}
+                    onDragEnd={() => {
+                      setDropIndex(null);
+                      window.setTimeout(() => {
+                        dragOccurredRef.current = false;
+                      }, 0);
+                    }}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "move";
+                      setDropIndex(slotIndex);
+                    }}
+                    onDragLeave={() => {
+                      setDropIndex((current) => (current === slotIndex ? null : current));
+                    }}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      setDropIndex(null);
+                      const payload = parseLineupDrag(
+                        event.dataTransfer.getData("text/plain"),
+                      );
+                      if (!payload) {
+                        return;
+                      }
+
+                      onDropOnSlot(slotIndex, payload.playerId);
+                    }}
+                    className="group flex cursor-pointer flex-col items-center gap-1"
                   >
-                    {player ? slotIndex + 1 : "·"}
+                    <div
+                      className={`flex h-11 w-11 items-center justify-center rounded-full border-2 bg-surface-container-highest font-data-mono text-data-mono text-on-surface shadow-sm transition-colors ${accent} ${hover} ${
+                        isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+                      } ${isDropTarget ? "ring-2 ring-secondary ring-offset-2 ring-offset-background" : ""}`}
+                    >
+                      {player ? slotIndex + 1 : "·"}
+                    </div>
+                    <div
+                      className={`rounded border border-outline-variant bg-surface-container-lowest px-2 py-0.5 font-data-mono text-[11px] ${
+                        player ? "text-on-surface" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {player ? (
+                        <>
+                          {formatShortName(player.firstName, player.lastName)}
+                          <span className={`ml-2 ${getPitchRatingTextClass(player.position)}`}>
+                            {player.overallRating}
+                          </span>
+                        </>
+                      ) : (
+                        "Empty"
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className={`rounded border border-outline-variant bg-surface-container-lowest px-2 py-0.5 font-data-mono text-[11px] ${
-                      player ? "text-on-surface" : "text-on-surface-variant"
-                    }`}
-                  >
-                    {player ? (
-                      <>
-                        {formatShortName(player.firstName, player.lastName)}
-                        <span className={`ml-2 ${getPitchRatingTextClass(player.position)}`}>
-                          {player.overallRating}
-                        </span>
-                      </>
-                    ) : (
-                      "Empty"
-                    )}
-                  </div>
-                </div>
+                </PlayerAttributePopover>
               );
             })}
           </div>

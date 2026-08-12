@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { PlayerAttributePopover } from "../../playerInstances/components/PlayerAttributePopover";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
 import {
   getPositionBadgeClassName,
@@ -51,103 +52,109 @@ export const TacticsBench = ({
           const isSelected = selectedIndex === index;
 
           return (
-            <div
+            <PlayerAttributePopover
               key={`bench-${index}`}
-              role="button"
-              tabIndex={0}
-              data-tactics-bench-slot={index}
-              draggable={Boolean(player)}
-              onClick={(event) => {
-                if (dragOccurredRef.current) {
-                  return;
-                }
-
-                onSlotClick(index, event.currentTarget.getBoundingClientRect());
-              }}
-              onKeyDown={(event) => {
-                if (event.key !== "Enter" && event.key !== " ") {
-                  return;
-                }
-
-                event.preventDefault();
-                onSlotClick(index, event.currentTarget.getBoundingClientRect());
-              }}
-              onDragStart={(event) => {
-                if (!playerId) {
-                  event.preventDefault();
-                  return;
-                }
-
-                dragOccurredRef.current = true;
-                event.dataTransfer.effectAllowed = "move";
-                event.dataTransfer.setData(
-                  "text/plain",
-                  serializeLineupDrag({
-                    kind: "bench",
-                    index,
-                    playerId,
-                  }),
-                );
-              }}
-              onDragEnd={() => {
-                setDropIndex(null);
-                window.setTimeout(() => {
-                  dragOccurredRef.current = false;
-                }, 0);
-              }}
-              onDragOver={(event) => {
-                event.preventDefault();
-                event.dataTransfer.dropEffect = "move";
-                setDropIndex(index);
-              }}
-              onDragLeave={() => {
-                setDropIndex((current) => (current === index ? null : current));
-              }}
-              onDrop={(event) => {
-                event.preventDefault();
-                setDropIndex(null);
-                const payload = parseLineupDrag(event.dataTransfer.getData("text/plain"));
-                if (!payload) {
-                  return;
-                }
-
-                onDropOnSlot(index, payload.playerId);
-              }}
-              className={`flex w-full items-center justify-between rounded p-2 ${
-                player ? "cursor-grab" : "cursor-pointer border border-dashed border-outline-variant"
-              } ${isDropTarget ? "bg-surface-variant" : ""} ${
-                isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
-              }`}
+              player={player}
+              disabled={isSelected}
+              className="block w-full"
             >
-              {player ? (
-                <>
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span
-                      className={`inline-flex h-6 w-8 shrink-0 items-center justify-center rounded text-label-caps ${getPositionBadgeClassName(player.position)}`}
-                    >
-                      {getPositionLabel(player.position)}
-                    </span>
-                    <span className="truncate font-body-sm text-on-surface">
-                      {formatShortName(player.firstName, player.lastName)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {player.isInjured ? (
-                      <span className="rounded bg-error-container px-1.5 py-0.5 text-[10px] font-bold text-on-error-container">
-                        INJ
+              <div
+                role="button"
+                tabIndex={0}
+                data-tactics-bench-slot={index}
+                draggable={Boolean(player)}
+                onClick={(event) => {
+                  if (dragOccurredRef.current) {
+                    return;
+                  }
+
+                  onSlotClick(index, event.currentTarget.getBoundingClientRect());
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                  }
+
+                  event.preventDefault();
+                  onSlotClick(index, event.currentTarget.getBoundingClientRect());
+                }}
+                onDragStart={(event) => {
+                  if (!playerId) {
+                    event.preventDefault();
+                    return;
+                  }
+
+                  dragOccurredRef.current = true;
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData(
+                    "text/plain",
+                    serializeLineupDrag({
+                      kind: "bench",
+                      index,
+                      playerId,
+                    }),
+                  );
+                }}
+                onDragEnd={() => {
+                  setDropIndex(null);
+                  window.setTimeout(() => {
+                    dragOccurredRef.current = false;
+                  }, 0);
+                }}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  event.dataTransfer.dropEffect = "move";
+                  setDropIndex(index);
+                }}
+                onDragLeave={() => {
+                  setDropIndex((current) => (current === index ? null : current));
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  setDropIndex(null);
+                  const payload = parseLineupDrag(event.dataTransfer.getData("text/plain"));
+                  if (!payload) {
+                    return;
+                  }
+
+                  onDropOnSlot(index, payload.playerId);
+                }}
+                className={`flex w-full items-center justify-between rounded p-2 ${
+                  player ? "cursor-grab" : "cursor-pointer border border-dashed border-outline-variant"
+                } ${isDropTarget ? "bg-surface-variant" : ""} ${
+                  isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+                }`}
+              >
+                {player ? (
+                  <>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={`inline-flex h-6 w-8 shrink-0 items-center justify-center rounded text-label-caps ${getPositionBadgeClassName(player.position)}`}
+                      >
+                        {getPositionLabel(player.position)}
                       </span>
-                    ) : null}
-                    <div className="flex h-6 w-6 items-center justify-center rounded bg-primary-container/20 font-data-mono text-[11px] text-primary">
-                      {player.overallRating}
+                      <span className="truncate font-body-sm text-on-surface">
+                        {formatShortName(player.firstName, player.lastName)}
+                      </span>
                     </div>
-                  </div>
-                </>
-              ) : (
-                <span className="font-body-sm text-body-sm text-on-surface-variant">
-                  Empty bench slot
-                </span>
-              )}
-            </div>
+                    <div className="flex items-center gap-2">
+                      {player.isInjured ? (
+                        <span className="rounded bg-error-container px-1.5 py-0.5 text-[10px] font-bold text-on-error-container">
+                          INJ
+                        </span>
+                      ) : null}
+                      <div className="flex h-6 w-6 items-center justify-center rounded bg-primary-container/20 font-data-mono text-[11px] text-primary">
+                        {player.overallRating}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <span className="font-body-sm text-body-sm text-on-surface-variant">
+                    Empty bench slot
+                  </span>
+                )}
+              </div>
+            </PlayerAttributePopover>
           );
         })}
       </div>

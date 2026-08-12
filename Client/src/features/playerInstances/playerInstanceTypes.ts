@@ -1,4 +1,10 @@
-import type { PlayerPosition, PreferredFoot } from "../basePlayers/basePlayerTypes";
+import type {
+  PlayerAttributes,
+  PlayerPosition,
+  PreferredFoot,
+} from "../basePlayers/basePlayerTypes";
+
+export type { PlayerAttributes } from "../basePlayers/basePlayerTypes";
 
 // Responses
 export interface PlayerInstanceResponse {
@@ -11,6 +17,7 @@ export interface PlayerInstanceResponse {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
+  attributes: PlayerAttributes;
   attackPower: number;
   defenseStrength: number;
   midfieldControl: number;
@@ -68,9 +75,7 @@ export interface CreateCustomPlayerInstanceRequest {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
   marketValue: number;
   wage: number;
 }
@@ -88,9 +93,7 @@ export interface UpdatePlayerInstanceStatsRequest {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
   marketValue: number;
   wage: number;
 }

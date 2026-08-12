@@ -26,6 +26,7 @@ import {
   useUpdatePlayerInstanceStatsMutation,
 } from "../playerInstancesApiSlice";
 import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+import { buildAttributesFromMains } from "../utils/playerAttributeHelpers";
 import {
   filterAdminPlayerInstances,
   type PlayerPositionFilter,
@@ -257,9 +258,12 @@ export const AdminPlayerInstancesPage = () => {
         heightCm: customValues.heightCm,
         weightKg: customValues.weightKg,
         preferredFoot: customValues.preferredFoot,
-        attackPower: customValues.attackPower,
-        defenseStrength: customValues.defenseStrength,
-        midfieldControl: customValues.midfieldControl,
+        attributes: buildAttributesFromMains(
+          customValues.position,
+          customValues.attackPower,
+          customValues.defenseStrength,
+          customValues.midfieldControl,
+        ),
         marketValue: customValues.marketValue,
         wage: customValues.wage,
       }).unwrap();
@@ -328,9 +332,12 @@ export const AdminPlayerInstancesPage = () => {
         heightCm: editValues.heightCm,
         weightKg: editValues.weightKg,
         preferredFoot: editValues.preferredFoot,
-        attackPower: editValues.attackPower,
-        defenseStrength: editValues.defenseStrength,
-        midfieldControl: editValues.midfieldControl,
+        attributes: buildAttributesFromMains(
+          editValues.position,
+          editValues.attackPower,
+          editValues.defenseStrength,
+          editValues.midfieldControl,
+        ),
         marketValue: editValues.marketValue,
         wage: editValues.wage,
       }).unwrap();

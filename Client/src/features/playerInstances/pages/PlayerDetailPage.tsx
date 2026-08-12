@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { PlayerAttributeProfile } from "../components/PlayerAttributeProfile";
 import { useGetPlayerInstanceByIdQuery } from "../playerInstancesApiSlice";
 import {
   formatSquadMoney,
@@ -13,53 +13,6 @@ import {
   getPositionLabel,
   getPreferredFootLabel,
 } from "../utils/squadHelpers";
-
-interface AttributeBarProps {
-  label: string;
-  value: number;
-  fillClassName: string;
-  emphasize?: boolean;
-  delayMs?: number;
-}
-
-const AttributeBar = ({
-  label,
-  value,
-  fillClassName,
-  emphasize = false,
-  delayMs = 0,
-}: AttributeBarProps) => {
-  const [width, setWidth] = useState(0);
-  const clamped = Math.min(100, Math.max(0, value));
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setWidth(clamped), 100 + delayMs);
-    return () => window.clearTimeout(timer);
-  }, [clamped, delayMs]);
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-label-caps text-on-surface-variant">
-        <span>{label}</span>
-        <span
-          className={
-            emphasize
-              ? "font-semibold text-primary"
-              : "text-on-background"
-          }
-        >
-          {value} / 100
-        </span>
-      </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-surface-container-highest">
-        <div
-          className={`h-full transition-all duration-1000 ease-out ${fillClassName}`}
-          style={{ width: `${width}%` }}
-        />
-      </div>
-    </div>
-  );
-};
 
 export const PlayerDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -182,27 +135,13 @@ export const PlayerDetailPage = () => {
             <MaterialIcon name="tune" className="text-primary" />
             Attributes Profile
           </h2>
-          <div className="flex flex-col gap-4">
-            <AttributeBar
-              label="Attack"
-              value={player.attackPower}
-              fillClassName="bg-secondary"
-              delayMs={0}
-            />
-            <AttributeBar
-              label="Defense"
-              value={player.defenseStrength}
-              fillClassName="bg-primary-fixed-dim"
-              delayMs={100}
-            />
-            <AttributeBar
-              label="Midfield"
-              value={player.midfieldControl}
-              fillClassName="bg-primary-container"
-              emphasize
-              delayMs={200}
-            />
-          </div>
+          <PlayerAttributeProfile
+            position={player.position}
+            attributes={player.attributes}
+            attackPower={player.attackPower}
+            defenseStrength={player.defenseStrength}
+            midfieldControl={player.midfieldControl}
+          />
         </div>
 
         <div className="flex flex-col gap-6">

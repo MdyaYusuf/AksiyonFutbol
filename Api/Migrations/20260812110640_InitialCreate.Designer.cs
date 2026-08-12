@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AksiyonFutbol.Api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20260809075314_AddClubSuspicion")]
-    partial class AddClubSuspicion
+    [Migration("20260812110640_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,96 @@ namespace AksiyonFutbol.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Api.Features.Actions.ClubAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("ActionType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CashSpent")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<decimal>("DetectionChance")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<decimal>("FineAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("HeatGenerated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid?>("MatchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("MatchPenaltyApplied")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("Outcome")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScandalMoralePenaltyApplied")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("ScandalReputationPenaltyApplied")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<decimal>("SuccessChance")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<Guid?>("TargetPlayerInstanceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedDate");
+
+                    b.Property<bool>("WasDetected")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("TargetPlayerInstanceId");
+
+                    b.HasIndex("ClubId", "ActionType");
+
+                    b.HasIndex("ClubId", "MatchId");
+
+                    b.HasIndex("ClubId", "TargetPlayerInstanceId", "ActionType");
+
+                    b.ToTable("ClubActions", (string)null);
+                });
+
             modelBuilder.Entity("Api.Features.BasePlayers.BasePlayer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -32,15 +122,27 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Id");
 
+                    b.Property<int>("AerialReach")
+                        .HasColumnType("int");
+
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
                     b.Property<int>("AttackPower")
                         .HasColumnType("int");
 
+                    b.Property<int>("Bravery")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Composure")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedDate");
+
+                    b.Property<int>("Decisions")
+                        .HasColumnType("int");
 
                     b.Property<string>("DefaultFirstName")
                         .IsRequired()
@@ -55,7 +157,22 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("DefenseStrength")
                         .HasColumnType("int");
 
+                    b.Property<int>("Finishing")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FirstTouch")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Handling")
+                        .HasColumnType("int");
+
                     b.Property<int>("HeightCm")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Kicking")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Marking")
                         .HasColumnType("int");
 
                     b.Property<int>("MidfieldControl")
@@ -65,15 +182,54 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("OffTheBall")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OneOnOnes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Pace")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Passing")
+                        .HasColumnType("int");
+
                     b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Positioning")
                         .HasColumnType("int");
 
                     b.Property<int>("PreferredFoot")
                         .HasColumnType("int");
 
+                    b.Property<int>("Reflexes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingOut")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stamina")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Strength")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tackling")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Technique")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Throwing")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedDate");
+
+                    b.Property<int>("Vision")
+                        .HasColumnType("int");
 
                     b.Property<int>("WeightKg")
                         .HasColumnType("int");
@@ -412,10 +568,19 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Id");
 
+                    b.Property<decimal?>("AwayCashBefore")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid>("AwayClubId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("AwayMoraleBefore")
+                        .HasColumnType("int");
+
                     b.Property<int?>("AwayScore")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AwaySuspicionBefore")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -425,10 +590,19 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("DivisionId")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("HomeCashBefore")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<Guid>("HomeClubId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("HomeMoraleBefore")
+                        .HasColumnType("int");
+
                     b.Property<int?>("HomeScore")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HomeSuspicionBefore")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsPlayed")
@@ -479,6 +653,9 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Id");
 
+                    b.Property<int>("AerialReach")
+                        .HasColumnType("int");
+
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
@@ -488,20 +665,38 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<Guid?>("BasePlayerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Bravery")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("ClubId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Composure")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedDate");
 
+                    b.Property<int>("Decisions")
+                        .HasColumnType("int");
+
                     b.Property<int>("DefenseStrength")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Finishing")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("FirstTouch")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Handling")
+                        .HasColumnType("int");
 
                     b.Property<int>("HeightCm")
                         .HasColumnType("int");
@@ -516,6 +711,9 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<int>("Kicking")
+                        .HasColumnType("int");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -527,6 +725,9 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
 
+                    b.Property<int>("Marking")
+                        .HasColumnType("int");
+
                     b.Property<int>("MidfieldControl")
                         .HasColumnType("int");
 
@@ -534,10 +735,31 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("OffTheBall")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OneOnOnes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Pace")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Passing")
+                        .HasColumnType("int");
+
                     b.Property<int>("Position")
                         .HasColumnType("int");
 
+                    b.Property<int>("Positioning")
+                        .HasColumnType("int");
+
                     b.Property<int>("PreferredFoot")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Reflexes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingOut")
                         .HasColumnType("int");
 
                     b.Property<int>("SeasonAssists")
@@ -560,9 +782,27 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<int>("Stamina")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Strength")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tackling")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Technique")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Throwing")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedDate");
+
+                    b.Property<int>("Vision")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Wage")
                         .ValueGeneratedOnAdd()
@@ -805,6 +1045,31 @@ namespace AksiyonFutbol.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Api.Features.Actions.ClubAction", b =>
+                {
+                    b.HasOne("Api.Features.Clubs.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Api.Features.Matches.Match", "Match")
+                        .WithMany()
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Api.Features.PlayerInstances.PlayerInstance", "TargetPlayerInstance")
+                        .WithMany()
+                        .HasForeignKey("TargetPlayerInstanceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Club");
+
+                    b.Navigation("Match");
+
+                    b.Navigation("TargetPlayerInstance");
                 });
 
             modelBuilder.Entity("Api.Features.Bribery.BribeAttempt", b =>

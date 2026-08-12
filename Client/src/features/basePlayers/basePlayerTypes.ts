@@ -15,6 +15,55 @@ export const PreferredFoot = {
 
 export type PreferredFoot = (typeof PreferredFoot)[keyof typeof PreferredFoot];
 
+export interface OutfieldAttackAttributes {
+  pace: number;
+  finishing: number;
+  offTheBall: number;
+  composure: number;
+}
+
+export interface OutfieldMidfieldAttributes {
+  passing: number;
+  technique: number;
+  stamina: number;
+  decisions: number;
+}
+
+export interface OutfieldDefenseAttributes {
+  strength: number;
+  tackling: number;
+  marking: number;
+  bravery: number;
+}
+
+export interface GoalkeepingAttributes {
+  reflexes: number;
+  oneOnOnes: number;
+  aerialReach: number;
+  positioning: number;
+}
+
+export interface CommandAttributes {
+  firstTouch: number;
+  handling: number;
+  rushingOut: number;
+}
+
+export interface DistributionAttributes {
+  throwing: number;
+  kicking: number;
+  vision: number;
+}
+
+export interface PlayerAttributes {
+  attack?: OutfieldAttackAttributes | null;
+  midfield?: OutfieldMidfieldAttributes | null;
+  defense?: OutfieldDefenseAttributes | null;
+  goalkeeping?: GoalkeepingAttributes | null;
+  command?: CommandAttributes | null;
+  distribution?: DistributionAttributes | null;
+}
+
 // Responses
 export interface BasePlayerResponse {
   id: string;
@@ -26,6 +75,7 @@ export interface BasePlayerResponse {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
+  attributes: PlayerAttributes;
   attackPower: number;
   defenseStrength: number;
   midfieldControl: number;
@@ -63,9 +113,7 @@ export interface CreateBasePlayerRequest {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
 }
 
 export interface UpdateBasePlayerRequest {
@@ -78,7 +126,5 @@ export interface UpdateBasePlayerRequest {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
 }

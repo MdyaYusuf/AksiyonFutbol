@@ -24,6 +24,28 @@ namespace AksiyonFutbol.Api.Migrations
                     HeightCm = table.Column<int>(type: "int", nullable: false),
                     WeightKg = table.Column<int>(type: "int", nullable: false),
                     PreferredFoot = table.Column<int>(type: "int", nullable: false),
+                    Pace = table.Column<int>(type: "int", nullable: false),
+                    Finishing = table.Column<int>(type: "int", nullable: false),
+                    OffTheBall = table.Column<int>(type: "int", nullable: false),
+                    Composure = table.Column<int>(type: "int", nullable: false),
+                    Passing = table.Column<int>(type: "int", nullable: false),
+                    Technique = table.Column<int>(type: "int", nullable: false),
+                    Stamina = table.Column<int>(type: "int", nullable: false),
+                    Decisions = table.Column<int>(type: "int", nullable: false),
+                    Strength = table.Column<int>(type: "int", nullable: false),
+                    Tackling = table.Column<int>(type: "int", nullable: false),
+                    Marking = table.Column<int>(type: "int", nullable: false),
+                    Bravery = table.Column<int>(type: "int", nullable: false),
+                    Throwing = table.Column<int>(type: "int", nullable: false),
+                    Kicking = table.Column<int>(type: "int", nullable: false),
+                    Vision = table.Column<int>(type: "int", nullable: false),
+                    FirstTouch = table.Column<int>(type: "int", nullable: false),
+                    Handling = table.Column<int>(type: "int", nullable: false),
+                    RushingOut = table.Column<int>(type: "int", nullable: false),
+                    Reflexes = table.Column<int>(type: "int", nullable: false),
+                    OneOnOnes = table.Column<int>(type: "int", nullable: false),
+                    AerialReach = table.Column<int>(type: "int", nullable: false),
+                    Positioning = table.Column<int>(type: "int", nullable: false),
                     AttackPower = table.Column<int>(type: "int", nullable: false),
                     DefenseStrength = table.Column<int>(type: "int", nullable: false),
                     MidfieldControl = table.Column<int>(type: "int", nullable: false),
@@ -149,6 +171,7 @@ namespace AksiyonFutbol.Api.Migrations
                     Morale = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
                     Chemistry = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
                     Discipline = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
+                    Suspicion = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     PresidentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DivisionId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -226,6 +249,12 @@ namespace AksiyonFutbol.Api.Migrations
                     HomeScore = table.Column<int>(type: "int", nullable: true),
                     AwayScore = table.Column<int>(type: "int", nullable: true),
                     MatchLogJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HomeCashBefore = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    AwayCashBefore = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    HomeMoraleBefore = table.Column<int>(type: "int", nullable: true),
+                    AwayMoraleBefore = table.Column<int>(type: "int", nullable: true),
+                    HomeSuspicionBefore = table.Column<int>(type: "int", nullable: true),
+                    AwaySuspicionBefore = table.Column<int>(type: "int", nullable: true),
                     DivisionId = table.Column<int>(type: "int", nullable: false),
                     HomeClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AwayClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -275,6 +304,28 @@ namespace AksiyonFutbol.Api.Migrations
                     HeightCm = table.Column<int>(type: "int", nullable: false),
                     WeightKg = table.Column<int>(type: "int", nullable: false),
                     PreferredFoot = table.Column<int>(type: "int", nullable: false),
+                    Pace = table.Column<int>(type: "int", nullable: false),
+                    Finishing = table.Column<int>(type: "int", nullable: false),
+                    OffTheBall = table.Column<int>(type: "int", nullable: false),
+                    Composure = table.Column<int>(type: "int", nullable: false),
+                    Passing = table.Column<int>(type: "int", nullable: false),
+                    Technique = table.Column<int>(type: "int", nullable: false),
+                    Stamina = table.Column<int>(type: "int", nullable: false),
+                    Decisions = table.Column<int>(type: "int", nullable: false),
+                    Strength = table.Column<int>(type: "int", nullable: false),
+                    Tackling = table.Column<int>(type: "int", nullable: false),
+                    Marking = table.Column<int>(type: "int", nullable: false),
+                    Bravery = table.Column<int>(type: "int", nullable: false),
+                    Throwing = table.Column<int>(type: "int", nullable: false),
+                    Kicking = table.Column<int>(type: "int", nullable: false),
+                    Vision = table.Column<int>(type: "int", nullable: false),
+                    FirstTouch = table.Column<int>(type: "int", nullable: false),
+                    Handling = table.Column<int>(type: "int", nullable: false),
+                    RushingOut = table.Column<int>(type: "int", nullable: false),
+                    Reflexes = table.Column<int>(type: "int", nullable: false),
+                    OneOnOnes = table.Column<int>(type: "int", nullable: false),
+                    AerialReach = table.Column<int>(type: "int", nullable: false),
+                    Positioning = table.Column<int>(type: "int", nullable: false),
                     AttackPower = table.Column<int>(type: "int", nullable: false),
                     DefenseStrength = table.Column<int>(type: "int", nullable: false),
                     MidfieldControl = table.Column<int>(type: "int", nullable: false),
@@ -341,6 +392,51 @@ namespace AksiyonFutbol.Api.Migrations
                         name: "FK_BribeAttempts_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClubActions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ActionType = table.Column<int>(type: "int", nullable: false),
+                    Outcome = table.Column<int>(type: "int", nullable: false),
+                    WasDetected = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    HeatGenerated = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CashSpent = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    SuccessChance = table.Column<decimal>(type: "decimal(5,4)", precision: 5, scale: 4, nullable: false),
+                    DetectionChance = table.Column<decimal>(type: "decimal(5,4)", precision: 5, scale: 4, nullable: false),
+                    FineAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    ScandalMoralePenaltyApplied = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ScandalReputationPenaltyApplied = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    MatchPenaltyApplied = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    ClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MatchId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TargetPlayerInstanceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClubActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClubActions_Clubs_ClubId",
+                        column: x => x.ClubId,
+                        principalTable: "Clubs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClubActions_Matches_MatchId",
+                        column: x => x.MatchId,
+                        principalTable: "Matches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClubActions_PlayerInstances_TargetPlayerInstanceId",
+                        column: x => x.TargetPlayerInstanceId,
+                        principalTable: "PlayerInstances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -458,6 +554,36 @@ namespace AksiyonFutbol.Api.Migrations
                 name: "IX_BribeAttempts_RefereeId",
                 table: "BribeAttempts",
                 column: "RefereeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubActions_ClubId",
+                table: "ClubActions",
+                column: "ClubId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubActions_ClubId_ActionType",
+                table: "ClubActions",
+                columns: new[] { "ClubId", "ActionType" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubActions_ClubId_MatchId",
+                table: "ClubActions",
+                columns: new[] { "ClubId", "MatchId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubActions_ClubId_TargetPlayerInstanceId_ActionType",
+                table: "ClubActions",
+                columns: new[] { "ClubId", "TargetPlayerInstanceId", "ActionType" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubActions_MatchId",
+                table: "ClubActions",
+                column: "MatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubActions_TargetPlayerInstanceId",
+                table: "ClubActions",
+                column: "TargetPlayerInstanceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClubFacilities_ClubId",
@@ -665,6 +791,9 @@ namespace AksiyonFutbol.Api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BribeAttempts");
+
+            migrationBuilder.DropTable(
+                name: "ClubActions");
 
             migrationBuilder.DropTable(
                 name: "ClubFacilities");
