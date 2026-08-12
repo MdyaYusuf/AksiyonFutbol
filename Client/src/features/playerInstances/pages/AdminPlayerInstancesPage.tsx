@@ -26,7 +26,11 @@ import {
   useUpdatePlayerInstanceStatsMutation,
 } from "../playerInstancesApiSlice";
 import type { PlayerInstanceResponse } from "../playerInstanceTypes";
-import { buildAttributesFromMains } from "../utils/playerAttributeHelpers";
+import {
+  areAttributesEqual,
+  attributesForPosition,
+  buildDefaultAttributes,
+} from "../utils/playerAttributeHelpers";
 import {
   filterAdminPlayerInstances,
   type PlayerPositionFilter,
@@ -52,9 +56,7 @@ const emptyCustomValues = (clubId = ""): CustomPlayerFormValues => ({
   heightCm: 180,
   weightKg: 75,
   preferredFoot: PreferredFoot.Right,
-  attackPower: 50,
-  defenseStrength: 50,
-  midfieldControl: 50,
+  attributes: buildDefaultAttributes(PlayerPosition.Midfielder),
   marketValue: 1_000_000,
   wage: 10_000,
 });
@@ -68,9 +70,7 @@ const emptyEditValues = (): EditPlayerFormValues => ({
   heightCm: 180,
   weightKg: 75,
   preferredFoot: PreferredFoot.Right,
-  attackPower: 50,
-  defenseStrength: 50,
-  midfieldControl: 50,
+  attributes: buildDefaultAttributes(PlayerPosition.Midfielder),
   isInjured: false,
   injuryDays: 0,
   seasonGoals: 0,
@@ -90,9 +90,7 @@ const toEditValues = (player: PlayerInstanceResponse): EditPlayerFormValues => (
   heightCm: player.heightCm,
   weightKg: player.weightKg,
   preferredFoot: player.preferredFoot,
-  attackPower: player.attackPower,
-  defenseStrength: player.defenseStrength,
-  midfieldControl: player.midfieldControl,
+  attributes: attributesForPosition(player.position, player.attributes),
   isInjured: player.isInjured,
   injuryDays: player.injuryDays,
   seasonGoals: player.seasonGoals,
@@ -258,11 +256,9 @@ export const AdminPlayerInstancesPage = () => {
         heightCm: customValues.heightCm,
         weightKg: customValues.weightKg,
         preferredFoot: customValues.preferredFoot,
-        attributes: buildAttributesFromMains(
+        attributes: attributesForPosition(
           customValues.position,
-          customValues.attackPower,
-          customValues.defenseStrength,
-          customValues.midfieldControl,
+          customValues.attributes,
         ),
         marketValue: customValues.marketValue,
         wage: customValues.wage,
@@ -319,9 +315,11 @@ export const AdminPlayerInstancesPage = () => {
       editValues.heightCm !== editingPlayer.heightCm ||
       editValues.weightKg !== editingPlayer.weightKg ||
       editValues.preferredFoot !== editingPlayer.preferredFoot ||
-      editValues.attackPower !== editingPlayer.attackPower ||
-      editValues.defenseStrength !== editingPlayer.defenseStrength ||
-      editValues.midfieldControl !== editingPlayer.midfieldControl ||
+      !areAttributesEqual(
+        editValues.attributes,
+        editingPlayer.attributes,
+        editValues.position,
+      ) ||
       editValues.marketValue !== editingPlayer.marketValue ||
       editValues.wage !== editingPlayer.wage
     ) {
@@ -332,11 +330,9 @@ export const AdminPlayerInstancesPage = () => {
         heightCm: editValues.heightCm,
         weightKg: editValues.weightKg,
         preferredFoot: editValues.preferredFoot,
-        attributes: buildAttributesFromMains(
+        attributes: attributesForPosition(
           editValues.position,
-          editValues.attackPower,
-          editValues.defenseStrength,
-          editValues.midfieldControl,
+          editValues.attributes,
         ),
         marketValue: editValues.marketValue,
         wage: editValues.wage,

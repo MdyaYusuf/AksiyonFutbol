@@ -168,51 +168,185 @@ export const getAttributeGroupValues = (
   return (attributes.distribution ?? {}) as Record<string, number>;
 };
 
-export const buildAttributesFromMains = (
+const DEFAULT_SUB_STAT = 50;
+
+export const clampStat = (value: number): number => {
+  if (value < 1) {
+    return 1;
+  }
+
+  if (value > 100) {
+    return 100;
+  }
+
+  return value;
+};
+
+export const averageStat = (values: number[]): number => {
+  if (values.length === 0) {
+    return 1;
+  }
+
+  let sum = 0;
+  for (const value of values) {
+    sum += value;
+  }
+
+  const rounded = Math.round(sum / values.length);
+  return clampStat(rounded);
+};
+
+export const buildDefaultAttributes = (
   position: PlayerPosition,
-  attackPower: number,
-  defenseStrength: number,
-  midfieldControl: number,
 ): PlayerAttributes => {
   if (isGoalkeeper(position)) {
     return {
       goalkeeping: {
-        reflexes: defenseStrength,
-        oneOnOnes: defenseStrength,
-        aerialReach: defenseStrength,
-        positioning: defenseStrength,
+        reflexes: DEFAULT_SUB_STAT,
+        oneOnOnes: DEFAULT_SUB_STAT,
+        aerialReach: DEFAULT_SUB_STAT,
+        positioning: DEFAULT_SUB_STAT,
       },
       command: {
-        firstTouch: midfieldControl,
-        handling: midfieldControl,
-        rushingOut: midfieldControl,
+        firstTouch: DEFAULT_SUB_STAT,
+        handling: DEFAULT_SUB_STAT,
+        rushingOut: DEFAULT_SUB_STAT,
       },
       distribution: {
-        throwing: attackPower,
-        kicking: attackPower,
-        vision: attackPower,
+        throwing: DEFAULT_SUB_STAT,
+        kicking: DEFAULT_SUB_STAT,
+        vision: DEFAULT_SUB_STAT,
       },
     };
   }
 
   return {
     attack: {
-      pace: attackPower,
-      finishing: attackPower,
-      offTheBall: attackPower,
-      composure: attackPower,
+      pace: DEFAULT_SUB_STAT,
+      finishing: DEFAULT_SUB_STAT,
+      offTheBall: DEFAULT_SUB_STAT,
+      composure: DEFAULT_SUB_STAT,
     },
     midfield: {
-      passing: midfieldControl,
-      technique: midfieldControl,
-      stamina: midfieldControl,
-      decisions: midfieldControl,
+      passing: DEFAULT_SUB_STAT,
+      technique: DEFAULT_SUB_STAT,
+      stamina: DEFAULT_SUB_STAT,
+      decisions: DEFAULT_SUB_STAT,
     },
     defense: {
-      strength: defenseStrength,
-      tackling: defenseStrength,
-      marking: defenseStrength,
-      bravery: defenseStrength,
+      strength: DEFAULT_SUB_STAT,
+      tackling: DEFAULT_SUB_STAT,
+      marking: DEFAULT_SUB_STAT,
+      bravery: DEFAULT_SUB_STAT,
     },
   };
+};
+
+export const attributesForPosition = (
+  position: PlayerPosition,
+  current: PlayerAttributes | null | undefined,
+): PlayerAttributes => {
+  const defaults = buildDefaultAttributes(position);
+
+  if (isGoalkeeper(position)) {
+    return {
+      goalkeeping: current?.goalkeeping ?? defaults.goalkeeping,
+      command: current?.command ?? defaults.command,
+      distribution: current?.distribution ?? defaults.distribution,
+    };
+  }
+
+  return {
+    attack: current?.attack ?? defaults.attack,
+    midfield: current?.midfield ?? defaults.midfield,
+    defense: current?.defense ?? defaults.defense,
+  };
+};
+
+export const applyPositionChange = (
+  currentPosition: PlayerPosition,
+  nextPosition: PlayerPosition,
+  attributes: PlayerAttributes,
+): PlayerAttributes => {
+  if (isGoalkeeper(currentPosition) === isGoalkeeper(nextPosition)) {
+    return attributesForPosition(nextPosition, attributes);
+  }
+
+  return buildDefaultAttributes(nextPosition);
+};
+
+export const computeMainStats = (
+  position: PlayerPosition,
+  attributes: PlayerAttributes | null | undefined,
+): {
+  attackPower: number;
+  defenseStrength: number;
+  midfieldControl: number;
+} => {
+  const groups = getAttributeGroups(position);
+  let attackPower = 1;
+  let defenseStrength = 1;
+  let midfieldControl = 1;
+
+  for (const group of groups) {
+    const values = getAttributeGroupValues(attributes, group.id);
+    const stats = group.stats.map((stat) => values[stat.key] ?? 0);
+    const average = averageStat(stats);
+
+    if (group.pillar === "attack") {
+      attackPower = average;
+    } else if (group.pillar === "defense") {
+      defenseStrength = average;
+    } else {
+      midfieldControl = average;
+    }
+  }
+
+  return { attackPower, defenseStrength, midfieldControl };
+};
+
+export const setAttributeStat = (
+  attributes: PlayerAttributes,
+  position: PlayerPosition,
+  groupId: AttributeGroupId,
+  key: string,
+  value: number,
+): PlayerAttributes => {
+  const next = attributesForPosition(position, attributes);
+
+  if (groupId === "attack" && next.attack) {
+    return { ...next, attack: { ...next.attack, [key]: value } };
+  }
+
+  if (groupId === "midfield" && next.midfield) {
+    return { ...next, midfield: { ...next.midfield, [key]: value } };
+  }
+
+  if (groupId === "defense" && next.defense) {
+    return { ...next, defense: { ...next.defense, [key]: value } };
+  }
+
+  if (groupId === "goalkeeping" && next.goalkeeping) {
+    return { ...next, goalkeeping: { ...next.goalkeeping, [key]: value } };
+  }
+
+  if (groupId === "command" && next.command) {
+    return { ...next, command: { ...next.command, [key]: value } };
+  }
+
+  if (groupId === "distribution" && next.distribution) {
+    return { ...next, distribution: { ...next.distribution, [key]: value } };
+  }
+
+  return next;
+};
+
+export const areAttributesEqual = (
+  left: PlayerAttributes | null | undefined,
+  right: PlayerAttributes | null | undefined,
+  position: PlayerPosition,
+): boolean => {
+  const normalizedLeft = attributesForPosition(position, left);
+  const normalizedRight = attributesForPosition(position, right);
+  return JSON.stringify(normalizedLeft) === JSON.stringify(normalizedRight);
 };

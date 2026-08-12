@@ -3,8 +3,11 @@ import {
   PlayerPosition,
   PreferredFoot,
   type BasePlayerResponse,
+  type PlayerAttributes,
 } from "../../basePlayers/basePlayerTypes";
 import type { ClubResponse } from "../../clubs/clubTypes";
+import { applyPositionChange } from "../utils/playerAttributeHelpers";
+import { AdminAttributeEditor } from "./AdminAttributeEditor";
 
 export type PlayerInstancePanelTab = "assign" | "custom" | "edit";
 
@@ -25,9 +28,7 @@ export interface CustomPlayerFormValues {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
   marketValue: number;
   wage: number;
 }
@@ -41,9 +42,7 @@ export interface EditPlayerFormValues {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
   isInjured: boolean;
   injuryDays: number;
   seasonGoals: number;
@@ -299,12 +298,18 @@ export const AdminPlayerInstanceFormPanel = ({
                 <label className="text-label-caps text-on-surface-variant">Position</label>
                 <select
                   value={customValues.position}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    const position = Number(event.target.value) as PlayerPosition;
                     onCustomChange({
                       ...customValues,
-                      position: Number(event.target.value) as PlayerPosition,
-                    })
-                  }
+                      position,
+                      attributes: applyPositionChange(
+                        customValues.position,
+                        position,
+                        customValues.attributes,
+                      ),
+                    });
+                  }}
                   className={inputClassName}
                 >
                   {positionOptions.map((option) => (
@@ -381,56 +386,14 @@ export const AdminPlayerInstanceFormPanel = ({
                 ))}
               </select>
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-on-surface-variant">ATT</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={customValues.attackPower}
-                  onChange={(event) =>
-                    onCustomChange({
-                      ...customValues,
-                      attackPower: Number(event.target.value),
-                    })
-                  }
-                  className={`${inputClassName} font-data-mono`}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-on-surface-variant">DEF</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={customValues.defenseStrength}
-                  onChange={(event) =>
-                    onCustomChange({
-                      ...customValues,
-                      defenseStrength: Number(event.target.value),
-                    })
-                  }
-                  className={`${inputClassName} font-data-mono`}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-on-surface-variant">MID</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={customValues.midfieldControl}
-                  onChange={(event) =>
-                    onCustomChange({
-                      ...customValues,
-                      midfieldControl: Number(event.target.value),
-                    })
-                  }
-                  className={`${inputClassName} font-data-mono`}
-                />
-              </div>
-            </div>
+            <AdminAttributeEditor
+              idPrefix="custom"
+              position={customValues.position}
+              attributes={customValues.attributes}
+              onChange={(attributes) =>
+                onCustomChange({ ...customValues, attributes })
+              }
+            />
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-xs text-on-surface-variant">Market Value ($)</label>
@@ -634,12 +597,18 @@ export const AdminPlayerInstanceFormPanel = ({
                   <label className="text-xs text-on-surface-variant">Position</label>
                   <select
                     value={editValues.position}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const position = Number(event.target.value) as PlayerPosition;
                       onEditChange({
                         ...editValues,
-                        position: Number(event.target.value) as PlayerPosition,
-                      })
-                    }
+                        position,
+                        attributes: applyPositionChange(
+                          editValues.position,
+                          position,
+                          editValues.attributes,
+                        ),
+                      });
+                    }}
                     className={inputClassName}
                   >
                     {positionOptions.map((option) => (
@@ -658,54 +627,6 @@ export const AdminPlayerInstanceFormPanel = ({
                     value={editValues.age}
                     onChange={(event) =>
                       onEditChange({ ...editValues, age: Number(event.target.value) })
-                    }
-                    className={`${inputClassName} font-data-mono`}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-on-surface-variant">ATT</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={editValues.attackPower}
-                    onChange={(event) =>
-                      onEditChange({
-                        ...editValues,
-                        attackPower: Number(event.target.value),
-                      })
-                    }
-                    className={`${inputClassName} font-data-mono`}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-on-surface-variant">DEF</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={editValues.defenseStrength}
-                    onChange={(event) =>
-                      onEditChange({
-                        ...editValues,
-                        defenseStrength: Number(event.target.value),
-                      })
-                    }
-                    className={`${inputClassName} font-data-mono`}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-on-surface-variant">MID</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={editValues.midfieldControl}
-                    onChange={(event) =>
-                      onEditChange({
-                        ...editValues,
-                        midfieldControl: Number(event.target.value),
-                      })
                     }
                     className={`${inputClassName} font-data-mono`}
                   />
@@ -759,6 +680,16 @@ export const AdminPlayerInstanceFormPanel = ({
                     className={`${inputClassName} font-data-mono`}
                   />
                 </div>
+              </div>
+              <div className="mt-4">
+                <AdminAttributeEditor
+                  idPrefix="edit"
+                  position={editValues.position}
+                  attributes={editValues.attributes}
+                  onChange={(attributes) =>
+                    onEditChange({ ...editValues, attributes })
+                  }
+                />
               </div>
             </div>
           </>

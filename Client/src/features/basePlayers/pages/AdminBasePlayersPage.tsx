@@ -17,7 +17,10 @@ import {
   PreferredFoot,
   type BasePlayerResponse,
 } from "../basePlayerTypes";
-import { buildAttributesFromMains } from "../../playerInstances/utils/playerAttributeHelpers";
+import {
+  attributesForPosition,
+  buildDefaultAttributes,
+} from "../../playerInstances/utils/playerAttributeHelpers";
 import {
   filterBasePlayers,
   type BasePlayerPositionFilter,
@@ -34,9 +37,7 @@ const emptyFormValues = (): AdminBasePlayerFormValues => ({
   heightCm: 180,
   weightKg: 75,
   preferredFoot: PreferredFoot.Right,
-  attackPower: 50,
-  defenseStrength: 50,
-  midfieldControl: 50,
+  attributes: buildDefaultAttributes(PlayerPosition.Midfielder),
 });
 
 const toFormValues = (player: BasePlayerResponse): AdminBasePlayerFormValues => ({
@@ -48,9 +49,7 @@ const toFormValues = (player: BasePlayerResponse): AdminBasePlayerFormValues => 
   heightCm: player.heightCm,
   weightKg: player.weightKg,
   preferredFoot: player.preferredFoot,
-  attackPower: player.attackPower,
-  defenseStrength: player.defenseStrength,
-  midfieldControl: player.midfieldControl,
+  attributes: attributesForPosition(player.position, player.attributes),
 });
 
 const toRequestBody = (values: AdminBasePlayerFormValues) => ({
@@ -62,12 +61,7 @@ const toRequestBody = (values: AdminBasePlayerFormValues) => ({
   heightCm: values.heightCm,
   weightKg: values.weightKg,
   preferredFoot: values.preferredFoot,
-  attributes: buildAttributesFromMains(
-    values.position,
-    values.attackPower,
-    values.defenseStrength,
-    values.midfieldControl,
-  ),
+  attributes: attributesForPosition(values.position, values.attributes),
 });
 
 export const AdminBasePlayersPage = () => {

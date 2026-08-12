@@ -1,7 +1,10 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { AdminAttributeEditor } from "../../playerInstances/components/AdminAttributeEditor";
+import { applyPositionChange } from "../../playerInstances/utils/playerAttributeHelpers";
 import {
   PlayerPosition,
   PreferredFoot,
+  type PlayerAttributes,
 } from "../basePlayerTypes";
 
 export interface AdminBasePlayerFormValues {
@@ -13,9 +16,7 @@ export interface AdminBasePlayerFormValues {
   heightCm: number;
   weightKg: number;
   preferredFoot: PreferredFoot;
-  attackPower: number;
-  defenseStrength: number;
-  midfieldControl: number;
+  attributes: PlayerAttributes;
 }
 
 interface AdminBasePlayerFormPanelProps {
@@ -40,41 +41,6 @@ const footOptions = [
   { value: PreferredFoot.Right, label: "Right" },
   { value: PreferredFoot.Both, label: "Both" },
 ];
-
-const AttributeRow = ({
-  id,
-  label,
-  value,
-  onChange,
-}: {
-  id: string;
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-}) => (
-  <div className="space-y-2">
-    <div className="flex items-center justify-between">
-      <label htmlFor={id} className="text-sm text-on-surface-variant">
-        {label}
-      </label>
-      <input
-        id={id}
-        type="number"
-        min={1}
-        max={100}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="w-16 rounded border border-outline-variant bg-surface-container p-1.5 text-center font-data-mono text-sm text-on-surface outline-none focus:border-primary"
-      />
-    </div>
-    <div className="h-1 w-full overflow-hidden rounded-full bg-surface-container-highest">
-      <div
-        className="h-full rounded-full bg-primary"
-        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-      />
-    </div>
-  </div>
-);
 
 export const AdminBasePlayerFormPanel = ({
   mode,
@@ -185,12 +151,18 @@ export const AdminBasePlayerFormPanel = ({
               <select
                 id="base-position"
                 value={values.position}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const position = Number(event.target.value) as PlayerPosition;
                   onChange({
                     ...values,
-                    position: Number(event.target.value) as PlayerPosition,
-                  })
-                }
+                    position,
+                    attributes: applyPositionChange(
+                      values.position,
+                      position,
+                      values.attributes,
+                    ),
+                  });
+                }}
                 className="w-full appearance-none rounded border border-outline-variant bg-surface-container p-2 text-sm text-on-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
               >
                 {positionOptions.map((option) => (
@@ -288,31 +260,11 @@ export const AdminBasePlayerFormPanel = ({
           </div>
 
           <div className="space-y-4 border-t border-outline-variant pt-4">
-            <h4 className="flex items-center gap-2 text-sm font-semibold text-on-surface">
-              <MaterialIcon name="troubleshoot" className="text-[18px] text-primary" />
-              Technical Attributes (1-100)
-            </h4>
-            <AttributeRow
-              id="base-attack"
-              label="Attack Power"
-              value={values.attackPower}
-              onChange={(attackPower) => onChange({ ...values, attackPower })}
-            />
-            <AttributeRow
-              id="base-defense"
-              label="Defense Strength"
-              value={values.defenseStrength}
-              onChange={(defenseStrength) =>
-                onChange({ ...values, defenseStrength })
-              }
-            />
-            <AttributeRow
-              id="base-midfield"
-              label="Midfield Control"
-              value={values.midfieldControl}
-              onChange={(midfieldControl) =>
-                onChange({ ...values, midfieldControl })
-              }
+            <AdminAttributeEditor
+              idPrefix="base"
+              position={values.position}
+              attributes={values.attributes}
+              onChange={(attributes) => onChange({ ...values, attributes })}
             />
           </div>
         </div>
