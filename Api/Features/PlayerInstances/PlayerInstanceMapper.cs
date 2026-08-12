@@ -1,3 +1,4 @@
+using Api.Features.BasePlayers;
 using Riok.Mapperly.Abstractions;
 
 namespace Api.Features.PlayerInstances;
@@ -5,11 +6,48 @@ namespace Api.Features.PlayerInstances;
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
 public partial class PlayerInstanceMapper
 {
-  public partial PlayerInstance CreateCustomToEntity(CreateCustomPlayerInstanceRequest request);
   public partial void UpdateEntityFromNameRequest(UpdatePlayerInstanceNameRequest request, PlayerInstance entity);
-  public partial void UpdateEntityFromStatsRequest(UpdatePlayerInstanceStatsRequest request, PlayerInstance entity);
   public partial void UpdateEntityFromHealthRequest(UpdatePlayerInstanceHealthRequest request, PlayerInstance entity);
   public partial void UpdateEntityFromSeasonStatsRequest(UpdatePlayerInstanceSeasonStatsRequest request, PlayerInstance entity);
+
+  public PlayerInstance CreateCustomToEntity(CreateCustomPlayerInstanceRequest request)
+  {
+    PlayerInstance entity = new()
+    {
+      ClubId = request.ClubId,
+      FirstName = request.FirstName,
+      LastName = request.LastName,
+      Nationality = request.Nationality,
+      Position = request.Position,
+      Age = request.Age,
+      HeightCm = request.HeightCm,
+      WeightKg = request.WeightKg,
+      PreferredFoot = request.PreferredFoot,
+      MarketValue = request.MarketValue,
+      Wage = request.Wage,
+      IsInjured = false,
+      InjuryDays = 0
+    };
+
+    PlayerAttributeMapper.ApplyToEntity(request.Attributes, entity);
+    PlayerAttributeCalculator.ApplyMainStats(entity);
+
+    return entity;
+  }
+
+  public void UpdateEntityFromStatsRequest(UpdatePlayerInstanceStatsRequest request, PlayerInstance entity)
+  {
+    entity.Position = request.Position;
+    entity.Age = request.Age;
+    entity.HeightCm = request.HeightCm;
+    entity.WeightKg = request.WeightKg;
+    entity.PreferredFoot = request.PreferredFoot;
+    entity.MarketValue = request.MarketValue;
+    entity.Wage = request.Wage;
+
+    PlayerAttributeMapper.ApplyToEntity(request.Attributes, entity);
+    PlayerAttributeCalculator.ApplyMainStats(entity);
+  }
 
   public PlayerInstanceResponseDto EntityToResponseDto(PlayerInstance entity)
   {
@@ -24,6 +62,7 @@ public partial class PlayerInstanceMapper
       HeightCm = entity.HeightCm,
       WeightKg = entity.WeightKg,
       PreferredFoot = entity.PreferredFoot,
+      Attributes = PlayerAttributeMapper.ToDto(entity),
       AttackPower = entity.AttackPower,
       DefenseStrength = entity.DefenseStrength,
       MidfieldControl = entity.MidfieldControl,
@@ -81,5 +120,4 @@ public partial class PlayerInstanceMapper
   {
     return entities.Select(EntityToPreviewDto).ToList();
   }
-
 }

@@ -210,6 +210,9 @@ public class PlayerInstanceService(
       InjuryDays = 0
     };
 
+    PlayerAttributeMapper.CopySubStats(basePlayer, player);
+    PlayerAttributeCalculator.ApplyMainStats(player);
+
     await _playerInstanceRepository.AddAsync(player, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 

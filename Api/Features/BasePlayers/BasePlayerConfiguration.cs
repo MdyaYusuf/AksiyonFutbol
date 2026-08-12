@@ -52,6 +52,72 @@ public class BasePlayerConfiguration : IEntityTypeConfiguration<BasePlayer>
       .HasConversion<int>()
       .IsRequired();
 
+    builder.Property(bp => bp.Pace)
+      .IsRequired();
+
+    builder.Property(bp => bp.Finishing)
+      .IsRequired();
+
+    builder.Property(bp => bp.OffTheBall)
+      .IsRequired();
+
+    builder.Property(bp => bp.Composure)
+      .IsRequired();
+
+    builder.Property(bp => bp.Passing)
+      .IsRequired();
+
+    builder.Property(bp => bp.Technique)
+      .IsRequired();
+
+    builder.Property(bp => bp.Stamina)
+      .IsRequired();
+
+    builder.Property(bp => bp.Decisions)
+      .IsRequired();
+
+    builder.Property(bp => bp.Strength)
+      .IsRequired();
+
+    builder.Property(bp => bp.Tackling)
+      .IsRequired();
+
+    builder.Property(bp => bp.Marking)
+      .IsRequired();
+
+    builder.Property(bp => bp.Bravery)
+      .IsRequired();
+
+    builder.Property(bp => bp.Throwing)
+      .IsRequired();
+
+    builder.Property(bp => bp.Kicking)
+      .IsRequired();
+
+    builder.Property(bp => bp.Vision)
+      .IsRequired();
+
+    builder.Property(bp => bp.FirstTouch)
+      .IsRequired();
+
+    builder.Property(bp => bp.Handling)
+      .IsRequired();
+
+    builder.Property(bp => bp.RushingOut)
+      .IsRequired();
+
+    builder.Property(bp => bp.Reflexes)
+      .IsRequired();
+
+    builder.Property(bp => bp.OneOnOnes)
+      .IsRequired();
+
+    builder.Property(bp => bp.AerialReach)
+      .IsRequired();
+
+    builder.Property(bp => bp.Positioning)
+      .IsRequired();
+
     builder.Property(bp => bp.AttackPower)
       .IsRequired();
 

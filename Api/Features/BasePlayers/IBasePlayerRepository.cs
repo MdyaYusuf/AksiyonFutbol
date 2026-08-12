@@ -13,9 +13,6 @@ public interface IBasePlayerRepository : IRepository<BasePlayer, Guid>
     int heightCm,
     int weightKg,
     PreferredFoot preferredFoot,
-    int attackPower,
-    int defenseStrength,
-    int midfieldControl,
     Guid? excludedId = null,
     CancellationToken cancellationToken = default);
 }

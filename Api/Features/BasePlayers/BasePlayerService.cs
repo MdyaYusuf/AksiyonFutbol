@@ -192,9 +192,6 @@ public class BasePlayerService(
       request.HeightCm,
       request.WeightKg,
       request.PreferredFoot,
-      request.AttackPower,
-      request.DefenseStrength,
-      request.MidfieldControl,
       cancellationToken: cancellationToken);
 
     BasePlayer basePlayer = _mapper.CreateToEntity(request);
@@ -242,9 +239,6 @@ public class BasePlayerService(
       request.HeightCm,
       request.WeightKg,
       request.PreferredFoot,
-      request.AttackPower,
-      request.DefenseStrength,
-      request.MidfieldControl,
       request.Id,
       cancellationToken);
 

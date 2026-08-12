@@ -1,3 +1,4 @@
+using Api.Features.BasePlayers;
 using FluentValidation;
 
 namespace Api.Features.PlayerInstances;
@@ -55,14 +56,10 @@ public class CreateCustomPlayerInstanceRequestValidator : AbstractValidator<Crea
     RuleFor(pi => pi.PreferredFoot)
       .IsInEnum().WithMessage("Geçersiz tercih edilen ayak değeri.");
 
-    RuleFor(pi => pi.AttackPower)
-      .InclusiveBetween(1, 100).WithMessage("Hücum gücü 1 ile 100 arasında olmalıdır.");
-
-    RuleFor(pi => pi.DefenseStrength)
-      .InclusiveBetween(1, 100).WithMessage("Savunma gücü 1 ile 100 arasında olmalıdır.");
-
-    RuleFor(pi => pi.MidfieldControl)
-      .InclusiveBetween(1, 100).WithMessage("Orta saha kontrolü 1 ile 100 arasında olmalıdır.");
+    PlayerAttributesDtoValidator.AddRules(
+      this,
+      pi => pi.Position,
+      pi => pi.Attributes);
 
     RuleFor(pi => pi.MarketValue)
       .GreaterThanOrEqualTo(0).WithMessage("Piyasa değeri negatif olamaz.");
@@ -113,14 +110,10 @@ public class UpdatePlayerInstanceStatsRequestValidator : AbstractValidator<Updat
     RuleFor(pi => pi.PreferredFoot)
       .IsInEnum().WithMessage("Geçersiz tercih edilen ayak değeri.");
 
-    RuleFor(pi => pi.AttackPower)
-      .InclusiveBetween(1, 100).WithMessage("Hücum gücü 1 ile 100 arasında olmalıdır.");
-
-    RuleFor(pi => pi.DefenseStrength)
-      .InclusiveBetween(1, 100).WithMessage("Savunma gücü 1 ile 100 arasında olmalıdır.");
-
-    RuleFor(pi => pi.MidfieldControl)
-      .InclusiveBetween(1, 100).WithMessage("Orta saha kontrolü 1 ile 100 arasında olmalıdır.");
+    PlayerAttributesDtoValidator.AddRules(
+      this,
+      pi => pi.Position,
+      pi => pi.Attributes);
 
     RuleFor(pi => pi.MarketValue)
       .GreaterThanOrEqualTo(0).WithMessage("Piyasa değeri negatif olamaz.");

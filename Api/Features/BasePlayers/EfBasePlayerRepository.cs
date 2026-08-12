@@ -19,9 +19,6 @@ public class EfBasePlayerRepository : EfBaseRepository<BaseDbContext, BasePlayer
     int heightCm,
     int weightKg,
     PreferredFoot preferredFoot,
-    int attackPower,
-    int defenseStrength,
-    int midfieldControl,
     Guid? excludedId = null,
     CancellationToken cancellationToken = default)
   {
@@ -35,9 +32,6 @@ public class EfBasePlayerRepository : EfBaseRepository<BaseDbContext, BasePlayer
         bp.HeightCm == heightCm &&
         bp.WeightKg == weightKg &&
         bp.PreferredFoot == preferredFoot &&
-        bp.AttackPower == attackPower &&
-        bp.DefenseStrength == defenseStrength &&
-        bp.MidfieldControl == midfieldControl &&
         (excludedId == null || bp.Id != excludedId),
         cancellationToken);
   }

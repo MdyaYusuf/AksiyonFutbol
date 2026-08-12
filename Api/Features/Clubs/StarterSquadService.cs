@@ -112,7 +112,7 @@ public class StarterSquadService(
   {
     int overall = BasePlayerRatingCalculator.Calculate(basePlayer);
 
-    return new PlayerInstance
+    PlayerInstance player = new()
     {
       FirstName = basePlayer.DefaultFirstName,
       LastName = basePlayer.DefaultLastName,
@@ -132,6 +132,10 @@ public class StarterSquadService(
       IsInjured = false,
       InjuryDays = 0
     };
+
+    PlayerAttributeMapper.CopySubStats(basePlayer, player);
+    PlayerAttributeCalculator.ApplyMainStats(player);
+    return player;
   }
 
   private static void EnsureCompositionIsValid(GameOptions options)

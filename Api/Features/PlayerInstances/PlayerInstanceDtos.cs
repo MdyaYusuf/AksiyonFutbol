@@ -14,6 +14,7 @@ public sealed record PlayerInstanceResponseDto
   public int HeightCm { get; init; }
   public int WeightKg { get; init; }
   public PreferredFoot PreferredFoot { get; init; }
+  public PlayerAttributesDto Attributes { get; init; } = default!;
   public int AttackPower { get; init; }
   public int DefenseStrength { get; init; }
   public int MidfieldControl { get; init; }
@@ -72,9 +73,7 @@ public sealed record CreateCustomPlayerInstanceRequest(
   int HeightCm,
   int WeightKg,
   PreferredFoot PreferredFoot,
-  int AttackPower,
-  int DefenseStrength,
-  int MidfieldControl,
+  PlayerAttributesDto Attributes,
   decimal MarketValue,
   decimal Wage);
 
@@ -90,9 +89,7 @@ public sealed record UpdatePlayerInstanceStatsRequest(
   int HeightCm,
   int WeightKg,
   PreferredFoot PreferredFoot,
-  int AttackPower,
-  int DefenseStrength,
-  int MidfieldControl,
+  PlayerAttributesDto Attributes,
   decimal MarketValue,
   decimal Wage);
 
