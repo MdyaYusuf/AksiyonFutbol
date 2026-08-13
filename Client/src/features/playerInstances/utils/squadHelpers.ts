@@ -41,7 +41,14 @@ export const getSquadFilterChipClassName = (
     return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-sky-500 hover:text-sky-400`;
   }
 
-  // ALL + GK share the primary green accent
+  if (filter === "GK") {
+    if (isActive) {
+      return `${base} border-teal-400/50 bg-teal-400/10 text-teal-300`;
+    }
+
+    return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-teal-400 hover:text-teal-300`;
+  }
+
   if (isActive) {
     return `${base} border-primary/50 bg-primary-container/10 text-primary`;
   }
@@ -84,7 +91,7 @@ export const getPositionBadgeClassName = (position: PlayerPosition): string => {
     return "bg-sky-700 text-sky-100";
   }
 
-  return "bg-primary-container text-on-primary-container";
+  return "bg-teal-700 text-teal-100";
 };
 
 export const getDetailPositionBadgeClassName = (position: PlayerPosition): string => {
@@ -100,7 +107,7 @@ export const getDetailPositionBadgeClassName = (position: PlayerPosition): strin
     return "bg-sky-700 text-sky-100";
   }
 
-  return "bg-primary-container text-on-primary-container";
+  return "bg-teal-700 text-teal-100";
 };
 
 export const getOverallBadgeClassName = (overallRating: number): string => {

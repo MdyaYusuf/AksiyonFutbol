@@ -6,7 +6,6 @@ interface AppNavItem {
   to: string;
   label: string;
   icon: string;
-  adminOnly?: boolean;
 }
 
 const navItems: AppNavItem[] = [
@@ -20,7 +19,6 @@ const navItems: AppNavItem[] = [
   { to: "/app/league", label: "League", icon: "military_tech" },
   { to: "/app/fixtures", label: "Fixtures", icon: "calendar_month" },
   { to: "/app/actions", label: "Actions", icon: "bolt" },
-  { to: "/admin", label: "Admin", icon: "admin_panel_settings", adminOnly: true },
 ];
 
 interface AppSidebarProps {
@@ -39,9 +37,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export const AppSidebar = ({ divisionName, mobileOpen, onClose }: AppSidebarProps) => {
   const { user } = useAppSelector((state) => state.auth);
-  const visibleItems = navItems.filter(
-    (item) => !item.adminOnly || user?.roleName === "Admin",
-  );
+  const isAdmin = user?.roleName === "Admin";
 
   return (
     <>
@@ -66,7 +62,7 @@ export const AppSidebar = ({ divisionName, mobileOpen, onClose }: AppSidebarProp
         </div>
 
         <div className="flex flex-1 flex-col gap-1 overflow-y-auto py-4">
-          {visibleItems.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -84,6 +80,19 @@ export const AppSidebar = ({ divisionName, mobileOpen, onClose }: AppSidebarProp
             </NavLink>
           ))}
         </div>
+
+        {isAdmin ? (
+          <div className="border-t border-outline-variant p-4">
+            <NavLink
+              to="/admin"
+              className="flex items-center gap-2 text-body-sm text-on-surface-variant transition-colors hover:text-primary"
+              onClick={onClose}
+            >
+              <MaterialIcon name="admin_panel_settings" className="text-base" />
+              Admin
+            </NavLink>
+          </div>
+        ) : null}
       </nav>
 
       {mobileOpen && (

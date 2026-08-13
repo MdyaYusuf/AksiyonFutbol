@@ -1,5 +1,6 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { goBackOrFallback } from "../../matches/utils/matchReportHelpers";
 import { PlayerAttributeProfile } from "../components/PlayerAttributeProfile";
 import { useGetPlayerInstanceByIdQuery } from "../playerInstancesApiSlice";
 import {
@@ -16,10 +17,15 @@ import {
 
 export const PlayerDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: player, isLoading, isError } = useGetPlayerInstanceByIdQuery(
     id ?? "",
     { skip: !id },
   );
+
+  const handleGoBack = () => {
+    goBackOrFallback(navigate, "/app/squad");
+  };
 
   if (isLoading) {
     return (
@@ -32,13 +38,14 @@ export const PlayerDetailPage = () => {
   if (isError || !player) {
     return (
       <div className="mx-auto max-w-7xl space-y-4">
-        <Link
-          to="/app/squad"
-          className="inline-flex items-center gap-1 text-body-sm text-on-surface-variant transition-colors hover:text-primary"
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="flex items-center gap-1 text-on-surface-variant transition-colors hover:text-primary"
         >
-          <MaterialIcon name="arrow_back" className="text-[16px]" />
-          Back to Squad
-        </Link>
+          <MaterialIcon name="arrow_back" className="text-sm" />
+          <span className="text-label-caps">Go back</span>
+        </button>
         <p className="text-body-sm text-on-surface-variant">Player not found.</p>
       </div>
     );
@@ -51,13 +58,23 @@ export const PlayerDetailPage = () => {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
-      <nav className="mb-2 flex items-center gap-2 text-body-sm text-on-surface-variant">
-        <Link to="/app/squad" className="transition-colors hover:text-primary">
-          Squad
-        </Link>
-        <MaterialIcon name="chevron_right" className="text-[16px]" />
-        <span className="font-semibold text-on-background">{fullName}</span>
-      </nav>
+      <div className="mb-2 flex items-center gap-4 text-on-surface-variant">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="flex items-center gap-1 transition-colors hover:text-primary"
+        >
+          <MaterialIcon name="arrow_back" className="text-sm" />
+          <span className="text-label-caps">Go back</span>
+        </button>
+        <nav className="flex items-center gap-2 text-body-sm">
+          <Link to="/app/squad" className="transition-colors hover:text-primary">
+            Squad
+          </Link>
+          <MaterialIcon name="chevron_right" className="text-[16px]" />
+          <span className="font-semibold text-on-background">{fullName}</span>
+        </nav>
+      </div>
 
       <section className="relative flex flex-col items-start justify-between gap-8 overflow-hidden rounded-lg border border-surface-variant bg-surface-container p-8 md:flex-row md:items-center">
         <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary-container opacity-5 blur-3xl" />

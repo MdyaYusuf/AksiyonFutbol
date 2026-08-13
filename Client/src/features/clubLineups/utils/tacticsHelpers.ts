@@ -70,7 +70,7 @@ export const getPitchAccentClass = (position: PlayerPosition): string => {
     return "border-sky-400 text-sky-300";
   }
 
-  return "border-primary text-primary";
+  return "border-teal-400 text-teal-300";
 };
 
 export const getPitchRatingTextClass = (position: PlayerPosition): string => {
@@ -86,7 +86,7 @@ export const getPitchRatingTextClass = (position: PlayerPosition): string => {
     return "text-sky-300";
   }
 
-  return "text-primary";
+  return "text-teal-300";
 };
 
 export const getPitchHoverClass = (position: PlayerPosition): string => {
@@ -102,7 +102,7 @@ export const getPitchHoverClass = (position: PlayerPosition): string => {
     return "group-hover:bg-sky-700 group-hover:text-sky-100";
   }
 
-  return "group-hover:bg-primary-container group-hover:text-on-primary-container";
+  return "group-hover:bg-teal-700 group-hover:text-teal-100";
 };
 
 export const groupPlayersByPosition = (players: PlayerInstanceResponse[]) => {

@@ -23,7 +23,7 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
   const detailPath = getFacilityDetailPath(facility.facilityType);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container p-6 transition-colors hover:bg-surface-container-high">
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container p-6 transition-colors hover:border-secondary/40 hover:bg-surface-container-high">
       <div
         className={`absolute -top-10 -right-10 h-48 w-48 rounded-full opacity-5 blur-2xl transition-opacity group-hover:opacity-10 ${getFacilityGlowClass(facility.facilityType)}`}
       />
@@ -43,7 +43,7 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
               {facility.facilityTypeName}
             </h2>
             <div className="mt-1 flex items-center gap-2">
-              <span className="rounded border border-outline-variant bg-surface-variant px-2 py-1 font-label-caps text-label-caps text-on-surface">
+              <span className="rounded border border-secondary/40 bg-secondary/10 px-2 py-1 font-label-caps text-label-caps text-secondary">
                 Lv. {facility.level}
               </span>
               <span className="font-body-sm text-body-sm text-on-surface-variant">
@@ -59,7 +59,7 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
           <div className="mb-1 font-label-caps text-label-caps text-on-surface-variant">
             Current Effect
           </div>
-          <div className="font-data-mono text-data-mono text-on-surface">
+          <div className="font-data-mono text-data-mono text-secondary">
             {getCurrentEffectLabel(facility)}
           </div>
         </div>
@@ -95,7 +95,7 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
         ) : canAfford ? (
           <Link
             to={detailPath}
-            className="flex items-center gap-2 rounded bg-primary px-6 py-2 font-label-caps text-label-caps text-on-primary transition-colors hover:bg-primary-fixed"
+            className="flex items-center gap-2 rounded bg-primary px-6 py-2 font-label-caps text-label-caps text-on-primary shadow-[0_0_12px_rgba(255,202,69,0.15)] transition-colors hover:bg-primary-fixed hover:shadow-[0_0_16px_rgba(255,202,69,0.3)]"
           >
             <MaterialIcon name="upgrade" className="text-sm" />
             Upgrade

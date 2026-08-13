@@ -3,6 +3,7 @@ import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanc
 import {
   getPlayerFullName,
   getPositionLabel,
+  getDetailPositionBadgeClassName,
 } from "../../playerInstances/utils/squadHelpers";
 import type { TransferMarketItem } from "../transferTypes";
 import {
@@ -37,7 +38,7 @@ export const MakeOfferPlayerHeader = ({
             <h1 className="font-headline-md text-headline-md text-on-surface">
               {getPlayerFullName(player.firstName, player.lastName)}
             </h1>
-            <span className="rounded border border-primary/30 bg-primary/20 px-2 py-0.5 font-label-caps text-[10px] text-primary">
+            <span className={`rounded px-2 py-0.5 font-label-caps text-[10px] ${getDetailPositionBadgeClassName(player.position)}`}>
               {getPositionLabel(player.position)}
             </span>
             <span className="rounded border border-outline-variant bg-surface-variant px-2 py-0.5 font-label-caps text-[10px] text-on-surface-variant">

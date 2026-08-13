@@ -31,18 +31,18 @@ export const getFacilityIcon = (facilityType: FacilityType): string => {
 
 export const getFacilityIconToneClass = (facilityType: FacilityType): string => {
   if (facilityType === FacilityTypeValues.YouthAcademy) {
-    return "text-primary-fixed";
+    return "text-secondary";
   }
 
-  return "text-primary";
+  return "text-secondary-fixed-dim";
 };
 
 export const getFacilityGlowClass = (facilityType: FacilityType): string => {
   if (facilityType === FacilityTypeValues.YouthAcademy) {
-    return "bg-primary-container";
+    return "bg-secondary";
   }
 
-  return "bg-primary";
+  return "bg-secondary-container";
 };
 
 export const getCurrentEffectLabel = (facility: ClubFacility): string => {

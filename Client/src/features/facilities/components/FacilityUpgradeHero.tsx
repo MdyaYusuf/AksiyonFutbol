@@ -34,7 +34,7 @@ export const FacilityUpgradeHero = ({ facility }: FacilityUpgradeHeroProps) => {
         <div className="flex items-center gap-2 rounded-full border border-outline-variant bg-surface-container-high/90 px-3 py-1.5 backdrop-blur-sm">
           <MaterialIcon
             name={getFacilityHeroBadgeIcon(facility.facilityType)}
-            className="text-sm text-primary"
+            className="text-sm text-secondary"
             filled
           />
           <span className="font-label-caps text-label-caps text-on-surface">
@@ -57,8 +57,8 @@ export const FacilityUpgradeHero = ({ facility }: FacilityUpgradeHeroProps) => {
 
 const getHeroGradient = (facilityType: FacilityType): string => {
   if (facilityType === 2) {
-    return "bg-gradient-to-br from-surface-container-highest via-on-primary-fixed-variant/40 to-surface-container-low";
+    return "bg-gradient-to-br from-surface-container-highest via-secondary/30 to-surface-container-low";
   }
 
-  return "bg-gradient-to-br from-surface-container-high via-primary/20 to-surface-container-lowest";
+  return "bg-gradient-to-br from-surface-container-high via-secondary/25 to-surface-container-lowest";
 };

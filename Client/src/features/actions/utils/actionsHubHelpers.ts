@@ -5,10 +5,10 @@ export const formatChancePercent = (chance: number): string => {
   return `${Math.round(chance * 100)}%`;
 };
 
-/** Heat/Suspicion: low is safe (primary), mid caution (secondary), high danger (error). */
+/** Heat/Suspicion: warmer red as risk rises. */
 export const getHeatBarColor = (value: number, max: number): string => {
   if (max <= 0) {
-    return "bg-primary";
+    return "bg-error/40";
   }
 
   const ratio = value / max;
@@ -18,10 +18,10 @@ export const getHeatBarColor = (value: number, max: number): string => {
   }
 
   if (ratio >= 0.34) {
-    return "bg-secondary";
+    return "bg-error/80";
   }
 
-  return "bg-primary";
+  return "bg-error/50";
 };
 
 export const getHeatLabel = (value: number, max: number): string => {

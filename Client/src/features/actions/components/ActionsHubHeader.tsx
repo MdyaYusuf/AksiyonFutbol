@@ -40,10 +40,10 @@ export const ActionsHubHeader = ({
         </div>
       </div>
 
-      <div className="rounded-xl border border-outline-variant bg-surface-container p-5">
+      <div className="rounded-xl border border-error/40 bg-error/10 p-5">
         <div className="mb-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <MaterialIcon name="local_fire_department" className="text-secondary" />
+            <MaterialIcon name="local_fire_department" className="text-error" />
             <div>
               <h2 className="font-headline-sm text-headline-sm text-on-surface">Heat</h2>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -52,19 +52,24 @@ export const ActionsHubHeader = ({
             </div>
           </div>
           <div className="text-right">
-            <div className="font-stat-value text-stat-value text-on-surface">
+            <div className="font-stat-value text-stat-value text-error">
               {suspicion}
               <span className="font-body-sm text-body-sm text-on-surface-variant">
                 {" "}
                 / {maxSuspicion}
               </span>
             </div>
-            <div className="font-label-caps text-label-caps text-on-surface-variant">
+            <div className="font-label-caps text-label-caps text-error/80">
               {heatLabel}
             </div>
           </div>
         </div>
-        <ProgressBar value={suspicion} max={maxSuspicion} colorClassName={heatColor} />
+        <ProgressBar
+          value={suspicion}
+          max={maxSuspicion}
+          colorClassName={heatColor}
+          trackClassName="bg-error/20"
+        />
       </div>
     </div>
   );

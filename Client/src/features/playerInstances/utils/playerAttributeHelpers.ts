@@ -33,12 +33,12 @@ const POSITIONAL_WEIGHT = 0.55;
 const PHYSICAL_WEIGHT = 0.25;
 const MENTAL_WEIGHT = 0.2;
 
-const PHYSICAL_FILL = "bg-outline";
-const MENTAL_FILL = "bg-tertiary-fixed-dim";
+const PHYSICAL_FILL = "bg-primary-container";
+const MENTAL_FILL = "bg-violet-400";
 const ATTACK_FILL = "bg-secondary";
-const MIDFIELD_FILL = "bg-primary-container";
+const MIDFIELD_FILL = "bg-tertiary-container";
 const DEFENSE_FILL = "bg-sky-500";
-const GOALKEEPING_FILL = "bg-primary-container";
+const GOALKEEPING_FILL = "bg-teal-400";
 
 const PHYSICAL_GROUP: AttributeGroupDef = {
   id: "physical",
@@ -567,11 +567,20 @@ export const applyPositionChange = (
   nextPosition: PlayerPosition,
   attributes: PlayerAttributes,
 ): PlayerAttributes => {
-  if (isGoalkeeper(currentPosition) === isGoalkeeper(nextPosition)) {
-    return attributesForPosition(nextPosition, attributes);
+  if (isGoalkeeper(currentPosition) !== isGoalkeeper(nextPosition)) {
+    return buildDefaultAttributes(nextPosition);
   }
 
-  return buildDefaultAttributes(nextPosition);
+  const currentNormalized = attributesForPosition(currentPosition, attributes);
+  const currentDefaults = buildDefaultAttributes(currentPosition);
+  const stillOnDefaults =
+    JSON.stringify(currentNormalized) === JSON.stringify(currentDefaults);
+
+  if (stillOnDefaults) {
+    return buildDefaultAttributes(nextPosition);
+  }
+
+  return attributesForPosition(nextPosition, attributes);
 };
 
 export const setAttributeStat = (

@@ -1,5 +1,6 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
+import { getSquadFilterChipClassName } from "../../playerInstances/utils/squadHelpers";
 import {
   TRANSFER_POSITION_FILTERS,
   TRANSFER_SORT_OPTIONS,
@@ -35,11 +36,7 @@ export const TransferMarketToolbar = ({
               key={filter}
               type="button"
               onClick={() => onPositionFilterChange(filter)}
-              className={`rounded border px-3 py-1.5 font-label-caps text-label-caps transition-colors ${
-                isActive
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-outline-variant bg-surface-variant text-on-surface hover:bg-surface-bright"
-              }`}
+              className={getSquadFilterChipClassName(filter, isActive)}
             >
               {label}
             </button>

@@ -24,17 +24,17 @@ const getGroupAccent = (
 ): PillarAccent => {
   if (kind === "physical") {
     return {
-      fill: "bg-outline",
-      text: "text-on-surface-variant",
-      panel: "rounded-lg border border-outline-variant/40 bg-surface-container-low p-3",
+      fill: "bg-primary-container",
+      text: "text-primary",
+      panel: "rounded-lg border border-primary/30 bg-primary-container/5 p-3",
     };
   }
 
   if (kind === "mental") {
     return {
-      fill: "bg-tertiary-fixed-dim",
-      text: "text-tertiary",
-      panel: "rounded-lg border border-tertiary/30 bg-tertiary/5 p-3",
+      fill: "bg-violet-400",
+      text: "text-violet-400",
+      panel: "rounded-lg border border-violet-400/30 bg-violet-400/5 p-3",
     };
   }
 
@@ -49,9 +49,9 @@ const getGroupAccent = (
   if (pillar === "defense") {
     if (position === PlayerPosition.Goalkeeper) {
       return {
-        fill: "bg-primary-container",
-        text: "text-primary",
-        panel: "rounded-lg border border-primary/30 bg-primary-container/5 p-3",
+        fill: "bg-teal-400",
+        text: "text-teal-300",
+        panel: "rounded-lg border border-teal-400/30 bg-teal-400/5 p-3",
       };
     }
 
