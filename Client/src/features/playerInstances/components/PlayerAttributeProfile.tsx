@@ -4,10 +4,10 @@ import {
   type PlayerAttributes,
 } from "../../basePlayers/basePlayerTypes";
 import {
-  getAttributeGroups,
+  getGroupHeaderValue,
+  getProfileAttributeGroups,
   getAttributeGroupValues,
-  getPillarValue,
-  getPrimaryPillar,
+  type AttributeGroupKind,
   type AttributePillar,
 } from "../utils/playerAttributeHelpers";
 
@@ -17,10 +17,27 @@ interface PillarAccent {
   panel: string;
 }
 
-const getPillarAccent = (
-  pillar: AttributePillar,
+const getGroupAccent = (
+  kind: AttributeGroupKind,
+  pillar: AttributePillar | undefined,
   position: PlayerPosition,
 ): PillarAccent => {
+  if (kind === "physical") {
+    return {
+      fill: "bg-outline",
+      text: "text-on-surface-variant",
+      panel: "rounded-lg border border-outline-variant/40 bg-surface-container-low p-3",
+    };
+  }
+
+  if (kind === "mental") {
+    return {
+      fill: "bg-tertiary-fixed-dim",
+      text: "text-tertiary",
+      panel: "rounded-lg border border-tertiary/30 bg-tertiary/5 p-3",
+    };
+  }
+
   if (pillar === "attack") {
     return {
       fill: "bg-secondary",
@@ -138,8 +155,6 @@ interface PlayerAttributeProfileProps {
   defenseStrength: number;
   midfieldControl: number;
   compact?: boolean;
-  /** When true, only the position's primary pillar group is shown (tactics popover). */
-  primaryOnly?: boolean;
 }
 
 export const PlayerAttributeProfile = ({
@@ -149,35 +164,28 @@ export const PlayerAttributeProfile = ({
   defenseStrength,
   midfieldControl,
   compact = false,
-  primaryOnly = false,
 }: PlayerAttributeProfileProps) => {
-  const primaryPillar = getPrimaryPillar(position);
-  const groups = getAttributeGroups(position).filter((group) => {
-    if (!primaryOnly) {
-      return true;
-    }
-
-    return group.pillar === primaryPillar;
-  });
+  const groups = getProfileAttributeGroups(position);
 
   return (
     <div
       className={
         compact
-          ? "flex flex-col gap-3"
+          ? "grid grid-cols-3 gap-3"
           : "grid grid-cols-1 gap-6 sm:grid-cols-3"
       }
     >
       {groups.map((group, groupIndex) => {
-        const mainValue = getPillarValue(
-          group.pillar,
+        const mainValue = getGroupHeaderValue(
+          group,
+          attributes,
           attackPower,
           defenseStrength,
           midfieldControl,
         );
         const values = getAttributeGroupValues(attributes, group.id);
-        const isPrimary = group.pillar === primaryPillar;
-        const accent = getPillarAccent(group.pillar, position);
+        const isPrimary = group.kind === "positional";
+        const accent = getGroupAccent(group.kind, group.pillar, position);
 
         let sectionClassName = "flex flex-col gap-3";
         if (compact) {

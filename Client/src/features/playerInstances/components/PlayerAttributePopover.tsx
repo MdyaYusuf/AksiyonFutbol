@@ -23,8 +23,8 @@ interface PlayerAttributePopoverProps {
 
 const HOVER_OPEN_MS = 280;
 const HOVER_CLOSE_MS = 140;
-const POPOVER_WIDTH = 288;
-const POPOVER_ESTIMATED_HEIGHT = 220;
+const POPOVER_WIDTH = 520;
+const POPOVER_ESTIMATED_HEIGHT = 280;
 
 const isCoarsePointer = (): boolean => {
   return window.matchMedia("(pointer: coarse)").matches;
@@ -236,7 +236,7 @@ export const PlayerAttributePopover = ({
               role="tooltip"
               id={labelId}
               aria-label={`${displayName} attributes`}
-              className="fixed z-40 overflow-hidden rounded-lg border border-outline-variant bg-surface-container shadow-lg"
+              className="fixed z-40 rounded-lg border border-outline-variant bg-surface-container shadow-lg"
               style={getPopoverStyle(anchor)}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
@@ -257,7 +257,6 @@ export const PlayerAttributePopover = ({
                   defenseStrength={player.defenseStrength}
                   midfieldControl={player.midfieldControl}
                   compact
-                  primaryOnly
                 />
               </div>
             </div>,

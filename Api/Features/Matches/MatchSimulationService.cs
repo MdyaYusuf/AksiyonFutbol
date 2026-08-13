@@ -743,11 +743,13 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       finalModifier *= (double)_gameOptions.Value.MatchPenaltyPowerMultiplier;
     }
 
+    List<PlayerInstance> outfield = GetOutfieldPlayers(players);
+
     return new TeamPower
     {
       AttackPower = Math.Max(
         1,
-        players.Average(p => p.AttackPower)
+        AverageStat(outfield, p => p.AttackPower)
           * finalModifier
           * mentalityModifiers.Attack
           * formationModifiers.Attack
@@ -755,14 +757,14 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
           * espionageModifier),
       DefenseStrength = Math.Max(
         1,
-        players.Average(p => p.DefenseStrength)
+        AverageStat(players, p => p.DefenseStrength)
           * finalModifier
           * mentalityModifiers.Defense
           * formationModifiers.Defense
           * dopingModifier),
       MidfieldControl = Math.Max(
         1,
-        players.Average(p => p.MidfieldControl)
+        AverageStat(outfield, p => p.MidfieldControl)
           * finalModifier
           * mentalityModifiers.Midfield
           * formationModifiers.Midfield
@@ -849,11 +851,17 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
 
   private static PlayerInstance PickScorer(List<PlayerInstance> players)
   {
-    int totalAttackPower = players.Sum(p => Math.Max(1, p.AttackPower));
+    List<PlayerInstance> outfield = GetOutfieldPlayers(players);
+    if (outfield.Count == 0)
+    {
+      return players[0];
+    }
+
+    int totalAttackPower = outfield.Sum(p => Math.Max(1, p.AttackPower));
     int roll = Random.Shared.Next(1, totalAttackPower + 1);
     int cumulative = 0;
 
-    foreach (PlayerInstance player in players.OrderByDescending(p => p.AttackPower))
+    foreach (PlayerInstance player in outfield.OrderByDescending(p => p.AttackPower))
     {
       cumulative += Math.Max(1, player.AttackPower);
 
@@ -863,7 +871,24 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       }
     }
 
-    return players[0];
+    return outfield[0];
+  }
+
+  private static List<PlayerInstance> GetOutfieldPlayers(List<PlayerInstance> players)
+  {
+    return players.Where(p => p.Position != PlayerPosition.Goalkeeper).ToList();
+  }
+
+  private static double AverageStat(
+    List<PlayerInstance> players,
+    Func<PlayerInstance, int> selector)
+  {
+    if (players.Count == 0)
+    {
+      return 1;
+    }
+
+    return players.Average(p => selector(p));
   }
 
   private static PlayerInstance PickGoalkeeperOrDefender(List<PlayerInstance> players)

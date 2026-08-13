@@ -15,53 +15,61 @@ export const PreferredFoot = {
 
 export type PreferredFoot = (typeof PreferredFoot)[keyof typeof PreferredFoot];
 
-export interface OutfieldAttackAttributes {
+export interface PhysicalAttributes {
   pace: number;
+  stamina: number;
+  strength: number;
+  balance: number;
+  jumping: number;
+}
+
+export interface MentalAttributes {
+  decisions: number;
+  positioning: number;
+  teamwork: number;
+  workRate: number;
+  leadership: number;
+}
+
+export interface OutfieldAttackAttributes {
   finishing: number;
   offTheBall: number;
+  crossing: number;
+  longShots: number;
   composure: number;
 }
 
 export interface OutfieldMidfieldAttributes {
   passing: number;
   technique: number;
-  stamina: number;
-  decisions: number;
+  firstTouch: number;
+  dribbling: number;
+  vision: number;
 }
 
 export interface OutfieldDefenseAttributes {
-  strength: number;
   tackling: number;
   marking: number;
+  heading: number;
   bravery: number;
+  concentration: number;
 }
 
 export interface GoalkeepingAttributes {
   reflexes: number;
   oneOnOnes: number;
-  aerialReach: number;
-  positioning: number;
-}
-
-export interface CommandAttributes {
-  firstTouch: number;
   handling: number;
   rushingOut: number;
-}
-
-export interface DistributionAttributes {
-  throwing: number;
-  kicking: number;
-  vision: number;
+  distribution: number;
 }
 
 export interface PlayerAttributes {
+  physical?: PhysicalAttributes | null;
+  mental?: MentalAttributes | null;
   attack?: OutfieldAttackAttributes | null;
   midfield?: OutfieldMidfieldAttributes | null;
   defense?: OutfieldDefenseAttributes | null;
   goalkeeping?: GoalkeepingAttributes | null;
-  command?: CommandAttributes | null;
-  distribution?: DistributionAttributes | null;
 }
 
 // Responses

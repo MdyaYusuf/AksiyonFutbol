@@ -5,9 +5,9 @@ import type {
 } from "../../basePlayers/basePlayerTypes";
 import {
   computeMainStats,
+  computeOverallRating,
   getAttributeGroups,
   getAttributeGroupValues,
-  getPillarValue,
   setAttributeStat,
 } from "../utils/playerAttributeHelpers";
 
@@ -63,6 +63,7 @@ export const AdminAttributeEditor = ({
 }: AdminAttributeEditorProps) => {
   const groups = getAttributeGroups(position);
   const mains = computeMainStats(position, attributes);
+  const overallRating = computeOverallRating(position, attributes);
 
   return (
     <div className="space-y-4">
@@ -71,30 +72,26 @@ export const AdminAttributeEditor = ({
           <MaterialIcon name="troubleshoot" className="text-[18px] text-primary" />
           Technical Attributes (1-100)
         </h4>
-        <div className="grid grid-cols-3 gap-2">
-          {groups.map((group) => {
-            const mainValue = getPillarValue(
-              group.pillar,
-              mains.attackPower,
-              mains.defenseStrength,
-              mains.midfieldControl,
-            );
-
-            return (
-              <div
-                key={`${group.id}-preview`}
-                className="rounded border border-outline-variant bg-surface-container-low px-2 py-2 text-center"
-              >
-                <div className="text-[10px] font-bold tracking-wide text-on-surface-variant uppercase">
-                  {group.title}
-                </div>
-                <div className="font-data-mono text-sm text-on-surface">{mainValue}</div>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { label: "Attack", value: mains.attackPower },
+            { label: "Defense", value: mains.defenseStrength },
+            { label: "Control", value: mains.midfieldControl },
+            { label: "Overall", value: overallRating },
+          ].map((preview) => (
+            <div
+              key={preview.label}
+              className="rounded border border-outline-variant bg-surface-container-low px-2 py-2 text-center"
+            >
+              <div className="text-[10px] font-bold tracking-wide text-on-surface-variant uppercase">
+                {preview.label}
               </div>
-            );
-          })}
+              <div className="font-data-mono text-sm text-on-surface">{preview.value}</div>
+            </div>
+          ))}
         </div>
         <p className="mt-1 text-[11px] text-on-surface-variant">
-          Main ratings update from the group average.
+          Mains update from the 55/25/20 blend. Overall averages physical, mental, and the role group.
         </p>
       </div>
 
