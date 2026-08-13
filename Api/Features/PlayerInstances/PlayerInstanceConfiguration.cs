@@ -55,10 +55,43 @@ public class PlayerInstanceConfiguration : IEntityTypeConfiguration<PlayerInstan
     builder.Property(pi => pi.Pace)
       .IsRequired();
 
+    builder.Property(pi => pi.Stamina)
+      .IsRequired();
+
+    builder.Property(pi => pi.Strength)
+      .IsRequired();
+
+    builder.Property(pi => pi.Balance)
+      .IsRequired();
+
+    builder.Property(pi => pi.Jumping)
+      .IsRequired();
+
+    builder.Property(pi => pi.Decisions)
+      .IsRequired();
+
+    builder.Property(pi => pi.Positioning)
+      .IsRequired();
+
+    builder.Property(pi => pi.Teamwork)
+      .IsRequired();
+
+    builder.Property(pi => pi.WorkRate)
+      .IsRequired();
+
+    builder.Property(pi => pi.Leadership)
+      .IsRequired();
+
     builder.Property(pi => pi.Finishing)
       .IsRequired();
 
     builder.Property(pi => pi.OffTheBall)
+      .IsRequired();
+
+    builder.Property(pi => pi.Crossing)
+      .IsRequired();
+
+    builder.Property(pi => pi.LongShots)
       .IsRequired();
 
     builder.Property(pi => pi.Composure)
@@ -70,13 +103,13 @@ public class PlayerInstanceConfiguration : IEntityTypeConfiguration<PlayerInstan
     builder.Property(pi => pi.Technique)
       .IsRequired();
 
-    builder.Property(pi => pi.Stamina)
+    builder.Property(pi => pi.FirstTouch)
       .IsRequired();
 
-    builder.Property(pi => pi.Decisions)
+    builder.Property(pi => pi.Dribbling)
       .IsRequired();
 
-    builder.Property(pi => pi.Strength)
+    builder.Property(pi => pi.Vision)
       .IsRequired();
 
     builder.Property(pi => pi.Tackling)
@@ -85,25 +118,13 @@ public class PlayerInstanceConfiguration : IEntityTypeConfiguration<PlayerInstan
     builder.Property(pi => pi.Marking)
       .IsRequired();
 
+    builder.Property(pi => pi.Heading)
+      .IsRequired();
+
     builder.Property(pi => pi.Bravery)
       .IsRequired();
 
-    builder.Property(pi => pi.Throwing)
-      .IsRequired();
-
-    builder.Property(pi => pi.Kicking)
-      .IsRequired();
-
-    builder.Property(pi => pi.Vision)
-      .IsRequired();
-
-    builder.Property(pi => pi.FirstTouch)
-      .IsRequired();
-
-    builder.Property(pi => pi.Handling)
-      .IsRequired();
-
-    builder.Property(pi => pi.RushingOut)
+    builder.Property(pi => pi.Concentration)
       .IsRequired();
 
     builder.Property(pi => pi.Reflexes)
@@ -112,10 +133,13 @@ public class PlayerInstanceConfiguration : IEntityTypeConfiguration<PlayerInstan
     builder.Property(pi => pi.OneOnOnes)
       .IsRequired();
 
-    builder.Property(pi => pi.AerialReach)
+    builder.Property(pi => pi.Handling)
       .IsRequired();
 
-    builder.Property(pi => pi.Positioning)
+    builder.Property(pi => pi.RushingOut)
+      .IsRequired();
+
+    builder.Property(pi => pi.Distribution)
       .IsRequired();
 
     builder.Property(pi => pi.AttackPower)

@@ -11,6 +11,44 @@ export const POSITION_FILTERS: SquadPositionFilter[] = [
   "FWD",
 ];
 
+export const getSquadFilterChipClassName = (
+  filter: SquadPositionFilter,
+  isActive: boolean,
+): string => {
+  const base = "rounded border px-4 py-2 text-label-caps transition-colors";
+
+  if (filter === "FWD") {
+    if (isActive) {
+      return `${base} border-secondary/50 bg-secondary/10 text-secondary`;
+    }
+
+    return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-secondary hover:text-secondary`;
+  }
+
+  if (filter === "MID") {
+    if (isActive) {
+      return `${base} border-tertiary/50 bg-tertiary/10 text-tertiary`;
+    }
+
+    return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-tertiary hover:text-tertiary`;
+  }
+
+  if (filter === "DEF") {
+    if (isActive) {
+      return `${base} border-sky-500/50 bg-sky-500/10 text-sky-400`;
+    }
+
+    return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-sky-500 hover:text-sky-400`;
+  }
+
+  // ALL + GK share the primary green accent
+  if (isActive) {
+    return `${base} border-primary/50 bg-primary-container/10 text-primary`;
+  }
+
+  return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-primary hover:text-primary`;
+};
+
 export const getPositionLabel = (position: PlayerPosition): string => {
   if (position === PlayerPosition.Goalkeeper) {
     return "GK";

@@ -24,39 +24,47 @@ public class BasePlayer : Entity<Guid>
   public int WeightKg { get; set; }
   public PreferredFoot PreferredFoot { get; set; }
 
-  // Outfield attack
+  // Physical
   public int Pace { get; set; }
+  public int Stamina { get; set; }
+  public int Strength { get; set; }
+  public int Balance { get; set; }
+  public int Jumping { get; set; }
+
+  // Mental
+  public int Decisions { get; set; }
+  public int Positioning { get; set; }
+  public int Teamwork { get; set; }
+  public int WorkRate { get; set; }
+  public int Leadership { get; set; }
+
+  // Outfield attack
   public int Finishing { get; set; }
   public int OffTheBall { get; set; }
+  public int Crossing { get; set; }
+  public int LongShots { get; set; }
   public int Composure { get; set; }
 
   // Outfield midfield
   public int Passing { get; set; }
   public int Technique { get; set; }
-  public int Stamina { get; set; }
-  public int Decisions { get; set; }
-
-  // Outfield defense
-  public int Strength { get; set; }
-  public int Tackling { get; set; }
-  public int Marking { get; set; }
-  public int Bravery { get; set; }
-
-  // Goalkeeper attack (distribution)
-  public int Throwing { get; set; }
-  public int Kicking { get; set; }
+  public int FirstTouch { get; set; }
+  public int Dribbling { get; set; }
   public int Vision { get; set; }
 
-  // Goalkeeper midfield
-  public int FirstTouch { get; set; }
-  public int Handling { get; set; }
-  public int RushingOut { get; set; }
+  // Outfield defense
+  public int Tackling { get; set; }
+  public int Marking { get; set; }
+  public int Heading { get; set; }
+  public int Bravery { get; set; }
+  public int Concentration { get; set; }
 
-  // Goalkeeper defense
+  // Goalkeeping
   public int Reflexes { get; set; }
   public int OneOnOnes { get; set; }
-  public int AerialReach { get; set; }
-  public int Positioning { get; set; }
+  public int Handling { get; set; }
+  public int RushingOut { get; set; }
+  public int Distribution { get; set; }
 
   // Persisted mains computed from role-relevant sub-stats
   public int AttackPower { get; set; }

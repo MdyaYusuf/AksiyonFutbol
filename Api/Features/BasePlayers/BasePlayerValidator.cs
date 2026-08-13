@@ -14,6 +14,41 @@ public static class PlayerAttributesDtoValidator
       .WithMessage("Oyuncu özellikleri zorunludur.");
 
     validator.When(
+      request => attributesSelector(request) != null,
+      () =>
+      {
+        validator.RuleFor(request => attributesSelector(request)!.Physical)
+          .NotNull()
+          .WithMessage("Fiziksel özellikler zorunludur.");
+
+        validator.RuleFor(request => attributesSelector(request)!.Mental)
+          .NotNull()
+          .WithMessage("Zihinsel özellikler zorunludur.");
+      });
+
+    validator.When(
+      request => attributesSelector(request)?.Physical != null,
+      () =>
+      {
+        AddRange(validator, request => attributesSelector(request)!.Physical!.Pace, "Hız");
+        AddRange(validator, request => attributesSelector(request)!.Physical!.Stamina, "Dayanıklılık");
+        AddRange(validator, request => attributesSelector(request)!.Physical!.Strength, "Güç");
+        AddRange(validator, request => attributesSelector(request)!.Physical!.Balance, "Denge");
+        AddRange(validator, request => attributesSelector(request)!.Physical!.Jumping, "Sıçrama");
+      });
+
+    validator.When(
+      request => attributesSelector(request)?.Mental != null,
+      () =>
+      {
+        AddRange(validator, request => attributesSelector(request)!.Mental!.Decisions, "Karar verme");
+        AddRange(validator, request => attributesSelector(request)!.Mental!.Positioning, "Pozisyon alma");
+        AddRange(validator, request => attributesSelector(request)!.Mental!.Teamwork, "Takım oyunu");
+        AddRange(validator, request => attributesSelector(request)!.Mental!.WorkRate, "Çalışkanlık");
+        AddRange(validator, request => attributesSelector(request)!.Mental!.Leadership, "Liderlik");
+      });
+
+    validator.When(
       request =>
         attributesSelector(request) != null &&
         positionSelector(request) == PlayerPosition.Goalkeeper,
@@ -22,14 +57,6 @@ public static class PlayerAttributesDtoValidator
         validator.RuleFor(request => attributesSelector(request)!.Goalkeeping)
           .NotNull()
           .WithMessage("Kaleci için kalecilik özellikleri zorunludur.");
-
-        validator.RuleFor(request => attributesSelector(request)!.Command)
-          .NotNull()
-          .WithMessage("Kaleci için komuta özellikleri zorunludur.");
-
-        validator.RuleFor(request => attributesSelector(request)!.Distribution)
-          .NotNull()
-          .WithMessage("Kaleci için dağıtım özellikleri zorunludur.");
 
         validator.RuleFor(request => attributesSelector(request)!.Attack)
           .Null()
@@ -52,30 +79,9 @@ public static class PlayerAttributesDtoValidator
       {
         AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.Reflexes, "Refleksler");
         AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.OneOnOnes, "Bire bir");
-        AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.AerialReach, "Hava hakimiyeti");
-        AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.Positioning, "Pozisyon alma");
-      });
-
-    validator.When(
-      request =>
-        attributesSelector(request)?.Command != null &&
-        positionSelector(request) == PlayerPosition.Goalkeeper,
-      () =>
-      {
-        AddRange(validator, request => attributesSelector(request)!.Command!.FirstTouch, "İlk dokunuş");
-        AddRange(validator, request => attributesSelector(request)!.Command!.Handling, "Top tutma");
-        AddRange(validator, request => attributesSelector(request)!.Command!.RushingOut, "Çıkış");
-      });
-
-    validator.When(
-      request =>
-        attributesSelector(request)?.Distribution != null &&
-        positionSelector(request) == PlayerPosition.Goalkeeper,
-      () =>
-      {
-        AddRange(validator, request => attributesSelector(request)!.Distribution!.Throwing, "Elle çıkış");
-        AddRange(validator, request => attributesSelector(request)!.Distribution!.Kicking, "Ayakla çıkış");
-        AddRange(validator, request => attributesSelector(request)!.Distribution!.Vision, "Görüş");
+        AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.Handling, "Top tutma");
+        AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.RushingOut, "Çıkış");
+        AddRange(validator, request => attributesSelector(request)!.Goalkeeping!.Distribution, "Dağıtım");
       });
 
     validator.When(
@@ -99,14 +105,6 @@ public static class PlayerAttributesDtoValidator
         validator.RuleFor(request => attributesSelector(request)!.Goalkeeping)
           .Null()
           .WithMessage("Saha oyuncusu için kalecilik özellikleri gönderilemez.");
-
-        validator.RuleFor(request => attributesSelector(request)!.Command)
-          .Null()
-          .WithMessage("Saha oyuncusu için komuta özellikleri gönderilemez.");
-
-        validator.RuleFor(request => attributesSelector(request)!.Distribution)
-          .Null()
-          .WithMessage("Saha oyuncusu için dağıtım özellikleri gönderilemez.");
       });
 
     validator.When(
@@ -115,9 +113,10 @@ public static class PlayerAttributesDtoValidator
         positionSelector(request) != PlayerPosition.Goalkeeper,
       () =>
       {
-        AddRange(validator, request => attributesSelector(request)!.Attack!.Pace, "Hız");
         AddRange(validator, request => attributesSelector(request)!.Attack!.Finishing, "Bitiricilik");
         AddRange(validator, request => attributesSelector(request)!.Attack!.OffTheBall, "Topsuz koşu");
+        AddRange(validator, request => attributesSelector(request)!.Attack!.Crossing, "Orta");
+        AddRange(validator, request => attributesSelector(request)!.Attack!.LongShots, "Uzaktan şut");
         AddRange(validator, request => attributesSelector(request)!.Attack!.Composure, "Soğukkanlılık");
       });
 
@@ -129,8 +128,9 @@ public static class PlayerAttributesDtoValidator
       {
         AddRange(validator, request => attributesSelector(request)!.Midfield!.Passing, "Pas");
         AddRange(validator, request => attributesSelector(request)!.Midfield!.Technique, "Teknik");
-        AddRange(validator, request => attributesSelector(request)!.Midfield!.Stamina, "Dayanıklılık");
-        AddRange(validator, request => attributesSelector(request)!.Midfield!.Decisions, "Karar verme");
+        AddRange(validator, request => attributesSelector(request)!.Midfield!.FirstTouch, "İlk dokunuş");
+        AddRange(validator, request => attributesSelector(request)!.Midfield!.Dribbling, "Dribling");
+        AddRange(validator, request => attributesSelector(request)!.Midfield!.Vision, "Görüş");
       });
 
     validator.When(
@@ -139,10 +139,11 @@ public static class PlayerAttributesDtoValidator
         positionSelector(request) != PlayerPosition.Goalkeeper,
       () =>
       {
-        AddRange(validator, request => attributesSelector(request)!.Defense!.Strength, "Güç");
         AddRange(validator, request => attributesSelector(request)!.Defense!.Tackling, "Müdahale");
         AddRange(validator, request => attributesSelector(request)!.Defense!.Marking, "Markaj");
+        AddRange(validator, request => attributesSelector(request)!.Defense!.Heading, "Kafa");
         AddRange(validator, request => attributesSelector(request)!.Defense!.Bravery, "Cesaret");
+        AddRange(validator, request => attributesSelector(request)!.Defense!.Concentration, "Konsantrasyon");
       });
   }
 

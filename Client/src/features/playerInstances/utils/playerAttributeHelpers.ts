@@ -120,6 +120,19 @@ export const getAttributeGroups = (
   return OUTFIELD_GROUPS;
 };
 
+/** Pillar that matters most for this role — used for UI emphasis. */
+export const getPrimaryPillar = (position: PlayerPosition): AttributePillar => {
+  if (position === PlayerPosition.Forward) {
+    return "attack";
+  }
+
+  if (position === PlayerPosition.Defender || position === PlayerPosition.Goalkeeper) {
+    return "defense";
+  }
+
+  return "midfield";
+};
+
 export const getPillarValue = (
   pillar: AttributePillar,
   attackPower: number,

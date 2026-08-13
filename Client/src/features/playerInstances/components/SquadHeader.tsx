@@ -1,5 +1,8 @@
 import type { SquadPositionFilter } from "../utils/squadHelpers";
-import { POSITION_FILTERS } from "../utils/squadHelpers";
+import {
+  getSquadFilterChipClassName,
+  POSITION_FILTERS,
+} from "../utils/squadHelpers";
 
 interface SquadHeaderProps {
   positionFilter: SquadPositionFilter;
@@ -32,25 +35,20 @@ export const SquadHeader = ({
           className="w-full rounded border border-outline-variant bg-surface-container-low px-3 py-2 text-body-sm text-on-surface outline-none placeholder:text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary sm:w-64"
         />
         <div className="flex flex-wrap gap-2">
-        {POSITION_FILTERS.map((filter) => {
-          const isActive = positionFilter === filter;
+          {POSITION_FILTERS.map((filter) => {
+            const isActive = positionFilter === filter;
 
-          return (
-            <button
-              key={filter}
-              type="button"
-              onClick={() => onPositionFilterChange(filter)}
-              className={[
-                "rounded border px-4 py-2 text-label-caps transition-colors",
-                isActive
-                  ? "border-outline-variant bg-surface-container-highest text-primary"
-                  : "border-outline-variant bg-transparent text-on-surface-variant hover:border-primary hover:text-primary",
-              ].join(" ")}
-            >
-              {filter}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => onPositionFilterChange(filter)}
+                className={getSquadFilterChipClassName(filter, isActive)}
+              >
+                {filter}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

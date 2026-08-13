@@ -24,7 +24,7 @@ interface PlayerAttributePopoverProps {
 const HOVER_OPEN_MS = 280;
 const HOVER_CLOSE_MS = 140;
 const POPOVER_WIDTH = 288;
-const POPOVER_ESTIMATED_HEIGHT = 360;
+const POPOVER_ESTIMATED_HEIGHT = 220;
 
 const isCoarsePointer = (): boolean => {
   return window.matchMedia("(pointer: coarse)").matches;
@@ -249,7 +249,7 @@ export const PlayerAttributePopover = ({
                   {getPositionLabel(player.position)} · {player.overallRating}
                 </span>
               </div>
-              <div className="max-h-[min(360px,70vh)] overflow-y-auto p-3">
+              <div className="p-3">
                 <PlayerAttributeProfile
                   position={player.position}
                   attributes={player.attributes}
@@ -257,6 +257,7 @@ export const PlayerAttributePopover = ({
                   defenseStrength={player.defenseStrength}
                   midfieldControl={player.midfieldControl}
                   compact
+                  primaryOnly
                 />
               </div>
             </div>,
