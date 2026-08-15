@@ -13,12 +13,15 @@ public sealed record ClubResponseDto
   public int Discipline { get; init; }
   public int Suspicion { get; init; }
   public bool CashSpendLocked { get; init; }
+  public ClubLifecycleStatus LifecycleStatus { get; init; }
+  public LeagueDivisions.LeagueTier? PlacementTargetTier { get; init; }
+  public int? TutorialDivisionId { get; init; }
   public Guid? PresidentId { get; init; }
   public string? PresidentName { get; init; }
-  public int DivisionId { get; init; }
-  public string DivisionName { get; init; } = default!;
-  public int DivisionTier { get; init; }
-  public int DivisionGroupNumber { get; init; }
+  public int? DivisionId { get; init; }
+  public string? DivisionName { get; init; }
+  public int? DivisionTier { get; init; }
+  public int? DivisionGroupNumber { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 
@@ -27,17 +30,19 @@ public sealed record ClubPreviewDto
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
   public bool IsBot { get; init; }
+  public ClubLifecycleStatus LifecycleStatus { get; init; }
   public Guid? PresidentId { get; init; }
   public string? PresidentName { get; init; }
-  public int DivisionId { get; init; }
-  public string DivisionName { get; init; } = default!;
+  public int? DivisionId { get; init; }
+  public string? DivisionName { get; init; }
 }
 
 public sealed record CreatedClubResponseDto
 {
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
-  public int DivisionId { get; init; }
+  public ClubLifecycleStatus LifecycleStatus { get; init; }
+  public int? DivisionId { get; init; }
 }
 
 public sealed record ClubCreationDefaultsDto
@@ -49,8 +54,7 @@ public sealed record ClubCreationDefaultsDto
 
 // Requests
 public sealed record CreateClubRequest(
-  string Name,
-  int DivisionId);
+  string Name);
 
 public sealed record CreateBotClubRequest(
   string Name,

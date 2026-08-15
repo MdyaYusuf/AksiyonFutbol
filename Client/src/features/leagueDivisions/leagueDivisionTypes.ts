@@ -1,3 +1,12 @@
+export const DivisionLifecycleStatus = {
+  Active: 1,
+  Completed: 2,
+  Sealed: 3,
+} as const;
+
+export type DivisionLifecycleStatus =
+  (typeof DivisionLifecycleStatus)[keyof typeof DivisionLifecycleStatus];
+
 // Responses
 export interface LeagueDivisionResponse {
   id: number;
@@ -5,6 +14,9 @@ export interface LeagueDivisionResponse {
   tier: number;
   groupNumber: number;
   currentMatchWeek: number;
+  isTutorial: boolean;
+  ownerUserId?: string | null;
+  lifecycleStatus: DivisionLifecycleStatus;
   createdDate: string;
 }
 
@@ -14,6 +26,8 @@ export interface LeagueDivisionPreview {
   tier: number;
   groupNumber: number;
   currentMatchWeek: number;
+  isTutorial: boolean;
+  lifecycleStatus: DivisionLifecycleStatus;
 }
 
 export interface CreatedLeagueDivisionResponse {
@@ -21,6 +35,8 @@ export interface CreatedLeagueDivisionResponse {
   name: string;
   tier: number;
   groupNumber: number;
+  isTutorial: boolean;
+  lifecycleStatus: DivisionLifecycleStatus;
 }
 
 export interface ProcessMatchWeekResult {

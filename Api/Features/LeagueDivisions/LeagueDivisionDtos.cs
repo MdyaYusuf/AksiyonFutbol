@@ -8,6 +8,9 @@ public sealed record LeagueDivisionResponseDto
   public int Tier { get; init; }
   public int GroupNumber { get; init; }
   public int CurrentMatchWeek { get; init; }
+  public bool IsTutorial { get; init; }
+  public Guid? OwnerUserId { get; init; }
+  public DivisionLifecycleStatus LifecycleStatus { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 
@@ -18,6 +21,8 @@ public sealed record LeagueDivisionPreviewDto
   public int Tier { get; init; }
   public int GroupNumber { get; init; }
   public int CurrentMatchWeek { get; init; }
+  public bool IsTutorial { get; init; }
+  public DivisionLifecycleStatus LifecycleStatus { get; init; }
 }
 
 public sealed record CreatedLeagueDivisionResponseDto
@@ -26,6 +31,8 @@ public sealed record CreatedLeagueDivisionResponseDto
   public string Name { get; init; } = default!;
   public int Tier { get; init; }
   public int GroupNumber { get; init; }
+  public bool IsTutorial { get; init; }
+  public DivisionLifecycleStatus LifecycleStatus { get; init; }
 }
 
 public sealed record ProcessMatchWeekResultDto

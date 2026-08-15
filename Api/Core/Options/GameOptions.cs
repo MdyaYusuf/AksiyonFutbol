@@ -7,9 +7,19 @@ public class GameOptions
   public decimal StartingCash { get; set; }
   public decimal StartingWageBudget { get; set; }
   public int StartingClubStatus { get; set; }
-  public int MaximumClubsPerDivision { get; set; }
+  public int MaximumClubsPerDivision { get; set; } = 8;
   public int MinimumMatchWeek { get; set; }
   public int MaximumMatchWeek { get; set; }
+
+  public int TutorialClubCount { get; set; } = 4;
+  public int TutorialMatchWeeks { get; set; } = 6;
+  public int CompetitiveMatchWeeks { get; set; } = 14;
+
+  /// <summary>Local kickoff time (Europe/Istanbul) for auto-scheduled fixtures.</summary>
+  public TimeSpan MatchKickoffLocalTime { get; set; } = new(19, 0, 0);
+
+  public decimal DraftStartingCash { get; set; } = 50000m;
+  public decimal DraftWageBudget { get; set; } = 10000m;
 
   public int StarterSquadGoalkeepers { get; set; } = 2;
   public int StarterSquadDefenders { get; set; } = 5;
@@ -17,6 +27,25 @@ public class GameOptions
   public int StarterSquadForwards { get; set; } = 4;
   public decimal StarterMarketValuePerOverall { get; set; } = 1000m;
   public decimal StarterWagePerOverall { get; set; } = 50m;
+
+  public int GraduationGoldMinPoints { get; set; } = 15;
+  public int GraduationGoldMaxPoints { get; set; } = 18;
+  public int GraduationSilverMinPoints { get; set; } = 10;
+  public int GraduationSilverMaxPoints { get; set; } = 14;
+  public int GraduationBronzeMinPoints { get; set; } = 5;
+  public int GraduationBronzeMaxPoints { get; set; } = 9;
+  public int GraduationIronMinPoints { get; set; } = 0;
+  public int GraduationIronMaxPoints { get; set; } = 4;
+
+  public decimal SeatingBonusGold { get; set; } = 25000m;
+  public decimal SeatingBonusSilver { get; set; } = 15000m;
+  public decimal SeatingBonusBronze { get; set; } = 10000m;
+  public decimal SeatingBonusIron { get; set; } = 5000m;
+
+  public decimal TierStartingWageBudgetGold { get; set; } = 15000m;
+  public decimal TierStartingWageBudgetSilver { get; set; } = 12000m;
+  public decimal TierStartingWageBudgetBronze { get; set; } = 10000m;
+  public decimal TierStartingWageBudgetIron { get; set; } = 8000m;
 
   public int PostMatchWinMoraleDelta { get; set; } = 3;
   public int PostMatchDrawMoraleDelta { get; set; } = 0;

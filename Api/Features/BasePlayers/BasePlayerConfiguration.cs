@@ -151,6 +151,26 @@ public class BasePlayerConfiguration : IEntityTypeConfiguration<BasePlayer>
     builder.Property(bp => bp.MidfieldControl)
       .IsRequired();
 
+    builder.Property(bp => bp.DraftTier)
+      .HasConversion<int>()
+      .IsRequired();
+
+    builder.Property(bp => bp.DraftFee)
+      .HasPrecision(18, 2)
+      .HasDefaultValue(0m)
+      .IsRequired();
+
+    builder.Property(bp => bp.IsFreeAgentTemplate)
+      .HasDefaultValue(false)
+      .IsRequired();
+
+    builder.Property(bp => bp.IsDraftOnly)
+      .HasDefaultValue(false)
+      .IsRequired();
+
     builder.HasIndex(bp => new { bp.Position, bp.Age, bp.Nationality });
+    builder.HasIndex(bp => bp.DraftTier);
+    builder.HasIndex(bp => bp.IsFreeAgentTemplate);
+    builder.HasIndex(bp => bp.IsDraftOnly);
   }
 }

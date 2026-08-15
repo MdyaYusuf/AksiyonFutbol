@@ -190,6 +190,16 @@ public class CreateBasePlayerRequestValidator : AbstractValidator<CreateBasePlay
     RuleFor(bp => bp.PreferredFoot)
       .IsInEnum().WithMessage("Geçersiz tercih edilen ayak değeri.");
 
+    RuleFor(bp => bp.DraftTier)
+      .IsInEnum().WithMessage("Geçersiz draft kademesi.");
+
+    RuleFor(bp => bp.DraftFee)
+      .GreaterThanOrEqualTo(0).WithMessage("Draft ücreti negatif olamaz.");
+
+    RuleFor(bp => bp)
+      .Must(bp => !(bp.IsDraftOnly && bp.IsFreeAgentTemplate))
+      .WithMessage("Draft-only oyuncular serbest ajan şablonu olamaz.");
+
     PlayerAttributesDtoValidator.AddRules(
       this,
       bp => bp.Position,
@@ -231,6 +241,16 @@ public class UpdateBasePlayerRequestValidator : AbstractValidator<UpdateBasePlay
 
     RuleFor(bp => bp.PreferredFoot)
       .IsInEnum().WithMessage("Geçersiz tercih edilen ayak değeri.");
+
+    RuleFor(bp => bp.DraftTier)
+      .IsInEnum().WithMessage("Geçersiz draft kademesi.");
+
+    RuleFor(bp => bp.DraftFee)
+      .GreaterThanOrEqualTo(0).WithMessage("Draft ücreti negatif olamaz.");
+
+    RuleFor(bp => bp)
+      .Must(bp => !(bp.IsDraftOnly && bp.IsFreeAgentTemplate))
+      .WithMessage("Draft-only oyuncular serbest ajan şablonu olamaz.");
 
     PlayerAttributesDtoValidator.AddRules(
       this,

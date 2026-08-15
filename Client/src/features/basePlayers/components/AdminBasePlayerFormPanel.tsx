@@ -2,6 +2,7 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { AdminAttributeEditor } from "../../playerInstances/components/AdminAttributeEditor";
 import { applyPositionChange } from "../../playerInstances/utils/playerAttributeHelpers";
 import {
+  DraftTier,
   PlayerPosition,
   PreferredFoot,
   type PlayerAttributes,
@@ -17,6 +18,10 @@ export interface AdminBasePlayerFormValues {
   weightKg: number;
   preferredFoot: PreferredFoot;
   attributes: PlayerAttributes;
+  draftTier: DraftTier;
+  draftFee: number;
+  isFreeAgentTemplate: boolean;
+  isDraftOnly: boolean;
 }
 
 interface AdminBasePlayerFormPanelProps {
@@ -40,6 +45,13 @@ const footOptions = [
   { value: PreferredFoot.Left, label: "Left" },
   { value: PreferredFoot.Right, label: "Right" },
   { value: PreferredFoot.Both, label: "Both" },
+];
+
+const draftTierOptions = [
+  { value: DraftTier.Gold, label: "Gold" },
+  { value: DraftTier.Silver, label: "Silver" },
+  { value: DraftTier.Bronze, label: "Bronze" },
+  { value: DraftTier.Iron, label: "Iron" },
 ];
 
 export const AdminBasePlayerFormPanel = ({
@@ -257,6 +269,88 @@ export const AdminBasePlayerFormPanel = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 border-t border-outline-variant pt-4">
+            <div>
+              <label
+                htmlFor="base-draft-tier"
+                className="mb-1 block text-xs text-label-caps text-on-surface-variant"
+              >
+                Draft Tier
+              </label>
+              <select
+                id="base-draft-tier"
+                value={values.draftTier}
+                onChange={(event) =>
+                  onChange({
+                    ...values,
+                    draftTier: Number(event.target.value) as DraftTier,
+                  })
+                }
+                className="w-full appearance-none rounded border border-outline-variant bg-surface-container p-2 text-sm text-on-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
+              >
+                {draftTierOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="base-draft-fee"
+                className="mb-1 block text-xs text-label-caps text-on-surface-variant"
+              >
+                Draft Fee
+              </label>
+              <input
+                id="base-draft-fee"
+                type="number"
+                min={0}
+                step={100}
+                value={values.draftFee}
+                onChange={(event) =>
+                  onChange({ ...values, draftFee: Number(event.target.value) })
+                }
+                className="w-full rounded border border-outline-variant bg-surface-container p-2 text-center font-data-mono text-sm text-on-surface outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex items-center gap-2 rounded border border-outline-variant bg-surface-container p-3 text-sm text-on-surface">
+              <input
+                type="checkbox"
+                checked={values.isFreeAgentTemplate}
+                disabled={values.isDraftOnly}
+                onChange={(event) =>
+                  onChange({
+                    ...values,
+                    isFreeAgentTemplate: event.target.checked,
+                    isDraftOnly: event.target.checked ? false : values.isDraftOnly,
+                  })
+                }
+              />
+              Free agent template
+            </label>
+            <label className="flex items-center gap-2 rounded border border-outline-variant bg-surface-container p-3 text-sm text-on-surface">
+              <input
+                type="checkbox"
+                checked={values.isDraftOnly}
+                disabled={values.isFreeAgentTemplate}
+                onChange={(event) =>
+                  onChange({
+                    ...values,
+                    isDraftOnly: event.target.checked,
+                    isFreeAgentTemplate: event.target.checked
+                      ? false
+                      : values.isFreeAgentTemplate,
+                  })
+                }
+              />
+              Draft only
+            </label>
           </div>
 
           <div className="space-y-4 border-t border-outline-variant pt-4">

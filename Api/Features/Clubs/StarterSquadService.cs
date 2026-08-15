@@ -36,7 +36,7 @@ public class StarterSquadService(
 
     foreach (BasePlayer template in selectedTemplates)
     {
-      club.Players.Add(CreatePlayerFromTemplate(club.Id, template, options));
+      club.Players.Add(PlayerInstanceFromBasePlayer.CreateWithStarterPricing(club.Id, template, options));
     }
   }
 
@@ -103,39 +103,6 @@ public class StarterSquadService(
       .OrderBy(_ => Random.Shared.Next())
       .Take(count)
       .ToList();
-  }
-
-  private static PlayerInstance CreatePlayerFromTemplate(
-    Guid clubId,
-    BasePlayer basePlayer,
-    GameOptions options)
-  {
-    int overall = BasePlayerRatingCalculator.Calculate(basePlayer);
-
-    PlayerInstance player = new()
-    {
-      FirstName = basePlayer.DefaultFirstName,
-      LastName = basePlayer.DefaultLastName,
-      ClubId = clubId,
-      BasePlayerId = basePlayer.Id,
-      Nationality = basePlayer.Nationality,
-      Position = basePlayer.Position,
-      Age = basePlayer.Age,
-      HeightCm = basePlayer.HeightCm,
-      WeightKg = basePlayer.WeightKg,
-      PreferredFoot = basePlayer.PreferredFoot,
-      AttackPower = basePlayer.AttackPower,
-      DefenseStrength = basePlayer.DefenseStrength,
-      MidfieldControl = basePlayer.MidfieldControl,
-      MarketValue = overall * options.StarterMarketValuePerOverall,
-      Wage = overall * options.StarterWagePerOverall,
-      IsInjured = false,
-      InjuryDays = 0
-    };
-
-    PlayerAttributeMapper.CopySubStats(basePlayer, player);
-    PlayerAttributeCalculator.ApplyMainStats(player);
-    return player;
   }
 
   private static void EnsureCompositionIsValid(GameOptions options)

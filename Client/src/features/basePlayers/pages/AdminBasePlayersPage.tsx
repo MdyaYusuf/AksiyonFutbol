@@ -13,6 +13,7 @@ import {
   useUpdateBasePlayerMutation,
 } from "../basePlayersApiSlice";
 import {
+  DraftTier,
   PlayerPosition,
   PreferredFoot,
   type BasePlayerResponse,
@@ -38,6 +39,10 @@ const emptyFormValues = (): AdminBasePlayerFormValues => ({
   weightKg: 75,
   preferredFoot: PreferredFoot.Right,
   attributes: buildDefaultAttributes(PlayerPosition.Midfielder),
+  draftTier: DraftTier.Bronze,
+  draftFee: 0,
+  isFreeAgentTemplate: true,
+  isDraftOnly: false,
 });
 
 const toFormValues = (player: BasePlayerResponse): AdminBasePlayerFormValues => ({
@@ -50,6 +55,10 @@ const toFormValues = (player: BasePlayerResponse): AdminBasePlayerFormValues => 
   weightKg: player.weightKg,
   preferredFoot: player.preferredFoot,
   attributes: attributesForPosition(player.position, player.attributes),
+  draftTier: player.draftTier,
+  draftFee: player.draftFee,
+  isFreeAgentTemplate: player.isFreeAgentTemplate,
+  isDraftOnly: player.isDraftOnly,
 });
 
 const toRequestBody = (values: AdminBasePlayerFormValues) => ({
@@ -62,6 +71,10 @@ const toRequestBody = (values: AdminBasePlayerFormValues) => ({
   weightKg: values.weightKg,
   preferredFoot: values.preferredFoot,
   attributes: attributesForPosition(values.position, values.attributes),
+  draftTier: values.draftTier,
+  draftFee: values.draftFee,
+  isFreeAgentTemplate: values.isFreeAgentTemplate,
+  isDraftOnly: values.isDraftOnly,
 });
 
 export const AdminBasePlayersPage = () => {

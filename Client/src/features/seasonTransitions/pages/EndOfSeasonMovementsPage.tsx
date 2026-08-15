@@ -30,7 +30,7 @@ export const EndOfSeasonMovementsPage = () => {
   const [processSeasonEnd, { isLoading: isSubmitting }] = useProcessSeasonEndMutation();
 
   const handleContinue = async () => {
-    if (!club || !preview?.canProcess) {
+    if (!club || club.divisionId == null || !preview?.canProcess) {
       return;
     }
 
@@ -50,7 +50,15 @@ export const EndOfSeasonMovementsPage = () => {
     );
   }
 
-  if (!club || isError || !preview) {
+  if (isClubLoading || isPreviewLoading) {
+    return (
+      <div className="mx-auto max-w-2xl py-16 text-center text-on-surface-variant">
+        Loading season end summary...
+      </div>
+    );
+  }
+
+  if (!club || club.divisionId == null || isError || !preview) {
     return (
       <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 py-16 text-center">
         <p className="font-body-lg text-body-lg text-on-surface-variant">

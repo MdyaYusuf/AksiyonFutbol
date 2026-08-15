@@ -75,12 +75,10 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: (_result, _error, arg) => [
+      invalidatesTags: () => [
         { type: "Club", id: "LIST" },
         { type: "Club", id: "ME" },
-        { type: "Club", id: `DIVISION-${arg.divisionId}` },
         { type: "ClubPresident", id: "ME" },
-        { type: "LeagueDivision", id: arg.divisionId },
       ],
     }),
 

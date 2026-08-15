@@ -71,6 +71,12 @@ public class BasePlayer : Entity<Guid>
   public int DefenseStrength { get; set; }
   public int MidfieldControl { get; set; }
 
+  // Draft / free-agent catalog
+  public DraftTier DraftTier { get; set; } = DraftTier.Bronze;
+  public decimal DraftFee { get; set; }
+  public bool IsFreeAgentTemplate { get; set; }
+  public bool IsDraftOnly { get; set; }
+
   // Relationship properties
   public virtual ICollection<PlayerInstance> PlayerInstances { get; set; }
 }

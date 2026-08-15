@@ -10,9 +10,6 @@ public class CreateClubRequestValidator : AbstractValidator<CreateClubRequest>
       .NotEmpty().WithMessage("Kulüp adı boş olamaz.")
       .MinimumLength(2).WithMessage("Kulüp adı en az 2 karakter olmalıdır.")
       .MaximumLength(100).WithMessage("Kulüp adı 100 karakterden uzun olamaz.");
-
-    RuleFor(c => c.DivisionId)
-      .GreaterThan(0).WithMessage("Geçersiz lig ID.");
   }
 }
 

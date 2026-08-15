@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AksiyonFutbol.Api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20260813105007_InitialCreate")]
+    [Migration("20260815120401_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -115,6 +115,59 @@ namespace AksiyonFutbol.Api.Migrations
                     b.ToTable("ClubActions", (string)null);
                 });
 
+            modelBuilder.Entity("Api.Features.BaseBotClubs.BaseBotClub", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<bool>("IsTutorialTemplate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("PreferredFormation")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StartingChemistry")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(50);
+
+                    b.Property<int>("StartingDiscipline")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(50);
+
+                    b.Property<int>("StartingMorale")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(50);
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsTutorialTemplate");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("BaseBotClubs", (string)null);
+                });
+
             modelBuilder.Entity("Api.Features.BasePlayers.BasePlayer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -166,6 +219,15 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("Distribution")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("DraftFee")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("DraftTier")
+                        .HasColumnType("int");
+
                     b.Property<int>("Dribbling")
                         .HasColumnType("int");
 
@@ -183,6 +245,16 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.Property<int>("HeightCm")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDraftOnly")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsFreeAgentTemplate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("Jumping")
                         .HasColumnType("int");
@@ -260,6 +332,12 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DraftTier");
+
+                    b.HasIndex("IsDraftOnly");
+
+                    b.HasIndex("IsFreeAgentTemplate");
+
                     b.HasIndex("Position", "Age", "Nationality");
 
                     b.ToTable("BasePlayers", (string)null);
@@ -312,6 +390,43 @@ namespace AksiyonFutbol.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("BribeAttempts", (string)null);
+                });
+
+            modelBuilder.Entity("Api.Features.ClubDrafts.ClubDraftPick", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("BasePlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<int>("PickOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BasePlayerId");
+
+                    b.HasIndex("ClubId", "BasePlayerId")
+                        .IsUnique();
+
+                    b.HasIndex("ClubId", "PickOrder")
+                        .IsUnique();
+
+                    b.ToTable("ClubDraftPicks", (string)null);
                 });
 
             modelBuilder.Entity("Api.Features.ClubLineups.ClubLineup", b =>
@@ -457,13 +572,18 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(50);
 
-                    b.Property<int>("DivisionId")
+                    b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsBot")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<int>("LifecycleStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("Morale")
                         .ValueGeneratedOnAdd()
@@ -475,6 +595,9 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("PlacementTargetTier")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("PresidentId")
                         .HasColumnType("uniqueidentifier");
 
@@ -482,6 +605,9 @@ namespace AksiyonFutbol.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<int?>("TutorialDivisionId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
@@ -497,12 +623,18 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.HasIndex("DivisionId");
 
+                    b.HasIndex("LifecycleStatus");
+
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("PlacementTargetTier");
 
                     b.HasIndex("PresidentId")
                         .IsUnique()
                         .HasFilter("[PresidentId] IS NOT NULL");
+
+                    b.HasIndex("TutorialDivisionId");
 
                     b.ToTable("Clubs", (string)null);
                 });
@@ -562,10 +694,23 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("GroupNumber")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsTutorial")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("LifecycleStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Tier")
                         .HasColumnType("int");
@@ -576,11 +721,20 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsTutorial");
+
+                    b.HasIndex("LifecycleStatus");
+
                     b.HasIndex("Name")
                         .IsUnique();
 
+                    b.HasIndex("OwnerUserId")
+                        .IsUnique()
+                        .HasFilter("[IsTutorial] = 1 AND [OwnerUserId] IS NOT NULL");
+
                     b.HasIndex("Tier", "GroupNumber")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IsTutorial] = 0");
 
                     b.ToTable("LeagueDivisions", (string)null);
                 });
@@ -1147,6 +1301,25 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Navigation("Referee");
                 });
 
+            modelBuilder.Entity("Api.Features.ClubDrafts.ClubDraftPick", b =>
+                {
+                    b.HasOne("Api.Features.BasePlayers.BasePlayer", "BasePlayer")
+                        .WithMany()
+                        .HasForeignKey("BasePlayerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Api.Features.Clubs.Club", "Club")
+                        .WithMany("DraftPicks")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BasePlayer");
+
+                    b.Navigation("Club");
+                });
+
             modelBuilder.Entity("Api.Features.ClubLineups.ClubLineup", b =>
                 {
                     b.HasOne("Api.Features.Clubs.Club", "Club")
@@ -1193,17 +1366,23 @@ namespace AksiyonFutbol.Api.Migrations
                     b.HasOne("Api.Features.LeagueDivisions.LeagueDivision", "Division")
                         .WithMany("Clubs")
                         .HasForeignKey("DivisionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Api.Features.ClubPresidents.ClubPresident", "President")
                         .WithOne("Club")
                         .HasForeignKey("Api.Features.Clubs.Club", "PresidentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Api.Features.LeagueDivisions.LeagueDivision", "TutorialDivision")
+                        .WithMany()
+                        .HasForeignKey("TutorialDivisionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Division");
 
                     b.Navigation("President");
+
+                    b.Navigation("TutorialDivision");
                 });
 
             modelBuilder.Entity("Api.Features.Facilities.ClubFacility", b =>
@@ -1335,6 +1514,8 @@ namespace AksiyonFutbol.Api.Migrations
 
             modelBuilder.Entity("Api.Features.Clubs.Club", b =>
                 {
+                    b.Navigation("DraftPicks");
+
                     b.Navigation("Facilities");
 
                     b.Navigation("Lineup");

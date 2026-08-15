@@ -189,29 +189,11 @@ public class PlayerInstanceService(
     await _businessRules.GetClubIfExistAsync(request.ClubId, cancellationToken: cancellationToken);
     BasePlayer basePlayer = await _businessRules.GetBasePlayerIfExistAsync(request.BasePlayerId, cancellationToken);
 
-    PlayerInstance player = new()
-    {
-      FirstName = basePlayer.DefaultFirstName,
-      LastName = basePlayer.DefaultLastName,
-      ClubId = request.ClubId,
-      BasePlayerId = basePlayer.Id,
-      Nationality = basePlayer.Nationality,
-      Position = basePlayer.Position,
-      Age = basePlayer.Age,
-      HeightCm = basePlayer.HeightCm,
-      WeightKg = basePlayer.WeightKg,
-      PreferredFoot = basePlayer.PreferredFoot,
-      AttackPower = basePlayer.AttackPower,
-      DefenseStrength = basePlayer.DefenseStrength,
-      MidfieldControl = basePlayer.MidfieldControl,
-      MarketValue = request.MarketValue,
-      Wage = request.Wage,
-      IsInjured = false,
-      InjuryDays = 0
-    };
-
-    PlayerAttributeMapper.CopySubStats(basePlayer, player);
-    PlayerAttributeCalculator.ApplyMainStats(player);
+    PlayerInstance player = PlayerInstanceFromBasePlayer.Create(
+      request.ClubId,
+      basePlayer,
+      request.MarketValue,
+      request.Wage);
 
     await _playerInstanceRepository.AddAsync(player, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

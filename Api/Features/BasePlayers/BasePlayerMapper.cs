@@ -18,7 +18,11 @@ public partial class BasePlayerMapper
       Age = request.Age,
       HeightCm = request.HeightCm,
       WeightKg = request.WeightKg,
-      PreferredFoot = request.PreferredFoot
+      PreferredFoot = request.PreferredFoot,
+      DraftTier = request.DraftTier,
+      DraftFee = request.DraftFee,
+      IsFreeAgentTemplate = request.IsFreeAgentTemplate,
+      IsDraftOnly = request.IsDraftOnly
     };
 
     PlayerAttributeMapper.ApplyToEntity(request.Attributes, entity);
@@ -37,6 +41,10 @@ public partial class BasePlayerMapper
     entity.HeightCm = request.HeightCm;
     entity.WeightKg = request.WeightKg;
     entity.PreferredFoot = request.PreferredFoot;
+    entity.DraftTier = request.DraftTier;
+    entity.DraftFee = request.DraftFee;
+    entity.IsFreeAgentTemplate = request.IsFreeAgentTemplate;
+    entity.IsDraftOnly = request.IsDraftOnly;
 
     PlayerAttributeMapper.ApplyToEntity(request.Attributes, entity);
     PlayerAttributeCalculator.ApplyMainStats(entity);
@@ -60,6 +68,10 @@ public partial class BasePlayerMapper
       DefenseStrength = entity.DefenseStrength,
       MidfieldControl = entity.MidfieldControl,
       OverallRating = BasePlayerRatingCalculator.Calculate(entity),
+      DraftTier = entity.DraftTier,
+      DraftFee = entity.DraftFee,
+      IsFreeAgentTemplate = entity.IsFreeAgentTemplate,
+      IsDraftOnly = entity.IsDraftOnly,
       CreatedDate = entity.CreatedDate
     };
   }
@@ -76,7 +88,11 @@ public partial class BasePlayerMapper
       HeightCm = entity.HeightCm,
       WeightKg = entity.WeightKg,
       PreferredFoot = entity.PreferredFoot,
-      OverallRating = BasePlayerRatingCalculator.Calculate(entity)
+      OverallRating = BasePlayerRatingCalculator.Calculate(entity),
+      DraftTier = entity.DraftTier,
+      DraftFee = entity.DraftFee,
+      IsFreeAgentTemplate = entity.IsFreeAgentTemplate,
+      IsDraftOnly = entity.IsDraftOnly
     };
   }
 

@@ -37,10 +37,32 @@ public class LeagueDivisionConfiguration : IEntityTypeConfiguration<LeagueDivisi
       .HasDefaultValue(1)
       .IsRequired();
 
+    builder.Property(ld => ld.IsTutorial)
+      .HasDefaultValue(false)
+      .IsRequired();
+
+    builder.Property(ld => ld.OwnerUserId)
+      .IsRequired(false);
+
+    builder.Property(ld => ld.LifecycleStatus)
+      .HasConversion<int>()
+      .HasDefaultValue(DivisionLifecycleStatus.Active)
+      .HasSentinel((DivisionLifecycleStatus)0)
+      .IsRequired();
+
     builder.HasIndex(ld => ld.Name)
       .IsUnique();
 
+    // Competitive divisions keep unique (Tier, GroupNumber); tutorial instances do not.
     builder.HasIndex(ld => new { ld.Tier, ld.GroupNumber })
-      .IsUnique();
+      .IsUnique()
+      .HasFilter("[IsTutorial] = 0");
+
+    builder.HasIndex(ld => ld.OwnerUserId)
+      .IsUnique()
+      .HasFilter("[IsTutorial] = 1 AND [OwnerUserId] IS NOT NULL");
+
+    builder.HasIndex(ld => ld.IsTutorial);
+    builder.HasIndex(ld => ld.LifecycleStatus);
   }
 }

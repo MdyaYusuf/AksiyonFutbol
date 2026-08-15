@@ -28,6 +28,73 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("MaximumClubsPerDivision 0'dan büyük olmalıdır.");
     }
 
+    if (options.TutorialClubCount != 4)
+    {
+      failures.Add("TutorialClubCount 4 olmalıdır.");
+    }
+
+    if (options.TutorialMatchWeeks != 6)
+    {
+      failures.Add("TutorialMatchWeeks 6 olmalıdır.");
+    }
+
+    if (options.CompetitiveMatchWeeks != 14)
+    {
+      failures.Add("CompetitiveMatchWeeks 14 olmalıdır.");
+    }
+
+    if (options.MatchKickoffLocalTime < TimeSpan.Zero || options.MatchKickoffLocalTime >= TimeSpan.FromDays(1))
+    {
+      failures.Add("MatchKickoffLocalTime geçerli bir gün içi saat olmalıdır.");
+    }
+
+    if (options.DraftStartingCash < 0)
+    {
+      failures.Add("DraftStartingCash negatif olamaz.");
+    }
+
+    if (options.DraftWageBudget < 0)
+    {
+      failures.Add("DraftWageBudget negatif olamaz.");
+    }
+
+    ValidateGraduationBand(
+      failures,
+      options.GraduationGoldMinPoints,
+      options.GraduationGoldMaxPoints,
+      "GraduationGold");
+    ValidateGraduationBand(
+      failures,
+      options.GraduationSilverMinPoints,
+      options.GraduationSilverMaxPoints,
+      "GraduationSilver");
+    ValidateGraduationBand(
+      failures,
+      options.GraduationBronzeMinPoints,
+      options.GraduationBronzeMaxPoints,
+      "GraduationBronze");
+    ValidateGraduationBand(
+      failures,
+      options.GraduationIronMinPoints,
+      options.GraduationIronMaxPoints,
+      "GraduationIron");
+
+    if (options.SeatingBonusGold < 0
+        || options.SeatingBonusSilver < 0
+        || options.SeatingBonusBronze < 0
+        || options.SeatingBonusIron < 0)
+    {
+      failures.Add("SeatingBonus değerleri negatif olamaz.");
+    }
+
+    if (options.TierStartingWageBudgetGold < 0
+        || options.TierStartingWageBudgetSilver < 0
+        || options.TierStartingWageBudgetBronze < 0
+        || options.TierStartingWageBudgetIron < 0)
+    {
+      failures.Add("TierStartingWageBudget değerleri negatif olamaz.");
+    }
+
     if (options.MinimumMatchWeek <= 0)
     {
       failures.Add("MinimumMatchWeek 0'dan büyük olmalıdır.");
@@ -428,6 +495,28 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
     if (value <= 0 || value > 2)
     {
       failures.Add($"{name} 0'dan büyük ve 2'den küçük veya eşit olmalıdır.");
+    }
+  }
+
+  private static void ValidateGraduationBand(
+    List<string> failures,
+    int minPoints,
+    int maxPoints,
+    string bandName)
+  {
+    if (minPoints < 0 || maxPoints < 0)
+    {
+      failures.Add($"{bandName} puan aralığı negatif olamaz.");
+    }
+
+    if (maxPoints < minPoints)
+    {
+      failures.Add($"{bandName}MaxPoints, {bandName}MinPoints değerinden küçük olamaz.");
+    }
+
+    if (maxPoints > 18)
+    {
+      failures.Add($"{bandName}MaxPoints 18'den büyük olamaz.");
     }
   }
 }

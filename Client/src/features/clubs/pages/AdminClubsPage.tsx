@@ -39,7 +39,7 @@ const emptyFormValues = (
 
 const toFormValues = (club: ClubResponse): AdminClubFormValues => ({
   name: club.name,
-  divisionId: club.divisionId,
+  divisionId: club.divisionId ?? "",
   cash: club.cash,
   wageBudget: club.wageBudget,
   morale: club.morale,

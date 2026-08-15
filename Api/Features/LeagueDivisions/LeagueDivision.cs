@@ -19,6 +19,9 @@ public class LeagueDivision : Entity<int>
   public int Tier { get; set; }
   public int GroupNumber { get; set; }
   public int CurrentMatchWeek { get; set; }
+  public bool IsTutorial { get; set; }
+  public Guid? OwnerUserId { get; set; }
+  public DivisionLifecycleStatus LifecycleStatus { get; set; } = DivisionLifecycleStatus.Active;
 
   // Relationship properties
   public virtual ICollection<Club> Clubs { get; set; }

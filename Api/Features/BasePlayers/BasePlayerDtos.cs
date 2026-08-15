@@ -17,6 +17,10 @@ public sealed record BasePlayerResponseDto
   public int DefenseStrength { get; init; }
   public int MidfieldControl { get; init; }
   public int OverallRating { get; init; }
+  public DraftTier DraftTier { get; init; }
+  public decimal DraftFee { get; init; }
+  public bool IsFreeAgentTemplate { get; init; }
+  public bool IsDraftOnly { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 
@@ -31,6 +35,10 @@ public sealed record BasePlayerPreviewDto
   public int WeightKg { get; init; }
   public PreferredFoot PreferredFoot { get; init; }
   public int OverallRating { get; init; }
+  public DraftTier DraftTier { get; init; }
+  public decimal DraftFee { get; init; }
+  public bool IsFreeAgentTemplate { get; init; }
+  public bool IsDraftOnly { get; init; }
 }
 
 public sealed record CreatedBasePlayerResponseDto
@@ -52,7 +60,11 @@ public sealed record CreateBasePlayerRequest(
   int HeightCm,
   int WeightKg,
   PreferredFoot PreferredFoot,
-  PlayerAttributesDto Attributes);
+  PlayerAttributesDto Attributes,
+  DraftTier DraftTier,
+  decimal DraftFee,
+  bool IsFreeAgentTemplate,
+  bool IsDraftOnly);
 
 public sealed record UpdateBasePlayerRequest(
   Guid Id,
@@ -64,4 +76,8 @@ public sealed record UpdateBasePlayerRequest(
   int HeightCm,
   int WeightKg,
   PreferredFoot PreferredFoot,
-  PlayerAttributesDto Attributes);
+  PlayerAttributesDto Attributes,
+  DraftTier DraftTier,
+  decimal DraftFee,
+  bool IsFreeAgentTemplate,
+  bool IsDraftOnly);

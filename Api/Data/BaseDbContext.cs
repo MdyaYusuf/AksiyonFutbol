@@ -1,6 +1,8 @@
 using System.Reflection;
 using Api.Features.BasePlayers;
 using Api.Core.Helpers;
+using Api.Features.BaseBotClubs;
+using Api.Features.ClubDrafts;
 using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
@@ -33,6 +35,8 @@ public class BaseDbContext : DbContext
   public DbSet<ClubLineup> ClubLineups { get; set; }
   public DbSet<ClubLineupSelection> ClubLineupSelections { get; set; }
   public DbSet<BasePlayer> BasePlayers { get; set; }
+  public DbSet<BaseBotClub> BaseBotClubs { get; set; }
+  public DbSet<ClubDraftPick> ClubDraftPicks { get; set; }
   public DbSet<PlayerInstance> PlayerInstances { get; set; }
   public DbSet<Referee> Referees { get; set; }
   public DbSet<Match> Matches { get; set; }

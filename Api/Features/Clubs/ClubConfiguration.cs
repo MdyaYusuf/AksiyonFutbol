@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Api.Features.LeagueDivisions;
 
 namespace Api.Features.Clubs;
 
@@ -57,11 +58,24 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
       .HasDefaultValue(0)
       .IsRequired();
 
+    builder.Property(c => c.LifecycleStatus)
+      .HasConversion<int>()
+      .HasDefaultValue(ClubLifecycleStatus.Drafting)
+      .HasSentinel((ClubLifecycleStatus)0)
+      .IsRequired();
+
+    builder.Property(c => c.PlacementTargetTier)
+      .HasConversion<int?>()
+      .IsRequired(false);
+
     builder.Property(c => c.PresidentId)
       .IsRequired(false);
 
     builder.Property(c => c.DivisionId)
-      .IsRequired();
+      .IsRequired(false);
+
+    builder.Property(c => c.TutorialDivisionId)
+      .IsRequired(false);
 
     builder.HasOne(c => c.President)
       .WithOne(cp => cp.Club)
@@ -73,6 +87,11 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
       .HasForeignKey(c => c.DivisionId)
       .OnDelete(DeleteBehavior.Restrict);
 
+    builder.HasOne(c => c.TutorialDivision)
+      .WithMany()
+      .HasForeignKey(c => c.TutorialDivisionId)
+      .OnDelete(DeleteBehavior.Restrict);
+
     builder.HasIndex(c => c.Name)
       .IsUnique();
 
@@ -81,5 +100,8 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
       .HasFilter("[PresidentId] IS NOT NULL");
 
     builder.HasIndex(c => c.DivisionId);
+    builder.HasIndex(c => c.TutorialDivisionId);
+    builder.HasIndex(c => c.LifecycleStatus);
+    builder.HasIndex(c => c.PlacementTargetTier);
   }
 }

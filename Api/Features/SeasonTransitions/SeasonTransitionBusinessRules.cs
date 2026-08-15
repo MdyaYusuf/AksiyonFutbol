@@ -35,7 +35,7 @@ public class SeasonTransitionBusinessRules(
         .Include(c => c.Division),
       cancellationToken: cancellationToken);
 
-    if (club == null || club.Division.GroupNumber != groupNumber)
+    if (club == null || club.Division == null || club.Division.GroupNumber != groupNumber)
     {
       throw new ForbiddenException("Bu sezon sonu işlemi için yetkiniz bulunmamaktadır.");
     }

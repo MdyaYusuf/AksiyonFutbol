@@ -12,6 +12,25 @@ namespace AksiyonFutbol.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "BaseBotClubs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    StartingMorale = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
+                    StartingChemistry = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
+                    StartingDiscipline = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
+                    PreferredFormation = table.Column<int>(type: "int", nullable: true),
+                    IsTutorialTemplate = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BaseBotClubs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BasePlayers",
                 columns: table => new
                 {
@@ -57,6 +76,10 @@ namespace AksiyonFutbol.Api.Migrations
                     AttackPower = table.Column<int>(type: "int", nullable: false),
                     DefenseStrength = table.Column<int>(type: "int", nullable: false),
                     MidfieldControl = table.Column<int>(type: "int", nullable: false),
+                    DraftTier = table.Column<int>(type: "int", nullable: false),
+                    DraftFee = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    IsFreeAgentTemplate = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDraftOnly = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -75,6 +98,9 @@ namespace AksiyonFutbol.Api.Migrations
                     Tier = table.Column<int>(type: "int", nullable: false),
                     GroupNumber = table.Column<int>(type: "int", nullable: false),
                     CurrentMatchWeek = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    IsTutorial = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LifecycleStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -180,8 +206,11 @@ namespace AksiyonFutbol.Api.Migrations
                     Chemistry = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
                     Discipline = table.Column<int>(type: "int", nullable: false, defaultValue: 50),
                     Suspicion = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    LifecycleStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    PlacementTargetTier = table.Column<int>(type: "int", nullable: true),
+                    TutorialDivisionId = table.Column<int>(type: "int", nullable: true),
                     PresidentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DivisionId = table.Column<int>(type: "int", nullable: false),
+                    DivisionId = table.Column<int>(type: "int", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -200,6 +229,40 @@ namespace AksiyonFutbol.Api.Migrations
                         principalTable: "LeagueDivisions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Clubs_LeagueDivisions_TutorialDivisionId",
+                        column: x => x.TutorialDivisionId,
+                        principalTable: "LeagueDivisions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClubDraftPicks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BasePlayerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PickOrder = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClubDraftPicks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClubDraftPicks_BasePlayers_BasePlayerId",
+                        column: x => x.BasePlayerId,
+                        principalTable: "BasePlayers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClubDraftPicks_Clubs_ClubId",
+                        column: x => x.ClubId,
+                        principalTable: "Clubs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -546,6 +609,32 @@ namespace AksiyonFutbol.Api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_BaseBotClubs_IsTutorialTemplate",
+                table: "BaseBotClubs",
+                column: "IsTutorialTemplate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseBotClubs_Name",
+                table: "BaseBotClubs",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BasePlayers_DraftTier",
+                table: "BasePlayers",
+                column: "DraftTier");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BasePlayers_IsDraftOnly",
+                table: "BasePlayers",
+                column: "IsDraftOnly");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BasePlayers_IsFreeAgentTemplate",
+                table: "BasePlayers",
+                column: "IsFreeAgentTemplate");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BasePlayers_Position_Age_Nationality",
                 table: "BasePlayers",
                 columns: new[] { "Position", "Age", "Nationality" });
@@ -602,6 +691,23 @@ namespace AksiyonFutbol.Api.Migrations
                 column: "TargetPlayerInstanceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClubDraftPicks_BasePlayerId",
+                table: "ClubDraftPicks",
+                column: "BasePlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubDraftPicks_ClubId_BasePlayerId",
+                table: "ClubDraftPicks",
+                columns: new[] { "ClubId", "BasePlayerId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubDraftPicks_ClubId_PickOrder",
+                table: "ClubDraftPicks",
+                columns: new[] { "ClubId", "PickOrder" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClubFacilities_ClubId",
                 table: "ClubFacilities",
                 column: "ClubId");
@@ -652,10 +758,20 @@ namespace AksiyonFutbol.Api.Migrations
                 column: "DivisionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Clubs_LifecycleStatus",
+                table: "Clubs",
+                column: "LifecycleStatus");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Clubs_Name",
                 table: "Clubs",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clubs_PlacementTargetTier",
+                table: "Clubs",
+                column: "PlacementTargetTier");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clubs_PresidentId",
@@ -665,16 +781,39 @@ namespace AksiyonFutbol.Api.Migrations
                 filter: "[PresidentId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Clubs_TutorialDivisionId",
+                table: "Clubs",
+                column: "TutorialDivisionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeagueDivisions_IsTutorial",
+                table: "LeagueDivisions",
+                column: "IsTutorial");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeagueDivisions_LifecycleStatus",
+                table: "LeagueDivisions",
+                column: "LifecycleStatus");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LeagueDivisions_Name",
                 table: "LeagueDivisions",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_LeagueDivisions_OwnerUserId",
+                table: "LeagueDivisions",
+                column: "OwnerUserId",
+                unique: true,
+                filter: "[IsTutorial] = 1 AND [OwnerUserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LeagueDivisions_Tier_GroupNumber",
                 table: "LeagueDivisions",
                 columns: new[] { "Tier", "GroupNumber" },
-                unique: true);
+                unique: true,
+                filter: "[IsTutorial] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_AwayClubId",
@@ -806,10 +945,16 @@ namespace AksiyonFutbol.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BaseBotClubs");
+
+            migrationBuilder.DropTable(
                 name: "BribeAttempts");
 
             migrationBuilder.DropTable(
                 name: "ClubActions");
+
+            migrationBuilder.DropTable(
+                name: "ClubDraftPicks");
 
             migrationBuilder.DropTable(
                 name: "ClubFacilities");

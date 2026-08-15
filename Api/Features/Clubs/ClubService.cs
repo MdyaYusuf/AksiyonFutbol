@@ -41,7 +41,11 @@ public class ClubService(
       pageSize,
       filter,
       include: include ?? IncludeClubRelations,
-      orderBy ?? (query => query.OrderBy(c => c.Division.Tier).ThenBy(c => c.Division.GroupNumber).ThenBy(c => c.Name)),
+      orderBy ?? (query => query
+        .OrderBy(c => c.DivisionId == null ? 1 : 0)
+        .ThenBy(c => c.Division!.Tier)
+        .ThenBy(c => c.Division!.GroupNumber)
+        .ThenBy(c => c.Name)),
       enableTracking,
       withDeleted,
       cancellationToken);
@@ -186,8 +190,8 @@ public class ClubService(
   {
     ClubCreationDefaultsDto defaults = new()
     {
-      StartingCash = _gameOptions.Value.StartingCash,
-      StartingWageBudget = _gameOptions.Value.StartingWageBudget,
+      StartingCash = _gameOptions.Value.DraftStartingCash,
+      StartingWageBudget = _gameOptions.Value.DraftWageBudget,
       StartingClubStatus = _gameOptions.Value.StartingClubStatus,
     };
 
@@ -213,8 +217,6 @@ public class ClubService(
     }
 
     ClubPresident president = await _businessRules.GetPresidentByUserIdIfExistAsync(currentUserId, cancellationToken);
-    await _businessRules.DivisionMustExistAsync(request.DivisionId, cancellationToken);
-    await _businessRules.DivisionMustHaveCapacityAsync(request.DivisionId, cancellationToken);
     await _businessRules.PresidentMustNotHaveClubAsync(president.Id, cancellationToken);
     _businessRules.ClubNameCannotBeRestrictedWord(request.Name);
     await _businessRules.ClubNameMustBeUniqueAsync(request.Name, cancellationToken: cancellationToken);
@@ -222,17 +224,18 @@ public class ClubService(
     Club club = _mapper.CreateToEntity(request);
     club.PresidentId = president.Id;
     club.IsBot = false;
-    club.Cash = _gameOptions.Value.StartingCash;
-    club.WageBudget = _gameOptions.Value.StartingWageBudget;
+    club.DivisionId = null;
+    club.TutorialDivisionId = null;
+    club.LifecycleStatus = ClubLifecycleStatus.Drafting;
+    club.PlacementTargetTier = null;
+    club.Cash = _gameOptions.Value.DraftStartingCash;
+    club.WageBudget = _gameOptions.Value.DraftWageBudget;
     club.Morale = _gameOptions.Value.StartingClubStatus;
     club.Chemistry = _gameOptions.Value.StartingClubStatus;
     club.Discipline = _gameOptions.Value.StartingClubStatus;
     club.Suspicion = _gameOptions.Value.StartingSuspicion;
 
     await _clubRepository.AddAsync(club, cancellationToken);
-    await _starterSquadService.AssignAsync(club, cancellationToken);
-    await _unitOfWork.SaveChangesAsync(cancellationToken);
-    await _defaultClubLineupService.EnsureAsync(club.Id, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     CreatedClubResponseDto response = _mapper.EntityToCreatedResponseDto(club);
@@ -268,6 +271,9 @@ public class ClubService(
     Club club = _mapper.CreateBotToEntity(request);
     club.IsBot = true;
     club.PresidentId = null;
+    club.LifecycleStatus = ClubLifecycleStatus.Competitive;
+    club.PlacementTargetTier = null;
+    club.TutorialDivisionId = null;
 
     await _clubRepository.AddAsync(club, cancellationToken);
     await _starterSquadService.AssignAsync(club, cancellationToken);

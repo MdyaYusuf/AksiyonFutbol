@@ -15,6 +15,15 @@ export const PreferredFoot = {
 
 export type PreferredFoot = (typeof PreferredFoot)[keyof typeof PreferredFoot];
 
+export const DraftTier = {
+  Gold: 1,
+  Silver: 2,
+  Bronze: 3,
+  Iron: 4,
+} as const;
+
+export type DraftTier = (typeof DraftTier)[keyof typeof DraftTier];
+
 export interface PhysicalAttributes {
   pace: number;
   stamina: number;
@@ -88,6 +97,10 @@ export interface BasePlayerResponse {
   defenseStrength: number;
   midfieldControl: number;
   overallRating: number;
+  draftTier: DraftTier;
+  draftFee: number;
+  isFreeAgentTemplate: boolean;
+  isDraftOnly: boolean;
   createdDate: string;
 }
 
@@ -101,6 +114,10 @@ export interface BasePlayerPreview {
   weightKg: number;
   preferredFoot: PreferredFoot;
   overallRating: number;
+  draftTier: DraftTier;
+  draftFee: number;
+  isFreeAgentTemplate: boolean;
+  isDraftOnly: boolean;
 }
 
 export interface CreatedBasePlayerResponse {
@@ -122,6 +139,10 @@ export interface CreateBasePlayerRequest {
   weightKg: number;
   preferredFoot: PreferredFoot;
   attributes: PlayerAttributes;
+  draftTier: DraftTier;
+  draftFee: number;
+  isFreeAgentTemplate: boolean;
+  isDraftOnly: boolean;
 }
 
 export interface UpdateBasePlayerRequest {
@@ -135,4 +156,8 @@ export interface UpdateBasePlayerRequest {
   weightKg: number;
   preferredFoot: PreferredFoot;
   attributes: PlayerAttributes;
+  draftTier: DraftTier;
+  draftFee: number;
+  isFreeAgentTemplate: boolean;
+  isDraftOnly: boolean;
 }
