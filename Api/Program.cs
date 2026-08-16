@@ -14,6 +14,7 @@ using Api.Features.ClubDrafts;
 using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
+using Api.Features.CompetitiveSeating;
 using Api.Features.LeagueDivisions;
 using Api.Features.Matches;
 using Api.Features.PlayerInstances;
@@ -76,6 +77,7 @@ builder.Services.AddBriberyDependencies();
 builder.Services.AddActionsDependencies();
 builder.Services.AddFacilitiesDependencies();
 builder.Services.AddSeasonTransitionDependencies();
+builder.Services.AddCompetitiveSeatingDependencies();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddCors(options =>

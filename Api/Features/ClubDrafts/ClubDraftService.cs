@@ -260,11 +260,14 @@ public class ClubDraftService(
 
       await _clubRepository.AddAsync(botClub, cancellationToken);
 
-      List<BasePlayer> botPicks = AutoDraftSquad(remainingPool, options, botClub.Cash, botClub.WageBudget);
+      List<BasePlayer> botPicks = BotSquadAutoDraft.SelectSquad(
+        remainingPool,
+        options,
+        botClub.Cash,
+        botClub.WageBudget);
 
       foreach (BasePlayer pick in botPicks)
       {
-        remainingPool.Remove(pick);
         botClub.Cash -= pick.DraftFee;
         botClub.Players.Add(
           PlayerInstanceFromBasePlayer.CreateWithStarterPricing(botClub.Id, pick, options));
@@ -344,68 +347,6 @@ public class ClubDraftService(
     }
 
     lineup.Formation = template.PreferredFormation.Value;
-  }
-
-  private static List<BasePlayer> AutoDraftSquad(
-    List<BasePlayer> pool,
-    GameOptions options,
-    decimal cash,
-    decimal wageBudget)
-  {
-    ClubDraftBusinessRules.EnsureCompositionIsValid(options);
-
-    List<BasePlayer> selected = [];
-    decimal remainingCash = cash;
-    decimal remainingWage = wageBudget;
-
-    foreach ((PlayerPosition position, int required) in ClubDraftBusinessRules.GetQuotaMap(options))
-    {
-      for (int i = 0; i < required; i++)
-      {
-        BasePlayer? pick = SelectBotPick(pool, selected, position, remainingCash, remainingWage, options);
-
-        if (pick == null)
-        {
-          throw new BusinessException(
-            $"Bot draft için yeterli {position} adayı kalmadı. Katalog veya bütçe yetersiz.");
-        }
-
-        selected.Add(pick);
-        remainingCash -= pick.DraftFee;
-        remainingWage -= ClubDraftBusinessRules.EstimateWage(pick, options);
-      }
-    }
-
-    return selected;
-  }
-
-  private static BasePlayer? SelectBotPick(
-    List<BasePlayer> pool,
-    List<BasePlayer> alreadySelected,
-    PlayerPosition position,
-    decimal remainingCash,
-    decimal remainingWage,
-    GameOptions options)
-  {
-    HashSet<Guid> selectedIds = alreadySelected.Select(p => p.Id).ToHashSet();
-
-    List<BasePlayer> candidates = pool
-      .Where(bp => !selectedIds.Contains(bp.Id))
-      .Where(bp => bp.Position == position)
-      .Where(bp => bp.DraftFee <= remainingCash)
-      .Where(bp => ClubDraftBusinessRules.EstimateWage(bp, options) <= remainingWage)
-      .OrderBy(bp => bp.DraftFee)
-      .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
-      .ThenBy(bp => bp.Id)
-      .Take(3)
-      .ToList();
-
-    if (candidates.Count == 0)
-    {
-      return null;
-    }
-
-    return candidates[Random.Shared.Next(candidates.Count)];
   }
 
   private static ClubDraftStateDto BuildState(Club club, GameOptions options)

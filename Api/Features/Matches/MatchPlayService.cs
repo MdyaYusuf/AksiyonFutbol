@@ -1,6 +1,7 @@
 using Api.Core.Repositories;
 using Api.Features.Actions;
 using Api.Features.ClubLineups;
+using Api.Features.CompetitiveSeating;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Matches;
@@ -12,6 +13,7 @@ public class MatchPlayService(
   IMatchSimulationService _matchSimulationService,
   IMatchInfluenceProvider _matchInfluenceProvider,
   IPromiseWinBonusSettler _promiseWinBonusSettler,
+  ITutorialGraduationService _tutorialGraduationService,
   IUnitOfWork _unitOfWork) : IMatchPlayService
 {
   public async Task<Match> PlayAndPersistAsync(
@@ -76,6 +78,8 @@ public class MatchPlayService(
       cancellationToken);
 
     _matchRepository.Update(match);
+
+    await _tutorialGraduationService.TryGraduateAfterMatchAsync(match, cancellationToken);
   }
 
   private static void CaptureSettlementSnapshots(Match match)

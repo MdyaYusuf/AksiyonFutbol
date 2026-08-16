@@ -16,6 +16,7 @@ public class FixtureSchedulingService(
     IReadOnlyList<Guid> orderedClubIds,
     int matchWeekCount,
     DateTime? utcNow = null,
+    DateTime? firstKickoffLocal = null,
     CancellationToken cancellationToken = default)
   {
     ArgumentNullException.ThrowIfNull(orderedClubIds);
@@ -46,9 +47,10 @@ public class FixtureSchedulingService(
       BuildDoubleRoundRobinSlots(orderedClubIds, matchWeekCount);
 
     GameOptions options = _gameOptions.Value;
-    DateTime firstKickoffLocal = GameLocalClock.GetNextKickoffLocal(
-      utcNow ?? DateTime.UtcNow,
-      options.MatchKickoffLocalTime);
+    DateTime resolvedFirstKickoffLocal = firstKickoffLocal
+      ?? GameLocalClock.GetNextKickoffLocal(
+        utcNow ?? DateTime.UtcNow,
+        options.MatchKickoffLocalTime);
 
     List<int> refereeIds = await LoadRefereeIdsAsync(cancellationToken);
     int refereeCursor = 0;
@@ -57,7 +59,7 @@ public class FixtureSchedulingService(
     foreach ((Guid homeClubId, Guid awayClubId, int matchWeek) in slots)
     {
       DateTime localKickoff = DateTime.SpecifyKind(
-        firstKickoffLocal.Date.AddDays(matchWeek - 1) + options.MatchKickoffLocalTime,
+        resolvedFirstKickoffLocal.Date.AddDays(matchWeek - 1) + options.MatchKickoffLocalTime,
         DateTimeKind.Unspecified);
 
       int? refereeId = null;
