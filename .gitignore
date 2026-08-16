@@ -459,6 +459,9 @@ $RECYCLE.BIN/
 # ASP.NET environment overrides (appsettings.json stays tracked with sample data)
 **/appsettings.*.json
 
+# Local DB seed / bootstrap SQL (run manually; do not push)
+sql-queries.sql
+
 # VS Code
 .vscode/
 *.code-workspace

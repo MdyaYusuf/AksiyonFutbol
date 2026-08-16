@@ -58,6 +58,7 @@ export const apiSlice = createApi({
     "ClubPresident",
     "LeagueDivision",
     "Club",
+    "ClubDraft",
     "ClubLineup",
     "BasePlayer",
     "PlayerInstance",
