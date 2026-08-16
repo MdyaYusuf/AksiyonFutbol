@@ -7,6 +7,7 @@ using Api.Features.BasePlayers;
 using Api.Features.ClubLineups;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
+using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using FluentValidation;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,7 @@ public class ClubDraftService(
   ILeagueDivisionRepository _leagueDivisionRepository,
   IClubLineupRepository _clubLineupRepository,
   IDefaultClubLineupService _defaultClubLineupService,
+  IFixtureSchedulingService _fixtureSchedulingService,
   IUnitOfWork _unitOfWork,
   IValidator<AddClubDraftPickRequest> _addPickValidator,
   IOptions<GameOptions> _gameOptions) : IClubDraftService
@@ -286,12 +288,22 @@ public class ClubDraftService(
       await ApplyPreferredFormationAsync(botClub.Name, botClub.Id, botTemplates, cancellationToken);
     }
 
+    List<Guid> orderedClubIds = new List<Guid> { club.Id }
+      .Concat(botClubs.Select(b => b.Id))
+      .ToList();
+
+    int matchCount = await _fixtureSchedulingService.ScheduleDoubleRoundRobinAsync(
+      tutorial.Id,
+      orderedClubIds,
+      options.TutorialMatchWeeks,
+      cancellationToken: cancellationToken);
+
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     return new ReturnModel<FinalizeClubDraftResponseDto>()
     {
       Success = true,
-      Message = "Draft tamamlandı. Tutorial ligi oluşturuldu. Fikstür üretimi sonraki adımda bağlanacak.",
+      Message = "Draft tamamlandı. Tutorial ligi ve fikstür oluşturuldu.",
       Data = new FinalizeClubDraftResponseDto
       {
         ClubId = club.Id,
@@ -302,7 +314,7 @@ public class ClubDraftService(
           + options.StarterSquadDefenders
           + options.StarterSquadMidfielders
           + options.StarterSquadForwards,
-        FixturesScheduled = false
+        FixturesScheduled = matchCount > 0
       },
       StatusCode = 200
     };

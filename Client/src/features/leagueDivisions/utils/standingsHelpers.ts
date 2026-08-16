@@ -150,31 +150,100 @@ export const buildStandings = (
     }
   }
 
-  const sorted = [...statsByClubId.values()].sort((left, right) => {
-    const leftPoints = left.won * 3 + left.drawn;
-    const rightPoints = right.won * 3 + right.drawn;
-    const leftGd = left.goalsFor - left.goalsAgainst;
-    const rightGd = right.goalsFor - right.goalsAgainst;
+  const getPoints = (stats: ClubStats): number => stats.won * 3 + stats.drawn;
+  const getGoalDifference = (stats: ClubStats): number =>
+    stats.goalsFor - stats.goalsAgainst;
 
-    if (rightPoints !== leftPoints) {
-      return rightPoints - leftPoints;
+  const getHeadToHeadPoints = (
+    club: ClubStats,
+    tiedGroup: ClubStats[],
+  ): number => {
+    if (tiedGroup.length <= 1) {
+      return 0;
     }
 
-    if (rightGd !== leftGd) {
-      return rightGd - leftGd;
+    const groupIds = new Set(tiedGroup.map((stats) => stats.clubId));
+    let points = 0;
+
+    for (const match of relevantMatches) {
+      if (
+        !groupIds.has(match.homeClubId) ||
+        !groupIds.has(match.awayClubId)
+      ) {
+        continue;
+      }
+
+      if (
+        match.homeClubId !== club.clubId &&
+        match.awayClubId !== club.clubId
+      ) {
+        continue;
+      }
+
+      const goalsFor =
+        match.homeClubId === club.clubId
+          ? match.homeScore!
+          : match.awayScore!;
+      const goalsAgainst =
+        match.homeClubId === club.clubId
+          ? match.awayScore!
+          : match.homeScore!;
+
+      if (goalsFor > goalsAgainst) {
+        points += 3;
+      } else if (goalsFor === goalsAgainst) {
+        points += 1;
+      }
     }
 
-    if (right.goalsFor !== left.goalsFor) {
-      return right.goalsFor - left.goalsFor;
-    }
+    return points;
+  };
 
-    return left.clubName.localeCompare(right.clubName);
-  });
+  const byPoints = new Map<number, ClubStats[]>();
+
+  for (const stats of statsByClubId.values()) {
+    const points = getPoints(stats);
+    const group = byPoints.get(points);
+
+    if (group) {
+      group.push(stats);
+    } else {
+      byPoints.set(points, [stats]);
+    }
+  }
+
+  const sorted: ClubStats[] = [];
+
+  for (const points of [...byPoints.keys()].sort((a, b) => b - a)) {
+    const tied = byPoints.get(points)!;
+    tied.sort((left, right) => {
+      const h2hDiff =
+        getHeadToHeadPoints(right, tied) - getHeadToHeadPoints(left, tied);
+
+      if (h2hDiff !== 0) {
+        return h2hDiff;
+      }
+
+      const gdDiff = getGoalDifference(right) - getGoalDifference(left);
+
+      if (gdDiff !== 0) {
+        return gdDiff;
+      }
+
+      if (right.goalsFor !== left.goalsFor) {
+        return right.goalsFor - left.goalsFor;
+      }
+
+      return left.clubName.localeCompare(right.clubName);
+    });
+
+    sorted.push(...tied);
+  }
 
   return sorted.map((stats, index) => {
     const position = index + 1;
-    const goalDifference = stats.goalsFor - stats.goalsAgainst;
-    const points = stats.won * 3 + stats.drawn;
+    const goalDifference = getGoalDifference(stats);
+    const points = getPoints(stats);
     const form = [...stats.results]
       .sort(
         (left, right) =>

@@ -11,6 +11,7 @@ public static class MatchRegistration
     services.AddScoped<IMatchSimulationService, MatchSimulationService>();
     services.AddScoped<IMatchPlayService, MatchPlayService>();
     services.AddScoped<IMatchService, MatchService>();
+    services.AddScoped<IFixtureSchedulingService, FixtureSchedulingService>();
     services.AddScoped<IMatchSettlementGate, MatchSettlementGate>();
     services.TryAddScoped<IMatchInfluenceProvider, NullMatchInfluenceProvider>();
     services.AddSingleton<MatchMapper>();

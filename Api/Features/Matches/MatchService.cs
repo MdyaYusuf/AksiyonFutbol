@@ -16,8 +16,6 @@ public class MatchService(
   IValidator<CreateMatchRequest> _createValidator,
   IValidator<UpdateMatchScheduleRequest> _updateScheduleValidator) : IMatchService
 {
-  private static readonly TimeZoneInfo _gameTimeZone = GetGameTimeZone();
-
   public async Task<ReturnModel<List<MatchResponseDto>>> GetAllAsync(CancellationToken cancellationToken = default)
   {
     List<Match> matches = await _matchRepository.GetAllAsync(
@@ -186,7 +184,7 @@ public class MatchService(
       cancellationToken: cancellationToken);
 
     Match match = _mapper.CreateToEntity(request);
-    match.MatchDate = ConvertGameLocalTimeToUtc(request.MatchDate);
+    match.MatchDate = GameLocalClock.ConvertLocalToUtc(request.MatchDate);
 
     await _matchRepository.AddAsync(match, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -240,7 +238,7 @@ public class MatchService(
       cancellationToken);
 
     _mapper.UpdateEntityFromScheduleRequest(request, match);
-    match.MatchDate = ConvertGameLocalTimeToUtc(request.MatchDate);
+    match.MatchDate = GameLocalClock.ConvertLocalToUtc(request.MatchDate);
 
     _matchRepository.Update(match);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -315,23 +313,4 @@ public class MatchService(
       .Include(m => m.Referee);
   }
 
-  private static DateTime ConvertGameLocalTimeToUtc(DateTime matchDate)
-  {
-    if (matchDate.Kind == DateTimeKind.Utc)
-    {
-      return matchDate;
-    }
-
-    DateTime gameLocalDate = DateTime.SpecifyKind(matchDate, DateTimeKind.Unspecified);
-    return TimeZoneInfo.ConvertTimeToUtc(gameLocalDate, _gameTimeZone);
-  }
-
-  private static TimeZoneInfo GetGameTimeZone()
-  {
-    string timeZoneId = OperatingSystem.IsWindows()
-      ? "Turkey Standard Time"
-      : "Europe/Istanbul";
-
-    return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-  }
 }
