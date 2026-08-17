@@ -13,12 +13,14 @@ public class LeagueDivision : Entity<int>
 
     Name = default!;
     CurrentMatchWeek = 1;
+    CurrentSeason = 1;
   }
 
   public required string Name { get; set; }
   public int Tier { get; set; }
   public int GroupNumber { get; set; }
   public int CurrentMatchWeek { get; set; }
+  public int CurrentSeason { get; set; }
   public bool IsTutorial { get; set; }
   public Guid? OwnerUserId { get; set; }
   public DivisionLifecycleStatus LifecycleStatus { get; set; } = DivisionLifecycleStatus.Active;

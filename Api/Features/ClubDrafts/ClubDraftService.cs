@@ -208,6 +208,7 @@ public class ClubDraftService(
       Tier = (int)LeagueTier.Iron,
       GroupNumber = 0,
       CurrentMatchWeek = options.MinimumMatchWeek,
+      CurrentSeason = 1,
       IsTutorial = true,
       OwnerUserId = currentUserId,
       LifecycleStatus = DivisionLifecycleStatus.Active
@@ -299,6 +300,7 @@ public class ClubDraftService(
       tutorial.Id,
       orderedClubIds,
       options.TutorialMatchWeeks,
+      tutorial.CurrentSeason,
       cancellationToken: cancellationToken);
 
     await _unitOfWork.SaveChangesAsync(cancellationToken);

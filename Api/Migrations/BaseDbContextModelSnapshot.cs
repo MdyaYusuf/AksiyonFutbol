@@ -688,6 +688,11 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<int>("CurrentSeason")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int>("GroupNumber")
                         .HasColumnType("int");
 
@@ -797,6 +802,11 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int?>("RefereeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Season")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedDate");
@@ -813,9 +823,9 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.HasIndex("RefereeId");
 
-                    b.HasIndex("DivisionId", "MatchWeek");
+                    b.HasIndex("DivisionId", "Season", "MatchWeek");
 
-                    b.HasIndex("DivisionId", "MatchWeek", "HomeClubId", "AwayClubId")
+                    b.HasIndex("DivisionId", "Season", "MatchWeek", "HomeClubId", "AwayClubId")
                         .IsUnique();
 
                     b.ToTable("Matches", (string)null);

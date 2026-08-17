@@ -41,6 +41,7 @@ export interface SeasonDivisionPreview {
   tier: number;
   groupNumber: number;
   currentMatchWeek: number;
+  currentSeason: number;
   isSeasonComplete: boolean;
   standings: StandingRow[];
 }

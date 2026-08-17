@@ -19,6 +19,25 @@ public partial class MatchMapper
   [MapProperty("AwayClub.Name", nameof(MatchPreviewDto.AwayClubName))]
   public partial MatchPreviewDto EntityToPreviewDto(Match entity);
 
-  public partial List<MatchResponseDto> EntityToResponseDtoList(List<Match> entities);
-  public partial List<MatchPreviewDto> EntityToPreviewDtoList(List<Match> entities);
+  public List<MatchResponseDto> EntityToResponseDtoList(List<Match> entities)
+  {
+    List<MatchResponseDto> mapped = new(entities.Count);
+    foreach (Match entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
+  }
+
+  public List<MatchPreviewDto> EntityToPreviewDtoList(List<Match> entities)
+  {
+    List<MatchPreviewDto> mapped = new(entities.Count);
+    foreach (Match entity in entities)
+    {
+      mapped.Add(EntityToPreviewDto(entity));
+    }
+
+    return mapped;
+  }
 }

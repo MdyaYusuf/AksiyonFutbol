@@ -7,6 +7,7 @@ public sealed record MatchResponseDto
   public int DivisionId { get; init; }
   public string DivisionName { get; init; } = default!;
   public int MatchWeek { get; init; }
+  public int Season { get; init; }
   public Guid HomeClubId { get; init; }
   public string HomeClubName { get; init; } = default!;
   public Guid AwayClubId { get; init; }
@@ -24,7 +25,9 @@ public sealed record MatchResponseDto
 public sealed record MatchPreviewDto
 {
   public Guid Id { get; init; }
+  public int DivisionId { get; init; }
   public int MatchWeek { get; init; }
+  public int Season { get; init; }
   public Guid HomeClubId { get; init; }
   public string HomeClubName { get; init; } = default!;
   public Guid AwayClubId { get; init; }
@@ -49,6 +52,7 @@ public sealed record CreatedMatchResponseDto
   public Guid Id { get; init; }
   public int DivisionId { get; init; }
   public int MatchWeek { get; init; }
+  public int Season { get; init; }
   public Guid HomeClubId { get; init; }
   public Guid AwayClubId { get; init; }
   public DateTime MatchDate { get; init; }

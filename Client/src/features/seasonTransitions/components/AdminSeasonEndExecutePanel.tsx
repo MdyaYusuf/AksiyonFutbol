@@ -20,8 +20,9 @@ export const AdminSeasonEndWarning = ({ blockReason }: AdminSeasonEndWarningProp
       </div>
       <ul className="mb-2 list-inside list-disc space-y-2 text-sm text-on-surface-variant opacity-80">
         <li>Promotion and relegation swaps will update club divisions.</li>
-        <li>Every division in the group resets to the first match week.</li>
-        <li>Old fixtures are removed and a new double round-robin schedule is generated.</li>
+        <li>Every division in the group starts the next season at match week 1.</li>
+        <li>Played matches stay on record. A new double round-robin is generated for the next season.</li>
+        <li>Player season stats reset for clubs in the group.</li>
         <li>This operation cannot be undone.</li>
       </ul>
       {blockReason ? (

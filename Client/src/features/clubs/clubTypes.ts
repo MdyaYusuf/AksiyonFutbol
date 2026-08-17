@@ -38,6 +38,7 @@ export interface ClubResponse {
   divisionName?: string | null;
   divisionTier?: number | null;
   divisionGroupNumber?: number | null;
+  divisionCurrentSeason?: number | null;
   createdDate: string;
 }
 

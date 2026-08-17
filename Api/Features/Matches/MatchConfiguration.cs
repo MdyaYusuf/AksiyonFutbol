@@ -26,6 +26,10 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
     builder.Property(m => m.MatchWeek)
       .IsRequired();
 
+    builder.Property(m => m.Season)
+      .HasDefaultValue(1)
+      .IsRequired();
+
     builder.Property(m => m.MatchDate)
       .IsRequired();
 
@@ -94,12 +98,12 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
       .HasForeignKey(m => m.RefereeId)
       .OnDelete(DeleteBehavior.Restrict);
 
-    builder.HasIndex(m => new { m.DivisionId, m.MatchWeek });
+    builder.HasIndex(m => new { m.DivisionId, m.Season, m.MatchWeek });
     builder.HasIndex(m => m.MatchDate);
     builder.HasIndex(m => m.IsPlayed);
     builder.HasIndex(m => m.HomeClubId);
     builder.HasIndex(m => m.AwayClubId);
-    builder.HasIndex(m => new { m.DivisionId, m.MatchWeek, m.HomeClubId, m.AwayClubId })
+    builder.HasIndex(m => new { m.DivisionId, m.Season, m.MatchWeek, m.HomeClubId, m.AwayClubId })
       .IsUnique();
   }
 }

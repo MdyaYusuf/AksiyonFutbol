@@ -91,6 +91,7 @@ public class CompetitiveSeatingService(
       Tier = (int)tier,
       GroupNumber = nextGroup,
       CurrentMatchWeek = options.MinimumMatchWeek,
+      CurrentSeason = 1,
       IsTutorial = false,
       OwnerUserId = null,
       LifecycleStatus = DivisionLifecycleStatus.Active
@@ -203,6 +204,7 @@ public class CompetitiveSeatingService(
       division.Id,
       orderedIds,
       options.CompetitiveMatchWeeks,
+      division.CurrentSeason,
       firstKickoffLocal: firstKickoffLocal,
       cancellationToken: cancellationToken);
   }

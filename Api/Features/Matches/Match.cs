@@ -8,6 +8,7 @@ namespace Api.Features.Matches;
 public class Match : Entity<Guid>
 {
   public int MatchWeek { get; set; }
+  public int Season { get; set; }
   public DateTime MatchDate { get; set; }
   public bool IsPlayed { get; set; }
   public int? HomeScore { get; set; }

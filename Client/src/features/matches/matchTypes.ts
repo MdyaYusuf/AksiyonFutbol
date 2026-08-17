@@ -36,6 +36,7 @@ export interface MatchResponse {
   divisionId: number;
   divisionName: string;
   matchWeek: number;
+  season: number;
   homeClubId: string;
   homeClubName: string;
   awayClubId: string;
@@ -52,7 +53,9 @@ export interface MatchResponse {
 
 export interface MatchPreview {
   id: string;
+  divisionId: number;
   matchWeek: number;
+  season: number;
   homeClubId: string;
   homeClubName: string;
   awayClubId: string;
@@ -74,6 +77,7 @@ export interface CreatedMatchResponse {
   id: string;
   divisionId: number;
   matchWeek: number;
+  season: number;
   homeClubId: string;
   awayClubId: string;
   matchDate: string;

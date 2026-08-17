@@ -31,6 +31,7 @@ type MatchLike = Pick<
   | "matchWeek"
   | "matchDate"
   | "divisionId"
+  | "season"
 >;
 
 interface ClubStats {
@@ -111,6 +112,7 @@ export const buildStandings = (
   matches: MatchLike[],
   divisionId: number,
   upToMatchWeek: number,
+  season?: number,
 ): StandingRow[] => {
   const statsByClubId = new Map<string, ClubStats>();
 
@@ -121,6 +123,7 @@ export const buildStandings = (
   const relevantMatches = matches.filter(
     (match) =>
       match.divisionId === divisionId &&
+      (season == null || match.season === season) &&
       match.isPlayed &&
       match.matchWeek <= upToMatchWeek &&
       match.homeScore != null &&

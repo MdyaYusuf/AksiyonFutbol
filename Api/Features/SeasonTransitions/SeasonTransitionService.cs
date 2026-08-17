@@ -5,6 +5,7 @@ using Api.Core.Responses;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
 using Api.Features.Matches;
+using Api.Features.PlayerInstances;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
@@ -15,7 +16,7 @@ public class SeasonTransitionService(
   SeasonTransitionBusinessRules _businessRules,
   IClubRepository _clubRepository,
   ILeagueDivisionRepository _leagueDivisionRepository,
-  IMatchRepository _matchRepository,
+  IPlayerInstanceRepository _playerInstanceRepository,
   IFixtureSchedulingService _fixtureSchedulingService,
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions,
@@ -225,6 +226,8 @@ public class SeasonTransitionService(
       _clubRepository.Update(club);
     }
 
+    await ResetSeasonStatsForClubsAsync(clubsById.Keys, cancellationToken);
+
     int resetWeek = _businessRules.Options.MinimumMatchWeek;
     GameOptions options = _gameOptions.Value;
     int fixturesGenerated = 0;
@@ -233,30 +236,31 @@ public class SeasonTransitionService(
       DateTime.UtcNow,
       options.MatchKickoffLocalTime);
 
+    Dictionary<int, List<Club>> clubsByNewDivisionId = ladder.ToDictionary(
+      division => division.Id,
+      _ => new List<Club>());
+
+    foreach (Club club in clubsById.Values)
+    {
+      if (!club.DivisionId.HasValue)
+      {
+        continue;
+      }
+
+      if (clubsByNewDivisionId.TryGetValue(club.DivisionId.Value, out List<Club>? divisionClubs))
+      {
+        divisionClubs.Add(club);
+      }
+    }
+
     foreach (LeagueDivision division in ladder)
     {
+      division.CurrentSeason += 1;
       division.CurrentMatchWeek = resetWeek;
       division.UpdatedDate = DateTime.UtcNow;
       _leagueDivisionRepository.Update(division);
 
-      List<Match> existingMatches = await _matchRepository.GetAllAsync(
-        filter: m => m.DivisionId == division.Id,
-        enableTracking: true,
-        cancellationToken: cancellationToken);
-
-      if (existingMatches.Count > 0)
-      {
-        _matchRepository.DeleteRange(existingMatches);
-      }
-    }
-
-    await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-    foreach (LeagueDivision division in ladder)
-    {
-      List<Club> clubs = await _businessRules.GetClubsForDivisionAsync(
-        division.Id,
-        cancellationToken: cancellationToken);
+      List<Club> clubs = clubsByNewDivisionId[division.Id];
 
       if (clubs.Count < 2 || clubs.Count % 2 != 0)
       {
@@ -273,6 +277,7 @@ public class SeasonTransitionService(
         division.Id,
         orderedClubIds,
         options.CompetitiveMatchWeeks,
+        division.CurrentSeason,
         firstKickoffLocal: firstKickoffLocal,
         cancellationToken: cancellationToken);
 
@@ -331,6 +336,7 @@ public class SeasonTransitionService(
 
       List<Match> matches = await _businessRules.GetPlayedMatchesForDivisionAsync(
         division.Id,
+        division.CurrentSeason,
         cancellationToken);
 
       IReadOnlyList<StandingRowDto> standings = SeasonStandingsCalculator.BuildStandings(
@@ -346,6 +352,7 @@ public class SeasonTransitionService(
         Tier = division.Tier,
         GroupNumber = division.GroupNumber,
         CurrentMatchWeek = division.CurrentMatchWeek,
+        CurrentSeason = division.CurrentSeason,
         IsSeasonComplete = isComplete,
         Standings = standings
       });
@@ -455,6 +462,33 @@ public class SeasonTransitionService(
         .ThenBy(m => m.Position)
         .ToList()
     };
+  }
+
+  private async Task ResetSeasonStatsForClubsAsync(
+    IEnumerable<Guid> clubIds,
+    CancellationToken cancellationToken)
+  {
+    List<Guid> clubIdList = clubIds.ToList();
+
+    if (clubIdList.Count == 0)
+    {
+      return;
+    }
+
+    List<PlayerInstance> players = await _playerInstanceRepository.GetAllAsync(
+      filter: p => clubIdList.Contains(p.ClubId),
+      enableTracking: true,
+      cancellationToken: cancellationToken);
+
+    foreach (PlayerInstance player in players)
+    {
+      player.SeasonGoals = 0;
+      player.SeasonAssists = 0;
+      player.SeasonYellowCards = 0;
+      player.SeasonRedCards = 0;
+      player.UpdatedDate = DateTime.UtcNow;
+      _playerInstanceRepository.Update(player);
+    }
   }
 
   private static SeasonClubMovementDto CreateMovement(

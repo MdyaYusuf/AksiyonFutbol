@@ -217,6 +217,7 @@ public class LeagueDivisionService(
 
     LeagueDivision leagueDivision = _mapper.CreateToEntity(request);
     leagueDivision.CurrentMatchWeek = _gameOptions.Value.MinimumMatchWeek;
+    leagueDivision.CurrentSeason = 1;
 
     await _leagueDivisionRepository.AddAsync(leagueDivision, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

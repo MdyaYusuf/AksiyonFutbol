@@ -85,11 +85,13 @@ public class SeasonTransitionBusinessRules(
 
   public async Task<List<Match>> GetPlayedMatchesForDivisionAsync(
     int divisionId,
+    int season,
     CancellationToken cancellationToken = default)
   {
     return await _matchRepository.GetAllAsync(
       filter: m =>
         m.DivisionId == divisionId &&
+        m.Season == season &&
         m.IsPlayed &&
         m.HomeScore != null &&
         m.AwayScore != null,
@@ -152,8 +154,10 @@ public class SeasonTransitionBusinessRules(
   {
     MustNotBeTutorial(division);
 
+    int season = division.CurrentSeason;
+
     bool hasUnplayed = await _matchRepository.AnyAsync(
-      m => m.DivisionId == division.Id && !m.IsPlayed,
+      m => m.DivisionId == division.Id && m.Season == season && !m.IsPlayed,
       cancellationToken);
 
     if (hasUnplayed)
@@ -163,7 +167,7 @@ public class SeasonTransitionBusinessRules(
     }
 
     bool hasCompetitiveFixtures = await _matchRepository.AnyAsync(
-      m => m.DivisionId == division.Id,
+      m => m.DivisionId == division.Id && m.Season == season,
       cancellationToken);
 
     if (!hasCompetitiveFixtures)
@@ -174,6 +178,7 @@ public class SeasonTransitionBusinessRules(
     bool finalWeekPlayed = await _matchRepository.AnyAsync(
       m =>
         m.DivisionId == division.Id &&
+        m.Season == season &&
         m.IsPlayed &&
         m.MatchWeek >= Options.CompetitiveMatchWeeks,
       cancellationToken);

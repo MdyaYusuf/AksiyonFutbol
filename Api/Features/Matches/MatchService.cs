@@ -1,6 +1,7 @@
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
+using Api.Features.LeagueDivisions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -110,10 +111,15 @@ public class MatchService(
     int matchWeek,
     CancellationToken cancellationToken = default)
   {
-    await _businessRules.DivisionMustExistAsync(divisionId, cancellationToken);
+    LeagueDivision division = await _businessRules.GetDivisionIfExistAsync(
+      divisionId,
+      cancellationToken: cancellationToken);
 
     List<Match> matches = await _matchRepository.GetAllAsync(
-      filter: m => m.DivisionId == divisionId && m.MatchWeek == matchWeek,
+      filter: m =>
+        m.DivisionId == divisionId &&
+        m.Season == division.CurrentSeason &&
+        m.MatchWeek == matchWeek,
       include: IncludeMatchRelations,
       orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),
       cancellationToken: cancellationToken);
@@ -169,7 +175,9 @@ public class MatchService(
     }
 
     _businessRules.ClubsMustBeDifferent(request.HomeClubId, request.AwayClubId);
-    await _businessRules.DivisionMustExistAsync(request.DivisionId, cancellationToken);
+    LeagueDivision division = await _businessRules.GetDivisionIfExistAsync(
+      request.DivisionId,
+      cancellationToken: cancellationToken);
     await _businessRules.RefereeMustExistWhenProvidedAsync(request.RefereeId, cancellationToken);
 
     Club homeClub = await _businessRules.GetClubIfExistAsync(request.HomeClubId, cancellationToken);
@@ -178,6 +186,7 @@ public class MatchService(
     _businessRules.ClubsMustBelongToDivision(homeClub, awayClub, request.DivisionId);
     await _businessRules.FixtureMustBeUniqueAsync(
       request.DivisionId,
+      division.CurrentSeason,
       request.MatchWeek,
       request.HomeClubId,
       request.AwayClubId,
@@ -185,6 +194,7 @@ public class MatchService(
 
     Match match = _mapper.CreateToEntity(request);
     match.MatchDate = GameLocalClock.ConvertLocalToUtc(request.MatchDate);
+    match.Season = division.CurrentSeason;
 
     await _matchRepository.AddAsync(match, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -222,7 +232,9 @@ public class MatchService(
 
     _businessRules.MatchMustNotBePlayed(match);
     _businessRules.ClubsMustBeDifferent(request.HomeClubId, request.AwayClubId);
-    await _businessRules.DivisionMustExistAsync(request.DivisionId, cancellationToken);
+    LeagueDivision division = await _businessRules.GetDivisionIfExistAsync(
+      request.DivisionId,
+      cancellationToken: cancellationToken);
     await _businessRules.RefereeMustExistWhenProvidedAsync(request.RefereeId, cancellationToken);
 
     Club homeClub = await _businessRules.GetClubIfExistAsync(request.HomeClubId, cancellationToken);
@@ -231,6 +243,7 @@ public class MatchService(
     _businessRules.ClubsMustBelongToDivision(homeClub, awayClub, request.DivisionId);
     await _businessRules.FixtureMustBeUniqueAsync(
       request.DivisionId,
+      division.CurrentSeason,
       request.MatchWeek,
       request.HomeClubId,
       request.AwayClubId,
@@ -239,6 +252,7 @@ public class MatchService(
 
     _mapper.UpdateEntityFromScheduleRequest(request, match);
     match.MatchDate = GameLocalClock.ConvertLocalToUtc(request.MatchDate);
+    match.Season = division.CurrentSeason;
 
     _matchRepository.Update(match);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

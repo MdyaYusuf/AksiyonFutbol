@@ -10,6 +10,25 @@ public partial class LeagueDivisionMapper
   public partial LeagueDivisionResponseDto EntityToResponseDto(LeagueDivision entity);
   public partial LeagueDivisionPreviewDto EntityToPreviewDto(LeagueDivision entity);
   public partial CreatedLeagueDivisionResponseDto EntityToCreatedResponseDto(LeagueDivision entity);
-  public partial List<LeagueDivisionResponseDto> EntityToResponseDtoList(List<LeagueDivision> entities);
-  public partial List<LeagueDivisionPreviewDto> EntityToPreviewDtoList(List<LeagueDivision> entities);
+  public List<LeagueDivisionResponseDto> EntityToResponseDtoList(List<LeagueDivision> entities)
+  {
+    List<LeagueDivisionResponseDto> mapped = new(entities.Count);
+    foreach (LeagueDivision entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
+  }
+
+  public List<LeagueDivisionPreviewDto> EntityToPreviewDtoList(List<LeagueDivision> entities)
+  {
+    List<LeagueDivisionPreviewDto> mapped = new(entities.Count);
+    foreach (LeagueDivision entity in entities)
+    {
+      mapped.Add(EntityToPreviewDto(entity));
+    }
+
+    return mapped;
+  }
 }

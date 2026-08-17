@@ -61,7 +61,14 @@ export const buildAdminDashboardStats = (
 ): AdminDashboardStats => {
   const humanClubs = clubs.filter((club) => !club.isBot).length;
   const botClubs = clubs.filter((club) => club.isBot).length;
-  const unplayedFixtures = matches.filter((match) => !match.isPlayed).length;
+  const unplayedFixtures = matches.filter((match) => {
+    if (match.isPlayed) {
+      return false;
+    }
+
+    const division = divisions.find((item) => item.id === match.divisionId);
+    return division != null && match.season === division.currentSeason;
+  }).length;
 
   let currentMatchWeekLabel = "—";
 
@@ -102,6 +109,7 @@ export const buildDivisionGlanceRows = (
       const unplayedThisWeek = matches.filter(
         (match) =>
           match.divisionId === division.id &&
+          match.season === division.currentSeason &&
           match.matchWeek === division.currentMatchWeek &&
           !match.isPlayed,
       ).length;

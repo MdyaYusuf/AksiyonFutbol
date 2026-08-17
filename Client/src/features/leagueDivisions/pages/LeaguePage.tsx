@@ -37,6 +37,7 @@ export const LeaguePage = () => {
       allMatches,
       division.id,
       selectedMatchWeek,
+      division.currentSeason,
     );
   }, [allMatches, club, division, divisionClubs, selectedMatchWeek]);
 
@@ -48,8 +49,12 @@ export const LeaguePage = () => {
       return [];
     }
 
-    return allMatches.filter((match) => match.divisionId === club.divisionId);
-  }, [allMatches, club]);
+    return allMatches.filter(
+      (match) =>
+        match.divisionId === club.divisionId &&
+        match.season === division?.currentSeason,
+    );
+  }, [allMatches, club, division]);
 
   const seasonLooksComplete =
     !!division &&

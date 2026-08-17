@@ -41,14 +41,27 @@ public class MatchBusinessRules(
     return club;
   }
 
-  public async Task DivisionMustExistAsync(int divisionId, CancellationToken cancellationToken = default)
+  public async Task<LeagueDivision> GetDivisionIfExistAsync(
+    int divisionId,
+    bool enableTracking = false,
+    CancellationToken cancellationToken = default)
   {
-    bool exists = await _leagueDivisionRepository.AnyAsync(ld => ld.Id == divisionId, cancellationToken);
+    LeagueDivision? division = await _leagueDivisionRepository.GetByIdAsync(
+      divisionId,
+      enableTracking: enableTracking,
+      cancellationToken: cancellationToken);
 
-    if (!exists)
+    if (division == null)
     {
       throw new NotFoundException($"{divisionId} numaralı lig bulunamadı.");
     }
+
+    return division;
+  }
+
+  public async Task DivisionMustExistAsync(int divisionId, CancellationToken cancellationToken = default)
+  {
+    await GetDivisionIfExistAsync(divisionId, cancellationToken: cancellationToken);
   }
 
   public async Task RefereeMustExistWhenProvidedAsync(int? refereeId, CancellationToken cancellationToken = default)
@@ -84,6 +97,7 @@ public class MatchBusinessRules(
 
   public async Task FixtureMustBeUniqueAsync(
     int divisionId,
+    int season,
     int matchWeek,
     Guid homeClubId,
     Guid awayClubId,
@@ -92,6 +106,7 @@ public class MatchBusinessRules(
   {
     bool exists = await _matchRepository.FixtureExistsAsync(
       divisionId,
+      season,
       matchWeek,
       homeClubId,
       awayClubId,

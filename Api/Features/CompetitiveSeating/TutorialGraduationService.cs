@@ -30,7 +30,7 @@ public class TutorialGraduationService(
     }
 
     List<Match> divisionMatches = await _matchRepository.GetAllAsync(
-      filter: m => m.DivisionId == division.Id,
+      filter: m => m.DivisionId == division.Id && m.Season == division.CurrentSeason,
       enableTracking: false,
       cancellationToken: cancellationToken);
 

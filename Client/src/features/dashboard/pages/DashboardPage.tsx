@@ -13,6 +13,7 @@ import {
   getMatchKickoff,
   getMatchPresentationPhase,
 } from "../../matches/utils/matchLiveHelpers";
+import { filterCurrentSeasonMatches } from "../../matches/utils/seasonHelpers";
 import { ClubStatusCard } from "../components/ClubStatusCard";
 import { LeagueStandingsCard } from "../components/LeagueStandingsCard";
 import { NextMatchCard } from "../components/NextMatchCard";
@@ -38,7 +39,12 @@ export const DashboardPage = () => {
   const { data: allMatches = [], isLoading: isAllMatchesLoading } = useGetMatchesQuery();
 
   const now = new Date(nowMs);
-  const nextMatch = getNextMatch(matches, now);
+  const currentSeasonMatches = filterCurrentSeasonMatches(
+    matches,
+    club?.divisionCurrentSeason,
+    club?.divisionId,
+  );
+  const nextMatch = getNextMatch(currentSeasonMatches, now);
   const nextPhase = nextMatch
     ? getMatchPresentationPhase(nextMatch, now)
     : null;
@@ -93,6 +99,7 @@ export const DashboardPage = () => {
       allMatches,
       division.id,
       Math.max(1, division.currentMatchWeek),
+      division.currentSeason,
     );
   }, [allMatches, club, division, divisionClubs]);
 
@@ -112,7 +119,7 @@ export const DashboardPage = () => {
     );
   }
 
-  const recentMatches = getRecentMatches(matches);
+  const recentMatches = getRecentMatches(currentSeasonMatches);
 
   return (
     <div className="grid grid-cols-1 gap-card-gap md:grid-cols-8 lg:grid-cols-12">
@@ -122,7 +129,7 @@ export const DashboardPage = () => {
       <PresidentSummaryCard president={president} club={club} />
       <ClubStatusCard club={club} />
       <LeagueStandingsCard
-        divisionName={club?.divisionName}
+        divisionName={club?.divisionName ?? undefined}
         standings={standings}
         currentClubId={club?.id}
       />

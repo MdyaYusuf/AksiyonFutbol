@@ -22,6 +22,7 @@ public sealed record ClubResponseDto
   public string? DivisionName { get; init; }
   public int? DivisionTier { get; init; }
   public int? DivisionGroupNumber { get; init; }
+  public int? DivisionCurrentSeason { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 

@@ -37,6 +37,7 @@ public sealed class SeasonDivisionPreviewDto
   public int Tier { get; init; }
   public int GroupNumber { get; init; }
   public int CurrentMatchWeek { get; init; }
+  public int CurrentSeason { get; init; }
   public bool IsSeasonComplete { get; init; }
   public IReadOnlyList<StandingRowDto> Standings { get; init; } = [];
 }

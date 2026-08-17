@@ -121,6 +121,12 @@ export const findUnplayedWeekAlert = (
       continue;
     }
 
+    const division = divisions.find((item) => item.id === match.divisionId);
+
+    if (division == null || match.season !== division.currentSeason) {
+      continue;
+    }
+
     const key = `${match.divisionId}:${match.matchWeek}`;
     const existing = counts.get(key);
 
@@ -159,12 +165,14 @@ export const getUnplayedMatchesForWeek = (
   matches: MatchResponse[],
   divisionId: number,
   matchWeek: number,
+  season?: number,
 ): MatchResponse[] => {
   return matches.filter(
     (match) =>
       !match.isPlayed &&
       match.divisionId === divisionId &&
-      match.matchWeek === matchWeek,
+      match.matchWeek === matchWeek &&
+      (season == null || match.season === season),
   );
 };
 

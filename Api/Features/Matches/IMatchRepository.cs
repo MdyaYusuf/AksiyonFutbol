@@ -20,6 +20,7 @@ public interface IMatchRepository : IRepository<Match, Guid>
 
   Task<bool> FixtureExistsAsync(
     int divisionId,
+    int season,
     int matchWeek,
     Guid homeClubId,
     Guid awayClubId,

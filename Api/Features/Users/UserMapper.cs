@@ -16,8 +16,29 @@ public partial class UserMapper
   [MapProperty("Role.Name", nameof(UserResponseDto.RoleName))]
   public partial UserResponseDto EntityToResponseDto(User entity);
   public partial CreatedUserResponseDto EntityToCreatedResponseDto(User entity);
-  public partial List<UserResponseDto> EntityToResponseDtoList(List<User> entities);
+
+  public List<UserResponseDto> EntityToResponseDtoList(List<User> entities)
+  {
+    List<UserResponseDto> mapped = new(entities.Count);
+    foreach (User entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
+  }
+
   [MapProperty("Role.Name", "RoleName")]
   public partial UserPreviewDto EntityToPreviewDto(User entity);
-  public partial List<UserPreviewDto> EntityToPreviewDtoList(List<User> entities);
+
+  public List<UserPreviewDto> EntityToPreviewDtoList(List<User> entities)
+  {
+    List<UserPreviewDto> mapped = new(entities.Count);
+    foreach (User entity in entities)
+    {
+      mapped.Add(EntityToPreviewDto(entity));
+    }
+
+    return mapped;
+  }
 }

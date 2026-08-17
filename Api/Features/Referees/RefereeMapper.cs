@@ -10,6 +10,25 @@ public partial class RefereeMapper
   public partial RefereeResponseDto EntityToResponseDto(Referee entity);
   public partial RefereePreviewDto EntityToPreviewDto(Referee entity);
   public partial CreatedRefereeResponseDto EntityToCreatedResponseDto(Referee entity);
-  public partial List<RefereeResponseDto> EntityToResponseDtoList(List<Referee> entities);
-  public partial List<RefereePreviewDto> EntityToPreviewDtoList(List<Referee> entities);
+  public List<RefereeResponseDto> EntityToResponseDtoList(List<Referee> entities)
+  {
+    List<RefereeResponseDto> mapped = new(entities.Count);
+    foreach (Referee entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
+  }
+
+  public List<RefereePreviewDto> EntityToPreviewDtoList(List<Referee> entities)
+  {
+    List<RefereePreviewDto> mapped = new(entities.Count);
+    foreach (Referee entity in entities)
+    {
+      mapped.Add(EntityToPreviewDto(entity));
+    }
+
+    return mapped;
+  }
 }

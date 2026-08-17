@@ -10,6 +10,7 @@ public interface IFixtureSchedulingService
     int divisionId,
     IReadOnlyList<Guid> orderedClubIds,
     int matchWeekCount,
+    int season,
     DateTime? utcNow = null,
     DateTime? firstKickoffLocal = null,
     CancellationToken cancellationToken = default);

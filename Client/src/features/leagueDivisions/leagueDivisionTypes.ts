@@ -14,6 +14,7 @@ export interface LeagueDivisionResponse {
   tier: number;
   groupNumber: number;
   currentMatchWeek: number;
+  currentSeason: number;
   isTutorial: boolean;
   ownerUserId?: string | null;
   lifecycleStatus: DivisionLifecycleStatus;
@@ -26,6 +27,7 @@ export interface LeagueDivisionPreview {
   tier: number;
   groupNumber: number;
   currentMatchWeek: number;
+  currentSeason: number;
   isTutorial: boolean;
   lifecycleStatus: DivisionLifecycleStatus;
 }
@@ -35,6 +37,7 @@ export interface CreatedLeagueDivisionResponse {
   name: string;
   tier: number;
   groupNumber: number;
+  currentSeason: number;
   isTutorial: boolean;
   lifecycleStatus: DivisionLifecycleStatus;
 }

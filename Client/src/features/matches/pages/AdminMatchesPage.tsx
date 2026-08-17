@@ -28,6 +28,7 @@ import {
   toDateTimeLocalValue,
   type MatchStatusFilter,
 } from "../utils/adminMatchesHelpers";
+import { isMatchInDivisionCurrentSeason } from "../utils/seasonHelpers";
 
 const emptyFormValues = (
   defaultDivisionId: number | "" = "",
@@ -86,24 +87,31 @@ export const AdminMatchesPage = () => {
   const divisions = divisionsData?.items ?? [];
   const clubs = clubsData?.items ?? [];
   const referees = refereesData?.items ?? [];
+  const currentSeasonMatches = useMemo(
+    () => matches.filter((match) => isMatchInDivisionCurrentSeason(match, divisions)),
+    [matches, divisions],
+  );
 
   const filteredMatches = useMemo(
     () =>
       filterAdminMatches(
-        matches,
+        currentSeasonMatches,
         searchQuery,
         divisionFilter,
         matchWeekFilter,
         statusFilter,
       ),
-    [matches, searchQuery, divisionFilter, matchWeekFilter, statusFilter],
+    [currentSeasonMatches, searchQuery, divisionFilter, matchWeekFilter, statusFilter],
   );
 
-  const availableWeeks = useMemo(() => getAvailableMatchWeeks(matches), [matches]);
+  const availableWeeks = useMemo(
+    () => getAvailableMatchWeeks(currentSeasonMatches),
+    [currentSeasonMatches],
+  );
 
   const weekAlert = useMemo(
-    () => findUnplayedWeekAlert(matches, divisions),
-    [matches, divisions],
+    () => findUnplayedWeekAlert(currentSeasonMatches, divisions),
+    [currentSeasonMatches, divisions],
   );
 
   useEffect(() => {
@@ -200,7 +208,7 @@ export const AdminMatchesPage = () => {
     }
 
     const targets = getUnplayedMatchesForWeek(
-      matches,
+      currentSeasonMatches,
       weekAlert.divisionId,
       weekAlert.matchWeek,
     ).filter((match) => match.refereeId != null);
@@ -275,9 +283,11 @@ export const AdminMatchesPage = () => {
   ];
 
   const simulatableWeekCount = weekAlert
-    ? getUnplayedMatchesForWeek(matches, weekAlert.divisionId, weekAlert.matchWeek).filter(
-        (match) => match.refereeId != null,
-      ).length
+    ? getUnplayedMatchesForWeek(
+        currentSeasonMatches,
+        weekAlert.divisionId,
+        weekAlert.matchWeek,
+      ).filter((match) => match.refereeId != null).length
     : 0;
 
   return (

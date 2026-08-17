@@ -11,5 +11,14 @@ public partial class ClubPresidentMapper
   public partial ClubPresidentResponseDto EntityToResponseDto(ClubPresident entity);
   public partial ClubPresidentPreviewDto EntityToPreviewDto(ClubPresident entity);
   public partial CreatedClubPresidentResponseDto EntityToCreatedResponseDto(ClubPresident entity);
-  public partial List<ClubPresidentResponseDto> EntityToResponseDtoList(List<ClubPresident> entities);
+  public List<ClubPresidentResponseDto> EntityToResponseDtoList(List<ClubPresident> entities)
+  {
+    List<ClubPresidentResponseDto> mapped = new(entities.Count);
+    foreach (ClubPresident entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
+  }
 }

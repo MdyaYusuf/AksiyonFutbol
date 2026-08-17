@@ -54,6 +54,7 @@ public class EfMatchRepository : EfBaseRepository<BaseDbContext, Match, Guid>, I
 
   public async Task<bool> FixtureExistsAsync(
     int divisionId,
+    int season,
     int matchWeek,
     Guid homeClubId,
     Guid awayClubId,
@@ -63,6 +64,7 @@ public class EfMatchRepository : EfBaseRepository<BaseDbContext, Match, Guid>, I
     return await Query(enableTracking: false)
       .AnyAsync(m =>
         m.DivisionId == divisionId &&
+        m.Season == season &&
         m.MatchWeek == matchWeek &&
         m.HomeClubId == homeClubId &&
         m.AwayClubId == awayClubId &&

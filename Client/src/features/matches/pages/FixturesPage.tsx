@@ -9,6 +9,7 @@ import {
   groupMatchesByWeek,
   type FixtureStatusFilter,
 } from "../utils/fixturesHelpers";
+import { filterCurrentSeasonMatches } from "../utils/seasonHelpers";
 
 export const FixturesPage = () => {
   const [statusFilter, setStatusFilter] = useState<FixtureStatusFilter>("all");
@@ -34,7 +35,12 @@ export const FixturesPage = () => {
     );
   }
 
-  const filteredMatches = filterMatchesByStatus(matches, statusFilter);
+  const seasonMatches = filterCurrentSeasonMatches(
+    matches,
+    club.divisionCurrentSeason,
+    club.divisionId,
+  );
+  const filteredMatches = filterMatchesByStatus(seasonMatches, statusFilter);
   const weekGroups = groupMatchesByWeek(filteredMatches);
 
   return (

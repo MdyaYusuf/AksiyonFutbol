@@ -35,7 +35,10 @@ public class MatchWeekOrchestrationService(
     int processedMatchWeek = leagueDivision.CurrentMatchWeek;
 
     List<Match> weekMatches = await _matchRepository.GetAllAsync(
-      filter: m => m.DivisionId == divisionId && m.MatchWeek == processedMatchWeek,
+      filter: m =>
+        m.DivisionId == divisionId &&
+        m.Season == leagueDivision.CurrentSeason &&
+        m.MatchWeek == processedMatchWeek,
       include: MatchPlayService.IncludeMatchRelations,
       enableTracking: true,
       orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),

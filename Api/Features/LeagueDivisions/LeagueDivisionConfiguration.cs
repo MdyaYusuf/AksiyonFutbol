@@ -37,6 +37,10 @@ public class LeagueDivisionConfiguration : IEntityTypeConfiguration<LeagueDivisi
       .HasDefaultValue(1)
       .IsRequired();
 
+    builder.Property(ld => ld.CurrentSeason)
+      .HasDefaultValue(1)
+      .IsRequired();
+
     builder.Property(ld => ld.IsTutorial)
       .HasDefaultValue(false)
       .IsRequired();

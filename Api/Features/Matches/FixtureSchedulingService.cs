@@ -15,6 +15,7 @@ public class FixtureSchedulingService(
     int divisionId,
     IReadOnlyList<Guid> orderedClubIds,
     int matchWeekCount,
+    int season,
     DateTime? utcNow = null,
     DateTime? firstKickoffLocal = null,
     CancellationToken cancellationToken = default)
@@ -34,6 +35,11 @@ public class FixtureSchedulingService(
     if (matchWeekCount <= 0)
     {
       throw new BusinessException("Maç haftası sayısı 0'dan büyük olmalıdır.");
+    }
+
+    if (season < 1)
+    {
+      throw new BusinessException("Sezon numarası 1 veya daha büyük olmalıdır.");
     }
 
     int expectedWeeks = (orderedClubIds.Count - 1) * 2;
@@ -72,6 +78,7 @@ public class FixtureSchedulingService(
       Match match = new()
       {
         DivisionId = divisionId,
+        Season = season,
         MatchWeek = matchWeek,
         HomeClubId = homeClubId,
         AwayClubId = awayClubId,
