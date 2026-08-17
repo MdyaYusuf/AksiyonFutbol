@@ -1,5 +1,8 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { LeagueDivisionResponse } from "../leagueDivisionTypes";
+import {
+  DivisionLifecycleStatus,
+  type LeagueDivisionResponse,
+} from "../leagueDivisionTypes";
 
 interface LeagueStandingsHeaderProps {
   division: LeagueDivisionResponse;
@@ -7,6 +10,18 @@ interface LeagueStandingsHeaderProps {
   onMatchWeekChange: (matchWeek: number) => void;
   onExport: () => void;
 }
+
+const getDivisionSubtitle = (division: LeagueDivisionResponse): string => {
+  if (division.isTutorial) {
+    if (division.lifecycleStatus === DivisionLifecycleStatus.Sealed) {
+      return "Tutorial complete";
+    }
+
+    return "Private tutorial";
+  }
+
+  return `Group ${division.groupNumber} Standings`;
+};
 
 export const LeagueStandingsHeader = ({
   division,
@@ -26,7 +41,7 @@ export const LeagueStandingsHeader = ({
           {division.name}
         </h2>
         <p className="mt-2 text-headline-sm text-on-surface-variant">
-          Group {division.groupNumber} Standings
+          {getDivisionSubtitle(division)}
         </p>
       </div>
 

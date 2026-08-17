@@ -16,7 +16,11 @@ export const getClubInitials = (name: string): string => {
   return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 };
 
-export const getTierBadgeClassName = (tier: number): string => {
+export const getTierBadgeClassName = (tier?: number | null): string => {
+  if (tier == null) {
+    return "bg-outline-variant/30 text-on-surface-variant border-outline-variant";
+  }
+
   if (tier === 1) {
     return "bg-secondary/10 text-secondary border-secondary/20";
   }
@@ -63,9 +67,11 @@ export const filterAdminClubs = (
 
     const presidentName = club.presidentName?.toLowerCase() ?? "";
 
+    const divisionName = club.divisionName?.toLowerCase() ?? "";
+
     return (
       club.name.toLowerCase().includes(normalizedQuery) ||
-      club.divisionName.toLowerCase().includes(normalizedQuery) ||
+      divisionName.includes(normalizedQuery) ||
       presidentName.includes(normalizedQuery)
     );
   });

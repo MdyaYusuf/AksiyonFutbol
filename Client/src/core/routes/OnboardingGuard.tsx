@@ -1,6 +1,15 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useCheckCurrentUserHasPresidentQuery } from "../../features/clubPresidents/clubPresidentsApiSlice";
-import { useCheckCurrentUserHasClubQuery } from "../../features/clubs/clubsApiSlice";
+import {
+  useCheckCurrentUserHasClubQuery,
+  useGetCurrentUserClubQuery,
+} from "../../features/clubs/clubsApiSlice";
+import { ClubLifecycleStatus } from "../../features/clubs/clubTypes";
+import {
+  ONBOARDING_CLUB_PATH,
+  ONBOARDING_DRAFT_PATH,
+  ONBOARDING_PRESIDENT_PATH,
+} from "./onboardingPaths";
 
 export const OnboardingGuard = () => {
   const {
@@ -15,16 +24,27 @@ export const OnboardingGuard = () => {
     skip: hasPresident !== true,
   });
 
-  if (isPresidentLoading || isClubLoading) {
+  const {
+    data: club,
+    isLoading: isClubDetailLoading,
+  } = useGetCurrentUserClubQuery(undefined, {
+    skip: hasClub !== true,
+  });
+
+  if (isPresidentLoading || isClubLoading || isClubDetailLoading) {
     return <div>Oyun profiliniz hazırlanıyor...</div>;
   }
 
   if (!hasPresident) {
-    return <Navigate to="/app/onboarding/president" replace />;
+    return <Navigate to={ONBOARDING_PRESIDENT_PATH} replace />;
   }
 
   if (!hasClub) {
-    return <Navigate to="/app/onboarding/club" replace />;
+    return <Navigate to={ONBOARDING_CLUB_PATH} replace />;
+  }
+
+  if (club?.lifecycleStatus === ClubLifecycleStatus.Drafting) {
+    return <Navigate to={ONBOARDING_DRAFT_PATH} replace />;
   }
 
   return <Outlet />;

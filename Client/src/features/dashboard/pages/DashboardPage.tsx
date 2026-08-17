@@ -2,6 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useState } from "react";
 import { useGetCurrentUserClubPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
 import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
+import { ClubLifecycleStatus } from "../../clubs/clubTypes";
 import { useGetLeagueDivisionByIdQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
 import { buildStandings } from "../../leagueDivisions/utils/standingsHelpers";
 import {
@@ -15,6 +16,7 @@ import {
 } from "../../matches/utils/matchLiveHelpers";
 import { filterCurrentSeasonMatches } from "../../matches/utils/seasonHelpers";
 import { ClubStatusCard } from "../components/ClubStatusCard";
+import { DashboardLifecycleBanner } from "../components/DashboardLifecycleBanner";
 import { LeagueStandingsCard } from "../components/LeagueStandingsCard";
 import { NextMatchCard } from "../components/NextMatchCard";
 import { PresidentSummaryCard } from "../components/PresidentSummaryCard";
@@ -23,6 +25,28 @@ import { getNextMatch, getRecentMatches } from "../utils/matchHelpers";
 
 /** Poll live-status only while waiting for simulation to finish. */
 const WAITING_SIM_POLL_MS = 5_000;
+
+const startKickoffWakeTimer = (
+  matchDate: string,
+  onKickoff: () => void,
+): (() => void) => {
+  const kickoffMs = getMatchKickoff(matchDate).getTime();
+
+  if (Number.isNaN(kickoffMs)) {
+    return () => {};
+  }
+
+  const delayMs = kickoffMs - Date.now();
+
+  if (delayMs <= 0) {
+    return () => {};
+  }
+
+  const timer = window.setTimeout(onKickoff, delayMs);
+  return () => {
+    window.clearTimeout(timer);
+  };
+};
 
 export const DashboardPage = () => {
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -64,30 +88,20 @@ export const DashboardPage = () => {
     return () => window.clearInterval(timer);
   }, []);
 
+  const nextMatchId = nextMatch?.id;
+  const nextMatchDate = nextMatch?.matchDate;
+  const nextMatchIsPlayed = nextMatch?.isPlayed === true;
+
   // One-shot wake at kickoff so waitingSim polling can start without a refresh.
   useEffect(() => {
-    if (!nextMatch || nextMatch.isPlayed) {
+    if (nextMatchId == null || nextMatchDate == null || nextMatchIsPlayed) {
       return;
     }
 
-    const kickoffMs = getMatchKickoff(nextMatch.matchDate).getTime();
-
-    if (Number.isNaN(kickoffMs)) {
-      return;
-    }
-
-    const delayMs = kickoffMs - Date.now();
-
-    if (delayMs <= 0) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
+    return startKickoffWakeTimer(nextMatchDate, () => {
       setNowMs(Date.now());
-    }, delayMs);
-
-    return () => window.clearTimeout(timer);
-  }, [nextMatch?.id, nextMatch?.matchDate, nextMatch?.isPlayed]);
+    });
+  }, [nextMatchId, nextMatchDate, nextMatchIsPlayed]);
 
   const standings = useMemo(() => {
     if (!club || !division) {
@@ -123,9 +137,12 @@ export const DashboardPage = () => {
 
   return (
     <div className="grid grid-cols-1 gap-card-gap md:grid-cols-8 lg:grid-cols-12">
-      {club && (
+      {club ? (
+        <DashboardLifecycleBanner club={club} division={division} />
+      ) : null}
+      {club && club.lifecycleStatus !== ClubLifecycleStatus.AwaitingPlacement ? (
         <NextMatchCard clubId={club.id} nextMatch={nextMatch} />
-      )}
+      ) : null}
       <PresidentSummaryCard president={president} club={club} />
       <ClubStatusCard club={club} />
       <LeagueStandingsCard

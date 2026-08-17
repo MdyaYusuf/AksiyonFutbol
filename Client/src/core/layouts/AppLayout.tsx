@@ -13,7 +13,7 @@ export const AppLayout = () => {
   return (
     <div className="min-h-screen bg-background text-on-surface">
       <AppSidebar
-        divisionName={club?.divisionName}
+        divisionName={club?.divisionName ?? undefined}
         mobileOpen={mobileNavOpen}
         onClose={() => setMobileNavOpen(false)}
       />

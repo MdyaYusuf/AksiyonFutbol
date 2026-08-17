@@ -1,7 +1,9 @@
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
+import { ClubLifecycleStatus } from "../../clubs/clubTypes";
+import { getPlacementQueueMessage } from "../../clubs/utils/clubLifecycleHelpers";
 import { useGetMatchesQuery } from "../../matches/matchesApiSlice";
 import { LeagueStandingsHeader } from "../components/LeagueStandingsHeader";
 import { StandingsTable } from "../components/StandingsTable";
@@ -19,13 +21,26 @@ export const LeaguePage = () => {
     useGetClubsByDivisionIdQuery(club?.divisionId ?? skipToken);
   const { data: allMatches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
 
-  const [selectedMatchWeek, setSelectedMatchWeek] = useState(1);
+  const [weekSelection, setWeekSelection] = useState<{
+    divisionId: number;
+    week: number;
+  } | null>(null);
 
-  useEffect(() => {
-    if (division) {
-      setSelectedMatchWeek(Math.max(1, division.currentMatchWeek));
+  const selectedMatchWeek =
+    division != null && weekSelection?.divisionId === division.id
+      ? weekSelection.week
+      : Math.max(1, division?.currentMatchWeek ?? 1);
+
+  const handleMatchWeekChange = (week: number) => {
+    if (division == null) {
+      return;
     }
-  }, [division]);
+
+    setWeekSelection({
+      divisionId: division.id,
+      week,
+    });
+  };
 
   const standings = useMemo(() => {
     if (!club || !division) {
@@ -69,7 +84,37 @@ export const LeaguePage = () => {
     );
   }
 
-  if (!club || !division) {
+  const isAwaitingPlacement =
+    club?.lifecycleStatus === ClubLifecycleStatus.AwaitingPlacement;
+  const showSeasonEndCta =
+    seasonLooksComplete
+    && !division?.isTutorial
+    && !isAwaitingPlacement;
+
+  if (!club) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
+        Lig bilgisi bulunamadı.
+      </div>
+    );
+  }
+
+  if (!division) {
+    if (isAwaitingPlacement) {
+      return (
+        <div className="mx-auto max-w-7xl space-y-6">
+          <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3">
+            <p className="text-body-sm font-semibold text-on-surface">
+              {getPlacementQueueMessage(club.placementTargetTier)}
+            </p>
+            <p className="text-body-sm text-on-surface-variant">
+              Your tutorial table is archived. Competitive fixtures appear after Monday seating.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
         Lig bilgisi bulunamadı.
@@ -82,13 +127,24 @@ export const LeaguePage = () => {
       <LeagueStandingsHeader
         division={division}
         selectedMatchWeek={selectedMatchWeek}
-        onMatchWeekChange={setSelectedMatchWeek}
+        onMatchWeekChange={handleMatchWeekChange}
         onExport={() =>
           exportStandingsCsv(standings, division.name, selectedMatchWeek)
         }
       />
 
-      {seasonLooksComplete ? (
+      {isAwaitingPlacement ? (
+        <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3">
+          <p className="text-body-sm font-semibold text-on-surface">
+            {getPlacementQueueMessage(club.placementTargetTier)}
+          </p>
+          <p className="text-body-sm text-on-surface-variant">
+            This tutorial table is sealed. Competitive seating packs 8-club divisions on Monday.
+          </p>
+        </div>
+      ) : null}
+
+      {showSeasonEndCta ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3">
           <p className="text-body-sm text-on-surface">
             All fixtures are complete. Review promotion and relegation.

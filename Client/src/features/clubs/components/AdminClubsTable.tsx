@@ -132,12 +132,14 @@ export const AdminClubsTable = ({
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-2 text-on-surface-variant">{club.divisionName}</td>
+                    <td className="px-4 py-2 text-on-surface-variant">
+                      {club.divisionName ?? "—"}
+                    </td>
                     <td className="px-4 py-2 text-center">
                       <span
                         className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-bold ${getTierBadgeClassName(club.divisionTier)}`}
                       >
-                        {getTierBadgeLabel(club.divisionTier)}
+                        {club.divisionTier != null ? getTierBadgeLabel(club.divisionTier) : "—"}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-center">

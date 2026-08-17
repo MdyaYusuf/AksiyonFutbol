@@ -16,6 +16,7 @@ import { PresidentProfilePage } from "./features/clubPresidents/pages/PresidentP
 import { AdminClubsPage } from "./features/clubs/pages/AdminClubsPage";
 import { ClubOverviewPage } from "./features/clubs/pages/ClubOverviewPage";
 import { CreateClubPage } from "./features/clubs/pages/CreateClubPage";
+import { DraftBoardPage } from "./features/clubDrafts/pages/DraftBoardPage";
 import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
 import { AdminLeagueDivisionsPage } from "./features/leagueDivisions/pages/AdminLeagueDivisionsPage";
 import { LeaguePage } from "./features/leagueDivisions/pages/LeaguePage";
@@ -106,6 +107,10 @@ export const router = createBrowserRouter([
                       {
                         path: "club",
                         element: <CreateClubPage />,
+                      },
+                      {
+                        path: "draft",
+                        element: <DraftBoardPage />,
                       },
                     ],
                   },

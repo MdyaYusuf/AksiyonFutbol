@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { OnboardingTextField } from "../../../core/components/onboarding/OnboardingFields";
+import { ONBOARDING_DRAFT_PATH } from "../../../core/routes/onboardingPaths";
 import { useCreateClubMutation } from "../clubsApiSlice";
 
 export const CreateClubForm = () => {
@@ -22,7 +23,7 @@ export const CreateClubForm = () => {
         name: trimmedName,
       }).unwrap();
 
-      navigate("/app/dashboard", { replace: true });
+      navigate(ONBOARDING_DRAFT_PATH, { replace: true });
     } catch {
       /* Server validation errors are shown via apiClient toasts */
     }

@@ -1,4 +1,5 @@
 import { apiSlice } from "../../core/api/apiSlice";
+import { clubsApiSlice } from "../clubs/clubsApiSlice";
 import type {
   AddClubDraftPickRequest,
   ClubDraftState,
@@ -46,6 +47,21 @@ export const clubDraftsApiSlice = apiSlice.injectEndpoints({
         url: "clubDrafts/me/finalize",
         method: "POST",
       }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            clubsApiSlice.util.updateQueryData("getCurrentUserClub", undefined, (club) => {
+              club.lifecycleStatus = data.lifecycleStatus;
+              club.divisionId = data.tutorialDivisionId;
+              club.divisionName = data.tutorialDivisionName;
+              club.tutorialDivisionId = data.tutorialDivisionId;
+            }),
+          );
+        } catch {
+          /* Toasts via apiClient */
+        }
+      },
       invalidatesTags: [
         { type: "ClubDraft", id: "ME" },
         { type: "ClubDraft", id: "CATALOG" },
@@ -54,6 +70,8 @@ export const clubDraftsApiSlice = apiSlice.injectEndpoints({
         { type: "LeagueDivision", id: "LIST" },
         { type: "PlayerInstance", id: "LIST" },
         { type: "ClubLineup", id: "LIST" },
+        { type: "Match", id: "LIST" },
+        { type: "Match", id: "SCHEDULED-UNPLAYED" },
       ],
     }),
   }),

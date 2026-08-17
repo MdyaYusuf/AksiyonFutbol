@@ -1,6 +1,10 @@
 import { Navigate } from "react-router-dom";
+import {
+  ONBOARDING_PRESIDENT_PATH,
+  resolveOnboardingPath,
+} from "../../../core/routes/onboardingPaths";
 import { useCheckCurrentUserHasPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
-import { useCheckCurrentUserHasClubQuery } from "../clubsApiSlice";
+import { useCheckCurrentUserHasClubQuery, useGetCurrentUserClubQuery } from "../clubsApiSlice";
 import { CreateClubForm } from "../components/CreateClubForm";
 
 export const CreateClubPage = () => {
@@ -10,8 +14,12 @@ export const CreateClubPage = () => {
     undefined,
     { skip: hasPresident !== true },
   );
+  const { data: club, isLoading: isClubDetailLoading } = useGetCurrentUserClubQuery(
+    undefined,
+    { skip: hasClub !== true },
+  );
 
-  if (isPresidentLoading || isClubLoading) {
+  if (isPresidentLoading || isClubLoading || isClubDetailLoading) {
     return (
       <div className="flex flex-1 items-center justify-center text-on-surface-variant">
         Kulüp durumu kontrol ediliyor...
@@ -20,11 +28,16 @@ export const CreateClubPage = () => {
   }
 
   if (!hasPresident) {
-    return <Navigate to="/app/onboarding/president" replace />;
+    return <Navigate to={ONBOARDING_PRESIDENT_PATH} replace />;
   }
 
   if (hasClub) {
-    return <Navigate to="/app/dashboard" replace />;
+    return (
+      <Navigate
+        to={resolveOnboardingPath(true, true, club?.lifecycleStatus)}
+        replace
+      />
+    );
   }
 
   return <CreateClubForm />;

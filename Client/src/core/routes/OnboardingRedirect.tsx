@@ -1,6 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { useCheckCurrentUserHasPresidentQuery } from "../../features/clubPresidents/clubPresidentsApiSlice";
-import { useCheckCurrentUserHasClubQuery } from "../../features/clubs/clubsApiSlice";
+import {
+  useCheckCurrentUserHasClubQuery,
+  useGetCurrentUserClubQuery,
+} from "../../features/clubs/clubsApiSlice";
+import { resolveOnboardingPath } from "./onboardingPaths";
 
 export const OnboardingRedirect = () => {
   const {
@@ -15,17 +19,25 @@ export const OnboardingRedirect = () => {
     skip: hasPresident !== true,
   });
 
-  if (isPresidentLoading || isClubLoading) {
+  const {
+    data: club,
+    isLoading: isClubDetailLoading,
+  } = useGetCurrentUserClubQuery(undefined, {
+    skip: hasClub !== true,
+  });
+
+  if (isPresidentLoading || isClubLoading || isClubDetailLoading) {
     return <div>Onboarding durumu kontrol ediliyor...</div>;
   }
 
-  if (!hasPresident) {
-    return <Navigate to="/app/onboarding/president" replace />;
-  }
-
-  if (!hasClub) {
-    return <Navigate to="/app/onboarding/club" replace />;
-  }
-
-  return <Navigate to="/app/dashboard" replace />;
+  return (
+    <Navigate
+      to={resolveOnboardingPath(
+        hasPresident === true,
+        hasClub === true,
+        club?.lifecycleStatus,
+      )}
+      replace
+    />
+  );
 };

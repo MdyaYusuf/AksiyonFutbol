@@ -75,10 +75,26 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            clubsApiSlice.util.updateQueryData(
+              "checkCurrentUserHasClub",
+              undefined,
+              () => true,
+            ),
+          );
+        } catch {
+          /* Toasts via apiClient */
+        }
+      },
       invalidatesTags: () => [
         { type: "Club", id: "LIST" },
         { type: "Club", id: "ME" },
         { type: "ClubPresident", id: "ME" },
+        { type: "ClubDraft", id: "ME" },
+        { type: "ClubDraft", id: "CATALOG" },
       ],
     }),
 
