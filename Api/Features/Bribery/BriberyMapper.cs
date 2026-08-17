@@ -1,11 +1,9 @@
 using Api.Features.Matches;
 using Api.Features.Referees;
-using Riok.Mapperly.Abstractions;
 
 namespace Api.Features.Bribery;
 
-[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
-public partial class BriberyMapper
+public class BriberyMapper
 {
   public BribeAttemptResponseDto EntityToResponseDto(BribeAttempt attempt)
   {

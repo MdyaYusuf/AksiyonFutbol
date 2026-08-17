@@ -98,11 +98,23 @@ public partial class BasePlayerMapper
 
   public List<BasePlayerResponseDto> EntityToResponseDtoList(List<BasePlayer> entities)
   {
-    return entities.Select(EntityToResponseDto).ToList();
+    List<BasePlayerResponseDto> mapped = new(entities.Count);
+    foreach (BasePlayer entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
   }
 
   public List<BasePlayerPreviewDto> EntityToPreviewDtoList(List<BasePlayer> entities)
   {
-    return entities.Select(EntityToPreviewDto).ToList();
+    List<BasePlayerPreviewDto> mapped = new(entities.Count);
+    foreach (BasePlayer entity in entities)
+    {
+      mapped.Add(EntityToPreviewDto(entity));
+    }
+
+    return mapped;
   }
 }

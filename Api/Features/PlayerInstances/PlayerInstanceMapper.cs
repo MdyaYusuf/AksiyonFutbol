@@ -113,11 +113,23 @@ public partial class PlayerInstanceMapper
 
   public List<PlayerInstanceResponseDto> EntityToResponseDtoList(List<PlayerInstance> entities)
   {
-    return entities.Select(EntityToResponseDto).ToList();
+    List<PlayerInstanceResponseDto> mapped = new(entities.Count);
+    foreach (PlayerInstance entity in entities)
+    {
+      mapped.Add(EntityToResponseDto(entity));
+    }
+
+    return mapped;
   }
 
   public List<PlayerInstancePreviewDto> EntityToPreviewDtoList(List<PlayerInstance> entities)
   {
-    return entities.Select(EntityToPreviewDto).ToList();
+    List<PlayerInstancePreviewDto> mapped = new(entities.Count);
+    foreach (PlayerInstance entity in entities)
+    {
+      mapped.Add(EntityToPreviewDto(entity));
+    }
+
+    return mapped;
   }
 }

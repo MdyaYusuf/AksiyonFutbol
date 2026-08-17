@@ -1,9 +1,6 @@
-using Riok.Mapperly.Abstractions;
-
 namespace Api.Features.Facilities;
 
-[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
-public partial class FacilitiesMapper
+public class FacilitiesMapper
 {
   public ClubFacilityResponseDto ToFacilityDto(
     ClubFacility facility,

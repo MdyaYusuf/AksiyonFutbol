@@ -1,10 +1,8 @@
 using Api.Features.PlayerInstances;
-using Riok.Mapperly.Abstractions;
 
 namespace Api.Features.ClubLineups;
 
-[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
-public partial class ClubLineupMapper
+public class ClubLineupMapper
 {
   public ClubLineupResponseDto EntityToResponseDto(ClubLineup lineup)
   {

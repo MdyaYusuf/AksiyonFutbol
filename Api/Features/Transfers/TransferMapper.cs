@@ -1,12 +1,10 @@
 using Api.Core.Options;
 using Api.Features.BasePlayers;
 using Api.Features.PlayerInstances;
-using Riok.Mapperly.Abstractions;
 
 namespace Api.Features.Transfers;
 
-[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
-public partial class TransferMapper
+public class TransferMapper
 {
   public FreeAgentMarketItemDto BasePlayerToFreeAgentMarketItemDto(
     BasePlayer basePlayer,
