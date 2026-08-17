@@ -11,16 +11,17 @@ export const AdminSeasonEndWarning = ({ blockReason }: AdminSeasonEndWarningProp
       <div className="mb-4 flex items-start gap-3">
         <MaterialIcon name="warning" className="text-2xl text-secondary" />
         <div>
-          <h3 className="font-headline-sm text-headline-sm text-secondary">Warning</h3>
+          <h3 className="font-headline-sm text-headline-sm text-secondary">Emergency override</h3>
           <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-            This advances the selected division group to the next season.
+            Competitive groups auto-process when every fixture is complete. Use this
+            only if automation did not run.
           </p>
         </div>
       </div>
       <ul className="mb-2 list-inside list-disc space-y-2 text-sm text-on-surface-variant opacity-80">
         <li>Promotion and relegation swaps will update club divisions.</li>
         <li>Every division in the group resets to the first match week.</li>
-        <li>Existing fixtures are not regenerated automatically.</li>
+        <li>Old fixtures are removed and a new double round-robin schedule is generated.</li>
         <li>This operation cannot be undone.</li>
       </ul>
       {blockReason ? (
@@ -74,7 +75,7 @@ export const AdminSeasonEndExecute = ({
           name="sync"
           className="transition-transform duration-500 group-hover:rotate-180"
         />
-        {isSubmitting ? "Processing..." : "Process Season End"}
+        {isSubmitting ? "Processing..." : "Force Process Season End"}
       </button>
       <p className="mt-3 text-center font-data-mono text-xs text-on-surface-variant">
         This operation cannot be undone.

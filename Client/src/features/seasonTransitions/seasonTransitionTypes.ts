@@ -62,5 +62,6 @@ export interface SeasonEndProcessResult {
   clubsRelegated: number;
   divisionsReset: number;
   resetMatchWeek: number;
+  fixturesGenerated: number;
   movements: SeasonClubMovement[];
 }

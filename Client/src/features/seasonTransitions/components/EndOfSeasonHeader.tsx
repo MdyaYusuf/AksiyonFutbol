@@ -28,7 +28,8 @@ export const EndOfSeasonHeader = ({
           Season Complete
         </h1>
         <p className="mt-2 text-lg font-medium text-on-surface-variant">
-          The final whistle has blown. Promotion and relegation decided.
+          The final whistle has blown. Promotion and relegation are applied automatically
+          once every group fixture is complete.
         </p>
         <p className="mt-1 text-body-sm text-on-surface-variant">
           Matchday {matchWeek} of {matchWeek}
@@ -44,7 +45,7 @@ export const EndOfSeasonHeader = ({
         onClick={onContinue}
         className="group flex items-center gap-3 whitespace-nowrap rounded-xl bg-primary px-8 py-4 text-lg font-bold text-on-primary shadow-lg transition-colors hover:bg-primary-fixed disabled:cursor-not-allowed disabled:opacity-40"
       >
-        {isSubmitting ? "Processing..." : "Continue to New Season"}
+        {isSubmitting ? "Processing..." : "Force Continue (if needed)"}
         <MaterialIcon
           name="arrow_forward"
           className="transition-transform group-hover:translate-x-1"

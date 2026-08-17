@@ -1,10 +1,13 @@
 using Api.Core.Exceptions;
+using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
 using Api.Features.Matches;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace Api.Features.SeasonTransitions;
 
@@ -12,10 +15,14 @@ public class SeasonTransitionService(
   SeasonTransitionBusinessRules _businessRules,
   IClubRepository _clubRepository,
   ILeagueDivisionRepository _leagueDivisionRepository,
+  IMatchRepository _matchRepository,
+  IFixtureSchedulingService _fixtureSchedulingService,
   IUnitOfWork _unitOfWork,
-  HybridCache _cache) : ISeasonTransitionService
+  IOptions<GameOptions> _gameOptions,
+  HybridCache _cache) : ISeasonTransitionService, ICompetitiveSeasonEndService
 {
   private const string LeagueCacheTag = "league-divisions";
+  private static readonly ConcurrentDictionary<int, SemaphoreSlim> GroupLocks = new();
 
   public async Task<ReturnModel<SeasonEndPreviewDto>> PreviewByDivisionIdAsync(
     int divisionId,
@@ -26,6 +33,8 @@ public class SeasonTransitionService(
     LeagueDivision anchor = await _businessRules.GetDivisionAsync(
       divisionId,
       cancellationToken: cancellationToken);
+
+    _businessRules.MustNotBeTutorial(anchor);
 
     await _businessRules.EnsureCanManageSeasonEndAsync(
       userRole,
@@ -56,13 +65,119 @@ public class SeasonTransitionService(
       divisionId,
       cancellationToken: cancellationToken);
 
+    _businessRules.MustNotBeTutorial(anchor);
+
     await _businessRules.EnsureCanManageSeasonEndAsync(
       userRole,
       currentUserId,
       anchor.GroupNumber,
+      cancellationToken: cancellationToken);
+
+    SeasonEndProcessResultDto result = await ApplyGroupAsync(
+      anchor.GroupNumber,
       cancellationToken);
 
-    SeasonEndPreviewDto preview = await BuildPreviewAsync(anchor.GroupNumber, cancellationToken);
+    return new ReturnModel<SeasonEndProcessResultDto>
+    {
+      Success = true,
+      Message =
+        $"Sezon sonu işlendi. {result.ClubsPromoted} kulüp yükseldi, {result.ClubsRelegated} kulüp düştü. Ligler hafta {result.ResetMatchWeek} konumuna alındı. {result.FixturesGenerated} yeni maç oluşturuldu.",
+      Data = result,
+      StatusCode = 200
+    };
+  }
+
+  public async Task TryProcessAfterMatchAsync(
+    Match match,
+    CancellationToken cancellationToken = default)
+  {
+    LeagueDivision? division = match.Division;
+
+    if (division == null)
+    {
+      division = await _leagueDivisionRepository.GetByIdAsync(
+        match.DivisionId,
+        cancellationToken: cancellationToken);
+    }
+
+    if (division == null || division.IsTutorial)
+    {
+      return;
+    }
+
+    bool ready = await _businessRules.IsGroupReadyForSeasonEndAsync(
+      division.GroupNumber,
+      cancellationToken);
+
+    if (!ready)
+    {
+      return;
+    }
+
+    try
+    {
+      await ApplyGroupAsync(division.GroupNumber, cancellationToken);
+    }
+    catch (BusinessException)
+    {
+      // Another worker is processing this group or readiness changed mid-flight.
+    }
+  }
+
+  public async Task<int> ProcessReadyGroupsAsync(CancellationToken cancellationToken = default)
+  {
+    List<int> groupNumbers = await _businessRules.GetCompetitiveGroupNumbersAsync(cancellationToken);
+    int processed = 0;
+
+    foreach (int groupNumber in groupNumbers)
+    {
+      cancellationToken.ThrowIfCancellationRequested();
+
+      if (!await _businessRules.IsGroupReadyForSeasonEndAsync(groupNumber, cancellationToken))
+      {
+        continue;
+      }
+
+      try
+      {
+        await ApplyGroupAsync(groupNumber, cancellationToken);
+        processed += 1;
+      }
+      catch (BusinessException)
+      {
+        // Another worker or race — skip.
+      }
+    }
+
+    return processed;
+  }
+
+  private async Task<SeasonEndProcessResultDto> ApplyGroupAsync(
+    int groupNumber,
+    CancellationToken cancellationToken)
+  {
+    SemaphoreSlim gate = GroupLocks.GetOrAdd(groupNumber, _ => new SemaphoreSlim(1, 1));
+
+    if (!await gate.WaitAsync(0, cancellationToken))
+    {
+      throw new BusinessException("Bu grup için sezon sonu işlemi zaten devam ediyor.");
+    }
+
+    try
+    {
+      return await ApplyGroupCoreAsync(groupNumber, cancellationToken);
+    }
+    finally
+    {
+      gate.Release();
+    }
+  }
+
+  private async Task<SeasonEndProcessResultDto> ApplyGroupCoreAsync(
+    int groupNumber,
+    CancellationToken cancellationToken)
+  {
+    SeasonEndPreviewDto preview = await BuildPreviewAsync(groupNumber, cancellationToken);
 
     if (!preview.CanProcess)
     {
@@ -70,7 +185,7 @@ public class SeasonTransitionService(
     }
 
     List<LeagueDivision> ladder = await _businessRules.GetGroupLadderAsync(
-      anchor.GroupNumber,
+      groupNumber,
       enableTracking: true,
       cancellationToken: cancellationToken);
 
@@ -111,12 +226,57 @@ public class SeasonTransitionService(
     }
 
     int resetWeek = _businessRules.Options.MinimumMatchWeek;
+    GameOptions options = _gameOptions.Value;
+    int fixturesGenerated = 0;
+
+    DateTime firstKickoffLocal = GameLocalClock.GetNextKickoffLocal(
+      DateTime.UtcNow,
+      options.MatchKickoffLocalTime);
 
     foreach (LeagueDivision division in ladder)
     {
       division.CurrentMatchWeek = resetWeek;
       division.UpdatedDate = DateTime.UtcNow;
       _leagueDivisionRepository.Update(division);
+
+      List<Match> existingMatches = await _matchRepository.GetAllAsync(
+        filter: m => m.DivisionId == division.Id,
+        enableTracking: true,
+        cancellationToken: cancellationToken);
+
+      if (existingMatches.Count > 0)
+      {
+        _matchRepository.DeleteRange(existingMatches);
+      }
+    }
+
+    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+    foreach (LeagueDivision division in ladder)
+    {
+      List<Club> clubs = await _businessRules.GetClubsForDivisionAsync(
+        division.Id,
+        cancellationToken: cancellationToken);
+
+      if (clubs.Count < 2 || clubs.Count % 2 != 0)
+      {
+        throw new BusinessException(
+          $"{division.Name} fikstürü için çift sayıda kulüp gerekir (mevcut: {clubs.Count}).");
+      }
+
+      List<Guid> orderedClubIds = clubs
+        .OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase)
+        .Select(c => c.Id)
+        .ToList();
+
+      int created = await _fixtureSchedulingService.ScheduleDoubleRoundRobinAsync(
+        division.Id,
+        orderedClubIds,
+        options.CompetitiveMatchWeeks,
+        firstKickoffLocal: firstKickoffLocal,
+        cancellationToken: cancellationToken);
+
+      fixturesGenerated += created;
     }
 
     await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -125,21 +285,15 @@ public class SeasonTransitionService(
     int promoted = appliedMovements.Count(m => m.Outcome == SeasonMovementOutcome.Promoted);
     int relegated = appliedMovements.Count(m => m.Outcome == SeasonMovementOutcome.Relegated);
 
-    return new ReturnModel<SeasonEndProcessResultDto>
+    return new SeasonEndProcessResultDto
     {
-      Success = true,
-      Message =
-        $"Sezon sonu işlendi. {promoted} kulüp yükseldi, {relegated} kulüp düştü. Ligler hafta {resetWeek} konumuna alındı.",
-      Data = new SeasonEndProcessResultDto
-      {
-        GroupNumber = anchor.GroupNumber,
-        ClubsPromoted = promoted,
-        ClubsRelegated = relegated,
-        DivisionsReset = ladder.Count,
-        ResetMatchWeek = resetWeek,
-        Movements = appliedMovements
-      },
-      StatusCode = 200
+      GroupNumber = groupNumber,
+      ClubsPromoted = promoted,
+      ClubsRelegated = relegated,
+      DivisionsReset = ladder.Count,
+      ResetMatchWeek = resetWeek,
+      FixturesGenerated = fixturesGenerated,
+      Movements = appliedMovements
     };
   }
 
@@ -203,7 +357,7 @@ public class SeasonTransitionService(
     if (ladder.Count < 2)
     {
       canProcess = false;
-      blockReason = "Yükselme/düşme için aynı grupta en az iki lig seviyesi gerekir.";
+      blockReason = "Yükselme/düşme için aynı grupta en az iki rekabetçi lig seviyesi gerekir.";
     }
 
     int swapSlotsConfigured = Math.Min(

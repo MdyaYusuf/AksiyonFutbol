@@ -2,6 +2,7 @@ using Api.Core.Repositories;
 using Api.Features.Actions;
 using Api.Features.ClubLineups;
 using Api.Features.CompetitiveSeating;
+using Api.Features.SeasonTransitions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Matches;
@@ -14,6 +15,7 @@ public class MatchPlayService(
   IMatchInfluenceProvider _matchInfluenceProvider,
   IPromiseWinBonusSettler _promiseWinBonusSettler,
   ITutorialGraduationService _tutorialGraduationService,
+  ICompetitiveSeasonEndService _competitiveSeasonEndService,
   IUnitOfWork _unitOfWork) : IMatchPlayService
 {
   public async Task<Match> PlayAndPersistAsync(
@@ -28,6 +30,8 @@ public class MatchPlayService(
 
     await SimulateInPlaceAsync(match, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+    await _competitiveSeasonEndService.TryProcessAfterMatchAsync(match, cancellationToken);
 
     return match;
   }

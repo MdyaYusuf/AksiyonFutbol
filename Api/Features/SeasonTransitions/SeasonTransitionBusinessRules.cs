@@ -58,14 +58,14 @@ public class SeasonTransitionBusinessRules(
     CancellationToken cancellationToken = default)
   {
     List<LeagueDivision> divisions = await _leagueDivisionRepository.GetAllAsync(
-      filter: d => d.GroupNumber == groupNumber,
+      filter: d => d.GroupNumber == groupNumber && !d.IsTutorial,
       orderBy: query => query.OrderBy(d => d.Tier),
       enableTracking: enableTracking,
       cancellationToken: cancellationToken);
 
     if (divisions.Count == 0)
     {
-      throw new NotFoundException($"{groupNumber} numaralı grup için lig bulunamadı.");
+      throw new NotFoundException($"{groupNumber} numaralı grup için rekabetçi lig bulunamadı.");
     }
 
     return divisions;
@@ -96,15 +96,61 @@ public class SeasonTransitionBusinessRules(
       cancellationToken: cancellationToken);
   }
 
+  public async Task<List<int>> GetCompetitiveGroupNumbersAsync(
+    CancellationToken cancellationToken = default)
+  {
+    List<LeagueDivision> divisions = await _leagueDivisionRepository.GetAllAsync(
+      filter: d => !d.IsTutorial,
+      cancellationToken: cancellationToken);
+
+    return divisions
+      .Select(d => d.GroupNumber)
+      .Distinct()
+      .OrderBy(groupNumber => groupNumber)
+      .ToList();
+  }
+
+  public void MustNotBeTutorial(LeagueDivision division)
+  {
+    if (division.IsTutorial)
+    {
+      throw new BusinessException("Tutorial liglerinde sezon sonu işlenemez.");
+    }
+  }
+
+  public async Task<bool> IsGroupReadyForSeasonEndAsync(
+    int groupNumber,
+    CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      List<LeagueDivision> ladder = await GetGroupLadderAsync(
+        groupNumber,
+        cancellationToken: cancellationToken);
+
+      if (ladder.Count < 2)
+      {
+        return false;
+      }
+
+      foreach (LeagueDivision division in ladder)
+      {
+        await EnsureDivisionSeasonCompleteAsync(division, cancellationToken);
+      }
+
+      return true;
+    }
+    catch (BusinessException)
+    {
+      return false;
+    }
+  }
+
   public async Task EnsureDivisionSeasonCompleteAsync(
     LeagueDivision division,
     CancellationToken cancellationToken = default)
   {
-    if (division.CurrentMatchWeek < Options.MaximumMatchWeek)
-    {
-      throw new BusinessException(
-        $"{division.Name} henüz sezonun son haftasında değil (hafta {division.CurrentMatchWeek}/{Options.MaximumMatchWeek}).");
-    }
+    MustNotBeTutorial(division);
 
     bool hasUnplayed = await _matchRepository.AnyAsync(
       m => m.DivisionId == division.Id && !m.IsPlayed,
@@ -114,6 +160,28 @@ public class SeasonTransitionBusinessRules(
     {
       throw new BusinessException(
         $"{division.Name} liginde oynanmamış maçlar varken sezon sonu işlenemez.");
+    }
+
+    bool hasCompetitiveFixtures = await _matchRepository.AnyAsync(
+      m => m.DivisionId == division.Id,
+      cancellationToken);
+
+    if (!hasCompetitiveFixtures)
+    {
+      throw new BusinessException($"{division.Name} liginde fikstür bulunamadı.");
+    }
+
+    bool finalWeekPlayed = await _matchRepository.AnyAsync(
+      m =>
+        m.DivisionId == division.Id &&
+        m.IsPlayed &&
+        m.MatchWeek >= Options.CompetitiveMatchWeeks,
+      cancellationToken);
+
+    if (!finalWeekPlayed)
+    {
+      throw new BusinessException(
+        $"{division.Name} liginde {Options.CompetitiveMatchWeeks}. maç haftası henüz tamamlanmadı.");
     }
   }
 

@@ -2,6 +2,7 @@ using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Matches;
+using Api.Features.SeasonTransitions;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
@@ -12,6 +13,7 @@ public class MatchWeekOrchestrationService(
   LeagueDivisionBusinessRules _leagueBusinessRules,
   IMatchRepository _matchRepository,
   IMatchPlayService _matchPlayService,
+  ICompetitiveSeasonEndService _competitiveSeasonEndService,
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions,
   HybridCache _cache) : IMatchWeekOrchestrationService
@@ -60,6 +62,13 @@ public class MatchWeekOrchestrationService(
 
     await _unitOfWork.SaveChangesAsync(cancellationToken);
     await _cache.RemoveByTagAsync(LeagueCacheTag, cancellationToken);
+
+    if (unplayedMatches.Count > 0)
+    {
+      await _competitiveSeasonEndService.TryProcessAfterMatchAsync(
+        unplayedMatches[^1],
+        cancellationToken);
+    }
 
     var result = new ProcessMatchWeekResultDto
     {

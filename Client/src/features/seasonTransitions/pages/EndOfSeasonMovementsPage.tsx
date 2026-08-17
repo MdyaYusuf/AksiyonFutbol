@@ -50,14 +50,6 @@ export const EndOfSeasonMovementsPage = () => {
     );
   }
 
-  if (isClubLoading || isPreviewLoading) {
-    return (
-      <div className="mx-auto max-w-2xl py-16 text-center text-on-surface-variant">
-        Loading season end summary...
-      </div>
-    );
-  }
-
   if (!club || club.divisionId == null || isError || !preview) {
     return (
       <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 py-16 text-center">

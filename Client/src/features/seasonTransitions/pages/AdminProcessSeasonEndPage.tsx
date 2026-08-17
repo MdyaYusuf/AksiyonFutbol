@@ -29,7 +29,9 @@ export const AdminProcessSeasonEndPage = () => {
 
   const divisions = useMemo(() => {
     const items = divisionsData?.items ?? [];
-    return [...items].sort((left, right) => {
+    return [...items]
+      .filter((division) => !division.isTutorial)
+      .sort((left, right) => {
       if (left.tier !== right.tier) {
         return left.tier - right.tier;
       }
@@ -114,10 +116,11 @@ export const AdminProcessSeasonEndPage = () => {
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
           <h1 className="font-headline-md text-headline-md text-on-surface">
-            Process Season End
+            Force Season End
           </h1>
           <p className="mt-1 text-on-surface-variant">
-            Finalize standings, execute promotions, relegations, and reset league data.
+            Emergency override for a competitive division group. Season transitions
+            normally run automatically when the final fixtures finish.
           </p>
         </div>
 

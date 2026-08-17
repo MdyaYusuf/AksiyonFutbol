@@ -60,5 +60,6 @@ public sealed class SeasonEndProcessResultDto
   public int ClubsRelegated { get; init; }
   public int DivisionsReset { get; init; }
   public int ResetMatchWeek { get; init; }
+  public int FixturesGenerated { get; init; }
   public IReadOnlyList<SeasonClubMovementDto> Movements { get; init; } = [];
 }

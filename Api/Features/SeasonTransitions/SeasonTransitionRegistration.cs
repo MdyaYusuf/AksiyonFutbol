@@ -6,6 +6,8 @@ public static class SeasonTransitionRegistration
   {
     services.AddScoped<SeasonTransitionBusinessRules>();
     services.AddScoped<ISeasonTransitionService, SeasonTransitionService>();
+    services.AddScoped<ICompetitiveSeasonEndService, SeasonTransitionService>();
+    services.AddHostedService<SeasonTransitionBackgroundService>();
 
     return services;
   }
