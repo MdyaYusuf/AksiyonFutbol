@@ -45,4 +45,13 @@ public interface ITransferService
     Guid offerId,
     Guid currentUserId,
     CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<List<FreeAgentMarketItemDto>>> GetFreeAgentsAsync(
+    FreeAgentMarketQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<SignFreeAgentResponseDto>> SignFreeAgentAsync(
+    Guid basePlayerId,
+    Guid currentUserId,
+    CancellationToken cancellationToken = default);
 }

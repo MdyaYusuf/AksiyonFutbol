@@ -1,4 +1,5 @@
 using Api.Core.Exceptions;
+using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Actions;
@@ -9,6 +10,7 @@ using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Api.Features.Transfers;
 
@@ -16,6 +18,7 @@ public class TransferService(
   ITransferListingRepository _transferListingRepository,
   ITransferOfferRepository _transferOfferRepository,
   IPlayerInstanceRepository _playerInstanceRepository,
+  IBasePlayerRepository _basePlayerRepository,
   IClubRepository _clubRepository,
   IClubLineupSelectionRepository _clubLineupSelectionRepository,
   ITapUpDiscountService _tapUpDiscountService,
@@ -24,7 +27,8 @@ public class TransferService(
   IUnitOfWork _unitOfWork,
   IValidator<CreateTransferListingRequest> _createListingValidator,
   IValidator<CreateTransferOfferRequest> _createOfferValidator,
-  IMatchSettlementGate _settlementGate) : ITransferService
+  IMatchSettlementGate _settlementGate,
+  IOptions<GameOptions> _gameOptions) : ITransferService
 {
   public async Task<ReturnModel<List<TransferMarketItemDto>>> GetMarketAsync(
     TransferMarketQuery query,
@@ -455,6 +459,110 @@ public class TransferService(
     _clubLineupSelectionRepository.DeleteRange(selections);
   }
 
+  public async Task<ReturnModel<List<FreeAgentMarketItemDto>>> GetFreeAgentsAsync(
+    FreeAgentMarketQuery query,
+    CancellationToken cancellationToken = default)
+  {
+    GameOptions options = _gameOptions.Value;
+
+    List<BasePlayer> templates = await _basePlayerRepository.GetAllAsync(
+      filter: bp => bp.IsFreeAgentTemplate && !bp.IsDraftOnly,
+      cancellationToken: cancellationToken);
+
+    IEnumerable<BasePlayer> filtered = templates;
+
+    if (query.Position is PlayerPosition position)
+    {
+      filtered = filtered.Where(bp => bp.Position == position);
+    }
+
+    if (query.Tier is DraftTier tier)
+    {
+      filtered = filtered.Where(bp => bp.DraftTier == tier);
+    }
+
+    if (!string.IsNullOrWhiteSpace(query.Search))
+    {
+      string search = query.Search.Trim();
+      filtered = filtered.Where(bp =>
+        bp.DefaultFirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+        bp.DefaultLastName.Contains(search, StringComparison.OrdinalIgnoreCase));
+    }
+
+    filtered = ApplyFreeAgentSort(filtered, query);
+
+    List<FreeAgentMarketItemDto> items = filtered
+      .Select(bp => _mapper.BasePlayerToFreeAgentMarketItemDto(bp, options))
+      .ToList();
+
+    return new ReturnModel<List<FreeAgentMarketItemDto>>()
+    {
+      Success = true,
+      Message = "Serbest ajan listesi başarılı bir şekilde getirildi.",
+      Data = items,
+      StatusCode = 200
+    };
+  }
+
+  public async Task<ReturnModel<SignFreeAgentResponseDto>> SignFreeAgentAsync(
+    Guid basePlayerId,
+    Guid currentUserId,
+    CancellationToken cancellationToken = default)
+  {
+    GameOptions options = _gameOptions.Value;
+
+    Club club = await _businessRules.GetClubByUserIdIfExistAsync(
+      currentUserId,
+      include: q => q.Include(c => c.President),
+      enableTracking: true,
+      cancellationToken: cancellationToken);
+
+    _businessRules.ClubMustBeAbleToSignFreeAgent(club);
+    await _settlementGate.MustAllowClubSpendAsync(club.Id, cancellationToken);
+
+    BasePlayer template = await _businessRules.GetFreeAgentTemplateIfExistAsync(
+      basePlayerId,
+      cancellationToken);
+    await _businessRules.EnsureTemplateNotInClubSquadAsync(club.Id, template.Id, cancellationToken);
+
+    int overall = BasePlayerRatingCalculator.Calculate(template);
+    decimal signingFee = template.DraftFee;
+    decimal wage = overall * options.StarterWagePerOverall;
+
+    _businessRules.BuyerMustAffordFee(club, signingFee);
+    await _businessRules.BuyerMustAffordWageAsync(club, wage, cancellationToken);
+
+    club.Cash -= signingFee;
+
+    PlayerInstance player = PlayerInstanceFromBasePlayer.CreateWithStarterPricing(
+      club.Id,
+      template,
+      options);
+
+    await _playerInstanceRepository.AddAsync(player, cancellationToken);
+    _clubRepository.Update(club);
+    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+    return new ReturnModel<SignFreeAgentResponseDto>()
+    {
+      Success = true,
+      Message = "Serbest ajan başarılı bir şekilde transfer edildi.",
+      Data = new SignFreeAgentResponseDto
+      {
+        PlayerInstanceId = player.Id,
+        BasePlayerId = template.Id,
+        FirstName = player.FirstName,
+        LastName = player.LastName,
+        Position = player.Position.ToString(),
+        OverallRating = overall,
+        SigningFeePaid = signingFee,
+        Wage = player.Wage,
+        RemainingCash = club.Cash
+      },
+      StatusCode = 201
+    };
+  }
+
   private static IEnumerable<TransferListing> ApplyMarketSort(
     IEnumerable<TransferListing> listings,
     TransferMarketQuery query)
@@ -474,5 +582,26 @@ public class TransferService(
     return query.SortDescending
       ? listings.OrderByDescending(keySelector)
       : listings.OrderBy(keySelector);
+  }
+
+  private static IEnumerable<BasePlayer> ApplyFreeAgentSort(
+    IEnumerable<BasePlayer> templates,
+    FreeAgentMarketQuery query)
+  {
+    string sortBy = query.SortBy?.Trim().ToLowerInvariant() ?? "rating";
+
+    Func<BasePlayer, object> keySelector = sortBy switch
+    {
+      "fee" or "price" or "signingfee" => bp => bp.DraftFee,
+      "age" => bp => bp.Age,
+      "tier" => bp => bp.DraftTier,
+      "wage" => bp => BasePlayerRatingCalculator.Calculate(bp),
+      "name" => bp => bp.DefaultLastName,
+      _ => bp => BasePlayerRatingCalculator.Calculate(bp)
+    };
+
+    return query.SortDescending
+      ? templates.OrderByDescending(keySelector)
+      : templates.OrderBy(keySelector);
   }
 }

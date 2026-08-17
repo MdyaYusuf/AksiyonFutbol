@@ -1,3 +1,5 @@
+using Api.Core.Options;
+using Api.Features.BasePlayers;
 using Api.Features.PlayerInstances;
 using Riok.Mapperly.Abstractions;
 
@@ -6,6 +8,29 @@ namespace Api.Features.Transfers;
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
 public partial class TransferMapper
 {
+  public FreeAgentMarketItemDto BasePlayerToFreeAgentMarketItemDto(
+    BasePlayer basePlayer,
+    GameOptions options)
+  {
+    int overall = BasePlayerRatingCalculator.Calculate(basePlayer);
+    decimal estimatedWage = overall * options.StarterWagePerOverall;
+    decimal estimatedMarketValue = overall * options.StarterMarketValuePerOverall;
+
+    return new FreeAgentMarketItemDto
+    {
+      BasePlayerId = basePlayer.Id,
+      FirstName = basePlayer.DefaultFirstName,
+      LastName = basePlayer.DefaultLastName,
+      Position = basePlayer.Position.ToString(),
+      Age = basePlayer.Age,
+      OverallRating = overall,
+      DraftTier = basePlayer.DraftTier,
+      SigningFee = basePlayer.DraftFee,
+      EstimatedWage = estimatedWage,
+      EstimatedMarketValue = estimatedMarketValue
+    };
+  }
+
   public TransferMarketItemDto ListingToMarketItemDto(TransferListing listing)
   {
     PlayerInstance player = listing.PlayerInstance;

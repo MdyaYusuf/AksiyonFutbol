@@ -128,4 +128,40 @@ public class TransfersController(ITransferService _transferService) : CustomBase
 
     return CreateActionResult(result);
   }
+
+  [HttpGet("free-agents")]
+  public async Task<IActionResult> GetFreeAgents(
+    [FromQuery] PlayerPosition? position,
+    [FromQuery] DraftTier? tier,
+    [FromQuery] string? search,
+    [FromQuery] string? sortBy,
+    [FromQuery] bool sortDescending = true,
+    CancellationToken cancellationToken = default)
+  {
+    var result = await _transferService.GetFreeAgentsAsync(
+      query: new FreeAgentMarketQuery
+      {
+        Position = position,
+        Tier = tier,
+        Search = search,
+        SortBy = sortBy,
+        SortDescending = sortDescending
+      },
+      cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpPost("free-agents/{basePlayerId:guid}/sign")]
+  public async Task<IActionResult> SignFreeAgent(
+    Guid basePlayerId,
+    CancellationToken cancellationToken)
+  {
+    var result = await _transferService.SignFreeAgentAsync(
+      basePlayerId: basePlayerId,
+      currentUserId: GetUserId(),
+      cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
 }

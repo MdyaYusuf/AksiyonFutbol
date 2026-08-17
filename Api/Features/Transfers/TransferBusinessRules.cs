@@ -1,5 +1,6 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Features.BasePlayers;
 using Api.Features.Clubs;
 using Api.Features.PlayerInstances;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace Api.Features.Transfers;
 public class TransferBusinessRules(
   IClubRepository _clubRepository,
   IPlayerInstanceRepository _playerInstanceRepository,
+  IBasePlayerRepository _basePlayerRepository,
   ITransferListingRepository _transferListingRepository,
   ITransferOfferRepository _transferOfferRepository,
   IOptions<GameOptions> _gameOptions)
@@ -225,6 +227,52 @@ public class TransferBusinessRules(
     if (projectedWageBill > buyingClub.WageBudget)
     {
       throw new BusinessException("Önerilen maaş kulübün maaş bütçesini aşıyor.");
+    }
+  }
+
+  public void ClubMustBeAbleToSignFreeAgent(Club club)
+  {
+    if (club.LifecycleStatus != ClubLifecycleStatus.Tutorial
+        && club.LifecycleStatus != ClubLifecycleStatus.Competitive)
+    {
+      throw new BusinessException(
+        "Serbest ajan yalnızca tutorial veya rekabetçi kulüpler tarafından transfer edilebilir.");
+    }
+  }
+
+  public async Task<BasePlayer> GetFreeAgentTemplateIfExistAsync(
+    Guid basePlayerId,
+    CancellationToken cancellationToken = default)
+  {
+    BasePlayer? basePlayer = await _basePlayerRepository.GetByIdAsync(
+      basePlayerId,
+      cancellationToken: cancellationToken);
+
+    if (basePlayer == null)
+    {
+      throw new NotFoundException($"{basePlayerId} numaralı oyuncu şablonu bulunamadı.");
+    }
+
+    if (!basePlayer.IsFreeAgentTemplate || basePlayer.IsDraftOnly)
+    {
+      throw new BusinessException("Bu oyuncu serbest ajan piyasasında mevcut değil.");
+    }
+
+    return basePlayer;
+  }
+
+  public async Task EnsureTemplateNotInClubSquadAsync(
+    Guid clubId,
+    Guid basePlayerId,
+    CancellationToken cancellationToken = default)
+  {
+    bool alreadySigned = await _playerInstanceRepository.AnyAsync(
+      p => p.ClubId == clubId && p.BasePlayerId == basePlayerId,
+      cancellationToken);
+
+    if (alreadySigned)
+    {
+      throw new BusinessException("Bu oyuncu zaten kulübünüzde.");
     }
   }
 

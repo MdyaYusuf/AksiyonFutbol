@@ -8,6 +8,11 @@ import type {
   TransferMarketQuery,
   TransferOfferResponse,
 } from "./transferTypes";
+import type {
+  FreeAgentMarketItem,
+  FreeAgentMarketQuery,
+  SignFreeAgentResponse,
+} from "./freeAgentTypes";
 
 export const transfersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -108,6 +113,35 @@ export const transfersApiSlice = apiSlice.injectEndpoints({
         { type: "Transfer", id: "LISTINGS" },
       ],
     }),
+
+    getFreeAgents: builder.query<FreeAgentMarketItem[], FreeAgentMarketQuery | void>({
+      query: (arg) => ({
+        url: "transfers/free-agents",
+        params: arg
+          ? {
+              position: arg.position,
+              tier: arg.tier,
+              search: arg.search,
+              sortBy: arg.sortBy,
+              sortDescending: arg.sortDescending,
+            }
+          : undefined,
+      }),
+      providesTags: [{ type: "Transfer", id: "FREE-AGENTS" }],
+    }),
+
+    signFreeAgent: builder.mutation<SignFreeAgentResponse, string>({
+      query: (basePlayerId) => ({
+        url: `transfers/free-agents/${basePlayerId}/sign`,
+        method: "POST",
+      }),
+      invalidatesTags: [
+        { type: "Transfer", id: "FREE-AGENTS" },
+        { type: "Club", id: "ME" },
+        { type: "PlayerInstance", id: "MY-CLUB" },
+        { type: "ClubLineup", id: "ME" },
+      ],
+    }),
   }),
 });
 
@@ -121,4 +155,6 @@ export const {
   useWithdrawTransferOfferMutation,
   useAcceptTransferOfferMutation,
   useRejectTransferOfferMutation,
+  useGetFreeAgentsQuery,
+  useSignFreeAgentMutation,
 } = transfersApiSlice;

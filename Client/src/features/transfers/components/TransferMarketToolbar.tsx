@@ -4,16 +4,17 @@ import { getSquadFilterChipClassName } from "../../playerInstances/utils/squadHe
 import {
   TRANSFER_POSITION_FILTERS,
   TRANSFER_SORT_OPTIONS,
-  type TransferMarketSortOption,
 } from "../utils/transferMarketHelpers";
 
 interface TransferMarketToolbarProps {
   positionFilter: SquadPositionFilter;
   onPositionFilterChange: (filter: SquadPositionFilter) => void;
-  sortOption: TransferMarketSortOption;
-  onSortOptionChange: (sort: TransferMarketSortOption) => void;
+  sortOption: string;
+  onSortOptionChange: (sort: string) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
+  sortOptions?: { value: string; label: string }[];
+  searchPlaceholder?: string;
 }
 
 export const TransferMarketToolbar = ({
@@ -23,6 +24,8 @@ export const TransferMarketToolbar = ({
   onSortOptionChange,
   searchQuery,
   onSearchQueryChange,
+  sortOptions = TRANSFER_SORT_OPTIONS,
+  searchPlaceholder = "Search players, clubs...",
 }: TransferMarketToolbarProps) => {
   return (
     <div className="flex flex-col items-start justify-between gap-4 rounded-lg border border-outline-variant bg-surface-container p-4 md:flex-row md:items-center">
@@ -49,18 +52,18 @@ export const TransferMarketToolbar = ({
           type="text"
           value={searchQuery}
           onChange={(event) => onSearchQueryChange(event.target.value)}
-          placeholder="Search players, clubs..."
+          placeholder={searchPlaceholder}
           className="w-full rounded border border-outline-variant bg-surface-container-low px-3 py-1.5 text-body-sm text-on-surface outline-none placeholder:text-on-surface-variant focus:border-primary sm:w-56"
         />
         <div className="relative w-full sm:w-48">
           <select
             value={sortOption}
             onChange={(event) =>
-              onSortOptionChange(event.target.value as TransferMarketSortOption)
+              onSortOptionChange(event.target.value)
             }
             className="w-full appearance-none rounded border border-outline-variant bg-surface-container-low py-1.5 pr-8 pl-3 text-body-sm text-on-surface outline-none focus:border-primary"
           >
-            {TRANSFER_SORT_OPTIONS.map((option) => (
+            {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

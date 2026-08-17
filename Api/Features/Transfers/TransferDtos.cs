@@ -81,3 +81,39 @@ public sealed class TransferMarketQuery
   public string? SortBy { get; init; }
   public bool SortDescending { get; init; } = true;
 }
+
+public sealed class FreeAgentMarketItemDto
+{
+  public Guid BasePlayerId { get; init; }
+  public string FirstName { get; init; } = default!;
+  public string LastName { get; init; } = default!;
+  public string Position { get; init; } = default!;
+  public int Age { get; init; }
+  public int OverallRating { get; init; }
+  public DraftTier DraftTier { get; init; }
+  public decimal SigningFee { get; init; }
+  public decimal EstimatedWage { get; init; }
+  public decimal EstimatedMarketValue { get; init; }
+}
+
+public sealed class FreeAgentMarketQuery
+{
+  public PlayerPosition? Position { get; init; }
+  public DraftTier? Tier { get; init; }
+  public string? Search { get; init; }
+  public string? SortBy { get; init; }
+  public bool SortDescending { get; init; } = true;
+}
+
+public sealed class SignFreeAgentResponseDto
+{
+  public Guid PlayerInstanceId { get; init; }
+  public Guid BasePlayerId { get; init; }
+  public string FirstName { get; init; } = default!;
+  public string LastName { get; init; } = default!;
+  public string Position { get; init; } = default!;
+  public int OverallRating { get; init; }
+  public decimal SigningFeePaid { get; init; }
+  public decimal Wage { get; init; }
+  public decimal RemainingCash { get; init; }
+}
