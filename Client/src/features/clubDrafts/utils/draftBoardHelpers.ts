@@ -23,10 +23,7 @@ export const filterDraftCatalog = (
   catalog: DraftCatalogPlayer[],
   positionFilter: SquadPositionFilter,
   tierFilter: DraftTierFilter,
-  searchQuery: string,
 ): DraftCatalogPlayer[] => {
-  const normalizedQuery = searchQuery.trim().toLowerCase();
-
   return catalog
     .filter((player) => {
       if (positionFilter !== "ALL") {
@@ -38,14 +35,7 @@ export const filterDraftCatalog = (
       if (tierFilter !== "ALL" && player.draftTier !== tierFilter) {
         return false;
       }
-
-      if (!normalizedQuery) {
-        return true;
-      }
-
-      const fullName =
-        `${player.defaultFirstName} ${player.defaultLastName}`.toLowerCase();
-      return fullName.includes(normalizedQuery);
+      return true;
     })
     .sort((left, right) => {
       if (right.overallRating !== left.overallRating) {

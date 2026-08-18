@@ -11,15 +11,12 @@ export const OnboardingLayout = () => {
         <div className="absolute right-1/4 bottom-1/4 h-[500px] w-[500px] rounded-full bg-secondary opacity-5 blur-[140px]" />
       </div>
 
-      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-outline-variant/30 bg-surface/50 px-6 backdrop-blur-md">
+      <header className="sticky top-0 z-40 flex h-16 w-full items-center border-b border-outline-variant/30 bg-surface/50 px-6 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <MaterialIcon name="sports_soccer" className="text-primary" filled />
           <span className="text-headline-sm font-black tracking-tight text-primary">
             AksiyonFutbol
           </span>
-        </div>
-        <div className="pointer-events-none flex items-center gap-4 opacity-50 grayscale">
-          <div className="h-8 w-8 rounded-full border border-outline-variant bg-surface-container-highest" />
         </div>
       </header>
 

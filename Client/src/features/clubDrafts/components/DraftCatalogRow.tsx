@@ -2,6 +2,7 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import {
   formatSquadMoney,
   getPlayerDisplayName,
+  getPositionBadgeClassName,
   getPositionLabel,
 } from "../../playerInstances/utils/squadHelpers";
 import {
@@ -56,7 +57,9 @@ export const DraftCatalogRow = ({
         </div>
       </td>
       <td className="px-4 py-2">
-        <span className="rounded border border-outline-variant bg-surface-bright px-2 py-1 text-on-surface-variant">
+        <span
+          className={`rounded px-2 py-1 ${getPositionBadgeClassName(player.position)}`}
+        >
           {getPositionLabel(player.position)}
         </span>
       </td>

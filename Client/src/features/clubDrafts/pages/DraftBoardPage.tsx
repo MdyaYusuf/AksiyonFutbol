@@ -53,12 +53,11 @@ export const DraftBoardPage = () => {
 
   const [positionFilter, setPositionFilter] = useState<SquadPositionFilter>("ALL");
   const [tierFilter, setTierFilter] = useState<DraftTierFilter>("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
   const [busyPlayerId, setBusyPlayerId] = useState<string | null>(null);
 
   const filteredCatalog = useMemo(
-    () => filterDraftCatalog(catalog, positionFilter, tierFilter, searchQuery),
-    [catalog, positionFilter, searchQuery, tierFilter],
+    () => filterDraftCatalog(catalog, positionFilter, tierFilter),
+    [catalog, positionFilter, tierFilter],
   );
 
   const isLoading =
@@ -121,34 +120,29 @@ export const DraftBoardPage = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto p-6 md:p-10">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <div className="flex flex-col gap-2">
+    <div className="flex h-[calc(100vh-5.5rem)] flex-col overflow-hidden p-4 md:p-6">
+      <div className="mx-auto flex h-full w-full max-w-[1400px] min-h-0 flex-col gap-4">
+        <div className="flex flex-col gap-1">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-outline-variant/50 bg-surface-container px-3 py-1 text-label-caps text-on-surface-variant">
             <MaterialIcon name="groups" className="text-sm text-primary" filled />
             Open-pool draft
           </div>
-          <h1 className="text-[32px] leading-10 font-extrabold tracking-tight text-primary lg:text-display-lg lg:leading-[56px]">
+          <h1 className="text-[28px] leading-9 font-extrabold tracking-tight text-primary lg:text-[34px] lg:leading-10">
             Draft your squad
           </h1>
-          <p className="max-w-2xl text-body-lg text-on-surface-variant">
+          <p className="max-w-3xl text-body-sm text-on-surface-variant">
             Fill {draft.clubName}&apos;s quotas under the fee and wage caps. Bots
             draft the leftovers after you finalize, then your private tutorial starts.
           </p>
         </div>
 
-        <DraftBudgetMeters draft={draft} />
-        <DraftQuotaBar quotas={draft.quotas} />
-
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-          <div className="flex flex-col gap-4 lg:col-span-8">
+        <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="flex min-h-0 flex-col gap-3">
             <DraftCatalogToolbar
               positionFilter={positionFilter}
               onPositionFilterChange={setPositionFilter}
               tierFilter={tierFilter}
               onTierFilterChange={setTierFilter}
-              searchQuery={searchQuery}
-              onSearchQueryChange={setSearchQuery}
             />
             <DraftCatalogTable
               players={filteredCatalog}
@@ -159,7 +153,9 @@ export const DraftBoardPage = () => {
             />
           </div>
 
-          <div className="lg:col-span-4">
+          <div className="flex min-h-0 flex-col gap-3">
+            <DraftBudgetMeters draft={draft} />
+            <DraftQuotaBar quotas={draft.quotas} />
             <DraftPicksPanel
               draft={draft}
               isFinalizing={isFinalizing}

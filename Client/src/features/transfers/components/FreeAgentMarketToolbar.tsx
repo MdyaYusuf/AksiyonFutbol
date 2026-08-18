@@ -5,6 +5,7 @@ import type { FreeAgentSortOption } from "../utils/freeAgentHelpers";
 import {
   FREE_AGENT_SORT_OPTIONS,
   FREE_AGENT_TIER_FILTERS,
+  getDraftTierFilterChipClassName,
 } from "../utils/freeAgentHelpers";
 
 interface FreeAgentMarketToolbarProps {
@@ -50,11 +51,7 @@ export const FreeAgentMarketToolbar = ({
               key={option.label}
               type="button"
               onClick={() => onTierFilterChange(option.value)}
-              className={`rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors ${
-                isActive
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-outline-variant bg-surface-container text-on-surface-variant hover:border-primary hover:text-primary"
-              }`}
+              className={getDraftTierFilterChipClassName(option.value, isActive)}
             >
               {option.label}
             </button>

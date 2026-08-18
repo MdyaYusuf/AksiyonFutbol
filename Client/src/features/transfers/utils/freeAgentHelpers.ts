@@ -9,18 +9,61 @@ export const DRAFT_TIER_LABELS: Record<DraftTier, string> = {
 
 export const getDraftTierBadgeClassName = (tier: DraftTier): string => {
   if (tier === 1) {
-    return "border-primary/30 bg-primary-container/20 text-primary";
+    return "border-secondary/50 bg-transparent text-secondary";
   }
 
   if (tier === 2) {
-    return "border-secondary/30 bg-secondary/15 text-secondary";
+    return "border-sky-500/45 bg-transparent text-sky-400";
   }
 
   if (tier === 3) {
-    return "border-outline-variant bg-surface-bright text-on-surface";
+    return "border-tertiary/50 bg-transparent text-tertiary";
   }
 
-  return "border-outline-variant/70 bg-surface-container-low text-on-surface-variant";
+  return "border-teal-400/45 bg-transparent text-teal-300";
+};
+
+export const getDraftTierFilterChipClassName = (
+  tier: DraftTier | "ALL",
+  isActive: boolean,
+): string => {
+  if (tier === "ALL") {
+    if (isActive) {
+      return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-primary bg-primary/10 text-primary";
+    }
+
+    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-surface-container text-on-surface-variant hover:border-primary hover:text-primary";
+  }
+
+  if (tier === 1) {
+    if (isActive) {
+      return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-secondary/60 bg-transparent text-secondary";
+    }
+
+    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-transparent text-on-surface-variant hover:border-secondary hover:text-secondary";
+  }
+
+  if (tier === 2) {
+    if (isActive) {
+      return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-sky-500/55 bg-transparent text-sky-400";
+    }
+
+    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-transparent text-on-surface-variant hover:border-sky-500 hover:text-sky-400";
+  }
+
+  if (tier === 3) {
+    if (isActive) {
+      return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-tertiary/60 bg-transparent text-tertiary";
+    }
+
+    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-transparent text-on-surface-variant hover:border-tertiary hover:text-tertiary";
+  }
+
+  if (isActive) {
+    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-teal-400/55 bg-transparent text-teal-300";
+  }
+
+  return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-transparent text-on-surface-variant hover:border-teal-400 hover:text-teal-300";
 };
 
 export type FreeAgentSortOption =

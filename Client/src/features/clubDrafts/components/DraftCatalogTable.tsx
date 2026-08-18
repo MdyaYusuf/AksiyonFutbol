@@ -17,8 +17,8 @@ export const DraftCatalogTable = ({
   onRemove,
 }: DraftCatalogTableProps) => {
   return (
-    <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-outline-variant bg-surface-container">
-      <div className="flex-1 overflow-x-auto">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-outline-variant bg-surface-container">
+      <div className="flex-1 overflow-auto">
         <table className="w-full min-w-[720px] border-collapse text-left">
           <thead>
             <tr className="border-b border-outline-variant bg-surface-container-high font-label-caps text-label-caps text-on-surface-variant">

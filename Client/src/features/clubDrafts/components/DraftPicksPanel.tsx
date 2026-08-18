@@ -34,7 +34,7 @@ export const DraftPicksPanel = ({
   );
 
   return (
-    <aside className="flex flex-col gap-4 rounded-xl border border-outline-variant bg-surface-container/60 p-4 lg:sticky lg:top-20">
+    <aside className="flex h-full min-h-0 flex-col gap-3 rounded-xl border border-outline-variant bg-surface-container/60 p-4">
       <div>
         <h2 className="text-headline-sm text-on-surface">Your Picks</h2>
         <p className="text-body-sm text-on-surface-variant">
@@ -42,7 +42,7 @@ export const DraftPicksPanel = ({
         </p>
       </div>
 
-      <ul className="flex max-h-[420px] flex-col gap-2 overflow-y-auto">
+      <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         {orderedPicks.length === 0 ? (
           <li className="rounded-lg border border-dashed border-outline-variant px-3 py-6 text-center text-body-sm text-on-surface-variant">
             Pick players from the catalog to fill 2 GK, 5 DEF, 5 MID, and 4 FWD.

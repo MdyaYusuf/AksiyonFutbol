@@ -7,14 +7,13 @@ import {
   DRAFT_TIER_FILTERS,
   type DraftTierFilter,
 } from "../utils/draftBoardHelpers";
+import { getDraftTierFilterChipClassName } from "../../transfers/utils/freeAgentHelpers";
 
 interface DraftCatalogToolbarProps {
   positionFilter: SquadPositionFilter;
   onPositionFilterChange: (filter: SquadPositionFilter) => void;
   tierFilter: DraftTierFilter;
   onTierFilterChange: (tier: DraftTierFilter) => void;
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
 }
 
 export const DraftCatalogToolbar = ({
@@ -22,55 +21,43 @@ export const DraftCatalogToolbar = ({
   onPositionFilterChange,
   tierFilter,
   onTierFilterChange,
-  searchQuery,
-  onSearchQueryChange,
 }: DraftCatalogToolbarProps) => {
   return (
-    <div className="flex flex-col gap-3">
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(event) => onSearchQueryChange(event.target.value)}
-        placeholder="Search catalog..."
-        className="w-full rounded border border-outline-variant bg-surface-container-low px-3 py-2 text-body-sm text-on-surface outline-none placeholder:text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary"
-      />
+    <div className="flex flex-col gap-2 rounded-lg border border-outline-variant bg-surface-container/60 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-1.5">
+          {POSITION_FILTERS.map((filter) => {
+            const isActive = positionFilter === filter;
 
-      <div className="flex flex-wrap gap-2">
-        {POSITION_FILTERS.map((filter) => {
-          const isActive = positionFilter === filter;
+            return (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => onPositionFilterChange(filter)}
+                className={getSquadFilterChipClassName(filter, isActive)}
+              >
+                {filter}
+              </button>
+            );
+          })}
+        </div>
 
-          return (
-            <button
-              key={filter}
-              type="button"
-              onClick={() => onPositionFilterChange(filter)}
-              className={getSquadFilterChipClassName(filter, isActive)}
-            >
-              {filter}
-            </button>
-          );
-        })}
-      </div>
+        <div className="flex flex-wrap justify-end gap-1.5">
+          {DRAFT_TIER_FILTERS.map((option) => {
+            const isActive = tierFilter === option.value;
 
-      <div className="flex flex-wrap gap-2">
-        {DRAFT_TIER_FILTERS.map((option) => {
-          const isActive = tierFilter === option.value;
-
-          return (
-            <button
-              key={option.label}
-              type="button"
-              onClick={() => onTierFilterChange(option.value)}
-              className={`rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors ${
-                isActive
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-outline-variant bg-surface-container text-on-surface-variant hover:border-primary hover:text-primary"
-              }`}
-            >
-              {option.label}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={option.label}
+                type="button"
+                onClick={() => onTierFilterChange(option.value)}
+              className={getDraftTierFilterChipClassName(option.value, isActive)}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
