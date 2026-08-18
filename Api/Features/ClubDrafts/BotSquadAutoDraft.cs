@@ -27,7 +27,7 @@ public static class BotSquadAutoDraft
     {
       for (int i = 0; i < required; i++)
       {
-        BasePlayer? pick = SelectPick(pool, selected, position, remainingCash, remainingWage, options);
+        BasePlayer? pick = SelectPick(pool, selected, position, remainingCash, remainingWage);
 
         if (pick == null)
         {
@@ -37,7 +37,7 @@ public static class BotSquadAutoDraft
 
         selected.Add(pick);
         remainingCash -= pick.DraftFee;
-        remainingWage -= ClubDraftBusinessRules.EstimateWage(pick, options);
+        remainingWage -= pick.Wage;
       }
     }
 
@@ -54,8 +54,7 @@ public static class BotSquadAutoDraft
     List<BasePlayer> alreadySelected,
     PlayerPosition position,
     decimal remainingCash,
-    decimal remainingWage,
-    GameOptions options)
+    decimal remainingWage)
   {
     HashSet<Guid> selectedIds = alreadySelected.Select(p => p.Id).ToHashSet();
 
@@ -63,7 +62,7 @@ public static class BotSquadAutoDraft
       .Where(bp => !selectedIds.Contains(bp.Id))
       .Where(bp => bp.Position == position)
       .Where(bp => bp.DraftFee <= remainingCash)
-      .Where(bp => ClubDraftBusinessRules.EstimateWage(bp, options) <= remainingWage)
+      .Where(bp => bp.Wage <= remainingWage)
       .OrderBy(bp => bp.DraftFee)
       .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
       .ThenBy(bp => bp.Id)

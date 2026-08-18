@@ -196,6 +196,12 @@ public class CreateBasePlayerRequestValidator : AbstractValidator<CreateBasePlay
     RuleFor(bp => bp.DraftFee)
       .GreaterThanOrEqualTo(0).WithMessage("Draft ücreti negatif olamaz.");
 
+    RuleFor(bp => bp.Wage)
+      .GreaterThanOrEqualTo(0).WithMessage("Maaş negatif olamaz.");
+
+    RuleFor(bp => bp.MarketValue)
+      .GreaterThanOrEqualTo(0).WithMessage("Piyasa değeri negatif olamaz.");
+
     RuleFor(bp => bp)
       .Must(bp => !(bp.IsDraftOnly && bp.IsFreeAgentTemplate))
       .WithMessage("Draft-only oyuncular serbest ajan şablonu olamaz.");
@@ -247,6 +253,12 @@ public class UpdateBasePlayerRequestValidator : AbstractValidator<UpdateBasePlay
 
     RuleFor(bp => bp.DraftFee)
       .GreaterThanOrEqualTo(0).WithMessage("Draft ücreti negatif olamaz.");
+
+    RuleFor(bp => bp.Wage)
+      .GreaterThanOrEqualTo(0).WithMessage("Maaş negatif olamaz.");
+
+    RuleFor(bp => bp.MarketValue)
+      .GreaterThanOrEqualTo(0).WithMessage("Piyasa değeri negatif olamaz.");
 
     RuleFor(bp => bp)
       .Must(bp => !(bp.IsDraftOnly && bp.IsFreeAgentTemplate))

@@ -157,7 +157,7 @@ public class CompetitiveSeatingService(
       {
         botClub.Cash -= pick.DraftFee;
         botClub.Players.Add(
-          PlayerInstanceFromBasePlayer.CreateWithStarterPricing(botClub.Id, pick, options));
+          PlayerInstanceFromBasePlayer.CreateFromTemplate(botClub.Id, pick));
       }
 
       usedTemplates.Add(template);

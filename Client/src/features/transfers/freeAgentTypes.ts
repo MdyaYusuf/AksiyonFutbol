@@ -9,8 +9,8 @@ export interface FreeAgentMarketItem {
   overallRating: number;
   draftTier: DraftTier;
   signingFee: number;
-  estimatedWage: number;
-  estimatedMarketValue: number;
+  wage: number;
+  marketValue: number;
 }
 
 export interface FreeAgentMarketQuery {

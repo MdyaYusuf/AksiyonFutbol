@@ -1,5 +1,4 @@
 using Api.Core.Exceptions;
-using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Actions;
@@ -10,7 +9,6 @@ using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Api.Features.Transfers;
 
@@ -27,8 +25,7 @@ public class TransferService(
   IUnitOfWork _unitOfWork,
   IValidator<CreateTransferListingRequest> _createListingValidator,
   IValidator<CreateTransferOfferRequest> _createOfferValidator,
-  IMatchSettlementGate _settlementGate,
-  IOptions<GameOptions> _gameOptions) : ITransferService
+  IMatchSettlementGate _settlementGate) : ITransferService
 {
   public async Task<ReturnModel<List<TransferMarketItemDto>>> GetMarketAsync(
     TransferMarketQuery query,
@@ -463,8 +460,6 @@ public class TransferService(
     FreeAgentMarketQuery query,
     CancellationToken cancellationToken = default)
   {
-    GameOptions options = _gameOptions.Value;
-
     List<BasePlayer> templates = await _basePlayerRepository.GetAllAsync(
       filter: bp => bp.IsFreeAgentTemplate && !bp.IsDraftOnly,
       cancellationToken: cancellationToken);
@@ -492,7 +487,7 @@ public class TransferService(
     filtered = ApplyFreeAgentSort(filtered, query);
 
     List<FreeAgentMarketItemDto> items = filtered
-      .Select(bp => _mapper.BasePlayerToFreeAgentMarketItemDto(bp, options))
+      .Select(_mapper.BasePlayerToFreeAgentMarketItemDto)
       .ToList();
 
     return new ReturnModel<List<FreeAgentMarketItemDto>>()
@@ -509,8 +504,6 @@ public class TransferService(
     Guid currentUserId,
     CancellationToken cancellationToken = default)
   {
-    GameOptions options = _gameOptions.Value;
-
     Club club = await _businessRules.GetClubByUserIdIfExistAsync(
       currentUserId,
       include: q => q.Include(c => c.President),
@@ -525,19 +518,15 @@ public class TransferService(
       cancellationToken);
     await _businessRules.EnsureTemplateNotInClubSquadAsync(club.Id, template.Id, cancellationToken);
 
-    int overall = BasePlayerRatingCalculator.Calculate(template);
     decimal signingFee = template.DraftFee;
-    decimal wage = overall * options.StarterWagePerOverall;
+    decimal wage = template.Wage;
 
     _businessRules.BuyerMustAffordFee(club, signingFee);
     await _businessRules.BuyerMustAffordWageAsync(club, wage, cancellationToken);
 
     club.Cash -= signingFee;
 
-    PlayerInstance player = PlayerInstanceFromBasePlayer.CreateWithStarterPricing(
-      club.Id,
-      template,
-      options);
+    PlayerInstance player = PlayerInstanceFromBasePlayer.CreateFromTemplate(club.Id, template);
 
     await _playerInstanceRepository.AddAsync(player, cancellationToken);
     _clubRepository.Update(club);
@@ -554,7 +543,7 @@ public class TransferService(
         FirstName = player.FirstName,
         LastName = player.LastName,
         Position = player.Position.ToString(),
-        OverallRating = overall,
+        OverallRating = PlayerInstanceRatingCalculator.Calculate(player),
         SigningFeePaid = signingFee,
         Wage = player.Wage,
         RemainingCash = club.Cash
@@ -595,7 +584,7 @@ public class TransferService(
       "fee" or "price" or "signingfee" => bp => bp.DraftFee,
       "age" => bp => bp.Age,
       "tier" => bp => bp.DraftTier,
-      "wage" => bp => BasePlayerRatingCalculator.Calculate(bp),
+      "wage" => bp => bp.Wage,
       "name" => bp => bp.DefaultLastName,
       _ => bp => BasePlayerRatingCalculator.Calculate(bp)
     };

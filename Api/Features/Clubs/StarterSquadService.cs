@@ -36,7 +36,7 @@ public class StarterSquadService(
 
     foreach (BasePlayer template in selectedTemplates)
     {
-      club.Players.Add(PlayerInstanceFromBasePlayer.CreateWithStarterPricing(club.Id, template, options));
+      club.Players.Add(PlayerInstanceFromBasePlayer.CreateFromTemplate(club.Id, template));
     }
   }
 

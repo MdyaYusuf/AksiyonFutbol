@@ -21,6 +21,8 @@ public partial class BasePlayerMapper
       PreferredFoot = request.PreferredFoot,
       DraftTier = request.DraftTier,
       DraftFee = request.DraftFee,
+      Wage = request.Wage,
+      MarketValue = request.MarketValue,
       IsFreeAgentTemplate = request.IsFreeAgentTemplate,
       IsDraftOnly = request.IsDraftOnly
     };
@@ -43,6 +45,8 @@ public partial class BasePlayerMapper
     entity.PreferredFoot = request.PreferredFoot;
     entity.DraftTier = request.DraftTier;
     entity.DraftFee = request.DraftFee;
+    entity.Wage = request.Wage;
+    entity.MarketValue = request.MarketValue;
     entity.IsFreeAgentTemplate = request.IsFreeAgentTemplate;
     entity.IsDraftOnly = request.IsDraftOnly;
 
@@ -70,6 +74,8 @@ public partial class BasePlayerMapper
       OverallRating = BasePlayerRatingCalculator.Calculate(entity),
       DraftTier = entity.DraftTier,
       DraftFee = entity.DraftFee,
+      Wage = entity.Wage,
+      MarketValue = entity.MarketValue,
       IsFreeAgentTemplate = entity.IsFreeAgentTemplate,
       IsDraftOnly = entity.IsDraftOnly,
       CreatedDate = entity.CreatedDate
@@ -91,6 +97,8 @@ public partial class BasePlayerMapper
       OverallRating = BasePlayerRatingCalculator.Calculate(entity),
       DraftTier = entity.DraftTier,
       DraftFee = entity.DraftFee,
+      Wage = entity.Wage,
+      MarketValue = entity.MarketValue,
       IsFreeAgentTemplate = entity.IsFreeAgentTemplate,
       IsDraftOnly = entity.IsDraftOnly
     };

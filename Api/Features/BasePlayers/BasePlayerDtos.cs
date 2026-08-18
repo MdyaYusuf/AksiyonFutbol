@@ -19,6 +19,8 @@ public sealed record BasePlayerResponseDto
   public int OverallRating { get; init; }
   public DraftTier DraftTier { get; init; }
   public decimal DraftFee { get; init; }
+  public decimal Wage { get; init; }
+  public decimal MarketValue { get; init; }
   public bool IsFreeAgentTemplate { get; init; }
   public bool IsDraftOnly { get; init; }
   public DateTime CreatedDate { get; init; }
@@ -37,6 +39,8 @@ public sealed record BasePlayerPreviewDto
   public int OverallRating { get; init; }
   public DraftTier DraftTier { get; init; }
   public decimal DraftFee { get; init; }
+  public decimal Wage { get; init; }
+  public decimal MarketValue { get; init; }
   public bool IsFreeAgentTemplate { get; init; }
   public bool IsDraftOnly { get; init; }
 }
@@ -63,6 +67,8 @@ public sealed record CreateBasePlayerRequest(
   PlayerAttributesDto Attributes,
   DraftTier DraftTier,
   decimal DraftFee,
+  decimal Wage,
+  decimal MarketValue,
   bool IsFreeAgentTemplate,
   bool IsDraftOnly);
 
@@ -79,5 +85,7 @@ public sealed record UpdateBasePlayerRequest(
   PlayerAttributesDto Attributes,
   DraftTier DraftTier,
   decimal DraftFee,
+  decimal Wage,
+  decimal MarketValue,
   bool IsFreeAgentTemplate,
   bool IsDraftOnly);

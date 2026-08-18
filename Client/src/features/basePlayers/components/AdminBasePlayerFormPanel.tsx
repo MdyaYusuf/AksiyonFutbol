@@ -7,6 +7,10 @@ import {
   PreferredFoot,
   type PlayerAttributes,
 } from "../basePlayerTypes";
+import {
+  applyDraftPricingIfUnedited,
+  getDraftTierPricingDefaults,
+} from "../utils/adminBasePlayersHelpers";
 
 export interface AdminBasePlayerFormValues {
   defaultFirstName: string;
@@ -20,6 +24,8 @@ export interface AdminBasePlayerFormValues {
   attributes: PlayerAttributes;
   draftTier: DraftTier;
   draftFee: number;
+  wage: number;
+  marketValue: number;
   isFreeAgentTemplate: boolean;
   isDraftOnly: boolean;
 }
@@ -282,12 +288,28 @@ export const AdminBasePlayerFormPanel = ({
               <select
                 id="base-draft-tier"
                 value={values.draftTier}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const nextDraftTier = Number(event.target.value) as DraftTier;
+                  const pricing = applyDraftPricingIfUnedited(
+                    values,
+                    getDraftTierPricingDefaults(
+                      values.draftTier,
+                      values.isDraftOnly,
+                    ),
+                    getDraftTierPricingDefaults(
+                      nextDraftTier,
+                      values.isDraftOnly,
+                    ),
+                  );
+
                   onChange({
                     ...values,
-                    draftTier: Number(event.target.value) as DraftTier,
-                  })
-                }
+                    draftTier: nextDraftTier,
+                    draftFee: pricing.draftFee,
+                    wage: pricing.wage,
+                    marketValue: pricing.marketValue,
+                  });
+                }}
                 className="w-full appearance-none rounded border border-outline-variant bg-surface-container p-2 text-sm text-on-surface outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
               >
                 {draftTierOptions.map((option) => (
@@ -316,6 +338,44 @@ export const AdminBasePlayerFormPanel = ({
                 className="w-full rounded border border-outline-variant bg-surface-container p-2 text-center font-data-mono text-sm text-on-surface outline-none focus:border-primary"
               />
             </div>
+            <div>
+              <label
+                htmlFor="base-wage"
+                className="mb-1 block text-xs text-label-caps text-on-surface-variant"
+              >
+                Wage
+              </label>
+              <input
+                id="base-wage"
+                type="number"
+                min={0}
+                step={50}
+                value={values.wage}
+                onChange={(event) =>
+                  onChange({ ...values, wage: Number(event.target.value) })
+                }
+                className="w-full rounded border border-outline-variant bg-surface-container p-2 text-center font-data-mono text-sm text-on-surface outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="base-market-value"
+                className="mb-1 block text-xs text-label-caps text-on-surface-variant"
+              >
+                Market Value
+              </label>
+              <input
+                id="base-market-value"
+                type="number"
+                min={0}
+                step={100}
+                value={values.marketValue}
+                onChange={(event) =>
+                  onChange({ ...values, marketValue: Number(event.target.value) })
+                }
+                className="w-full rounded border border-outline-variant bg-surface-container p-2 text-center font-data-mono text-sm text-on-surface outline-none focus:border-primary"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -324,13 +384,29 @@ export const AdminBasePlayerFormPanel = ({
                 type="checkbox"
                 checked={values.isFreeAgentTemplate}
                 disabled={values.isDraftOnly}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const isFreeAgentTemplate = event.target.checked;
+                  const isDraftOnly = isFreeAgentTemplate
+                    ? false
+                    : values.isDraftOnly;
+                  const pricing = applyDraftPricingIfUnedited(
+                    values,
+                    getDraftTierPricingDefaults(
+                      values.draftTier,
+                      values.isDraftOnly,
+                    ),
+                    getDraftTierPricingDefaults(values.draftTier, isDraftOnly),
+                  );
+
                   onChange({
                     ...values,
-                    isFreeAgentTemplate: event.target.checked,
-                    isDraftOnly: event.target.checked ? false : values.isDraftOnly,
-                  })
-                }
+                    isFreeAgentTemplate,
+                    isDraftOnly,
+                    draftFee: pricing.draftFee,
+                    wage: pricing.wage,
+                    marketValue: pricing.marketValue,
+                  });
+                }}
               />
               Free agent template
             </label>
@@ -339,15 +415,29 @@ export const AdminBasePlayerFormPanel = ({
                 type="checkbox"
                 checked={values.isDraftOnly}
                 disabled={values.isFreeAgentTemplate}
-                onChange={(event) =>
+                onChange={(event) => {
+                  const isDraftOnly = event.target.checked;
+                  const isFreeAgentTemplate = isDraftOnly
+                    ? false
+                    : values.isFreeAgentTemplate;
+                  const pricing = applyDraftPricingIfUnedited(
+                    values,
+                    getDraftTierPricingDefaults(
+                      values.draftTier,
+                      values.isDraftOnly,
+                    ),
+                    getDraftTierPricingDefaults(values.draftTier, isDraftOnly),
+                  );
+
                   onChange({
                     ...values,
-                    isDraftOnly: event.target.checked,
-                    isFreeAgentTemplate: event.target.checked
-                      ? false
-                      : values.isFreeAgentTemplate,
-                  })
-                }
+                    isDraftOnly,
+                    isFreeAgentTemplate,
+                    draftFee: pricing.draftFee,
+                    wage: pricing.wage,
+                    marketValue: pricing.marketValue,
+                  });
+                }}
               />
               Draft only
             </label>

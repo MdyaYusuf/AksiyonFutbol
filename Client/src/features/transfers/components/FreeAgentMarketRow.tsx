@@ -69,7 +69,7 @@ export const FreeAgentMarketRow = ({
         </div>
       </td>
       <td className="px-4 py-2">{formatSquadMoney(item.signingFee)}</td>
-      <td className="px-4 py-2">{formatTransferWage(item.estimatedWage)}</td>
+      <td className="px-4 py-2">{formatTransferWage(item.wage)}</td>
       <td className="px-4 py-2 text-right">
         {canSign ? (
           <button

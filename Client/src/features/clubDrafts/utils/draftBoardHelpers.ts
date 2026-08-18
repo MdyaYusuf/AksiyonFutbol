@@ -71,7 +71,7 @@ export const getPickBlockReason = (
     return "Not enough remaining cash for this fee.";
   }
 
-  if (player.estimatedWage > draft.remainingWageBudget) {
+  if (player.wage > draft.remainingWageBudget) {
     return "Not enough remaining wage budget.";
   }
 

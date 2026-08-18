@@ -92,8 +92,8 @@ public sealed class FreeAgentMarketItemDto
   public int OverallRating { get; init; }
   public DraftTier DraftTier { get; init; }
   public decimal SigningFee { get; init; }
-  public decimal EstimatedWage { get; init; }
-  public decimal EstimatedMarketValue { get; init; }
+  public decimal Wage { get; init; }
+  public decimal MarketValue { get; init; }
 }
 
 public sealed class FreeAgentMarketQuery

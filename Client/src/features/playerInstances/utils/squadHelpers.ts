@@ -180,7 +180,8 @@ export const formatSquadMoney = (amount: number): string => {
   }
 
   if (amount >= 1_000) {
-    return `$${(amount / 1_000).toFixed(amount % 1_000 === 0 ? 0 : 0)}k`;
+    const compact = (amount / 1_000).toFixed(2).replace(/\.?0+$/, "");
+    return `$${compact}k`;
   }
 
   return `$${amount.toLocaleString("en-US")}`;

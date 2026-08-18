@@ -63,6 +63,9 @@ export const DraftCatalogRow = ({
           {getPositionLabel(player.position)}
         </span>
       </td>
+      <td className="px-4 py-2">{player.age}</td>
+      <td className="px-4 py-2">{player.heightCm}cm</td>
+      <td className="px-4 py-2">{player.weightKg}kg</td>
       <td className="px-4 py-2">
         <div
           className={`flex h-8 w-8 items-center justify-center rounded border font-bold ${getRatingBadgeClassName(player.overallRating)}`}
@@ -71,7 +74,7 @@ export const DraftCatalogRow = ({
         </div>
       </td>
       <td className="px-4 py-2">{formatSquadMoney(player.draftFee)}</td>
-      <td className="px-4 py-2">{formatTransferWage(player.estimatedWage)}</td>
+      <td className="px-4 py-2">{formatTransferWage(player.wage)}</td>
       <td className="px-4 py-2 text-right">
         {player.isPickedByMe ? (
           <button

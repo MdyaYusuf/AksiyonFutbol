@@ -1,5 +1,6 @@
 import type { ClubFacilitiesOverview, ClubFacility, FacilityType } from "../facilityTypes";
 import { FacilityType as FacilityTypeValues } from "../facilityTypes";
+import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
 import { getFacilityLevelLabel } from "./facilitiesHubHelpers";
 
 export const parseFacilityTypeParam = (
@@ -168,14 +169,4 @@ export const getUpgradePathProgressPercent = (
   return (completedSteps / (maxLevel - 1)) * 100;
 };
 
-const formatCompactCash = (amount: number): string => {
-  if (amount >= 1_000_000) {
-    return `$${(amount / 1_000_000).toFixed(1)}M`;
-  }
-
-  if (amount >= 1_000) {
-    return `$${(amount / 1_000).toFixed(0)}k`;
-  }
-
-  return `$${Math.round(amount)}`;
-};
+const formatCompactCash = (amount: number): string => formatSquadMoney(amount);

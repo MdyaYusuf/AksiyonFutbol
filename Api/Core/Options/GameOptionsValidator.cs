@@ -133,16 +133,6 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("Başlangıç kadrosu toplam oyuncu sayısı 0'dan büyük olmalıdır.");
     }
 
-    if (options.StarterMarketValuePerOverall < 0)
-    {
-      failures.Add("StarterMarketValuePerOverall negatif olamaz.");
-    }
-
-    if (options.StarterWagePerOverall < 0)
-    {
-      failures.Add("StarterWagePerOverall negatif olamaz.");
-    }
-
     if (options.PostMatchWinMoraleDelta < -100 || options.PostMatchWinMoraleDelta > 100)
     {
       failures.Add("PostMatchWinMoraleDelta -100 ile 100 arasında olmalıdır.");

@@ -37,7 +37,6 @@ public class ClubDraftService(
       cancellationToken: cancellationToken);
 
     HashSet<Guid> pickedIds = club.DraftPicks.Select(p => p.BasePlayerId).ToHashSet();
-    GameOptions options = _gameOptions.Value;
 
     List<BasePlayer> catalog = await _basePlayerRepository.GetAllAsync(
       orderBy: query => query
@@ -57,10 +56,13 @@ public class ClubDraftService(
         DefaultFirstName = bp.DefaultFirstName,
         DefaultLastName = bp.DefaultLastName,
         Position = bp.Position,
+        Age = bp.Age,
+        HeightCm = bp.HeightCm,
+        WeightKg = bp.WeightKg,
         OverallRating = overall,
         DraftTier = bp.DraftTier,
         DraftFee = bp.DraftFee,
-        EstimatedWage = overall * options.StarterWagePerOverall,
+        Wage = bp.Wage,
         IsPickedByMe = pickedIds.Contains(bp.Id),
         IsDraftOnly = bp.IsDraftOnly,
         IsFreeAgentTemplate = bp.IsFreeAgentTemplate
@@ -117,7 +119,7 @@ public class ClubDraftService(
 
     await _businessRules.MustNotAlreadyBePickedAsync(club.Id, basePlayer.Id, cancellationToken);
     _businessRules.MustHavePositionQuotaRemaining(club, basePlayer.Position, options);
-    _businessRules.MustAffordPick(club, basePlayer, options);
+    _businessRules.MustAffordPick(club, basePlayer);
 
     int nextOrder = club.DraftPicks.Count == 0
       ? 1
@@ -234,7 +236,7 @@ public class ClubDraftService(
     foreach (ClubDraftPick pick in club.DraftPicks.OrderBy(p => p.PickOrder))
     {
       club.Players.Add(
-        PlayerInstanceFromBasePlayer.CreateWithStarterPricing(club.Id, pick.BasePlayer, options));
+        PlayerInstanceFromBasePlayer.CreateFromTemplate(club.Id, pick.BasePlayer));
     }
 
     List<Club> botClubs = [];
@@ -271,7 +273,7 @@ public class ClubDraftService(
       {
         botClub.Cash -= pick.DraftFee;
         botClub.Players.Add(
-          PlayerInstanceFromBasePlayer.CreateWithStarterPricing(botClub.Id, pick, options));
+          PlayerInstanceFromBasePlayer.CreateFromTemplate(botClub.Id, pick));
       }
 
       botClubs.Add(botClub);
@@ -368,13 +370,13 @@ public class ClubDraftService(
           OverallRating = overall,
           DraftTier = p.BasePlayer.DraftTier,
           DraftFee = p.BasePlayer.DraftFee,
-          EstimatedWage = overall * options.StarterWagePerOverall
+          Wage = p.BasePlayer.Wage
         };
       })
       .ToList();
 
     decimal spentFees = picks.Sum(p => p.DraftFee);
-    decimal committedWages = picks.Sum(p => p.EstimatedWage);
+    decimal committedWages = picks.Sum(p => p.Wage);
 
     List<DraftQuotaDto> quotas = ClubDraftBusinessRules.GetQuotaMap(options)
       .Select(q =>

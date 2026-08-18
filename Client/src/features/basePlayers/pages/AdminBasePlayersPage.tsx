@@ -24,26 +24,33 @@ import {
 } from "../../playerInstances/utils/playerAttributeHelpers";
 import {
   filterBasePlayers,
+  getDraftTierPricingDefaults,
   type BasePlayerPositionFilter,
 } from "../utils/adminBasePlayersHelpers";
 
 const PAGE_SIZE = 10;
 
-const emptyFormValues = (): AdminBasePlayerFormValues => ({
-  defaultFirstName: "",
-  defaultLastName: "",
-  nationality: "",
-  position: PlayerPosition.Midfielder,
-  age: 21,
-  heightCm: 180,
-  weightKg: 75,
-  preferredFoot: PreferredFoot.Right,
-  attributes: buildDefaultAttributes(PlayerPosition.Midfielder),
-  draftTier: DraftTier.Bronze,
-  draftFee: 0,
-  isFreeAgentTemplate: true,
-  isDraftOnly: false,
-});
+const emptyFormValues = (): AdminBasePlayerFormValues => {
+  const bronzePricing = getDraftTierPricingDefaults(DraftTier.Bronze);
+
+  return {
+    defaultFirstName: "",
+    defaultLastName: "",
+    nationality: "",
+    position: PlayerPosition.Midfielder,
+    age: 21,
+    heightCm: 180,
+    weightKg: 75,
+    preferredFoot: PreferredFoot.Right,
+    attributes: buildDefaultAttributes(PlayerPosition.Midfielder),
+    draftTier: DraftTier.Bronze,
+    draftFee: bronzePricing.draftFee,
+    wage: bronzePricing.wage,
+    marketValue: bronzePricing.marketValue,
+    isFreeAgentTemplate: true,
+    isDraftOnly: false,
+  };
+};
 
 const toFormValues = (player: BasePlayerResponse): AdminBasePlayerFormValues => ({
   defaultFirstName: player.defaultFirstName,
@@ -57,6 +64,8 @@ const toFormValues = (player: BasePlayerResponse): AdminBasePlayerFormValues => 
   attributes: attributesForPosition(player.position, player.attributes),
   draftTier: player.draftTier,
   draftFee: player.draftFee,
+  wage: player.wage,
+  marketValue: player.marketValue,
   isFreeAgentTemplate: player.isFreeAgentTemplate,
   isDraftOnly: player.isDraftOnly,
 });
@@ -73,6 +82,8 @@ const toRequestBody = (values: AdminBasePlayerFormValues) => ({
   attributes: attributesForPosition(values.position, values.attributes),
   draftTier: values.draftTier,
   draftFee: values.draftFee,
+  wage: values.wage,
+  marketValue: values.marketValue,
   isFreeAgentTemplate: values.isFreeAgentTemplate,
   isDraftOnly: values.isDraftOnly,
 });

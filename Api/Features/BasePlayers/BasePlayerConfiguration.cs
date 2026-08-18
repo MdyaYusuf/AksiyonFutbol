@@ -160,6 +160,16 @@ public class BasePlayerConfiguration : IEntityTypeConfiguration<BasePlayer>
       .HasDefaultValue(0m)
       .IsRequired();
 
+    builder.Property(bp => bp.Wage)
+      .HasPrecision(18, 2)
+      .HasDefaultValue(0m)
+      .IsRequired();
+
+    builder.Property(bp => bp.MarketValue)
+      .HasPrecision(18, 2)
+      .HasDefaultValue(0m)
+      .IsRequired();
+
     builder.Property(bp => bp.IsFreeAgentTemplate)
       .HasDefaultValue(false)
       .IsRequired();

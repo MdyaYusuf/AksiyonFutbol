@@ -74,6 +74,8 @@ public class BasePlayer : Entity<Guid>
   // Draft / free-agent catalog
   public DraftTier DraftTier { get; set; } = DraftTier.Bronze;
   public decimal DraftFee { get; set; }
+  public decimal Wage { get; set; }
+  public decimal MarketValue { get; set; }
   public bool IsFreeAgentTemplate { get; set; }
   public bool IsDraftOnly { get; set; }
 

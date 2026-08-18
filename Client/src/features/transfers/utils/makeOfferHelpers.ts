@@ -1,3 +1,4 @@
+import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
 import type { TransferMarketItem } from "../transferTypes";
 
@@ -33,17 +34,7 @@ export const getEstimatedValueRange = (marketValue: number): string => {
   return `${formatCompactMoney(low)} - ${formatCompactMoney(high)}`;
 };
 
-export const formatCompactMoney = (amount: number): string => {
-  if (amount >= 1_000_000) {
-    return `$${(amount / 1_000_000).toFixed(1)}M`;
-  }
-
-  if (amount >= 1_000) {
-    return `$${(amount / 1_000).toFixed(0)}K`;
-  }
-
-  return `$${amount.toLocaleString("en-US")}`;
-};
+export const formatCompactMoney = (amount: number): string => formatSquadMoney(amount);
 
 export const buildScoutNote = (
   player: PlayerInstanceResponse,

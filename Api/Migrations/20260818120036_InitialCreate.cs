@@ -78,6 +78,8 @@ namespace AksiyonFutbol.Api.Migrations
                     MidfieldControl = table.Column<int>(type: "int", nullable: false),
                     DraftTier = table.Column<int>(type: "int", nullable: false),
                     DraftFee = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    Wage = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    MarketValue = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
                     IsFreeAgentTemplate = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsDraftOnly = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -98,6 +100,7 @@ namespace AksiyonFutbol.Api.Migrations
                     Tier = table.Column<int>(type: "int", nullable: false),
                     GroupNumber = table.Column<int>(type: "int", nullable: false),
                     CurrentMatchWeek = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    CurrentSeason = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     IsTutorial = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LifecycleStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
@@ -315,6 +318,7 @@ namespace AksiyonFutbol.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MatchWeek = table.Column<int>(type: "int", nullable: false),
+                    Season = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     MatchDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsPlayed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     HomeScore = table.Column<int>(type: "int", nullable: true),
@@ -821,14 +825,14 @@ namespace AksiyonFutbol.Api.Migrations
                 column: "AwayClubId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_DivisionId_MatchWeek",
+                name: "IX_Matches_DivisionId_Season_MatchWeek",
                 table: "Matches",
-                columns: new[] { "DivisionId", "MatchWeek" });
+                columns: new[] { "DivisionId", "Season", "MatchWeek" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_DivisionId_MatchWeek_HomeClubId_AwayClubId",
+                name: "IX_Matches_DivisionId_Season_MatchWeek_HomeClubId_AwayClubId",
                 table: "Matches",
-                columns: new[] { "DivisionId", "MatchWeek", "HomeClubId", "AwayClubId" },
+                columns: new[] { "DivisionId", "Season", "MatchWeek", "HomeClubId", "AwayClubId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

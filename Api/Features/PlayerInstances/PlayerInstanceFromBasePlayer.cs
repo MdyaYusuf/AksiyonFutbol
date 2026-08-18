@@ -1,6 +1,4 @@
-using Api.Core.Options;
 using Api.Features.BasePlayers;
-using Api.Features.PlayerInstances;
 
 namespace Api.Features.PlayerInstances;
 
@@ -40,19 +38,10 @@ public static class PlayerInstanceFromBasePlayer
     return player;
   }
 
-  public static PlayerInstance CreateWithStarterPricing(
-    Guid clubId,
-    BasePlayer basePlayer,
-    GameOptions options)
+  public static PlayerInstance CreateFromTemplate(Guid clubId, BasePlayer basePlayer)
   {
-    ArgumentNullException.ThrowIfNull(options);
+    ArgumentNullException.ThrowIfNull(basePlayer);
 
-    int overall = BasePlayerRatingCalculator.Calculate(basePlayer);
-
-    return Create(
-      clubId,
-      basePlayer,
-      overall * options.StarterMarketValuePerOverall,
-      overall * options.StarterWagePerOverall);
+    return Create(clubId, basePlayer, basePlayer.MarketValue, basePlayer.Wage);
   }
 }

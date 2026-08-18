@@ -8,6 +8,7 @@ import {
   DRAFT_TIER_LABELS,
   getDraftTierBadgeClassName,
 } from "../../transfers/utils/freeAgentHelpers";
+import { formatTransferWage } from "../../transfers/utils/transferMarketHelpers";
 import type { ClubDraftState } from "../clubDraftTypes";
 import {
   getRequiredPickCount,
@@ -59,7 +60,7 @@ export const DraftPicksPanel = ({
                 </p>
                 <p className="text-[11px] text-on-surface-variant">
                   {getPositionLabel(pick.position)} · {pick.overallRating} ·{" "}
-                  {formatSquadMoney(pick.draftFee)}
+                  {formatSquadMoney(pick.draftFee)} · {formatTransferWage(pick.wage)}
                 </p>
               </div>
               <div className="flex items-center gap-2">

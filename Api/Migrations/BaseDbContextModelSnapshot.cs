@@ -262,6 +262,12 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("LongShots")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("MarketValue")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<int>("Marking")
                         .HasColumnType("int");
 
@@ -320,6 +326,12 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.Property<int>("Vision")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Wage")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.Property<int>("WeightKg")
                         .HasColumnType("int");

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AksiyonFutbol.Api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20260817094411_AddSeasonStamps")]
-    partial class AddSeasonStamps
+    [Migration("20260818120036_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -265,6 +265,12 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("LongShots")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("MarketValue")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<int>("Marking")
                         .HasColumnType("int");
 
@@ -323,6 +329,12 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.Property<int>("Vision")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Wage")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.Property<int>("WeightKg")
                         .HasColumnType("int");

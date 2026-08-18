@@ -99,6 +99,8 @@ export interface BasePlayerResponse {
   overallRating: number;
   draftTier: DraftTier;
   draftFee: number;
+  wage: number;
+  marketValue: number;
   isFreeAgentTemplate: boolean;
   isDraftOnly: boolean;
   createdDate: string;
@@ -116,6 +118,8 @@ export interface BasePlayerPreview {
   overallRating: number;
   draftTier: DraftTier;
   draftFee: number;
+  wage: number;
+  marketValue: number;
   isFreeAgentTemplate: boolean;
   isDraftOnly: boolean;
 }
@@ -141,6 +145,8 @@ export interface CreateBasePlayerRequest {
   attributes: PlayerAttributes;
   draftTier: DraftTier;
   draftFee: number;
+  wage: number;
+  marketValue: number;
   isFreeAgentTemplate: boolean;
   isDraftOnly: boolean;
 }
@@ -158,6 +164,8 @@ export interface UpdateBasePlayerRequest {
   attributes: PlayerAttributes;
   draftTier: DraftTier;
   draftFee: number;
+  wage: number;
+  marketValue: number;
   isFreeAgentTemplate: boolean;
   isDraftOnly: boolean;
 }

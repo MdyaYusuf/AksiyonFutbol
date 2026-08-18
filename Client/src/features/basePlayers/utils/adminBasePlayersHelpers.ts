@@ -1,10 +1,60 @@
 import {
+  DraftTier,
   PlayerPosition,
   PreferredFoot,
   type BasePlayerResponse,
 } from "../basePlayerTypes";
 
 export type BasePlayerPositionFilter = "ALL" | PlayerPosition;
+
+export interface DraftTierPricingDefaults {
+  draftFee: number;
+  wage: number;
+  marketValue: number;
+}
+
+export const getDraftTierPricingDefaults = (
+  draftTier: DraftTier,
+  isDraftOnly = false,
+): DraftTierPricingDefaults => {
+  if (draftTier === DraftTier.Gold) {
+    if (isDraftOnly) {
+      return { draftFee: 16000, wage: 2050, marketValue: 95000 };
+    }
+
+    return { draftFee: 11000, wage: 1700, marketValue: 68000 };
+  }
+
+  if (draftTier === DraftTier.Silver) {
+    return { draftFee: 5500, wage: 1400, marketValue: 40000 };
+  }
+
+  if (draftTier === DraftTier.Iron) {
+    return { draftFee: 1000, wage: 850, marketValue: 13000 };
+  }
+
+  return { draftFee: 2500, wage: 1150, marketValue: 25000 };
+};
+
+export const applyDraftPricingIfUnedited = (
+  current: DraftTierPricingDefaults,
+  previousDefaults: DraftTierPricingDefaults,
+  nextDefaults: DraftTierPricingDefaults,
+): DraftTierPricingDefaults => {
+  if (
+    current.draftFee === previousDefaults.draftFee &&
+    current.wage === previousDefaults.wage &&
+    current.marketValue === previousDefaults.marketValue
+  ) {
+    return nextDefaults;
+  }
+
+  return {
+    draftFee: current.draftFee,
+    wage: current.wage,
+    marketValue: current.marketValue,
+  };
+};
 
 export const getPreferredFootLabel = (foot: PreferredFoot): string => {
   if (foot === PreferredFoot.Left) {

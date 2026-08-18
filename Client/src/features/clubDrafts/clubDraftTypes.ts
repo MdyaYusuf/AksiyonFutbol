@@ -9,10 +9,13 @@ export interface DraftCatalogPlayer {
   defaultFirstName: string;
   defaultLastName: string;
   position: PlayerPosition;
+  age: number;
+  heightCm: number;
+  weightKg: number;
   overallRating: number;
   draftTier: DraftTier;
   draftFee: number;
-  estimatedWage: number;
+  wage: number;
   isPickedByMe: boolean;
   isDraftOnly: boolean;
   isFreeAgentTemplate: boolean;
@@ -27,7 +30,7 @@ export interface DraftPick {
   overallRating: number;
   draftTier: DraftTier;
   draftFee: number;
-  estimatedWage: number;
+  wage: number;
 }
 
 export interface DraftQuota {

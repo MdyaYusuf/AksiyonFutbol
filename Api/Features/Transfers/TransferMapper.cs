@@ -1,4 +1,3 @@
-using Api.Core.Options;
 using Api.Features.BasePlayers;
 using Api.Features.PlayerInstances;
 
@@ -6,13 +5,9 @@ namespace Api.Features.Transfers;
 
 public class TransferMapper
 {
-  public FreeAgentMarketItemDto BasePlayerToFreeAgentMarketItemDto(
-    BasePlayer basePlayer,
-    GameOptions options)
+  public FreeAgentMarketItemDto BasePlayerToFreeAgentMarketItemDto(BasePlayer basePlayer)
   {
     int overall = BasePlayerRatingCalculator.Calculate(basePlayer);
-    decimal estimatedWage = overall * options.StarterWagePerOverall;
-    decimal estimatedMarketValue = overall * options.StarterMarketValuePerOverall;
 
     return new FreeAgentMarketItemDto
     {
@@ -24,8 +19,8 @@ public class TransferMapper
       OverallRating = overall,
       DraftTier = basePlayer.DraftTier,
       SigningFee = basePlayer.DraftFee,
-      EstimatedWage = estimatedWage,
-      EstimatedMarketValue = estimatedMarketValue
+      Wage = basePlayer.Wage,
+      MarketValue = basePlayer.MarketValue
     };
   }
 

@@ -18,15 +18,13 @@ public class GameOptions
   /// <summary>Local kickoff time (Europe/Istanbul) for auto-scheduled fixtures.</summary>
   public TimeSpan MatchKickoffLocalTime { get; set; } = new(19, 0, 0);
 
-  public decimal DraftStartingCash { get; set; } = 50000m;
-  public decimal DraftWageBudget { get; set; } = 10000m;
+  public decimal DraftStartingCash { get; set; } = 65000m;
+  public decimal DraftWageBudget { get; set; } = 25000m;
 
   public int StarterSquadGoalkeepers { get; set; } = 2;
   public int StarterSquadDefenders { get; set; } = 5;
   public int StarterSquadMidfielders { get; set; } = 5;
   public int StarterSquadForwards { get; set; } = 4;
-  public decimal StarterMarketValuePerOverall { get; set; } = 1000m;
-  public decimal StarterWagePerOverall { get; set; } = 50m;
 
   public int GraduationGoldMinPoints { get; set; } = 15;
   public int GraduationGoldMaxPoints { get; set; } = 18;

@@ -88,15 +88,12 @@ public class ClubDraftBusinessRules(
     }
   }
 
-  public void MustAffordPick(
-    Club club,
-    BasePlayer basePlayer,
-    GameOptions options)
+  public void MustAffordPick(Club club, BasePlayer basePlayer)
   {
     decimal spentFees = club.DraftPicks.Sum(p => p.BasePlayer.DraftFee);
-    decimal committedWages = club.DraftPicks.Sum(p => EstimateWage(p.BasePlayer, options));
+    decimal committedWages = club.DraftPicks.Sum(p => p.BasePlayer.Wage);
     decimal fee = basePlayer.DraftFee;
-    decimal wage = EstimateWage(basePlayer, options);
+    decimal wage = basePlayer.Wage;
 
     if (club.Cash - spentFees - fee < 0)
     {
@@ -125,7 +122,7 @@ public class ClubDraftBusinessRules(
     }
 
     decimal spentFees = club.DraftPicks.Sum(p => p.BasePlayer.DraftFee);
-    decimal committedWages = club.DraftPicks.Sum(p => EstimateWage(p.BasePlayer, options));
+    decimal committedWages = club.DraftPicks.Sum(p => p.BasePlayer.Wage);
 
     if (club.Cash - spentFees < 0)
     {
@@ -160,12 +157,6 @@ public class ClubDraftBusinessRules(
     }
 
     return templates.Take(botCount).ToList();
-  }
-
-  public static decimal EstimateWage(BasePlayer basePlayer, GameOptions options)
-  {
-    int overall = BasePlayerRatingCalculator.Calculate(basePlayer);
-    return overall * options.StarterWagePerOverall;
   }
 
   public static int GetRequiredCount(PlayerPosition position, GameOptions options)

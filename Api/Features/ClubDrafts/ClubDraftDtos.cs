@@ -8,10 +8,13 @@ public sealed record DraftCatalogPlayerDto
   public string DefaultFirstName { get; init; } = default!;
   public string DefaultLastName { get; init; } = default!;
   public PlayerPosition Position { get; init; }
+  public int Age { get; init; }
+  public int HeightCm { get; init; }
+  public int WeightKg { get; init; }
   public int OverallRating { get; init; }
   public DraftTier DraftTier { get; init; }
   public decimal DraftFee { get; init; }
-  public decimal EstimatedWage { get; init; }
+  public decimal Wage { get; init; }
   public bool IsPickedByMe { get; init; }
   public bool IsDraftOnly { get; init; }
   public bool IsFreeAgentTemplate { get; init; }
@@ -27,7 +30,7 @@ public sealed record DraftPickDto
   public int OverallRating { get; init; }
   public DraftTier DraftTier { get; init; }
   public decimal DraftFee { get; init; }
-  public decimal EstimatedWage { get; init; }
+  public decimal Wage { get; init; }
 }
 
 public sealed record DraftQuotaDto
