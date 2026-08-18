@@ -2,13 +2,16 @@ import { ClubLifecycleStatus } from "../clubs/clubTypes";
 import {
   DraftTier,
   PlayerPosition,
+  PreferredFoot,
 } from "../basePlayers/basePlayerTypes";
 
 export interface DraftCatalogPlayer {
   id: string;
   defaultFirstName: string;
   defaultLastName: string;
+  nationality?: string | null;
   position: PlayerPosition;
+  preferredFoot: PreferredFoot;
   age: number;
   heightCm: number;
   weightKg: number;

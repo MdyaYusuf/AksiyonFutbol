@@ -23,7 +23,11 @@ import { DraftCatalogToolbar } from "../components/DraftCatalogToolbar";
 import { DraftPicksPanel } from "../components/DraftPicksPanel";
 import { DraftQuotaBar } from "../components/DraftQuotaBar";
 import {
+  DEFAULT_DRAFT_CATALOG_SORT,
   filterDraftCatalog,
+  sortDraftCatalog,
+  toggleDraftCatalogSort,
+  type DraftCatalogSortColumn,
   type DraftTierFilter,
 } from "../utils/draftBoardHelpers";
 
@@ -53,12 +57,21 @@ export const DraftBoardPage = () => {
 
   const [positionFilter, setPositionFilter] = useState<SquadPositionFilter>("ALL");
   const [tierFilter, setTierFilter] = useState<DraftTierFilter>("ALL");
+  const [catalogSort, setCatalogSort] = useState(DEFAULT_DRAFT_CATALOG_SORT);
   const [busyPlayerId, setBusyPlayerId] = useState<string | null>(null);
 
   const filteredCatalog = useMemo(
-    () => filterDraftCatalog(catalog, positionFilter, tierFilter),
-    [catalog, positionFilter, tierFilter],
+    () =>
+      sortDraftCatalog(
+        filterDraftCatalog(catalog, positionFilter, tierFilter),
+        catalogSort,
+      ),
+    [catalog, catalogSort, positionFilter, tierFilter],
   );
+
+  const handleCatalogSortChange = (column: DraftCatalogSortColumn) => {
+    setCatalogSort((current) => toggleDraftCatalogSort(current, column));
+  };
 
   const isLoading =
     isPresidentLoading
@@ -147,7 +160,9 @@ export const DraftBoardPage = () => {
             <DraftCatalogTable
               players={filteredCatalog}
               draft={draft}
+              sort={catalogSort}
               busyPlayerId={busyPlayerId}
+              onSortChange={handleCatalogSortChange}
               onPick={handlePick}
               onRemove={handleRemove}
             />

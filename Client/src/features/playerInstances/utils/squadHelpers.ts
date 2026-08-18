@@ -151,6 +151,18 @@ export const getPreferredFootLabel = (foot: PreferredFoot): string => {
   return "Right Foot";
 };
 
+export const getPreferredFootShortLabel = (foot: PreferredFoot): string => {
+  if (foot === PreferredFoot.Left) {
+    return "L";
+  }
+
+  if (foot === PreferredFoot.Both) {
+    return "B";
+  }
+
+  return "R";
+};
+
 export const getPlayerStatus = (
   player: PlayerInstanceResponse,
 ): { label: string; icon: string; className: string } => {

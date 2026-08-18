@@ -7,7 +7,9 @@ public sealed record DraftCatalogPlayerDto
   public Guid Id { get; init; }
   public string DefaultFirstName { get; init; } = default!;
   public string DefaultLastName { get; init; } = default!;
+  public string? Nationality { get; init; }
   public PlayerPosition Position { get; init; }
+  public PreferredFoot PreferredFoot { get; init; }
   public int Age { get; init; }
   public int HeightCm { get; init; }
   public int WeightKg { get; init; }
