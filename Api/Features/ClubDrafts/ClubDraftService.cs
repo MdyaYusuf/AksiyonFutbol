@@ -237,9 +237,13 @@ public class ClubDraftService(
     }
 
     List<Club> botClubs = [];
+    List<BotDraftProfileKind> tutorialProfiles = BotDraftProfileResolver.CreateShuffledTutorialProfiles();
 
-    foreach (BaseBotClub template in botTemplates)
+    for (int i = 0; i < botTemplates.Count; i++)
     {
+      BaseBotClub template = botTemplates[i];
+      BotDraftProfileKind botProfile = tutorialProfiles[i % tutorialProfiles.Count];
+
       await _clubBusinessRules.ClubNameMustBeUniqueAsync(template.Name, cancellationToken: cancellationToken);
 
       Club botClub = new()
@@ -265,7 +269,7 @@ public class ClubDraftService(
         options,
         botClub.Cash,
         botClub.WageBudget,
-        BotDraftProfileKind.TutorialMid,
+        botProfile,
         BotDraftStyle.Balanced);
 
       foreach (BasePlayer pick in botPicks)

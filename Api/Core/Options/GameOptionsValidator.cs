@@ -518,6 +518,50 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
     ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierRotation, "BotDraft.RoleWageMultiplierRotation");
     ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierCheap, "BotDraft.RoleWageMultiplierCheap");
     ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierBackup, "BotDraft.RoleWageMultiplierBackup");
+
+    ValidateProfileSettings(failures, botDraft.TutorialWeak, "BotDraft.TutorialWeak");
+    ValidateProfileSettings(failures, botDraft.TutorialMid, "BotDraft.TutorialMid");
+    ValidateProfileSettings(failures, botDraft.TutorialStrong, "BotDraft.TutorialStrong");
+    ValidateProfileSettings(failures, botDraft.Iron, "BotDraft.Iron");
+    ValidateProfileSettings(failures, botDraft.Bronze, "BotDraft.Bronze");
+    ValidateProfileSettings(failures, botDraft.Silver, "BotDraft.Silver");
+    ValidateProfileSettings(failures, botDraft.Gold, "BotDraft.Gold");
+  }
+
+  private static void ValidateProfileSettings(
+    List<string> failures,
+    BotDraftProfileSettings settings,
+    string prefix)
+  {
+    if (settings.TargetCashSpendRatio <= 0 || settings.TargetCashSpendRatio > 1)
+    {
+      failures.Add($"{prefix}.TargetCashSpendRatio 0'dan büyük ve 1'den küçük veya eşit olmalıdır.");
+    }
+
+    if (settings.TargetWageSpendRatio <= 0 || settings.TargetWageSpendRatio > 1)
+    {
+      failures.Add($"{prefix}.TargetWageSpendRatio 0'dan büyük ve 1'den küçük veya eşit olmalıdır.");
+    }
+
+    if (settings.MaxGold < 0)
+    {
+      failures.Add($"{prefix}.MaxGold negatif olamaz.");
+    }
+
+    if (settings.MinSilver < 0)
+    {
+      failures.Add($"{prefix}.MinSilver negatif olamaz.");
+    }
+
+    if (settings.MaxIron < 0)
+    {
+      failures.Add($"{prefix}.MaxIron negatif olamaz.");
+    }
+
+    if (settings.FeeBandMultiplier <= 0 || settings.FeeBandMultiplier > 3)
+    {
+      failures.Add($"{prefix}.FeeBandMultiplier 0'dan büyük ve 3'ten küçük veya eşit olmalıdır.");
+    }
   }
 
   private static void ValidateRoleMultiplier(List<string> failures, decimal value, string name)

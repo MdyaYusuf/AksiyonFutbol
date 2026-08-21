@@ -18,18 +18,24 @@ public static class BotSquadAutoDraft
     BotDraftProfileKind profile,
     BotDraftStyle style)
   {
-    _ = profile;
     _ = style;
 
     ClubDraftBusinessRules.EnsureCompositionIsValid(options);
 
     BotDraftOptions botDraft = options.BotDraft;
+    BotDraftProfileSettings profileSettings = BotDraftProfileResolver.GetSettings(profile, botDraft);
+    bool allowDraftOnly = profile == BotDraftProfileKind.Gold && profileSettings.AllowDraftOnly;
+
+    List<BasePlayer> usableCatalog = catalog
+      .Where(bp => !bp.IsDraftOnly || allowDraftOnly)
+      .ToList();
+
     List<BotDraftRoleSlot> remainingSlots = BotDraftRoleQueue.Build(options);
     List<BasePlayer> selected = [];
     decimal remainingCash = cash;
     decimal remainingWage = wageBudget;
-    decimal plannedCashLeft = cash * botDraft.TargetCashSpendRatio;
-    decimal plannedWageLeft = wageBudget * botDraft.TargetWageSpendRatio;
+    decimal plannedCashLeft = cash * profileSettings.TargetCashSpendRatio;
+    decimal plannedWageLeft = wageBudget * profileSettings.TargetWageSpendRatio;
 
     while (remainingSlots.Count > 0)
     {
@@ -42,19 +48,24 @@ public static class BotSquadAutoDraft
 
       decimal baseTargetFee = plannedCashLeft / slotsLeft;
       decimal baseTargetWage = plannedWageLeft / slotsLeft;
-      decimal targetFee = baseTargetFee * BotDraftRoleQueue.GetFeeMultiplier(slot.Role, botDraft);
-      decimal targetWage = baseTargetWage * BotDraftRoleQueue.GetWageMultiplier(slot.Role, botDraft);
+      decimal targetFee = baseTargetFee
+        * BotDraftRoleQueue.GetFeeMultiplier(slot.Role, botDraft)
+        * profileSettings.FeeBandMultiplier;
+      decimal targetWage = baseTargetWage
+        * BotDraftRoleQueue.GetWageMultiplier(slot.Role, botDraft)
+        * profileSettings.FeeBandMultiplier;
 
       BasePlayer? pick = SelectPick(
-        catalog,
+        usableCatalog,
         selected,
-        slot.Position,
+        slot,
         remainingCash,
         remainingWage,
         slotsAfterCurrent,
         targetFee,
         targetWage,
-        botDraft);
+        botDraft,
+        profileSettings);
 
       if (pick == null)
       {
@@ -76,19 +87,23 @@ public static class BotSquadAutoDraft
   private static BasePlayer? SelectPick(
     IReadOnlyList<BasePlayer> catalog,
     List<BasePlayer> alreadySelected,
-    PlayerPosition position,
+    BotDraftRoleSlot slot,
     decimal remainingCash,
     decimal remainingWage,
     List<PlayerPosition> slotsAfterCurrent,
     decimal targetFee,
     decimal targetWage,
-    BotDraftOptions botDraft)
+    BotDraftOptions botDraft,
+    BotDraftProfileSettings profileSettings)
   {
     HashSet<Guid> selectedIds = alreadySelected.Select(p => p.Id).ToHashSet();
+    int goldCount = alreadySelected.Count(p => p.DraftTier == DraftTier.Gold);
+    int silverCount = alreadySelected.Count(p => p.DraftTier == DraftTier.Silver);
+    int ironCount = alreadySelected.Count(p => p.DraftTier == DraftTier.Iron);
 
     List<BasePlayer> affordable = catalog
       .Where(bp => !selectedIds.Contains(bp.Id))
-      .Where(bp => bp.Position == position)
+      .Where(bp => bp.Position == slot.Position)
       .Where(bp => bp.DraftFee <= remainingCash)
       .Where(bp => bp.Wage <= remainingWage)
       .Where(bp => LeavesEnoughReserve(
@@ -105,9 +120,27 @@ public static class BotSquadAutoDraft
       return null;
     }
 
+    List<BasePlayer> tierFiltered = ApplyHardTierCaps(
+      affordable,
+      goldCount,
+      ironCount,
+      profileSettings);
+
+    if (tierFiltered.Count == 0)
+    {
+      tierFiltered = affordable;
+    }
+
+    List<BasePlayer> preferenced = ApplyMinSilverPreference(
+      tierFiltered,
+      slot.Role,
+      silverCount,
+      goldCount,
+      profileSettings);
+
     decimal slack = botDraft.FeeTargetSlack;
     List<BasePlayer>? shortlist = BuildNearTargetShortlist(
-      affordable,
+      preferenced,
       targetFee,
       targetWage,
       slack,
@@ -116,7 +149,7 @@ public static class BotSquadAutoDraft
     if (shortlist == null || shortlist.Count == 0)
     {
       shortlist = BuildNearTargetShortlist(
-        affordable,
+        preferenced,
         targetFee,
         targetWage,
         Math.Min(1m, slack * 2m),
@@ -125,10 +158,19 @@ public static class BotSquadAutoDraft
 
     if (shortlist == null || shortlist.Count == 0)
     {
-      shortlist = affordable
+      shortlist = preferenced
         .OrderBy(bp => bp.DraftFee)
         .ThenBy(bp => bp.Wage)
         .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
+        .ThenBy(bp => bp.Id)
+        .Take(botDraft.ShortlistSize)
+        .ToList();
+    }
+
+    if (shortlist.Count == 0)
+    {
+      shortlist = affordable
+        .OrderBy(bp => bp.DraftFee)
         .ThenBy(bp => bp.Id)
         .Take(botDraft.ShortlistSize)
         .ToList();
@@ -140,6 +182,67 @@ public static class BotSquadAutoDraft
     }
 
     return shortlist[Random.Shared.Next(shortlist.Count)];
+  }
+
+  private static List<BasePlayer> ApplyHardTierCaps(
+    List<BasePlayer> candidates,
+    int goldCount,
+    int ironCount,
+    BotDraftProfileSettings profileSettings)
+  {
+    IEnumerable<BasePlayer> filtered = candidates;
+
+    if (goldCount >= profileSettings.MaxGold)
+    {
+      filtered = filtered.Where(bp => bp.DraftTier != DraftTier.Gold);
+    }
+
+    if (ironCount >= profileSettings.MaxIron)
+    {
+      filtered = filtered.Where(bp => bp.DraftTier != DraftTier.Iron);
+    }
+
+    return filtered.ToList();
+  }
+
+  private static List<BasePlayer> ApplyMinSilverPreference(
+    List<BasePlayer> candidates,
+    BotDraftRole role,
+    int silverCount,
+    int goldCount,
+    BotDraftProfileSettings profileSettings)
+  {
+    if (profileSettings.MinSilver <= 0)
+    {
+      return candidates;
+    }
+
+    int qualityCount = silverCount + goldCount;
+    if (qualityCount >= profileSettings.MinSilver)
+    {
+      return candidates;
+    }
+
+    bool ambitiousRole = role == BotDraftRole.Star
+      || role == BotDraftRole.Key
+      || role == BotDraftRole.Starter
+      || role == BotDraftRole.Engine;
+
+    if (!ambitiousRole)
+    {
+      return candidates;
+    }
+
+    List<BasePlayer> silverOrBetter = candidates
+      .Where(bp => bp.DraftTier == DraftTier.Silver || bp.DraftTier == DraftTier.Gold)
+      .ToList();
+
+    if (silverOrBetter.Count == 0)
+    {
+      return candidates;
+    }
+
+    return silverOrBetter;
   }
 
   private static bool LeavesEnoughReserve(
