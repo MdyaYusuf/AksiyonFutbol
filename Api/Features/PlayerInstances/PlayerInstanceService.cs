@@ -35,7 +35,7 @@ public class PlayerInstanceService(
       pageSize,
       filter,
       include: include ?? IncludePlayerRelations,
-      orderBy ?? (query => query.OrderBy(pi => pi.Club.Name).ThenBy(pi => pi.Position).ThenByDescending(pi => pi.AttackPower + pi.DefenseStrength + pi.MidfieldControl)),
+      orderBy ?? (query => query.OrderBy(pi => pi.Club.DisplayName).ThenBy(pi => pi.Position).ThenByDescending(pi => pi.AttackPower + pi.DefenseStrength + pi.MidfieldControl)),
       enableTracking,
       withDeleted,
       cancellationToken);

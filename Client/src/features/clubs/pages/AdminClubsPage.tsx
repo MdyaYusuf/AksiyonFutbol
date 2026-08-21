@@ -17,6 +17,7 @@ import {
   useUpdateClubStatusMutation,
 } from "../clubsApiSlice";
 import type { ClubCreationDefaults, ClubResponse } from "../clubTypes";
+import { getClubDisplayName } from "../utils/clubDisplayName";
 import {
   filterAdminClubs,
   type ClubTypeFilter,
@@ -38,7 +39,7 @@ const emptyFormValues = (
 });
 
 const toFormValues = (club: ClubResponse): AdminClubFormValues => ({
-  name: club.name,
+  name: getClubDisplayName(club),
   divisionId: club.divisionId ?? "",
   cash: club.cash,
   wageBudget: club.wageBudget,
@@ -221,7 +222,7 @@ export const AdminClubsPage = () => {
       return;
     }
 
-    const confirmed = window.confirm(`Delete club "${club.name}"?`);
+    const confirmed = window.confirm(`Delete club "${getClubDisplayName(club)}"?`);
 
     if (!confirmed) {
       return;

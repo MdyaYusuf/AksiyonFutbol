@@ -581,6 +581,11 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(50);
 
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("DivisionId")
                         .HasColumnType("int");
 
@@ -630,6 +635,8 @@ namespace AksiyonFutbol.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DisplayName");
+
                     b.HasIndex("DivisionId");
 
                     b.HasIndex("LifecycleStatus");
@@ -644,6 +651,8 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasFilter("[PresidentId] IS NOT NULL");
 
                     b.HasIndex("TutorialDivisionId");
+
+                    b.HasIndex("DivisionId", "DisplayName");
 
                     b.ToTable("Clubs", (string)null);
                 });

@@ -41,7 +41,7 @@ public class MatchWeekOrchestrationService(
         m.MatchWeek == processedMatchWeek,
       include: MatchPlayService.IncludeMatchRelations,
       enableTracking: true,
-      orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),
+      orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.DisplayName),
       cancellationToken: cancellationToken);
 
     List<Match> unplayedMatches = weekMatches

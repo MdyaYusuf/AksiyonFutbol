@@ -1,5 +1,6 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Features.BaseBotClubs;
 using Api.Features.ClubPresidents;
 using Api.Features.LeagueDivisions;
 using Microsoft.Extensions.Options;
@@ -10,6 +11,7 @@ public class ClubBusinessRules(
   IClubRepository _clubRepository,
   IClubPresidentRepository _clubPresidentRepository,
   ILeagueDivisionRepository _leagueDivisionRepository,
+  IBaseBotClubRepository _baseBotClubRepository,
   IOptions<GameOptions> _gameOptions)
 {
   public async Task<Club> GetClubIfExistAsync(
@@ -104,6 +106,43 @@ public class ClubBusinessRules(
     if (!isUnique)
     {
       throw new BusinessException("Bu kulüp adı zaten kullanımda.");
+    }
+  }
+
+  public async Task ClubDisplayNameMustBeUniqueInDivisionAsync(
+    string displayName,
+    int divisionId,
+    Guid? excludedClubId = null,
+    CancellationToken cancellationToken = default)
+  {
+    string normalized = displayName.Trim();
+
+    bool taken = await _clubRepository.AnyAsync(
+      c => c.DivisionId == divisionId
+        && c.DisplayName == normalized
+        && (excludedClubId == null || c.Id != excludedClubId),
+      cancellationToken);
+
+    if (taken)
+    {
+      throw new BusinessException("Bu lig grubunda aynı görünen ada sahip bir kulüp zaten var.");
+    }
+  }
+
+  public async Task ClubNameCannotMatchBotTemplateAsync(
+    string name,
+    CancellationToken cancellationToken = default)
+  {
+    string normalized = name.Trim();
+
+    bool matchesTemplate = await _baseBotClubRepository.AnyAsync(
+      b => b.Name == normalized,
+      cancellationToken);
+
+    if (matchesTemplate)
+    {
+      throw new BusinessException(
+        "Seçtiğiniz kulüp adı bot şablonları için rezerve edilmiştir. Lütfen farklı bir ad belirleyiniz.");
     }
   }
 

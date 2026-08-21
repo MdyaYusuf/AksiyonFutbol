@@ -6,6 +6,7 @@ import {
   PreferredFoot,
 } from "../../basePlayers/basePlayerTypes";
 import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import { paginateItems } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
 import {
   AdminPlayerInstanceFormPanel,
@@ -426,7 +427,7 @@ export const AdminPlayerInstancesPage = () => {
                 <option value="all">All Clubs</option>
                 {clubs.map((club) => (
                   <option key={club.id} value={club.id}>
-                    {club.name}
+                    {getClubDisplayName(club)}
                   </option>
                 ))}
               </select>

@@ -121,7 +121,7 @@ public class MatchService(
         m.Season == division.CurrentSeason &&
         m.MatchWeek == matchWeek,
       include: IncludeMatchRelations,
-      orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.Name),
+      orderBy: query => query.OrderBy(m => m.MatchDate).ThenBy(m => m.HomeClub.DisplayName),
       cancellationToken: cancellationToken);
 
     List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);

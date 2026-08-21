@@ -19,7 +19,6 @@ public class CompetitiveSeatingService(
   IBaseBotClubRepository _baseBotClubRepository,
   IBasePlayerRepository _basePlayerRepository,
   IClubLineupRepository _clubLineupRepository,
-  ClubBusinessRules _clubBusinessRules,
   IDefaultClubLineupService _defaultClubLineupService,
   IFixtureSchedulingService _fixtureSchedulingService,
   IUnitOfWork _unitOfWork,
@@ -116,8 +115,9 @@ public class CompetitiveSeatingService(
       seatedClubs.Add(human);
     }
 
-    List<BaseBotClub> botTemplates = await LoadAvailableCompetitiveBotTemplatesAsync(
+    List<BaseBotClub> botTemplates = await LoadDistinctCompetitiveBotTemplatesAsync(
       botsNeeded,
+      humanClubs,
       cancellationToken);
 
     List<BasePlayer> catalog = await _basePlayerRepository.GetAllAsync(
@@ -125,15 +125,16 @@ public class CompetitiveSeatingService(
 
     BotDraftProfileKind botProfile = BotDraftProfileResolver.FromLeagueTier(tier);
 
-    List<BaseBotClub> usedTemplates = [];
+    List<(Club Bot, BaseBotClub Template)> seatedBots = [];
 
     foreach (BaseBotClub template in botTemplates)
     {
-      await _clubBusinessRules.ClubNameMustBeUniqueAsync(template.Name, cancellationToken: cancellationToken);
+      (string instanceName, string displayName) = BotClubInstanceNaming.FromTemplate(template.Name);
 
       Club botClub = new()
       {
-        Name = template.Name,
+        Name = instanceName,
+        DisplayName = displayName,
         IsBot = true,
         PresidentId = null,
         Division = division,
@@ -166,7 +167,7 @@ public class CompetitiveSeatingService(
           PlayerInstanceFromBasePlayer.CreateFromTemplate(botClub.Id, pick));
       }
 
-      usedTemplates.Add(template);
+      seatedBots.Add((botClub, template));
       seatedClubs.Add(botClub);
     }
 
@@ -177,11 +178,9 @@ public class CompetitiveSeatingService(
       await _defaultClubLineupService.EnsureAsync(club.Id, cancellationToken);
     }
 
-    foreach (BaseBotClub template in usedTemplates)
+    foreach ((Club bot, BaseBotClub template) in seatedBots)
     {
-      Club? bot = seatedClubs.FirstOrDefault(c => c.IsBot && c.Name == template.Name);
-
-      if (bot == null || template.PreferredFormation == null)
+      if (template.PreferredFormation == null)
       {
         continue;
       }
@@ -231,8 +230,9 @@ public class CompetitiveSeatingService(
     return existing.Max(d => d.GroupNumber) + 1;
   }
 
-  private async Task<List<BaseBotClub>> LoadAvailableCompetitiveBotTemplatesAsync(
+  private async Task<List<BaseBotClub>> LoadDistinctCompetitiveBotTemplatesAsync(
     int count,
+    IReadOnlyList<Club> humanClubsInBatch,
     CancellationToken cancellationToken)
   {
     if (count == 0)
@@ -245,22 +245,29 @@ public class CompetitiveSeatingService(
       orderBy: query => query.OrderBy(b => b.Name),
       cancellationToken: cancellationToken);
 
-    HashSet<string> usedNames = (await _clubRepository.GetAllAsync(
-      cancellationToken: cancellationToken))
-      .Select(c => c.Name)
+    HashSet<string> reservedDisplayNames = humanClubsInBatch
+      .Select(c => c.DisplayName)
+      .Concat(humanClubsInBatch.Select(c => c.Name))
       .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-    List<BaseBotClub> available = templates
-      .Where(t => !usedNames.Contains(t.Name))
-      .Take(count)
+    List<BaseBotClub> eligible = templates
+      .Where(t => !reservedDisplayNames.Contains(t.Name))
       .ToList();
 
-    if (available.Count < count)
+    for (int i = eligible.Count - 1; i > 0; i--)
     {
-      throw new BusinessException(
-        $"Rekabetçi seating için yeterli bot şablonu yok. Gereken: {count}, uygun: {available.Count}.");
+      int swapIndex = Random.Shared.Next(i + 1);
+      (eligible[i], eligible[swapIndex]) = (eligible[swapIndex], eligible[i]);
     }
 
-    return available;
+    List<BaseBotClub> selected = eligible.Take(count).ToList();
+
+    if (selected.Count < count)
+    {
+      throw new BusinessException(
+        $"Rekabetçi seating için yeterli bot şablonu yok. Gereken: {count}, uygun: {selected.Count}.");
+    }
+
+    return selected;
   }
 }

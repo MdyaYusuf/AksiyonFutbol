@@ -1,5 +1,6 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { ClubResponse } from "../../clubs/clubTypes";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { ClubPresidentResponse } from "../clubPresidentTypes";
 import { formatCareerPeriod } from "../utils/presidentProfileHelpers";
 
@@ -39,7 +40,9 @@ export const CareerHistoryCard = ({
               <div className="flex h-8 w-8 items-center justify-center rounded border border-outline-variant bg-surface-variant">
                 <MaterialIcon name="shield" className="text-sm text-primary" />
               </div>
-              <span className="text-body-sm font-semibold text-on-surface">{club.name}</span>
+              <span className="text-body-sm font-semibold text-on-surface">
+                {getClubDisplayName(club)}
+              </span>
               <span className="hidden rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[10px] text-primary uppercase sm:inline-block">
                 Current
               </span>

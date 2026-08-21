@@ -36,7 +36,7 @@ public class FacilitiesMapper
     return new ClubFacilitiesOverviewDto
     {
       ClubId = club.Id,
-      ClubName = club.Name,
+      ClubName = club.DisplayName,
       ClubCash = clubCash,
       Morale = morale,
       Chemistry = club.Chemistry,

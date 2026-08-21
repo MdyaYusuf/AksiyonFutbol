@@ -54,7 +54,7 @@ public class ClubActionService(
     ClubActionsContextResponseDto response = new()
     {
       ClubId = club.Id,
-      ClubName = club.Name,
+      ClubName = club.DisplayName,
       ClubCash = view.Cash,
       Suspicion = view.Suspicion,
       MaxSuspicion = _businessRules.Options.MaxSuspicion,

@@ -42,7 +42,7 @@ public class TransferMapper
       IsInjured = player.IsInjured,
       AskingPrice = listing.AskingPrice,
       SellingClubId = listing.ClubId,
-      SellingClubName = listing.Club.Name,
+      SellingClubName = listing.Club.DisplayName,
       ListedAt = listing.CreatedDate
     };
   }
@@ -63,7 +63,7 @@ public class TransferMapper
       AskingPrice = listing.AskingPrice,
       Status = listing.Status,
       ClubId = listing.ClubId,
-      ClubName = listing.Club.Name,
+      ClubName = listing.Club.DisplayName,
       PendingOfferCount = listing.Offers.Count(o => o.Status == TransferOfferStatus.Pending),
       CreatedDate = listing.CreatedDate,
       UpdatedDate = listing.UpdatedDate
@@ -89,9 +89,9 @@ public class TransferMapper
       ProposedWage = offer.ProposedWage,
       Status = offer.Status,
       SellingClubId = listing.ClubId,
-      SellingClubName = listing.Club.Name,
+      SellingClubName = listing.Club.DisplayName,
       BuyingClubId = offer.BuyingClubId,
-      BuyingClubName = offer.BuyingClub.Name,
+      BuyingClubName = offer.BuyingClub.DisplayName,
       CreatedDate = offer.CreatedDate,
       UpdatedDate = offer.UpdatedDate
     };

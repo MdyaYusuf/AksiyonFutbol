@@ -25,7 +25,7 @@ public class BriberyService(
       cancellationToken: cancellationToken);
 
     ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
-    ClubContext clubContext = new(club.Id, club.Name, view.Cash);
+    ClubContext clubContext = new(club.Id, club.DisplayName, view.Cash);
     decimal minAmount = _businessRules.Options.BribeMinAmount;
     decimal maxAmount = _businessRules.Options.BribeMaxAmount;
 

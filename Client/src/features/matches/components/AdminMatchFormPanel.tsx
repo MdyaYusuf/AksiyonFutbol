@@ -1,5 +1,6 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { ClubResponse } from "../../clubs/clubTypes";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { RefereeResponse } from "../../referees/refereeTypes";
 import { formatDivisionOption } from "../utils/adminMatchesHelpers";
@@ -131,7 +132,7 @@ export const AdminMatchFormPanel = ({
               <option value="">Select Home Team...</option>
               {divisionClubs.map((club) => (
                 <option key={club.id} value={club.id}>
-                  {club.name}
+                  {getClubDisplayName(club)}
                 </option>
               ))}
             </select>
@@ -161,7 +162,7 @@ export const AdminMatchFormPanel = ({
                 .filter((club) => club.id !== values.homeClubId)
                 .map((club) => (
                   <option key={club.id} value={club.id}>
-                    {club.name}
+                    {getClubDisplayName(club)}
                   </option>
                 ))}
             </select>

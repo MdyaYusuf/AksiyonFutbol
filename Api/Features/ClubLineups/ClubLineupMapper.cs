@@ -15,7 +15,7 @@ public class ClubLineupMapper
     {
       Id = lineup.Id,
       ClubId = lineup.ClubId,
-      ClubName = lineup.Club.Name,
+      ClubName = lineup.Club.DisplayName,
       Formation = lineup.Formation,
       Mentality = lineup.Mentality,
       Starters = orderedSelections

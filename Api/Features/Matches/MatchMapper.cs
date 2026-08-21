@@ -10,13 +10,13 @@ public partial class MatchMapper
   public partial CreatedMatchResponseDto EntityToCreatedResponseDto(Match entity);
 
   [MapProperty("Division.Name", nameof(MatchResponseDto.DivisionName))]
-  [MapProperty("HomeClub.Name", nameof(MatchResponseDto.HomeClubName))]
-  [MapProperty("AwayClub.Name", nameof(MatchResponseDto.AwayClubName))]
+  [MapProperty("HomeClub.DisplayName", nameof(MatchResponseDto.HomeClubName))]
+  [MapProperty("AwayClub.DisplayName", nameof(MatchResponseDto.AwayClubName))]
   [MapProperty("Referee.Name", nameof(MatchResponseDto.RefereeName))]
   public partial MatchResponseDto EntityToResponseDto(Match entity);
 
-  [MapProperty("HomeClub.Name", nameof(MatchPreviewDto.HomeClubName))]
-  [MapProperty("AwayClub.Name", nameof(MatchPreviewDto.AwayClubName))]
+  [MapProperty("HomeClub.DisplayName", nameof(MatchPreviewDto.HomeClubName))]
+  [MapProperty("AwayClub.DisplayName", nameof(MatchPreviewDto.AwayClubName))]
   public partial MatchPreviewDto EntityToPreviewDto(Match entity);
 
   public List<MatchResponseDto> EntityToResponseDtoList(List<Match> entities)

@@ -76,7 +76,7 @@ public partial class PlayerInstanceMapper
       MarketValue = entity.MarketValue,
       Wage = entity.Wage,
       ClubId = entity.ClubId,
-      ClubName = entity.Club.Name,
+      ClubName = entity.Club.DisplayName,
       BasePlayerId = entity.BasePlayerId,
       CreatedDate = entity.CreatedDate
     };
@@ -95,7 +95,7 @@ public partial class PlayerInstanceMapper
       IsInjured = entity.IsInjured,
       InjuryDays = entity.InjuryDays,
       ClubId = entity.ClubId,
-      ClubName = entity.Club.Name
+      ClubName = entity.Club.DisplayName
     };
   }
 

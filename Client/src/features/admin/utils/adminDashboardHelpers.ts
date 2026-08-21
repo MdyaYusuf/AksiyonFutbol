@@ -1,4 +1,5 @@
 import type { ClubResponse } from "../../clubs/clubTypes";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { MatchResponse } from "../../matches/matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
@@ -141,7 +142,7 @@ export const buildRecentActivity = (
     activities.push({
       id: `club-${club.id}`,
       type: "club-created",
-      title: `New Club Founded: ${club.name}`,
+      title: `New Club Founded: ${getClubDisplayName(club)}`,
       subtitle: club.isBot ? "Bot club • Admin" : `Human club • ${club.presidentName ?? "No president"}`,
       sortDate: parseApiDate(club.createdDate),
     });

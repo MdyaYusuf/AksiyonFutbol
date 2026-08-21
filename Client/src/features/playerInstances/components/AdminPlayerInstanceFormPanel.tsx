@@ -6,6 +6,7 @@ import {
   type PlayerAttributes,
 } from "../../basePlayers/basePlayerTypes";
 import type { ClubResponse } from "../../clubs/clubTypes";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import { applyPositionChange } from "../utils/playerAttributeHelpers";
 import { AdminAttributeEditor } from "./AdminAttributeEditor";
 
@@ -175,7 +176,7 @@ export const AdminPlayerInstanceFormPanel = ({
                 <option value="">Select club</option>
                 {clubs.map((club) => (
                   <option key={club.id} value={club.id}>
-                    {club.name}
+                    {getClubDisplayName(club)}
                   </option>
                 ))}
               </select>
@@ -274,7 +275,7 @@ export const AdminPlayerInstanceFormPanel = ({
                 <option value="">Select club</option>
                 {clubs.map((club) => (
                   <option key={club.id} value={club.id}>
-                    {club.name}
+                    {getClubDisplayName(club)}
                   </option>
                 ))}
               </select>

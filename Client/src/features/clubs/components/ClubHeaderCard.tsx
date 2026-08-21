@@ -1,6 +1,7 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import type { ClubResponse } from "../clubTypes";
 import { formatEstablishedYear } from "../utils/clubOverviewHelpers";
+import { getClubDisplayName } from "../utils/clubDisplayName";
+import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 
 interface ClubHeaderCardProps {
   club: ClubResponse;
@@ -24,7 +25,7 @@ export const ClubHeaderCard = ({ club }: ClubHeaderCardProps) => {
           </span>
         </div>
         <h2 className="m-0 text-[32px] leading-10 font-extrabold tracking-tight text-on-surface lg:text-display-lg lg:leading-[56px]">
-          {club.name}
+          {getClubDisplayName(club)}
         </h2>
         <p className="mt-2 flex items-center gap-2 text-body-lg text-on-surface-variant">
           <MaterialIcon name="trophy" className="text-[18px]" />

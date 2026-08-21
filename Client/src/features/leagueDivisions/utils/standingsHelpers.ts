@@ -1,4 +1,5 @@
 import type { ClubPreview } from "../../clubs/clubTypes";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { MatchResponse } from "../../matches/matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
 
@@ -48,7 +49,7 @@ interface ClubStats {
 
 const createEmptyStats = (club: ClubPreview): ClubStats => ({
   clubId: club.id,
-  clubName: club.name,
+  clubName: getClubDisplayName(club),
   played: 0,
   won: 0,
   drawn: 0,

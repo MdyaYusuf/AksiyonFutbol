@@ -202,6 +202,7 @@ namespace AksiyonFutbol.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsBot = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     Cash = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
                     WageBudget = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
@@ -757,9 +758,19 @@ namespace AksiyonFutbol.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Clubs_DisplayName",
+                table: "Clubs",
+                column: "DisplayName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Clubs_DivisionId",
                 table: "Clubs",
                 column: "DivisionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clubs_DivisionId_DisplayName",
+                table: "Clubs",
+                columns: new[] { "DivisionId", "DisplayName" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clubs_LifecycleStatus",

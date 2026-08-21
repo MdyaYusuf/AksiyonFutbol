@@ -28,6 +28,10 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
       .HasMaxLength(100)
       .IsRequired();
 
+    builder.Property(c => c.DisplayName)
+      .HasMaxLength(100)
+      .IsRequired();
+
     builder.Property(c => c.IsBot)
       .HasDefaultValue(false)
       .IsRequired();
@@ -94,6 +98,9 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
 
     builder.HasIndex(c => c.Name)
       .IsUnique();
+
+    builder.HasIndex(c => c.DisplayName);
+    builder.HasIndex(c => new { c.DivisionId, c.DisplayName });
 
     builder.HasIndex(c => c.PresidentId)
       .IsUnique()

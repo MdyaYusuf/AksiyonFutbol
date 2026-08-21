@@ -51,7 +51,7 @@ public class TransferService(
       filtered = filtered.Where(l =>
         l.PlayerInstance.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
         l.PlayerInstance.LastName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-        l.Club.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+        l.Club.DisplayName.Contains(search, StringComparison.OrdinalIgnoreCase));
     }
 
     filtered = ApplyMarketSort(filtered, query);

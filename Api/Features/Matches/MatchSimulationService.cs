@@ -80,7 +80,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
       {
         Minute = 1,
         Type = MatchEventType.KickOff,
-        Description = $"{homeClub.Name} - {awayClub.Name} maçı başladı."
+        Description = $"{homeClub.DisplayName} - {awayClub.DisplayName} maçı başladı."
       }
     ];
 
@@ -95,7 +95,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
         {
           Minute = 45,
           Type = MatchEventType.HalfTime,
-          Description = $"İlk yarı sonucu: {homeClub.Name} {homeScore} - {awayScore} {awayClub.Name}."
+          Description = $"İlk yarı sonucu: {homeClub.DisplayName} {homeScore} - {awayScore} {awayClub.DisplayName}."
         });
         continue;
       }
@@ -159,7 +159,7 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     {
       Minute = 90,
       Type = MatchEventType.FullTime,
-      Description = $"Maç sonucu: {homeClub.Name} {homeScore} - {awayScore} {awayClub.Name}."
+      Description = $"Maç sonucu: {homeClub.DisplayName} {homeScore} - {awayScore} {awayClub.DisplayName}."
     });
 
     ApplyClubResultEffects(homeClub, awayClub, homeScore, awayScore);

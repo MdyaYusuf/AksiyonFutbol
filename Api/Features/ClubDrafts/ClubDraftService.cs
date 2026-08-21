@@ -16,7 +16,6 @@ namespace Api.Features.ClubDrafts;
 
 public class ClubDraftService(
   ClubDraftBusinessRules _businessRules,
-  ClubBusinessRules _clubBusinessRules,
   IBasePlayerRepository _basePlayerRepository,
   IClubDraftPickRepository _draftPickRepository,
   IClubRepository _clubRepository,
@@ -203,7 +202,7 @@ public class ClubDraftService(
 
     LeagueDivision tutorial = new()
     {
-      Name = BuildTutorialDivisionName(club.Name),
+      Name = BuildTutorialDivisionName(club.DisplayName),
       Tier = (int)LeagueTier.Iron,
       GroupNumber = 0,
       CurrentMatchWeek = options.MinimumMatchWeek,
@@ -243,12 +242,12 @@ public class ClubDraftService(
     {
       BaseBotClub template = botTemplates[i];
       BotDraftProfileKind botProfile = tutorialProfiles[i % tutorialProfiles.Count];
-
-      await _clubBusinessRules.ClubNameMustBeUniqueAsync(template.Name, cancellationToken: cancellationToken);
+      (string instanceName, string displayName) = BotClubInstanceNaming.FromTemplate(template.Name);
 
       Club botClub = new()
       {
-        Name = template.Name,
+        Name = instanceName,
+        DisplayName = displayName,
         IsBot = true,
         PresidentId = null,
         Division = tutorial,
@@ -293,10 +292,11 @@ public class ClubDraftService(
 
     await _defaultClubLineupService.EnsureAsync(club.Id, cancellationToken);
 
-    foreach (Club botClub in botClubs)
+    for (int i = 0; i < botClubs.Count; i++)
     {
+      Club botClub = botClubs[i];
       await _defaultClubLineupService.EnsureAsync(botClub.Id, cancellationToken);
-      await ApplyPreferredFormationAsync(botClub.Name, botClub.Id, botTemplates, cancellationToken);
+      await ApplyPreferredFormationAsync(botClub.Id, botTemplates[i], cancellationToken);
     }
 
     List<Guid> orderedClubIds = new List<Guid> { club.Id }
@@ -333,14 +333,11 @@ public class ClubDraftService(
   }
 
   private async Task ApplyPreferredFormationAsync(
-    string botClubName,
     Guid botClubId,
-    List<BaseBotClub> templates,
+    BaseBotClub template,
     CancellationToken cancellationToken)
   {
-    BaseBotClub? template = templates.FirstOrDefault(t => t.Name == botClubName);
-
-    if (template?.PreferredFormation == null)
+    if (template.PreferredFormation == null)
     {
       return;
     }
@@ -404,7 +401,7 @@ public class ClubDraftService(
     return new ClubDraftStateDto
     {
       ClubId = club.Id,
-      ClubName = club.Name,
+      ClubName = club.DisplayName,
       LifecycleStatus = club.LifecycleStatus,
       Cash = club.Cash,
       WageBudget = club.WageBudget,

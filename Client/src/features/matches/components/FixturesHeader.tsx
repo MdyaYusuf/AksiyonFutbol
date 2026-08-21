@@ -1,4 +1,5 @@
 import type { ClubResponse } from "../../clubs/clubTypes";
+import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { FixtureStatusFilter } from "../utils/fixturesHelpers";
 
 interface FixturesHeaderProps {
@@ -19,7 +20,7 @@ export const FixturesHeader = ({
           Fixtures & Results
         </h2>
         <p className="mt-1 text-body-lg text-on-surface-variant">
-          {club.divisionName} · {club.name}
+          {club.divisionName} · {getClubDisplayName(club)}
         </p>
       </div>
 
@@ -28,7 +29,7 @@ export const FixturesHeader = ({
           {club.divisionName}
         </span>
         <span className="rounded border border-outline-variant bg-surface-container-high px-3 py-2 text-body-sm text-on-surface">
-          {club.name}
+          {getClubDisplayName(club)}
         </span>
         <select
           value={statusFilter}

@@ -5,6 +5,7 @@ public sealed record ClubResponseDto
 {
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
+  public string DisplayName { get; init; } = default!;
   public bool IsBot { get; init; }
   public decimal Cash { get; init; }
   public decimal WageBudget { get; init; }
@@ -30,6 +31,7 @@ public sealed record ClubPreviewDto
 {
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
+  public string DisplayName { get; init; } = default!;
   public bool IsBot { get; init; }
   public ClubLifecycleStatus LifecycleStatus { get; init; }
   public Guid? PresidentId { get; init; }
@@ -42,6 +44,7 @@ public sealed record CreatedClubResponseDto
 {
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
+  public string DisplayName { get; init; } = default!;
   public ClubLifecycleStatus LifecycleStatus { get; init; }
   public int? DivisionId { get; init; }
 }

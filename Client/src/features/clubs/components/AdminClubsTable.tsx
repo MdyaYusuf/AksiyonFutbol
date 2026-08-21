@@ -7,6 +7,7 @@ import {
   getStatusBarColor,
   getTierBadgeClassName,
 } from "../utils/adminClubsHelpers";
+import { getClubDisplayName } from "../utils/clubDisplayName";
 
 interface AdminClubsTableProps {
   clubs: ClubResponse[];
@@ -119,7 +120,7 @@ export const AdminClubsTable = ({
                           {club.isBot ? (
                             <MaterialIcon name="smart_toy" className="text-[14px]" />
                           ) : (
-                            getClubInitials(club.name)
+                            getClubInitials(getClubDisplayName(club))
                           )}
                         </div>
                         <span
@@ -128,7 +129,7 @@ export const AdminClubsTable = ({
                             club.isBot ? "text-on-surface-variant" : "text-on-surface",
                           ].join(" ")}
                         >
-                          {club.name}
+                          {getClubDisplayName(club)}
                         </span>
                       </div>
                     </td>

@@ -66,9 +66,9 @@ public class ClubActionMapper
       MatchWeek = match.MatchWeek,
       MatchDate = match.MatchDate,
       HomeClubId = match.HomeClubId,
-      HomeClubName = match.HomeClub.Name,
+      HomeClubName = match.HomeClub.DisplayName,
       AwayClubId = match.AwayClubId,
-      AwayClubName = match.AwayClub.Name,
+      AwayClubName = match.AwayClub.DisplayName,
       IsHome = match.HomeClubId == clubId
     };
   }

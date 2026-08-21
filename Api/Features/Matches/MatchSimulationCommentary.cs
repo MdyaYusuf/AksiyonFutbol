@@ -285,7 +285,7 @@ internal static class MatchSimulationCommentary
       : $"{player.FirstName} {player.LastName}";
 
     return template
-      .Replace("{club}", club.Name, StringComparison.Ordinal)
+      .Replace("{club}", club.DisplayName, StringComparison.Ordinal)
       .Replace("{player}", playerName, StringComparison.Ordinal)
       .Replace("{minute}", minute.ToString(), StringComparison.Ordinal);
   }
@@ -296,7 +296,7 @@ internal static class MatchSimulationCommentary
   {
     string template = GoalKickTemplates[Random.Shared.Next(GoalKickTemplates.Length)];
     return template
-      .Replace("{club}", defendingClub.Name, StringComparison.Ordinal)
+      .Replace("{club}", defendingClub.DisplayName, StringComparison.Ordinal)
       .Replace("{shooter}", PlayerLabel(shooter), StringComparison.Ordinal);
   }
 
@@ -308,9 +308,9 @@ internal static class MatchSimulationCommentary
   {
     string template = ThrowInRestartTemplates[Random.Shared.Next(ThrowInRestartTemplates.Length)];
     return template
-      .Replace("{outClub}", outClub.Name, StringComparison.Ordinal)
+      .Replace("{outClub}", outClub.DisplayName, StringComparison.Ordinal)
       .Replace("{outPlayer}", PlayerLabel(outPlayer), StringComparison.Ordinal)
-      .Replace("{throwClub}", throwClub.Name, StringComparison.Ordinal)
+      .Replace("{throwClub}", throwClub.DisplayName, StringComparison.Ordinal)
       .Replace("{throwPlayer}", PlayerLabel(throwPlayer), StringComparison.Ordinal);
   }
 
@@ -322,9 +322,9 @@ internal static class MatchSimulationCommentary
   {
     string template = FoulFreeKickTemplates[Random.Shared.Next(FoulFreeKickTemplates.Length)];
     return template
-      .Replace("{foulClub}", foulClub.Name, StringComparison.Ordinal)
+      .Replace("{foulClub}", foulClub.DisplayName, StringComparison.Ordinal)
       .Replace("{foulPlayer}", PlayerLabel(foulPlayer), StringComparison.Ordinal)
-      .Replace("{fkClub}", freeKickClub.Name, StringComparison.Ordinal)
+      .Replace("{fkClub}", freeKickClub.DisplayName, StringComparison.Ordinal)
       .Replace("{fkPlayer}", PlayerLabel(freeKickPlayer), StringComparison.Ordinal);
   }
 

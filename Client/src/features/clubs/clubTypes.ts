@@ -21,6 +21,7 @@ export type LeagueTier = (typeof LeagueTier)[keyof typeof LeagueTier];
 export interface ClubResponse {
   id: string;
   name: string;
+  displayName: string;
   isBot: boolean;
   cash: number;
   wageBudget: number;
@@ -45,6 +46,7 @@ export interface ClubResponse {
 export interface ClubPreview {
   id: string;
   name: string;
+  displayName: string;
   isBot: boolean;
   lifecycleStatus: ClubLifecycleStatus;
   presidentId?: string | null;
@@ -56,6 +58,7 @@ export interface ClubPreview {
 export interface CreatedClubResponse {
   id: string;
   name: string;
+  displayName: string;
   lifecycleStatus: ClubLifecycleStatus;
   divisionId?: number | null;
 }

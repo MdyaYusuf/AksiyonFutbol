@@ -19,6 +19,7 @@ public class Club : Entity<Guid>
     DraftPicks = new HashSet<ClubDraftPick>();
 
     Name = default!;
+    DisplayName = default!;
     Morale = 50;
     Chemistry = 50;
     Discipline = 50;
@@ -26,7 +27,12 @@ public class Club : Entity<Guid>
     LifecycleStatus = ClubLifecycleStatus.Drafting;
   }
 
+  /// <summary>Globally unique system key. Bots use a generated value; humans match DisplayName.</summary>
   public required string Name { get; set; }
+
+  /// <summary>Player-facing label. Bots copy the template name; may repeat across divisions.</summary>
+  public required string DisplayName { get; set; }
+
   public bool IsBot { get; set; }
   public decimal Cash { get; set; }
   public decimal WageBudget { get; set; }

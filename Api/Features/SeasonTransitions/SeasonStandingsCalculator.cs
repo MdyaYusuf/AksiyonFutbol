@@ -30,7 +30,7 @@ public static class SeasonStandingsCalculator
       club => new ClubStats
       {
         ClubId = club.Id,
-        ClubName = club.Name
+        ClubName = club.DisplayName
       });
 
     List<Match> playedMatches = [];

@@ -66,11 +66,12 @@ export const filterAdminClubs = (
     }
 
     const presidentName = club.presidentName?.toLowerCase() ?? "";
-
+    const displayName = club.displayName?.toLowerCase() ?? "";
     const divisionName = club.divisionName?.toLowerCase() ?? "";
 
     return (
       club.name.toLowerCase().includes(normalizedQuery) ||
+      displayName.includes(normalizedQuery) ||
       divisionName.includes(normalizedQuery) ||
       presidentName.includes(normalizedQuery)
     );

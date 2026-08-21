@@ -219,9 +219,11 @@ public class ClubService(
     ClubPresident president = await _businessRules.GetPresidentByUserIdIfExistAsync(currentUserId, cancellationToken);
     await _businessRules.PresidentMustNotHaveClubAsync(president.Id, cancellationToken);
     _businessRules.ClubNameCannotBeRestrictedWord(request.Name);
+    await _businessRules.ClubNameCannotMatchBotTemplateAsync(request.Name, cancellationToken);
     await _businessRules.ClubNameMustBeUniqueAsync(request.Name, cancellationToken: cancellationToken);
 
     Club club = _mapper.CreateToEntity(request);
+    club.DisplayName = club.Name;
     club.PresidentId = president.Id;
     club.IsBot = false;
     club.DivisionId = null;
@@ -266,9 +268,17 @@ public class ClubService(
     await _businessRules.DivisionMustExistAsync(request.DivisionId, cancellationToken);
     await _businessRules.DivisionMustHaveCapacityAsync(request.DivisionId, cancellationToken);
     _businessRules.ClubNameCannotBeRestrictedWord(request.Name);
-    await _businessRules.ClubNameMustBeUniqueAsync(request.Name, cancellationToken: cancellationToken);
+
+    (string instanceName, string displayName) = BotClubInstanceNaming.FromTemplate(request.Name);
+    await _businessRules.ClubNameMustBeUniqueAsync(instanceName, cancellationToken: cancellationToken);
+    await _businessRules.ClubDisplayNameMustBeUniqueInDivisionAsync(
+      displayName,
+      request.DivisionId,
+      cancellationToken: cancellationToken);
 
     Club club = _mapper.CreateBotToEntity(request);
+    club.Name = instanceName;
+    club.DisplayName = displayName;
     club.IsBot = true;
     club.PresidentId = null;
     club.LifecycleStatus = ClubLifecycleStatus.Competitive;
@@ -313,9 +323,37 @@ public class ClubService(
 
     _businessRules.ClubMustBelongToCurrentUserOrAdmin(club, currentUserId, userRole);
     _businessRules.ClubNameCannotBeRestrictedWord(request.Name);
-    await _businessRules.ClubNameMustBeUniqueAsync(request.Name, request.Id, cancellationToken);
 
-    _mapper.UpdateEntityFromRequest(request, club);
+    if (club.IsBot)
+    {
+      if (club.DivisionId.HasValue)
+      {
+        await _businessRules.ClubDisplayNameMustBeUniqueInDivisionAsync(
+          request.Name,
+          club.DivisionId.Value,
+          club.Id,
+          cancellationToken);
+      }
+
+      club.DisplayName = request.Name.Trim();
+    }
+    else
+    {
+      await _businessRules.ClubNameCannotMatchBotTemplateAsync(request.Name, cancellationToken);
+      await _businessRules.ClubNameMustBeUniqueAsync(request.Name, request.Id, cancellationToken);
+
+      if (club.DivisionId.HasValue)
+      {
+        await _businessRules.ClubDisplayNameMustBeUniqueInDivisionAsync(
+          request.Name,
+          club.DivisionId.Value,
+          club.Id,
+          cancellationToken);
+      }
+
+      _mapper.UpdateEntityFromRequest(request, club);
+      club.DisplayName = club.Name;
+    }
 
     _clubRepository.Update(club);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -5,8 +5,12 @@ namespace Api.Features.Clubs;
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
 public partial class ClubMapper
 {
+  [MapperIgnoreTarget(nameof(Club.DisplayName))]
   public partial Club CreateToEntity(CreateClubRequest request);
+
+  [MapperIgnoreTarget(nameof(Club.DisplayName))]
   public partial Club CreateBotToEntity(CreateBotClubRequest request);
+
   public partial void UpdateEntityFromRequest(UpdateClubRequest request, Club entity);
   [MapProperty("President.Name", nameof(ClubResponseDto.PresidentName))]
   [MapProperty("Division.Name", nameof(ClubResponseDto.DivisionName))]

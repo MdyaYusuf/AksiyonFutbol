@@ -77,8 +77,8 @@ public sealed class MatchAutoSimulationBackgroundService(
         _logger.LogInformation(
           "Auto-simulated match {MatchId}: {Home} vs {Away}.",
           dueMatch.Id,
-          dueMatch.HomeClub?.Name ?? dueMatch.HomeClubId.ToString(),
-          dueMatch.AwayClub?.Name ?? dueMatch.AwayClubId.ToString());
+          dueMatch.HomeClub?.DisplayName ?? dueMatch.HomeClubId.ToString(),
+          dueMatch.AwayClub?.DisplayName ?? dueMatch.AwayClubId.ToString());
       }
       catch (Exception ex)
       {
@@ -86,8 +86,8 @@ public sealed class MatchAutoSimulationBackgroundService(
           ex,
           "Skipped auto-simulation for match {MatchId} ({Home} vs {Away}).",
           dueMatch.Id,
-          dueMatch.HomeClub?.Name ?? dueMatch.HomeClubId.ToString(),
-          dueMatch.AwayClub?.Name ?? dueMatch.AwayClubId.ToString());
+          dueMatch.HomeClub?.DisplayName ?? dueMatch.HomeClubId.ToString(),
+          dueMatch.AwayClub?.DisplayName ?? dueMatch.AwayClubId.ToString());
       }
     }
   }
