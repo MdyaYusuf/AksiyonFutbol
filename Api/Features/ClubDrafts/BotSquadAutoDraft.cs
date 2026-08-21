@@ -24,7 +24,7 @@ public static class BotSquadAutoDraft
     ClubDraftBusinessRules.EnsureCompositionIsValid(options);
 
     BotDraftOptions botDraft = options.BotDraft;
-    List<PlayerPosition> remainingSlots = BuildSlotQueue(options);
+    List<BotDraftRoleSlot> remainingSlots = BotDraftRoleQueue.Build(options);
     List<BasePlayer> selected = [];
     decimal remainingCash = cash;
     decimal remainingWage = wageBudget;
@@ -33,17 +33,22 @@ public static class BotSquadAutoDraft
 
     while (remainingSlots.Count > 0)
     {
-      PlayerPosition position = remainingSlots[0];
-      List<PlayerPosition> slotsAfterCurrent = remainingSlots.Skip(1).ToList();
+      BotDraftRoleSlot slot = remainingSlots[0];
+      List<PlayerPosition> slotsAfterCurrent = remainingSlots
+        .Skip(1)
+        .Select(s => s.Position)
+        .ToList();
       int slotsLeft = remainingSlots.Count;
 
-      decimal targetFee = plannedCashLeft / slotsLeft;
-      decimal targetWage = plannedWageLeft / slotsLeft;
+      decimal baseTargetFee = plannedCashLeft / slotsLeft;
+      decimal baseTargetWage = plannedWageLeft / slotsLeft;
+      decimal targetFee = baseTargetFee * BotDraftRoleQueue.GetFeeMultiplier(slot.Role, botDraft);
+      decimal targetWage = baseTargetWage * BotDraftRoleQueue.GetWageMultiplier(slot.Role, botDraft);
 
       BasePlayer? pick = SelectPick(
         catalog,
         selected,
-        position,
+        slot.Position,
         remainingCash,
         remainingWage,
         slotsAfterCurrent,
@@ -54,7 +59,7 @@ public static class BotSquadAutoDraft
       if (pick == null)
       {
         throw new BusinessException(
-          $"Bot draft için yeterli {position} adayı kalmadı. Katalog veya bütçe yetersiz.");
+          $"Bot draft için yeterli {slot.Position} adayı kalmadı. Katalog veya bütçe yetersiz.");
       }
 
       selected.Add(pick);
@@ -66,21 +71,6 @@ public static class BotSquadAutoDraft
     }
 
     return selected;
-  }
-
-  private static List<PlayerPosition> BuildSlotQueue(GameOptions options)
-  {
-    List<PlayerPosition> slots = [];
-
-    foreach ((PlayerPosition position, int required) in ClubDraftBusinessRules.GetQuotaMap(options))
-    {
-      for (int i = 0; i < required; i++)
-      {
-        slots.Add(position);
-      }
-    }
-
-    return slots;
   }
 
   private static BasePlayer? SelectPick(
@@ -136,7 +126,8 @@ public static class BotSquadAutoDraft
     if (shortlist == null || shortlist.Count == 0)
     {
       shortlist = affordable
-        .OrderBy(bp => DistanceToTargets(bp, targetFee, targetWage))
+        .OrderBy(bp => bp.DraftFee)
+        .ThenBy(bp => bp.Wage)
         .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
         .ThenBy(bp => bp.Id)
         .Take(botDraft.ShortlistSize)

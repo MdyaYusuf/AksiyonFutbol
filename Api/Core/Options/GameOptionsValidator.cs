@@ -500,6 +500,32 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
     {
       failures.Add("BotDraft.FeeTargetSlack 0 ile 1 arasında olmalıdır.");
     }
+
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierStar, "BotDraft.RoleFeeMultiplierStar");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierKey, "BotDraft.RoleFeeMultiplierKey");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierStarter, "BotDraft.RoleFeeMultiplierStarter");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierEngine, "BotDraft.RoleFeeMultiplierEngine");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierSupport, "BotDraft.RoleFeeMultiplierSupport");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierRotation, "BotDraft.RoleFeeMultiplierRotation");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierCheap, "BotDraft.RoleFeeMultiplierCheap");
+    ValidateRoleMultiplier(failures, botDraft.RoleFeeMultiplierBackup, "BotDraft.RoleFeeMultiplierBackup");
+
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierStar, "BotDraft.RoleWageMultiplierStar");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierKey, "BotDraft.RoleWageMultiplierKey");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierStarter, "BotDraft.RoleWageMultiplierStarter");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierEngine, "BotDraft.RoleWageMultiplierEngine");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierSupport, "BotDraft.RoleWageMultiplierSupport");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierRotation, "BotDraft.RoleWageMultiplierRotation");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierCheap, "BotDraft.RoleWageMultiplierCheap");
+    ValidateRoleMultiplier(failures, botDraft.RoleWageMultiplierBackup, "BotDraft.RoleWageMultiplierBackup");
+  }
+
+  private static void ValidateRoleMultiplier(List<string> failures, decimal value, string name)
+  {
+    if (value <= 0 || value > 3)
+    {
+      failures.Add($"{name} 0'dan büyük ve 3'ten küçük veya eşit olmalıdır.");
+    }
   }
 
   private static void ValidateMentalityMultiplier(
