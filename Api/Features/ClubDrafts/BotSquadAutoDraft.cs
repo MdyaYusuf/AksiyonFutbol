@@ -5,7 +5,7 @@ using Api.Features.BasePlayers;
 namespace Api.Features.ClubDrafts;
 
 /// <summary>
-/// Shared bot squad builder for tutorial finalize, competitive seating, and (later) admin bots.
+/// Shared bot squad builder for tutorial finalize, competitive seating, and admin bots.
 /// Clones from a read-only catalog; does not deplete templates for other clubs.
 /// </summary>
 public static class BotSquadAutoDraft
@@ -18,12 +18,12 @@ public static class BotSquadAutoDraft
     BotDraftProfileKind profile,
     BotDraftStyle style)
   {
-    _ = style;
-
     ClubDraftBusinessRules.EnsureCompositionIsValid(options);
 
     BotDraftOptions botDraft = options.BotDraft;
-    BotDraftProfileSettings profileSettings = BotDraftProfileResolver.GetSettings(profile, botDraft);
+    BotDraftProfileSettings profileSettings = BotDraftStyleEffects.ApplyProfileOverrides(
+      BotDraftProfileResolver.GetSettings(profile, botDraft),
+      style);
     bool allowDraftOnly = profile == BotDraftProfileKind.Gold && profileSettings.AllowDraftOnly;
 
     List<BasePlayer> usableCatalog = catalog
@@ -36,6 +36,7 @@ public static class BotSquadAutoDraft
     decimal remainingWage = wageBudget;
     decimal plannedCashLeft = cash * profileSettings.TargetCashSpendRatio;
     decimal plannedWageLeft = wageBudget * profileSettings.TargetWageSpendRatio;
+    bool starHeavyBoostUsed = false;
 
     while (remainingSlots.Count > 0)
     {
@@ -55,6 +56,14 @@ public static class BotSquadAutoDraft
         * BotDraftRoleQueue.GetWageMultiplier(slot.Role, botDraft)
         * profileSettings.FeeBandMultiplier;
 
+      BotDraftStyleEffects.AdjustTargets(
+        style,
+        slot.Role,
+        slot.Position,
+        ref targetFee,
+        ref targetWage,
+        ref starHeavyBoostUsed);
+
       BasePlayer? pick = SelectPick(
         usableCatalog,
         selected,
@@ -65,7 +74,8 @@ public static class BotSquadAutoDraft
         targetFee,
         targetWage,
         botDraft,
-        profileSettings);
+        profileSettings,
+        style);
 
       if (pick == null)
       {
@@ -94,7 +104,8 @@ public static class BotSquadAutoDraft
     decimal targetFee,
     decimal targetWage,
     BotDraftOptions botDraft,
-    BotDraftProfileSettings profileSettings)
+    BotDraftProfileSettings profileSettings,
+    BotDraftStyle style)
   {
     HashSet<Guid> selectedIds = alreadySelected.Select(p => p.Id).ToHashSet();
     int goldCount = alreadySelected.Count(p => p.DraftTier == DraftTier.Gold);
@@ -144,7 +155,8 @@ public static class BotSquadAutoDraft
       targetFee,
       targetWage,
       slack,
-      botDraft.ShortlistSize);
+      botDraft.ShortlistSize,
+      style);
 
     if (shortlist == null || shortlist.Count == 0)
     {
@@ -153,16 +165,19 @@ public static class BotSquadAutoDraft
         targetFee,
         targetWage,
         Math.Min(1m, slack * 2m),
-        botDraft.ShortlistSize);
+        botDraft.ShortlistSize,
+        style);
     }
 
     if (shortlist == null || shortlist.Count == 0)
     {
-      shortlist = preferenced
-        .OrderBy(bp => bp.DraftFee)
-        .ThenBy(bp => bp.Wage)
-        .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
-        .ThenBy(bp => bp.Id)
+      shortlist = BotDraftStyleEffects.OrderByStylePreference(
+          preferenced,
+          style,
+          targetFee,
+          targetWage,
+          DistanceToTargets,
+          BasePlayerRatingCalculator.Calculate)
         .Take(botDraft.ShortlistSize)
         .ToList();
     }
@@ -275,19 +290,23 @@ public static class BotSquadAutoDraft
     decimal targetFee,
     decimal targetWage,
     decimal slack,
-    int shortlistSize)
+    int shortlistSize,
+    BotDraftStyle style)
   {
     decimal feeMin = targetFee * (1m - slack);
     decimal feeMax = targetFee * (1m + slack);
     decimal wageMin = targetWage * (1m - slack);
     decimal wageMax = targetWage * (1m + slack);
 
-    List<BasePlayer> inBand = affordable
-      .Where(bp => bp.DraftFee >= feeMin && bp.DraftFee <= feeMax)
-      .Where(bp => bp.Wage >= wageMin && bp.Wage <= wageMax)
-      .OrderBy(bp => DistanceToTargets(bp, targetFee, targetWage))
-      .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
-      .ThenBy(bp => bp.Id)
+    List<BasePlayer> inBand = BotDraftStyleEffects.OrderByStylePreference(
+        affordable
+          .Where(bp => bp.DraftFee >= feeMin && bp.DraftFee <= feeMax)
+          .Where(bp => bp.Wage >= wageMin && bp.Wage <= wageMax),
+        style,
+        targetFee,
+        targetWage,
+        DistanceToTargets,
+        BasePlayerRatingCalculator.Calculate)
       .Take(shortlistSize)
       .ToList();
 

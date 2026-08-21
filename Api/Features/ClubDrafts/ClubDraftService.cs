@@ -264,13 +264,15 @@ public class ClubDraftService(
 
       await _clubRepository.AddAsync(botClub, cancellationToken);
 
+      BotDraftStyle botStyle = BotDraftStylePicker.Roll(options.BotDraft.TutorialStyleWeights);
+
       List<BasePlayer> botPicks = BotSquadAutoDraft.SelectSquad(
         catalog,
         options,
         botClub.Cash,
         botClub.WageBudget,
         botProfile,
-        BotDraftStyle.Balanced);
+        botStyle);
 
       foreach (BasePlayer pick in botPicks)
       {

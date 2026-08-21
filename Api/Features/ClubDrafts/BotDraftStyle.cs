@@ -1,7 +1,7 @@
 namespace Api.Features.ClubDrafts;
 
 /// <summary>
-/// Personality lean for bot auto-draft. Step 1 accepts this; later steps apply modifiers.
+/// Personality lean for bot auto-draft target bands and shortlist ordering.
 /// </summary>
 public enum BotDraftStyle
 {

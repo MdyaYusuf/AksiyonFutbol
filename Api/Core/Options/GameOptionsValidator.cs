@@ -526,6 +526,41 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
     ValidateProfileSettings(failures, botDraft.Bronze, "BotDraft.Bronze");
     ValidateProfileSettings(failures, botDraft.Silver, "BotDraft.Silver");
     ValidateProfileSettings(failures, botDraft.Gold, "BotDraft.Gold");
+
+    ValidateStyleWeights(failures, botDraft.TutorialStyleWeights, "BotDraft.TutorialStyleWeights");
+    ValidateStyleWeights(failures, botDraft.CompetitiveStyleWeights, "BotDraft.CompetitiveStyleWeights");
+  }
+
+  private static void ValidateStyleWeights(
+    List<string> failures,
+    BotDraftStyleWeights weights,
+    string prefix)
+  {
+    if (weights.Balanced < 0
+      || weights.YouthCheap < 0
+      || weights.VeteranWages < 0
+      || weights.StarHeavy < 0
+      || weights.Depth < 0)
+    {
+      failures.Add($"{prefix} ağırlıkları negatif olamaz.");
+    }
+
+    decimal sum = weights.Balanced
+      + weights.YouthCheap
+      + weights.VeteranWages
+      + weights.StarHeavy
+      + weights.Depth;
+
+    if (sum <= 0m)
+    {
+      failures.Add($"{prefix} toplamı 0'dan büyük olmalıdır.");
+      return;
+    }
+
+    if (Math.Abs(sum - 1m) > 0.02m)
+    {
+      failures.Add($"{prefix} toplamı yaklaşık 1 olmalıdır (şu an: {sum}).");
+    }
   }
 
   private static void ValidateProfileSettings(

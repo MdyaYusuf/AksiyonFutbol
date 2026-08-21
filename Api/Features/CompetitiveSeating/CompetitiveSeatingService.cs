@@ -149,13 +149,15 @@ public class CompetitiveSeatingService(
 
       await _clubRepository.AddAsync(botClub, cancellationToken);
 
+      BotDraftStyle botStyle = BotDraftStylePicker.Roll(options.BotDraft.CompetitiveStyleWeights);
+
       List<BasePlayer> picks = BotSquadAutoDraft.SelectSquad(
         catalog,
         options,
         botClub.Cash,
         botClub.WageBudget,
         botProfile,
-        BotDraftStyle.Balanced);
+        botStyle);
 
       foreach (BasePlayer pick in picks)
       {

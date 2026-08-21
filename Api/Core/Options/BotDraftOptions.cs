@@ -111,4 +111,24 @@ public class BotDraftOptions
     FeeBandMultiplier = 1.20m,
     AllowDraftOnly = true
   };
+
+  /// <summary>Tutorial bot style roll; Balanced should dominate.</summary>
+  public BotDraftStyleWeights TutorialStyleWeights { get; set; } = new()
+  {
+    Balanced = 0.40m,
+    YouthCheap = 0.15m,
+    VeteranWages = 0.15m,
+    StarHeavy = 0.15m,
+    Depth = 0.15m
+  };
+
+  /// <summary>Competitive seating style roll; equal by default.</summary>
+  public BotDraftStyleWeights CompetitiveStyleWeights { get; set; } = new()
+  {
+    Balanced = 0.20m,
+    YouthCheap = 0.20m,
+    VeteranWages = 0.20m,
+    StarHeavy = 0.20m,
+    Depth = 0.20m
+  };
 }

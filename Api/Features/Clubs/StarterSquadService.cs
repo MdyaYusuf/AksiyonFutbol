@@ -1,6 +1,7 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Features.BasePlayers;
+using Api.Features.ClubDrafts;
 using Api.Features.PlayerInstances;
 using Microsoft.Extensions.Options;
 
@@ -30,97 +31,29 @@ public class StarterSquadService(
     }
 
     GameOptions options = _gameOptions.Value;
-    EnsureCompositionIsValid(options);
+    ClubDraftBusinessRules.EnsureCompositionIsValid(options);
 
-    List<BasePlayer> selectedTemplates = await SelectTemplatesAsync(options, cancellationToken);
+    decimal selectionCash = options.DraftStartingCash;
+    decimal selectionWage = options.TierStartingWageBudgetIron;
+    club.Cash = Math.Max(club.Cash, selectionCash);
+    club.WageBudget = Math.Max(club.WageBudget, selectionWage);
 
-    foreach (BasePlayer template in selectedTemplates)
-    {
-      club.Players.Add(PlayerInstanceFromBasePlayer.CreateFromTemplate(club.Id, template));
-    }
-  }
-
-  private async Task<List<BasePlayer>> SelectTemplatesAsync(
-    GameOptions options,
-    CancellationToken cancellationToken)
-  {
-    List<BasePlayer> selected = new();
-
-    selected.AddRange(await PickForPositionAsync(
-      PlayerPosition.Goalkeeper,
-      options.StarterSquadGoalkeepers,
-      "kaleci",
-      cancellationToken));
-
-    selected.AddRange(await PickForPositionAsync(
-      PlayerPosition.Defender,
-      options.StarterSquadDefenders,
-      "defans",
-      cancellationToken));
-
-    selected.AddRange(await PickForPositionAsync(
-      PlayerPosition.Midfielder,
-      options.StarterSquadMidfielders,
-      "orta saha",
-      cancellationToken));
-
-    selected.AddRange(await PickForPositionAsync(
-      PlayerPosition.Forward,
-      options.StarterSquadForwards,
-      "forvet",
-      cancellationToken));
-
-    return selected;
-  }
-
-  private async Task<List<BasePlayer>> PickForPositionAsync(
-    PlayerPosition position,
-    int count,
-    string positionLabel,
-    CancellationToken cancellationToken)
-  {
-    if (count <= 0)
-    {
-      return [];
-    }
-
-    List<BasePlayer> pool = await _basePlayerRepository.GetAllAsync(
-      filter: bp => bp.Position == position,
-      orderBy: query => query
-        .OrderByDescending(bp => bp.AttackPower + bp.DefenseStrength + bp.MidfieldControl)
-        .ThenBy(bp => bp.DefaultLastName)
-        .ThenBy(bp => bp.DefaultFirstName),
+    List<BasePlayer> catalog = await _basePlayerRepository.GetAllAsync(
       enableTracking: false,
       cancellationToken: cancellationToken);
 
-    if (pool.Count < count)
+    List<BasePlayer> selectedTemplates = BotSquadAutoDraft.SelectSquad(
+      catalog,
+      options,
+      selectionCash,
+      selectionWage,
+      BotDraftProfileKind.Iron,
+      BotDraftStyle.Balanced);
+
+    foreach (BasePlayer template in selectedTemplates)
     {
-      throw new BusinessException(
-        $"Başlangıç kadrosu için yeterli {positionLabel} şablonu yok. Gereken: {count}, mevcut: {pool.Count}.");
-    }
-
-    return pool
-      .OrderBy(_ => Random.Shared.Next())
-      .Take(count)
-      .ToList();
-  }
-
-  private static void EnsureCompositionIsValid(GameOptions options)
-  {
-    int total =
-      options.StarterSquadGoalkeepers +
-      options.StarterSquadDefenders +
-      options.StarterSquadMidfielders +
-      options.StarterSquadForwards;
-
-    if (total <= 0)
-    {
-      throw new BusinessException("Başlangıç kadrosu oyuncu sayısı yapılandırması geçersiz.");
-    }
-
-    if (options.StarterSquadGoalkeepers < 1)
-    {
-      throw new BusinessException("Başlangıç kadrosunda en az bir kaleci olmalıdır.");
+      club.Cash -= template.DraftFee;
+      club.Players.Add(PlayerInstanceFromBasePlayer.CreateFromTemplate(club.Id, template));
     }
   }
 }
