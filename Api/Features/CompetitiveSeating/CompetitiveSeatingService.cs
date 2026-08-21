@@ -120,8 +120,10 @@ public class CompetitiveSeatingService(
       botsNeeded,
       cancellationToken);
 
-    List<BasePlayer> playerPool = await _basePlayerRepository.GetAllAsync(
+    List<BasePlayer> catalog = await _basePlayerRepository.GetAllAsync(
       cancellationToken: cancellationToken);
+
+    BotDraftProfileKind botProfile = BotDraftProfileResolver.FromLeagueTier(tier);
 
     List<BaseBotClub> usedTemplates = [];
 
@@ -148,10 +150,12 @@ public class CompetitiveSeatingService(
       await _clubRepository.AddAsync(botClub, cancellationToken);
 
       List<BasePlayer> picks = BotSquadAutoDraft.SelectSquad(
-        playerPool,
+        catalog,
         options,
         botClub.Cash,
-        botClub.WageBudget);
+        botClub.WageBudget,
+        botProfile,
+        BotDraftStyle.Balanced);
 
       foreach (BasePlayer pick in picks)
       {

@@ -198,13 +198,8 @@ public class ClubDraftService(
 
     List<BaseBotClub> botTemplates = await _businessRules.GetTutorialBotTemplatesAsync(cancellationToken);
 
-    List<BasePlayer> allTemplates = await _basePlayerRepository.GetAllAsync(
+    List<BasePlayer> catalog = await _basePlayerRepository.GetAllAsync(
       cancellationToken: cancellationToken);
-
-    HashSet<Guid> takenIds = club.DraftPicks.Select(p => p.BasePlayerId).ToHashSet();
-    List<BasePlayer> remainingPool = allTemplates
-      .Where(bp => !takenIds.Contains(bp.Id))
-      .ToList();
 
     LeagueDivision tutorial = new()
     {
@@ -266,10 +261,12 @@ public class ClubDraftService(
       await _clubRepository.AddAsync(botClub, cancellationToken);
 
       List<BasePlayer> botPicks = BotSquadAutoDraft.SelectSquad(
-        remainingPool,
+        catalog,
         options,
         botClub.Cash,
-        botClub.WageBudget);
+        botClub.WageBudget,
+        BotDraftProfileKind.TutorialMid,
+        BotDraftStyle.Balanced);
 
       foreach (BasePlayer pick in botPicks)
       {
