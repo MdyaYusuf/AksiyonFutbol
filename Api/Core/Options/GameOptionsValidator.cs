@@ -472,9 +472,34 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("MatchAutoSimulatePollSeconds 0'dan büyük olmalıdır.");
     }
 
+    ValidateBotDraft(failures, options.BotDraft);
+
     return failures.Count > 0
       ? ValidateOptionsResult.Fail(failures)
       : ValidateOptionsResult.Success;
+  }
+
+  private static void ValidateBotDraft(List<string> failures, BotDraftOptions botDraft)
+  {
+    if (botDraft.TargetCashSpendRatio <= 0 || botDraft.TargetCashSpendRatio > 1)
+    {
+      failures.Add("BotDraft.TargetCashSpendRatio 0'dan büyük ve 1'den küçük veya eşit olmalıdır.");
+    }
+
+    if (botDraft.TargetWageSpendRatio <= 0 || botDraft.TargetWageSpendRatio > 1)
+    {
+      failures.Add("BotDraft.TargetWageSpendRatio 0'dan büyük ve 1'den küçük veya eşit olmalıdır.");
+    }
+
+    if (botDraft.ShortlistSize < 1)
+    {
+      failures.Add("BotDraft.ShortlistSize 1'den küçük olamaz.");
+    }
+
+    if (botDraft.FeeTargetSlack < 0 || botDraft.FeeTargetSlack > 1)
+    {
+      failures.Add("BotDraft.FeeTargetSlack 0 ile 1 arasında olmalıdır.");
+    }
   }
 
   private static void ValidateMentalityMultiplier(

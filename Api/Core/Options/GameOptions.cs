@@ -146,4 +146,6 @@ public class GameOptions
 
   public int MatchLiveReplayDurationSeconds { get; set; } = 180;
   public int MatchAutoSimulatePollSeconds { get; set; } = 5;
+
+  public BotDraftOptions BotDraft { get; set; } = new();
 }

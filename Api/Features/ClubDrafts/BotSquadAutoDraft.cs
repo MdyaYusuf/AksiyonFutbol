@@ -23,15 +23,22 @@ public static class BotSquadAutoDraft
 
     ClubDraftBusinessRules.EnsureCompositionIsValid(options);
 
+    BotDraftOptions botDraft = options.BotDraft;
     List<PlayerPosition> remainingSlots = BuildSlotQueue(options);
     List<BasePlayer> selected = [];
     decimal remainingCash = cash;
     decimal remainingWage = wageBudget;
+    decimal plannedCashLeft = cash * botDraft.TargetCashSpendRatio;
+    decimal plannedWageLeft = wageBudget * botDraft.TargetWageSpendRatio;
 
     while (remainingSlots.Count > 0)
     {
       PlayerPosition position = remainingSlots[0];
       List<PlayerPosition> slotsAfterCurrent = remainingSlots.Skip(1).ToList();
+      int slotsLeft = remainingSlots.Count;
+
+      decimal targetFee = plannedCashLeft / slotsLeft;
+      decimal targetWage = plannedWageLeft / slotsLeft;
 
       BasePlayer? pick = SelectPick(
         catalog,
@@ -39,7 +46,10 @@ public static class BotSquadAutoDraft
         position,
         remainingCash,
         remainingWage,
-        slotsAfterCurrent);
+        slotsAfterCurrent,
+        targetFee,
+        targetWage,
+        botDraft);
 
       if (pick == null)
       {
@@ -50,6 +60,8 @@ public static class BotSquadAutoDraft
       selected.Add(pick);
       remainingCash -= pick.DraftFee;
       remainingWage -= pick.Wage;
+      plannedCashLeft = Math.Max(0m, plannedCashLeft - pick.DraftFee);
+      plannedWageLeft = Math.Max(0m, plannedWageLeft - pick.Wage);
       remainingSlots.RemoveAt(0);
     }
 
@@ -77,45 +89,132 @@ public static class BotSquadAutoDraft
     PlayerPosition position,
     decimal remainingCash,
     decimal remainingWage,
-    List<PlayerPosition> slotsAfterCurrent)
+    List<PlayerPosition> slotsAfterCurrent,
+    decimal targetFee,
+    decimal targetWage,
+    BotDraftOptions botDraft)
   {
     HashSet<Guid> selectedIds = alreadySelected.Select(p => p.Id).ToHashSet();
 
-    List<BasePlayer> candidates = catalog
+    List<BasePlayer> affordable = catalog
       .Where(bp => !selectedIds.Contains(bp.Id))
       .Where(bp => bp.Position == position)
       .Where(bp => bp.DraftFee <= remainingCash)
       .Where(bp => bp.Wage <= remainingWage)
-      .Where(bp =>
-      {
-        HashSet<Guid> usedAfterPick = new(selectedIds) { bp.Id };
-        decimal cashLeft = remainingCash - bp.DraftFee;
-        decimal wageLeft = remainingWage - bp.Wage;
-
-        if (cashLeft < MinCashToFill(catalog, usedAfterPick, slotsAfterCurrent))
-        {
-          return false;
-        }
-
-        if (wageLeft < MinWageToFill(catalog, usedAfterPick, slotsAfterCurrent))
-        {
-          return false;
-        }
-
-        return true;
-      })
-      .OrderBy(bp => bp.DraftFee)
-      .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
-      .ThenBy(bp => bp.Id)
-      .Take(3)
+      .Where(bp => LeavesEnoughReserve(
+        catalog,
+        selectedIds,
+        bp,
+        remainingCash,
+        remainingWage,
+        slotsAfterCurrent))
       .ToList();
 
-    if (candidates.Count == 0)
+    if (affordable.Count == 0)
     {
       return null;
     }
 
-    return candidates[Random.Shared.Next(candidates.Count)];
+    decimal slack = botDraft.FeeTargetSlack;
+    List<BasePlayer>? shortlist = BuildNearTargetShortlist(
+      affordable,
+      targetFee,
+      targetWage,
+      slack,
+      botDraft.ShortlistSize);
+
+    if (shortlist == null || shortlist.Count == 0)
+    {
+      shortlist = BuildNearTargetShortlist(
+        affordable,
+        targetFee,
+        targetWage,
+        Math.Min(1m, slack * 2m),
+        botDraft.ShortlistSize);
+    }
+
+    if (shortlist == null || shortlist.Count == 0)
+    {
+      shortlist = affordable
+        .OrderBy(bp => DistanceToTargets(bp, targetFee, targetWage))
+        .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
+        .ThenBy(bp => bp.Id)
+        .Take(botDraft.ShortlistSize)
+        .ToList();
+    }
+
+    if (shortlist.Count == 0)
+    {
+      return null;
+    }
+
+    return shortlist[Random.Shared.Next(shortlist.Count)];
+  }
+
+  private static bool LeavesEnoughReserve(
+    IReadOnlyList<BasePlayer> catalog,
+    HashSet<Guid> selectedIds,
+    BasePlayer candidate,
+    decimal remainingCash,
+    decimal remainingWage,
+    List<PlayerPosition> slotsAfterCurrent)
+  {
+    HashSet<Guid> usedAfterPick = new(selectedIds) { candidate.Id };
+    decimal cashLeft = remainingCash - candidate.DraftFee;
+    decimal wageLeft = remainingWage - candidate.Wage;
+
+    if (cashLeft < MinCashToFill(catalog, usedAfterPick, slotsAfterCurrent))
+    {
+      return false;
+    }
+
+    if (wageLeft < MinWageToFill(catalog, usedAfterPick, slotsAfterCurrent))
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  private static List<BasePlayer>? BuildNearTargetShortlist(
+    List<BasePlayer> affordable,
+    decimal targetFee,
+    decimal targetWage,
+    decimal slack,
+    int shortlistSize)
+  {
+    decimal feeMin = targetFee * (1m - slack);
+    decimal feeMax = targetFee * (1m + slack);
+    decimal wageMin = targetWage * (1m - slack);
+    decimal wageMax = targetWage * (1m + slack);
+
+    List<BasePlayer> inBand = affordable
+      .Where(bp => bp.DraftFee >= feeMin && bp.DraftFee <= feeMax)
+      .Where(bp => bp.Wage >= wageMin && bp.Wage <= wageMax)
+      .OrderBy(bp => DistanceToTargets(bp, targetFee, targetWage))
+      .ThenByDescending(bp => BasePlayerRatingCalculator.Calculate(bp))
+      .ThenBy(bp => bp.Id)
+      .Take(shortlistSize)
+      .ToList();
+
+    if (inBand.Count == 0)
+    {
+      return null;
+    }
+
+    return inBand;
+  }
+
+  private static decimal DistanceToTargets(
+    BasePlayer player,
+    decimal targetFee,
+    decimal targetWage)
+  {
+    decimal feeScale = targetFee <= 0m ? 1m : targetFee;
+    decimal wageScale = targetWage <= 0m ? 1m : targetWage;
+    decimal feeDistance = Math.Abs(player.DraftFee - targetFee) / feeScale;
+    decimal wageDistance = Math.Abs(player.Wage - targetWage) / wageScale;
+    return feeDistance + wageDistance;
   }
 
   private static decimal MinCashToFill(
