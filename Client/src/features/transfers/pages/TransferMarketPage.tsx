@@ -37,11 +37,12 @@ const canSignFreeAgents = (lifecycleStatus?: number): boolean => {
 export const TransferMarketPage = () => {
   const navigate = useNavigate();
   const { data: club } = useGetCurrentUserClubQuery();
-  const [activeTab, setActiveTab] = useState<TransferMarketTab>("listings");
+  const [activeTab, setActiveTab] = useState<TransferMarketTab>("free-agents");
 
   const [positionFilter, setPositionFilter] = useState<SquadPositionFilter>("ALL");
   const [sortOption, setSortOption] = useState<TransferMarketSortOption>("rating-desc");
   const [searchQuery, setSearchQuery] = useState("");
+  const [listingTierFilter, setListingTierFilter] = useState<DraftTier | "ALL">("ALL");
 
   const [freeAgentTierFilter, setFreeAgentTierFilter] = useState<DraftTier | "ALL">("ALL");
   const [freeAgentSortOption, setFreeAgentSortOption] =
@@ -55,11 +56,12 @@ export const TransferMarketPage = () => {
 
     return {
       position: positionFilterToApi(positionFilter),
+      tier: tierFilterToApi(listingTierFilter),
       search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
       sortBy: sort.sortBy,
       sortDescending: sort.sortDescending,
     };
-  }, [positionFilter, sortOption, searchQuery]);
+  }, [positionFilter, listingTierFilter, sortOption, searchQuery]);
 
   const freeAgentQuery = useMemo(() => {
     const sort = freeAgentSortOptionToApi(freeAgentSortOption);
@@ -149,17 +151,6 @@ export const TransferMarketPage = () => {
       <div className="flex flex-wrap gap-2 rounded-lg border border-outline-variant bg-surface-container p-1">
         <button
           type="button"
-          onClick={() => setActiveTab("listings")}
-          className={`rounded-md px-4 py-2 font-label-caps text-label-caps transition-colors ${
-            activeTab === "listings"
-              ? "bg-primary text-on-primary"
-              : "text-on-surface-variant hover:bg-surface-variant hover:text-on-surface"
-          }`}
-        >
-          Listed Players
-        </button>
-        <button
-          type="button"
           onClick={() => setActiveTab("free-agents")}
           className={`rounded-md px-4 py-2 font-label-caps text-label-caps transition-colors ${
             activeTab === "free-agents"
@@ -169,28 +160,20 @@ export const TransferMarketPage = () => {
         >
           Free Agents
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("listings")}
+          className={`rounded-md px-4 py-2 font-label-caps text-label-caps transition-colors ${
+            activeTab === "listings"
+              ? "bg-primary text-on-primary"
+              : "text-on-surface-variant hover:bg-surface-variant hover:text-on-surface"
+          }`}
+        >
+          Listed Players
+        </button>
       </div>
 
-      {activeTab === "listings" ? (
-        <>
-          <TransferMarketToolbar
-            positionFilter={positionFilter}
-            onPositionFilterChange={setPositionFilter}
-            sortOption={sortOption}
-            onSortOptionChange={(sort) =>
-              setSortOption(sort as TransferMarketSortOption)
-            }
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-          />
-
-          <TransferMarketTable
-            items={marketItems}
-            currentClubId={club?.id}
-            onMakeOffer={handleMakeOffer}
-          />
-        </>
-      ) : (
+      {activeTab === "free-agents" ? (
         <>
           {club?.cashSpendLocked ? <CashSpendLockBanner /> : null}
 
@@ -211,6 +194,27 @@ export const TransferMarketPage = () => {
             disabledReason={freeAgentDisabledReason}
             signingBasePlayerId={signingBasePlayerId}
             onSign={(item) => handleSignFreeAgent(item.basePlayerId)}
+          />
+        </>
+      ) : (
+        <>
+          <TransferMarketToolbar
+            positionFilter={positionFilter}
+            onPositionFilterChange={setPositionFilter}
+            sortOption={sortOption}
+            onSortOptionChange={(sort) =>
+              setSortOption(sort as TransferMarketSortOption)
+            }
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            tierFilter={listingTierFilter}
+            onTierFilterChange={setListingTierFilter}
+          />
+
+          <TransferMarketTable
+            items={marketItems}
+            currentClubId={club?.id}
+            onMakeOffer={handleMakeOffer}
           />
         </>
       )}

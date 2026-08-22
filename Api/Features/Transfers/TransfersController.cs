@@ -13,6 +13,7 @@ public class TransfersController(ITransferService _transferService) : CustomBase
   [HttpGet("market")]
   public async Task<IActionResult> GetMarket(
     [FromQuery] PlayerPosition? position,
+    [FromQuery] DraftTier? tier,
     [FromQuery] string? search,
     [FromQuery] string? sortBy,
     [FromQuery] bool sortDescending = true,
@@ -22,6 +23,7 @@ public class TransfersController(ITransferService _transferService) : CustomBase
       query: new TransferMarketQuery
       {
         Position = position,
+        Tier = tier,
         Search = search,
         SortBy = sortBy,
         SortDescending = sortDescending

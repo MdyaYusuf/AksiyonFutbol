@@ -1,0 +1,182 @@
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { useGetBasePlayerByIdQuery } from "../../basePlayers/basePlayersApiSlice";
+import { goBackOrFallback } from "../../matches/utils/matchReportHelpers";
+import { PlayerAttributeProfile } from "../../playerInstances/components/PlayerAttributeProfile";
+import {
+  formatSquadMoney,
+  formatWeeklyWage,
+  getDetailPositionBadgeClassName,
+  getOverallBadgeClassName,
+  getPlayerDisplayName,
+  getPlayerInitials,
+  getPositionLabel,
+  getPreferredFootLabel,
+} from "../../playerInstances/utils/squadHelpers";
+import { DRAFT_TIER_LABELS, getDraftTierBadgeClassName } from "../utils/freeAgentHelpers";
+
+export const FreeAgentDetailPage = () => {
+  const { basePlayerId } = useParams<{ basePlayerId: string }>();
+  const navigate = useNavigate();
+  const { data: player, isLoading, isError } = useGetBasePlayerByIdQuery(
+    basePlayerId ?? "",
+    { skip: !basePlayerId },
+  );
+
+  const handleGoBack = () => {
+    goBackOrFallback(navigate, "/app/transfers");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
+        Player loading...
+      </div>
+    );
+  }
+
+  if (isError || !player) {
+    return (
+      <div className="mx-auto max-w-7xl space-y-4">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="flex items-center gap-1 text-on-surface-variant transition-colors hover:text-primary"
+        >
+          <MaterialIcon name="arrow_back" className="text-sm" />
+          <span className="text-label-caps">Go back</span>
+        </button>
+        <p className="text-body-sm text-on-surface-variant">Player not found.</p>
+      </div>
+    );
+  }
+
+  const fullName = getPlayerDisplayName(player.defaultFirstName, player.defaultLastName);
+  const initials = getPlayerInitials(player.defaultFirstName, player.defaultLastName);
+  const positionLabel = getPositionLabel(player.position);
+
+  return (
+    <div className="mx-auto flex max-w-7xl flex-col gap-6">
+      <div className="mb-2 flex items-center gap-4 text-on-surface-variant">
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className="flex items-center gap-1 transition-colors hover:text-primary"
+        >
+          <MaterialIcon name="arrow_back" className="text-sm" />
+          <span className="text-label-caps">Go back</span>
+        </button>
+        <nav className="flex items-center gap-2 text-body-sm">
+          <Link to="/app/transfers" className="transition-colors hover:text-primary">
+            Transfers
+          </Link>
+          <MaterialIcon name="chevron_right" className="text-[16px]" />
+          <span className="font-semibold text-on-background">{fullName}</span>
+        </nav>
+      </div>
+
+      <section className="relative flex flex-col items-start justify-between gap-8 overflow-hidden rounded-lg border border-surface-variant bg-surface-container p-8 md:flex-row md:items-center">
+        <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary-container opacity-5 blur-3xl" />
+
+        <div className="z-10 flex items-center gap-6">
+          <div className="flex h-24 w-24 items-center justify-center rounded border border-outline-variant bg-surface-container-high text-display-lg tracking-tighter text-primary shadow-sm">
+            {initials}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="m-0 text-headline-md font-bold text-on-background">
+                {fullName}
+              </h1>
+              <div
+                className={`rounded px-2 py-0.5 text-stat-value shadow-sm ${getOverallBadgeClassName(player.overallRating)}`}
+              >
+                {player.overallRating}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 text-label-caps text-on-surface-variant uppercase">
+              <span
+                className={`rounded px-2 py-0.5 ${getDetailPositionBadgeClassName(player.position)}`}
+              >
+                {positionLabel}
+              </span>
+              <span>Age: {player.age}</span>
+              <span className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-outline-variant" />
+                {player.nationality?.trim() || "Unknown"}
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-outline-variant" />
+                {getPreferredFootLabel(player.preferredFoot)}
+              </span>
+              <span
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 ${getDraftTierBadgeClassName(player.draftTier)}`}
+              >
+                {DRAFT_TIER_LABELS[player.draftTier]}
+              </span>
+              <span className="flex items-center gap-1 rounded px-2 py-0.5 bg-primary/10 text-primary">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-container" />
+                Free Agent
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="z-10 flex flex-col gap-1 rounded border border-surface-variant bg-surface-container-low p-3 font-data-mono text-data-mono text-on-surface-variant md:items-end">
+          <div className="flex items-center gap-2">
+            <MaterialIcon name="person_add" className="text-[16px]" />
+            <span>Global free agent pool</span>
+          </div>
+          <div className="flex items-center gap-2 text-on-background">
+            <MaterialIcon name="payments" className="text-[16px] text-secondary" />
+            <span>Wage: {formatWeeklyWage(player.wage)}</span>
+          </div>
+          <div className="flex items-center gap-2 text-on-background">
+            <MaterialIcon name="contract" className="text-[16px] text-primary" />
+            <span>Signing fee: {formatSquadMoney(player.draftFee)}</span>
+          </div>
+          <div className="flex items-center gap-2 text-on-background">
+            <MaterialIcon name="monitoring" className="text-[16px] text-primary" />
+            <span>Value: {formatSquadMoney(player.marketValue)}</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="flex flex-col gap-6 rounded-lg border border-surface-variant bg-surface-container p-6 md:col-span-2">
+          <h2 className="flex items-center gap-2 border-b border-surface-variant pb-2 text-headline-sm font-semibold text-on-background">
+            <MaterialIcon name="tune" className="text-primary" />
+            Attributes Profile
+          </h2>
+          <PlayerAttributeProfile
+            position={player.position}
+            attributes={player.attributes}
+            attackPower={player.attackPower}
+            defenseStrength={player.defenseStrength}
+            midfieldControl={player.midfieldControl}
+          />
+        </div>
+
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 rounded-lg border border-surface-variant bg-surface-container p-6">
+            <h2 className="flex items-center gap-2 border-b border-surface-variant pb-2 text-headline-sm font-semibold text-on-background">
+              <MaterialIcon name="accessibility_new" className="text-outline" />
+              Physical
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col rounded border border-surface-variant bg-surface-container-low p-3">
+                <span className="text-label-caps text-on-surface-variant">Height</span>
+                <span className="text-stat-value text-on-background">{player.heightCm}cm</span>
+              </div>
+              <div className="flex flex-col rounded border border-surface-variant bg-surface-container-low p-3">
+                <span className="text-label-caps text-on-surface-variant">Weight</span>
+                <span className="text-stat-value text-on-background">{player.weightKg}kg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

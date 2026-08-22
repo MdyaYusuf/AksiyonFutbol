@@ -1,4 +1,4 @@
-import type { PlayerPosition } from "../basePlayers/basePlayerTypes";
+import type { DraftTier, PlayerPosition } from "../basePlayers/basePlayerTypes";
 
 export const TransferListingStatus = {
   Active: 1,
@@ -92,6 +92,7 @@ export interface CreateTransferOfferRequest {
 
 export interface TransferMarketQuery {
   position?: PlayerPosition;
+  tier?: DraftTier;
   search?: string;
   sortBy?: string;
   sortDescending?: boolean;

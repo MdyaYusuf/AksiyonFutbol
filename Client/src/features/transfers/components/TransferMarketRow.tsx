@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import {
   formatSquadMoney,
@@ -22,6 +23,7 @@ export const TransferMarketRow = ({
   onMakeOffer,
 }: TransferMarketRowProps) => {
   const displayName = getPlayerDisplayName(item.firstName, item.lastName);
+  const detailPath = `/app/squad/${item.playerInstanceId}`;
 
   return (
     <tr className="group border-b border-surface-bright transition-colors hover:bg-surface-variant">
@@ -31,9 +33,12 @@ export const TransferMarketRow = ({
             <MaterialIcon name="person" className="text-sm text-on-surface-variant" />
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate font-body-sm text-body-sm font-semibold text-on-surface transition-colors group-hover:text-primary">
+            <Link
+              to={detailPath}
+              className="truncate font-body-sm text-body-sm font-semibold text-on-surface transition-colors hover:text-primary"
+            >
               {displayName}
-            </span>
+            </Link>
             <div className="mt-0.5 flex items-center gap-2">
               <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-secondary">
                 LISTED

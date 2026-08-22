@@ -32,6 +32,7 @@ import { AccountSettingsPage } from "./features/users/pages/AccountSettingsPage"
 import { MatchDayLineupPage } from "./features/clubLineups/pages/MatchDayLineupPage";
 import { TacticsBoardPage } from "./features/clubLineups/pages/TacticsBoardPage";
 import { TransferMarketPage } from "./features/transfers/pages/TransferMarketPage";
+import { FreeAgentDetailPage } from "./features/transfers/pages/FreeAgentDetailPage";
 import { MakeOfferPage } from "./features/transfers/pages/MakeOfferPage";
 import { MyDealsPage } from "./features/transfers/pages/MyDealsPage";
 import { MatchInfluencePage } from "./features/bribery/pages/MatchInfluencePage";
@@ -161,6 +162,10 @@ export const router = createBrowserRouter([
                       {
                         path: "transfers",
                         element: <TransferMarketPage />,
+                      },
+                      {
+                        path: "transfers/free-agents/:basePlayerId",
+                        element: <FreeAgentDetailPage />,
                       },
                       {
                         path: "transfers/deals",

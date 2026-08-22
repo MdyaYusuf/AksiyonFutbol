@@ -35,7 +35,8 @@ public class TransferService(
       filter: l => l.Status == TransferListingStatus.Active,
       include: q => q
         .Include(l => l.Club)
-        .Include(l => l.PlayerInstance),
+        .Include(l => l.PlayerInstance)
+          .ThenInclude(p => p.BasePlayer),
       cancellationToken: cancellationToken);
 
     IEnumerable<TransferListing> filtered = listings;
@@ -43,6 +44,13 @@ public class TransferService(
     if (query.Position is PlayerPosition position)
     {
       filtered = filtered.Where(l => l.PlayerInstance.Position == position);
+    }
+
+    if (query.Tier is DraftTier tier)
+    {
+      filtered = filtered.Where(l =>
+        l.PlayerInstance.BasePlayer != null
+        && l.PlayerInstance.BasePlayer.DraftTier == tier);
     }
 
     if (!string.IsNullOrWhiteSpace(query.Search))
@@ -564,6 +572,7 @@ public class TransferService(
       "age" => l => l.PlayerInstance.Age,
       "overall" or "rating" => l => PlayerInstanceRatingCalculator.Calculate(l.PlayerInstance),
       "marketvalue" or "value" => l => l.PlayerInstance.MarketValue,
+      "tier" => l => l.PlayerInstance.BasePlayer?.DraftTier ?? DraftTier.Iron,
       "name" => l => l.PlayerInstance.LastName,
       _ => l => l.AskingPrice
     };

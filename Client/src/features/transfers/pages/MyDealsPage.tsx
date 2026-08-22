@@ -4,6 +4,7 @@ import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import { MyDealsSummary } from "../components/MyDealsSummary";
 import { MyDealsTable } from "../components/MyDealsTable";
+import { MyDealsToolbar } from "../components/MyDealsToolbar";
 import {
   useAcceptTransferOfferMutation,
   useGetMyTransferDealsQuery,
@@ -140,6 +141,11 @@ export const MyDealsPage = () => {
 
       {cashSpendLocked ? <CashSpendLockBanner /> : null}
 
+      <MyDealsToolbar
+        statusFilters={statusFilters}
+        onToggleStatusFilter={handleToggleStatusFilter}
+      />
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <div className="xl:col-span-3">
           <MyDealsSummary
@@ -147,8 +153,6 @@ export const MyDealsPage = () => {
             totalFee={summary.totalFee}
             totalWage={summary.totalWage}
             pendingCount={summary.pendingCount}
-            statusFilters={statusFilters}
-            onToggleStatusFilter={handleToggleStatusFilter}
           />
         </div>
         <div className="xl:col-span-9">

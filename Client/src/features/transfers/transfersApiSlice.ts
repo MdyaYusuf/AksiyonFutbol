@@ -22,6 +22,7 @@ export const transfersApiSlice = apiSlice.injectEndpoints({
         params: arg
           ? {
               position: arg.position,
+              tier: arg.tier,
               search: arg.search,
               sortBy: arg.sortBy,
               sortDescending: arg.sortDescending,

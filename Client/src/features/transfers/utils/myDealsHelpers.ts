@@ -9,6 +9,45 @@ export type DealStatusFilter = "pending" | "accepted" | "closed";
 
 export const DEFAULT_DEAL_STATUS_FILTERS: DealStatusFilter[] = ["pending"];
 
+export const DEAL_STATUS_FILTER_OPTIONS: {
+  id: DealStatusFilter;
+  label: string;
+}[] = [
+  { id: "pending", label: "Pending" },
+  { id: "accepted", label: "Accepted" },
+  { id: "closed", label: "Rejected / Withdrawn" },
+];
+
+export const getDealStatusFilterChipClassName = (
+  filter: DealStatusFilter,
+  isActive: boolean,
+): string => {
+  const base =
+    "rounded border px-3 py-1.5 font-label-caps text-label-caps transition-colors";
+
+  if (filter === "pending") {
+    if (isActive) {
+      return `${base} border-secondary/50 bg-secondary/10 text-secondary`;
+    }
+
+    return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-secondary hover:text-secondary`;
+  }
+
+  if (filter === "accepted") {
+    if (isActive) {
+      return `${base} border-primary/50 bg-primary/10 text-primary`;
+    }
+
+    return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-primary hover:text-primary`;
+  }
+
+  if (isActive) {
+    return `${base} border-error/50 bg-error/10 text-error`;
+  }
+
+  return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-error hover:text-error`;
+};
+
 export const getOfferStatusLabel = (status: TransferOfferStatus): string => {
   if (status === TransferOfferStatus.Pending) {
     return "Pending";

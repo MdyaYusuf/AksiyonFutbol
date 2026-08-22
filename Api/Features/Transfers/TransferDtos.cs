@@ -77,6 +77,7 @@ public sealed class TransferDealsResponseDto
 public sealed class TransferMarketQuery
 {
   public PlayerPosition? Position { get; init; }
+  public DraftTier? Tier { get; init; }
   public string? Search { get; init; }
   public string? SortBy { get; init; }
   public bool SortDescending { get; init; } = true;

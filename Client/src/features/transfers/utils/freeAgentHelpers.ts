@@ -68,22 +68,26 @@ export const getDraftTierFilterChipClassName = (
 
 export type FreeAgentSortOption =
   | "rating-desc"
+  | "rating-asc"
   | "fee-asc"
   | "fee-desc"
   | "age-asc"
   | "age-desc"
-  | "tier-asc";
+  | "tier-asc"
+  | "tier-desc";
 
 export const FREE_AGENT_SORT_OPTIONS: {
   value: FreeAgentSortOption;
   label: string;
 }[] = [
   { value: "rating-desc", label: "Sort by: Rating (Desc)" },
+  { value: "rating-asc", label: "Sort by: Rating (Asc)" },
   { value: "fee-asc", label: "Sort by: Fee (Asc)" },
   { value: "fee-desc", label: "Sort by: Fee (Desc)" },
   { value: "age-asc", label: "Sort by: Age (Asc)" },
   { value: "age-desc", label: "Sort by: Age (Desc)" },
   { value: "tier-asc", label: "Sort by: Tier (Asc)" },
+  { value: "tier-desc", label: "Sort by: Tier (Desc)" },
 ];
 
 export const freeAgentSortOptionToApi = (
@@ -91,6 +95,10 @@ export const freeAgentSortOptionToApi = (
 ): { sortBy: string; sortDescending: boolean } => {
   if (sort === "rating-desc") {
     return { sortBy: "rating", sortDescending: true };
+  }
+
+  if (sort === "rating-asc") {
+    return { sortBy: "rating", sortDescending: false };
   }
 
   if (sort === "fee-asc") {
@@ -107,6 +115,10 @@ export const freeAgentSortOptionToApi = (
 
   if (sort === "age-desc") {
     return { sortBy: "age", sortDescending: true };
+  }
+
+  if (sort === "tier-desc") {
+    return { sortBy: "tier", sortDescending: true };
   }
 
   return { sortBy: "tier", sortDescending: false };

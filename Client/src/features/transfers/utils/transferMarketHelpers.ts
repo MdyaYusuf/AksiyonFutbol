@@ -4,10 +4,13 @@ import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
 
 export type TransferMarketSortOption =
   | "rating-desc"
+  | "rating-asc"
   | "value-asc"
   | "value-desc"
   | "age-asc"
   | "age-desc"
+  | "tier-asc"
+  | "tier-desc"
   | "asking-desc";
 
 export const TRANSFER_POSITION_FILTERS: SquadPositionFilter[] = [
@@ -23,11 +26,14 @@ export const TRANSFER_SORT_OPTIONS: {
   label: string;
 }[] = [
   { value: "rating-desc", label: "Sort by: Rating (Desc)" },
+  { value: "rating-asc", label: "Sort by: Rating (Asc)" },
   { value: "value-asc", label: "Sort by: Value (Asc)" },
   { value: "value-desc", label: "Sort by: Value (Desc)" },
   { value: "age-asc", label: "Sort by: Age (Asc)" },
   { value: "age-desc", label: "Sort by: Age (Desc)" },
-  { value: "asking-desc", label: "Sort by: Asking Price" },
+  { value: "tier-asc", label: "Sort by: Tier (Asc)" },
+  { value: "tier-desc", label: "Sort by: Tier (Desc)" },
+  { value: "asking-desc", label: "Sort by: Asking Price (Desc)" },
 ];
 
 export const positionFilterToApi = (
@@ -59,6 +65,10 @@ export const sortOptionToApi = (
     return { sortBy: "overall", sortDescending: true };
   }
 
+  if (sort === "rating-asc") {
+    return { sortBy: "overall", sortDescending: false };
+  }
+
   if (sort === "value-asc") {
     return { sortBy: "marketvalue", sortDescending: false };
   }
@@ -73,6 +83,14 @@ export const sortOptionToApi = (
 
   if (sort === "age-desc") {
     return { sortBy: "age", sortDescending: true };
+  }
+
+  if (sort === "tier-asc") {
+    return { sortBy: "tier", sortDescending: false };
+  }
+
+  if (sort === "tier-desc") {
+    return { sortBy: "tier", sortDescending: true };
   }
 
   return { sortBy: "askingprice", sortDescending: true };

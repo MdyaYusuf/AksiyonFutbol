@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import {
   formatSquadMoney,
@@ -30,6 +31,7 @@ export const FreeAgentMarketRow = ({
   onSign,
 }: FreeAgentMarketRowProps) => {
   const displayName = getPlayerDisplayName(item.firstName, item.lastName);
+  const detailPath = `/app/transfers/free-agents/${item.basePlayerId}`;
 
   return (
     <tr className="group border-b border-surface-bright transition-colors hover:bg-surface-variant">
@@ -39,9 +41,12 @@ export const FreeAgentMarketRow = ({
             <MaterialIcon name="person" className="text-sm text-on-surface-variant" />
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate font-body-sm text-body-sm font-semibold text-on-surface transition-colors group-hover:text-primary">
+            <Link
+              to={detailPath}
+              className="truncate font-body-sm text-body-sm font-semibold text-on-surface transition-colors hover:text-primary"
+            >
               {displayName}
-            </span>
+            </Link>
             <div className="mt-0.5 flex items-center gap-2">
               <span
                 className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-bold tracking-wider ${getDraftTierBadgeClassName(item.draftTier)}`}
