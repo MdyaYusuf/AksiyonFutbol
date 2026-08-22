@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
 import {
   APP_DASHBOARD_PATH,
   ONBOARDING_CLUB_PATH,
@@ -147,6 +148,7 @@ export const DraftBoardPage = () => {
             Fill {draft.clubName}&apos;s quotas under the fee and wage caps. Bots
             draft the leftovers after you finalize, then your private tutorial starts.
           </p>
+          <OnboardingSteps currentStep="draft" className="mt-2 max-w-3xl" />
         </div>
 
         <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">

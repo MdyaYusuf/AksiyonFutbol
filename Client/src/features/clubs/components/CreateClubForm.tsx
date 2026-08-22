@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
 import { OnboardingTextField } from "../../../core/components/onboarding/OnboardingFields";
 import { ONBOARDING_DRAFT_PATH } from "../../../core/routes/onboardingPaths";
 import { useCreateClubMutation } from "../clubsApiSlice";
@@ -40,6 +41,8 @@ export const CreateClubForm = () => {
             Name your club, then draft your squad and enter a private tutorial league.
           </p>
         </div>
+
+        <OnboardingSteps currentStep="club" />
 
         <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
           <div className="flex flex-col gap-6 rounded-xl border border-outline-variant bg-surface-container/60 p-6 shadow-2xl backdrop-blur-md">

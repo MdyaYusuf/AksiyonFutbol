@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
 import { OnboardingTextField } from "../../../core/components/onboarding/OnboardingFields";
 import { useCreateClubPresidentMutation } from "../clubPresidentsApiSlice";
 import { PresidentPreviewCard } from "./PresidentPreviewCard";
@@ -48,14 +49,7 @@ export const CreatePresidentForm = () => {
             </p>
           </div>
 
-          <div className="h-1 overflow-hidden rounded-full bg-surface-container-highest">
-            <div className="h-full w-1/3 bg-primary" />
-          </div>
-          <div className="flex justify-between text-label-caps text-on-surface-variant">
-            <span className="text-primary">01. Persona</span>
-            <span>02. Philosophy</span>
-            <span>03. Contract</span>
-          </div>
+          <OnboardingSteps currentStep="president" />
 
           <form className="mt-4 flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
             <OnboardingTextField

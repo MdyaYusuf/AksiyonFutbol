@@ -12,11 +12,13 @@ export const clubDraftsApiSlice = apiSlice.injectEndpoints({
     getClubDraftCatalog: builder.query<DraftCatalogPlayer[], void>({
       query: () => ({ url: "clubDrafts/me/catalog" }),
       providesTags: [{ type: "ClubDraft", id: "CATALOG" }],
+      keepUnusedDataFor: 0,
     }),
 
     getClubDraftState: builder.query<ClubDraftState, void>({
       query: () => ({ url: "clubDrafts/me" }),
       providesTags: [{ type: "ClubDraft", id: "ME" }],
+      keepUnusedDataFor: 0,
     }),
 
     addClubDraftPick: builder.mutation<ClubDraftState, AddClubDraftPickRequest>({
@@ -63,8 +65,6 @@ export const clubDraftsApiSlice = apiSlice.injectEndpoints({
         }
       },
       invalidatesTags: [
-        { type: "ClubDraft", id: "ME" },
-        { type: "ClubDraft", id: "CATALOG" },
         { type: "Club", id: "ME" },
         { type: "Club", id: "LIST" },
         { type: "LeagueDivision", id: "LIST" },
