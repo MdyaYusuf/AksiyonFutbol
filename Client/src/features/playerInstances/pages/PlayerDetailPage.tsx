@@ -1,5 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
 import { goBackOrFallback } from "../../matches/utils/matchReportHelpers";
 import { PlayerAttributeProfile } from "../components/PlayerAttributeProfile";
 import { useGetPlayerInstanceByIdQuery } from "../playerInstancesApiSlice";
@@ -55,6 +56,8 @@ export const PlayerDetailPage = () => {
   const initials = getPlayerInitials(player.firstName, player.lastName);
   const status = getPlayerStatus(player);
   const positionLabel = getPositionLabel(player.position);
+  const flagSrc = getNationalityFlagSrc(player.nationality);
+  const nationalityLabel = player.nationality?.trim() || "Unknown";
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
@@ -103,9 +106,23 @@ export const PlayerDetailPage = () => {
                 {positionLabel}
               </span>
               <span>Age: {player.age}</span>
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-outline-variant" />
-                {player.nationality?.trim() || "Unknown"}
+              <span className="flex items-center gap-2">
+                {flagSrc ? (
+                  <img
+                    src={flagSrc}
+                    alt={nationalityLabel}
+                    title={nationalityLabel}
+                    width={33}
+                    height={20}
+                    className="h-5 w-[33px] object-contain"
+                  />
+                ) : (
+                  <span
+                    title={nationalityLabel}
+                    className="inline-block h-5 w-[33px] rounded-sm bg-surface-container-highest"
+                  />
+                )}
+                {nationalityLabel}
               </span>
               <span className="flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-outline-variant" />

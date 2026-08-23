@@ -41,6 +41,16 @@ public class MatchesController(IMatchService _matchService) : CustomBaseControll
     return CreateActionResult(result);
   }
 
+  [HttpGet("division/{divisionId:int}")]
+  public async Task<IActionResult> GetByDivisionId(
+    int divisionId,
+    CancellationToken cancellationToken)
+  {
+    var result = await _matchService.GetByDivisionIdAsync(divisionId, cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
   [HttpGet("division/{divisionId:int}/week/{matchWeek:int}")]
   public async Task<IActionResult> GetByDivisionAndMatchWeek(
     int divisionId,

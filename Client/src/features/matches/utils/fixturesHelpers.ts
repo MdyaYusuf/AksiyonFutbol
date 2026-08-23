@@ -2,13 +2,35 @@ import type { MatchPreview } from "../matchTypes";
 import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
 import { parseApiDate } from "../../../core/utils/dateTime";
 
-export type FixtureStatusFilter = "all" | "results" | "upcoming";
+export type FixtureStatusFilter = "all" | "played" | "upcoming";
+
+export type FixtureScopeFilter = "all" | "my-team";
 
 export interface MatchWeekGroup {
   matchWeek: number;
   matches: MatchPreview[];
   hasUpcoming: boolean;
 }
+
+export const FIXTURE_SCOPE_FILTERS: {
+  value: FixtureScopeFilter;
+  label: string;
+}[] = [
+  { value: "all", label: "All" },
+  { value: "my-team", label: "My Team" },
+];
+
+export const getFixtureScopeChipClassName = (
+  isActive: boolean,
+): string => {
+  const base = "rounded border px-4 py-2 text-label-caps transition-colors";
+
+  if (isActive) {
+    return `${base} border-primary/50 bg-primary-container/10 text-primary`;
+  }
+
+  return `${base} border-outline-variant bg-transparent text-on-surface-variant hover:border-primary hover:text-primary`;
+};
 
 export const formatFixtureDateTime = (matchDate: string): string => {
   const date = parseApiDate(matchDate);
@@ -27,11 +49,25 @@ export const formatFixtureDateTime = (matchDate: string): string => {
   return `${dayMonth} · ${time}`;
 };
 
+export const filterMatchesByScope = (
+  matches: MatchPreview[],
+  scopeFilter: FixtureScopeFilter,
+  clubId: string,
+): MatchPreview[] => {
+  if (scopeFilter === "my-team") {
+    return matches.filter(
+      (match) => match.homeClubId === clubId || match.awayClubId === clubId,
+    );
+  }
+
+  return matches;
+};
+
 export const filterMatchesByStatus = (
   matches: MatchPreview[],
   statusFilter: FixtureStatusFilter,
 ): MatchPreview[] => {
-  if (statusFilter === "results") {
+  if (statusFilter === "played") {
     return matches.filter((match) => match.isPlayed);
   }
 
@@ -73,6 +109,13 @@ export const getScoreBadgeClassName = (
 ): string => {
   if (!match.isPlayed || match.homeScore == null || match.awayScore == null) {
     return "border border-outline-variant bg-surface-container-high text-on-surface-variant text-label-caps tracking-widest";
+  }
+
+  const involvesClub =
+    match.homeClubId === clubId || match.awayClubId === clubId;
+
+  if (!involvesClub) {
+    return "border border-outline-variant bg-surface-container-high text-on-surface text-stat-value tracking-wider";
   }
 
   const result = getMatchResultLetter(match, clubId);

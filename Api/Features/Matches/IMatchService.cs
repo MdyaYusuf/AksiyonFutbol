@@ -18,6 +18,10 @@ public interface IMatchService
     Guid clubId,
     CancellationToken cancellationToken = default);
 
+  Task<ReturnModel<List<MatchPreviewDto>>> GetByDivisionIdAsync(
+    int divisionId,
+    CancellationToken cancellationToken = default);
+
   Task<ReturnModel<List<MatchPreviewDto>>> GetByDivisionAndMatchWeekAsync(
     int divisionId,
     int matchWeek,

@@ -70,6 +70,17 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Match", id: `CLUB-${clubId}` }],
     }),
 
+    getMatchesByDivisionId: builder.query<MatchPreview[], number>({
+      query: (divisionId) => ({ url: `matches/division/${divisionId}` }),
+      providesTags: (result, _error, divisionId) =>
+        result
+          ? [
+            ...result.map(({ id }) => ({ type: "Match" as const, id })),
+            { type: "Match", id: `DIVISION-${divisionId}` },
+          ]
+          : [{ type: "Match", id: `DIVISION-${divisionId}` }],
+    }),
+
     getMatchesByDivisionAndMatchWeek: builder.query<
       MatchPreview[],
       { divisionId: number; matchWeek: number }
@@ -105,6 +116,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "Match", id: `CLUB-${arg.homeClubId}` },
         { type: "Match", id: `CLUB-${arg.awayClubId}` },
+        { type: "Match", id: `DIVISION-${arg.divisionId}` },
         { type: "Match", id: `DIVISION-${arg.divisionId}-WEEK-${arg.matchWeek}` },
         { type: "Club", id: arg.homeClubId },
         { type: "Club", id: arg.awayClubId },
@@ -124,6 +136,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "Match", id: `CLUB-${arg.homeClubId}` },
         { type: "Match", id: `CLUB-${arg.awayClubId}` },
+        { type: "Match", id: `DIVISION-${arg.divisionId}` },
         { type: "Match", id: `DIVISION-${arg.divisionId}-WEEK-${arg.matchWeek}` },
         ...(arg.refereeId ? [{ type: "Referee" as const, id: arg.refereeId }] : []),
       ],
@@ -151,6 +164,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
               { type: "Club" as const, id: result.awayClubId },
               { type: "Match" as const, id: `CLUB-${result.homeClubId}` },
               { type: "Match" as const, id: `CLUB-${result.awayClubId}` },
+              { type: "Match" as const, id: `DIVISION-${result.divisionId}` },
               {
                 type: "Match" as const,
                 id: `DIVISION-${result.divisionId}-WEEK-${result.matchWeek}`,
@@ -182,6 +196,7 @@ export const {
   useGetMatchByIdQuery,
   useGetMatchLiveStatusQuery,
   useGetMatchesByClubIdQuery,
+  useGetMatchesByDivisionIdQuery,
   useGetMatchesByDivisionAndMatchWeekQuery,
   useGetScheduledUnplayedMatchesQuery,
   useCreateMatchMutation,

@@ -34,7 +34,16 @@ export const SquadTable = ({
               <th className="px-4 py-3 text-label-caps text-on-surface-variant">
                 Player Name
               </th>
+              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Nat</th>
+              <th
+                className="px-4 py-3 text-label-caps text-on-surface-variant"
+                title="Preferred foot"
+              >
+                Foot
+              </th>
               <th className="px-4 py-3 text-label-caps text-on-surface-variant">Age</th>
+              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Height</th>
+              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Weight</th>
               <th className="px-4 py-3 text-label-caps text-on-surface-variant">OVR</th>
               <th className="px-4 py-3 text-center text-label-caps text-on-surface-variant">
                 Status
@@ -52,7 +61,7 @@ export const SquadTable = ({
             {players.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={12}
                   className="px-4 py-12 text-center text-on-surface-variant"
                 >
                   No players found for this filter.

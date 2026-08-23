@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
 import type { PlayerInstanceResponse } from "../playerInstanceTypes";
 import {
   formatSquadMoney,
@@ -9,6 +10,8 @@ import {
   getPlayerStatus,
   getPositionBadgeClassName,
   getPositionLabel,
+  getPreferredFootLabel,
+  getPreferredFootShortLabel,
   getSeasonCardsTotal,
 } from "../utils/squadHelpers";
 
@@ -22,6 +25,8 @@ export const SquadPlayerRow = ({ player }: SquadPlayerRowProps) => {
   const initials = getPlayerInitials(player.firstName, player.lastName);
   const cards = getSeasonCardsTotal(player);
   const detailPath = `/app/squad/${player.id}`;
+  const flagSrc = getNationalityFlagSrc(player.nationality);
+  const nationalityLabel = player.nationality?.trim() || "Unknown";
 
   return (
     <tr className="transition-colors hover:bg-surface-container-high">
@@ -43,8 +48,36 @@ export const SquadPlayerRow = ({ player }: SquadPlayerRowProps) => {
           {displayName}
         </Link>
       </td>
+      <td className="px-4 py-3">
+        {flagSrc ? (
+          <img
+            src={flagSrc}
+            alt={nationalityLabel}
+            title={nationalityLabel}
+            width={33}
+            height={20}
+            className="h-5 w-[33px] object-contain"
+          />
+        ) : (
+          <span
+            title={nationalityLabel}
+            className="inline-block h-5 w-[33px] rounded-sm bg-surface-container-highest"
+          />
+        )}
+      </td>
+      <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
+        <span title={getPreferredFootLabel(player.preferredFoot)}>
+          {getPreferredFootShortLabel(player.preferredFoot)}
+        </span>
+      </td>
       <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
         {player.age}
+      </td>
+      <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
+        {player.heightCm}cm
+      </td>
+      <td className="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">
+        {player.weightKg}kg
       </td>
       <td className="px-4 py-3">
         <div

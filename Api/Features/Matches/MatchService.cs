@@ -106,6 +106,37 @@ public class MatchService(
     };
   }
 
+  public async Task<ReturnModel<List<MatchPreviewDto>>> GetByDivisionIdAsync(
+    int divisionId,
+    CancellationToken cancellationToken = default)
+  {
+    LeagueDivision division = await _businessRules.GetDivisionIfExistAsync(
+      divisionId,
+      cancellationToken: cancellationToken);
+
+    List<Match> matches = await _matchRepository.GetAllAsync(
+      filter: m =>
+        m.DivisionId == divisionId &&
+        m.Season == division.CurrentSeason,
+      include: IncludeMatchRelations,
+      orderBy: query => query
+        .OrderBy(m => m.MatchWeek)
+        .ThenBy(m => m.MatchDate)
+        .ThenBy(m => m.HomeClub.DisplayName),
+      cancellationToken: cancellationToken);
+
+    List<MatchPreviewDto> response = _mapper.EntityToPreviewDtoList(matches);
+    _settlementGate.ConcealPreviewScores(matches, response);
+
+    return new ReturnModel<List<MatchPreviewDto>>()
+    {
+      Success = true,
+      Message = "Lig maçları başarılı bir şekilde getirildi.",
+      Data = response,
+      StatusCode = 200
+    };
+  }
+
   public async Task<ReturnModel<List<MatchPreviewDto>>> GetByDivisionAndMatchWeekAsync(
     int divisionId,
     int matchWeek,
