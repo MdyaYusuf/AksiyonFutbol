@@ -14,9 +14,9 @@ import {
 interface PillarAccent {
   fill: string;
   text: string;
-  panel: string;
-  compactMainShell: string;
-  compactMainTrack: string;
+  mainShell: string;
+  mainTrack: string;
+  detailMainShell: string;
 }
 
 const getGroupAccent = (
@@ -28,10 +28,11 @@ const getGroupAccent = (
     return {
       fill: "bg-primary-container",
       text: "text-primary",
-      panel: "rounded-lg border border-primary/30 bg-primary-container/5 p-3",
-      compactMainShell:
+      mainShell:
         "rounded-md border border-primary/35 bg-primary/10 px-2 py-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
-      compactMainTrack: "bg-primary/20",
+      mainTrack: "bg-primary/20",
+      detailMainShell:
+        "rounded-lg border border-primary/35 bg-primary/10 px-3 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
     };
   }
 
@@ -39,10 +40,11 @@ const getGroupAccent = (
     return {
       fill: "bg-violet-400",
       text: "text-violet-400",
-      panel: "rounded-lg border border-violet-400/30 bg-violet-400/5 p-3",
-      compactMainShell:
+      mainShell:
         "rounded-md border border-violet-400/35 bg-violet-400/10 px-2 py-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
-      compactMainTrack: "bg-violet-400/20",
+      mainTrack: "bg-violet-400/20",
+      detailMainShell:
+        "rounded-lg border border-violet-400/35 bg-violet-400/10 px-3 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
     };
   }
 
@@ -50,10 +52,11 @@ const getGroupAccent = (
     return {
       fill: "bg-secondary",
       text: "text-secondary",
-      panel: "rounded-lg border border-secondary/30 bg-secondary/5 p-3",
-      compactMainShell:
+      mainShell:
         "rounded-md border border-secondary/35 bg-secondary/10 px-2 py-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
-      compactMainTrack: "bg-secondary/20",
+      mainTrack: "bg-secondary/20",
+      detailMainShell:
+        "rounded-lg border border-secondary/35 bg-secondary/10 px-3 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
     };
   }
 
@@ -62,30 +65,33 @@ const getGroupAccent = (
       return {
         fill: "bg-teal-400",
         text: "text-teal-300",
-        panel: "rounded-lg border border-teal-400/30 bg-teal-400/5 p-3",
-        compactMainShell:
+        mainShell:
           "rounded-md border border-teal-400/35 bg-teal-400/10 px-2 py-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
-        compactMainTrack: "bg-teal-400/20",
+        mainTrack: "bg-teal-400/20",
+        detailMainShell:
+          "rounded-lg border border-teal-400/35 bg-teal-400/10 px-3 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
       };
     }
 
     return {
       fill: "bg-sky-500",
       text: "text-sky-400",
-      panel: "rounded-lg border border-sky-500/30 bg-sky-500/5 p-3",
-      compactMainShell:
+      mainShell:
         "rounded-md border border-sky-500/35 bg-sky-500/10 px-2 py-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
-      compactMainTrack: "bg-sky-500/20",
+      mainTrack: "bg-sky-500/20",
+      detailMainShell:
+        "rounded-lg border border-sky-500/35 bg-sky-500/10 px-3 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
     };
   }
 
   return {
     fill: "bg-tertiary-container",
     text: "text-tertiary",
-    panel: "rounded-lg border border-tertiary/30 bg-tertiary/5 p-3",
-    compactMainShell:
+    mainShell:
       "rounded-md border border-tertiary/35 bg-tertiary/10 px-2 py-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
-    compactMainTrack: "bg-tertiary/20",
+    mainTrack: "bg-tertiary/20",
+    detailMainShell:
+      "rounded-lg border border-tertiary/35 bg-tertiary/10 px-3 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
   };
 };
 
@@ -198,42 +204,29 @@ export const PlayerAttributeProfile = ({
           midfieldControl,
         );
         const values = getAttributeGroupValues(attributes, group.id);
-        const isPrimary = group.kind === "positional";
         const accent = getGroupAccent(group.kind, group.pillar, position);
+        const mainShellClassName = compact
+          ? accent.mainShell
+          : accent.detailMainShell;
 
-        let sectionClassName = "flex flex-col gap-3";
-        if (compact) {
-          sectionClassName = "flex min-w-0 flex-col gap-1.5";
-        } else if (isPrimary) {
-          sectionClassName = `flex flex-col gap-3 ${accent.panel}`;
-        }
+        const sectionClassName = compact
+          ? "flex min-w-0 flex-col gap-1.5"
+          : "flex flex-col gap-3";
 
         return (
           <section key={group.id} className={sectionClassName}>
-            {compact ? (
-              <div className={accent.compactMainShell}>
-                <AttributeBar
-                  label={group.title}
-                  value={mainValue}
-                  fillClassName={accent.fill}
-                  variant="main"
-                  accentTextClassName={accent.text}
-                  trackClassName={accent.compactMainTrack}
-                  compact={compact}
-                  delayMs={groupIndex * 60}
-                />
-              </div>
-            ) : (
+            <div className={mainShellClassName}>
               <AttributeBar
                 label={group.title}
                 value={mainValue}
                 fillClassName={accent.fill}
                 variant="main"
                 accentTextClassName={accent.text}
+                trackClassName={accent.mainTrack}
                 compact={compact}
                 delayMs={groupIndex * 60}
               />
-            )}
+            </div>
             <div
               className={`flex flex-col ${
                 compact

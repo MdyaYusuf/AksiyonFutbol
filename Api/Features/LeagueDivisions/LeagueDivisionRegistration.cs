@@ -6,6 +6,7 @@ public static class LeagueDivisionRegistration
   {
     services.AddScoped<ILeagueDivisionRepository, EfLeagueDivisionRepository>();
     services.AddScoped<LeagueDivisionBusinessRules>();
+    services.AddScoped<IMatchWeekProgressService, MatchWeekProgressService>();
     services.AddScoped<IMatchWeekOrchestrationService, MatchWeekOrchestrationService>();
     services.AddScoped<ILeagueDivisionService, LeagueDivisionService>();
     services.AddSingleton<LeagueDivisionMapper>();

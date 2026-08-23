@@ -1,25 +1,18 @@
-using Api.Core.Options;
-using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Core.Repositories;
 using Api.Features.Matches;
 using Api.Features.SeasonTransitions;
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Options;
 
 namespace Api.Features.LeagueDivisions;
 
 public class MatchWeekOrchestrationService(
-  ILeagueDivisionRepository _leagueDivisionRepository,
   LeagueDivisionBusinessRules _leagueBusinessRules,
   IMatchRepository _matchRepository,
   IMatchPlayService _matchPlayService,
+  IMatchWeekProgressService _matchWeekProgressService,
   ICompetitiveSeasonEndService _competitiveSeasonEndService,
-  IUnitOfWork _unitOfWork,
-  IOptions<GameOptions> _gameOptions,
-  HybridCache _cache) : IMatchWeekOrchestrationService
+  IUnitOfWork _unitOfWork) : IMatchWeekOrchestrationService
 {
-  private const string LeagueCacheTag = "league-divisions";
-
   public async Task<ReturnModel<ProcessMatchWeekResultDto>> ProcessCurrentWeekAsync(
     int divisionId,
     string userRole,
@@ -54,17 +47,13 @@ public class MatchWeekOrchestrationService(
       await _matchPlayService.SimulateInPlaceAsync(match, cancellationToken);
     }
 
-    bool weekAdvanced = false;
-
-    if (leagueDivision.CurrentMatchWeek < _gameOptions.Value.MaximumMatchWeek)
-    {
-      leagueDivision.CurrentMatchWeek++;
-      _leagueDivisionRepository.Update(leagueDivision);
-      weekAdvanced = true;
-    }
-
     await _unitOfWork.SaveChangesAsync(cancellationToken);
-    await _cache.RemoveByTagAsync(LeagueCacheTag, cancellationToken);
+
+    bool weekAdvanced = await _matchWeekProgressService.TryAdvanceIfWeekCompleteAsync(
+      divisionId,
+      leagueDivision.CurrentSeason,
+      processedMatchWeek,
+      cancellationToken);
 
     if (unplayedMatches.Count > 0)
     {
