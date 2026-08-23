@@ -22,8 +22,8 @@ export const FreeAgentMarketTable = ({
         <table className="w-full min-w-[1100px] border-collapse text-left">
           <thead>
             <tr className="border-b border-outline-variant bg-surface-container-high font-label-caps text-label-caps text-on-surface-variant">
-              <th className="px-2 py-3 font-normal">Player</th>
               <th className="px-2 py-3 font-normal">Nat</th>
+              <th className="px-2 py-3 font-normal">Player</th>
               <th className="px-2 py-3 font-normal">Pos</th>
               <th className="px-2 py-3 font-normal" title="Preferred foot">
                 Foot

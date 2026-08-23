@@ -4,6 +4,8 @@ import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
 import {
   formatSquadMoney,
   getPlayerDisplayName,
+  getPositionBadgeClassName,
+  getPositionLabel,
   getPreferredFootLabel,
   getPreferredFootShortLabel,
 } from "../../playerInstances/utils/squadHelpers";
@@ -13,9 +15,9 @@ import {
   getDraftTierBadgeClassName,
 } from "../utils/freeAgentHelpers";
 import {
-  formatMarketPosition,
   formatTransferWage,
   getRatingBadgeClassName,
+  parseMarketPosition,
 } from "../utils/transferMarketHelpers";
 
 interface FreeAgentMarketRowProps {
@@ -37,9 +39,27 @@ export const FreeAgentMarketRow = ({
   const detailPath = `/app/transfers/free-agents/${item.basePlayerId}`;
   const flagSrc = getNationalityFlagSrc(item.nationality);
   const nationalityLabel = item.nationality?.trim() || "Unknown";
+  const parsedPosition = parseMarketPosition(item.position);
 
   return (
     <tr className="group border-b border-surface-bright transition-colors hover:bg-surface-variant">
+      <td className="px-2 py-2">
+        {flagSrc ? (
+          <img
+            src={flagSrc}
+            alt={nationalityLabel}
+            title={nationalityLabel}
+            width={33}
+            height={20}
+            className="h-5 w-[33px] object-contain"
+          />
+        ) : (
+          <span
+            title={nationalityLabel}
+            className="inline-block h-5 w-[33px] rounded-sm bg-surface-container-highest"
+          />
+        )}
+      </td>
       <td className="min-w-0 px-2 py-2">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-surface-container-highest">
@@ -65,27 +85,18 @@ export const FreeAgentMarketRow = ({
           </div>
         </div>
       </td>
-      <td className="px-2 py-2">
-        {flagSrc ? (
-          <img
-            src={flagSrc}
-            alt={nationalityLabel}
-            title={nationalityLabel}
-            width={33}
-            height={20}
-            className="h-5 w-[33px] object-contain"
-          />
-        ) : (
-          <span
-            title={nationalityLabel}
-            className="inline-block h-5 w-[33px] rounded-sm bg-surface-container-highest"
-          />
-        )}
-      </td>
       <td className="whitespace-nowrap px-2 py-2">
-        <span className="rounded border border-outline-variant bg-surface-bright px-2 py-1 text-on-surface-variant">
-          {formatMarketPosition(item.position)}
-        </span>
+        {parsedPosition != null ? (
+          <span
+            className={`inline-flex h-6 w-8 items-center justify-center rounded text-label-caps ${getPositionBadgeClassName(parsedPosition)}`}
+          >
+            {getPositionLabel(parsedPosition)}
+          </span>
+        ) : (
+          <span className="rounded border border-outline-variant bg-surface-bright px-2 py-1 text-on-surface-variant">
+            {item.position}
+          </span>
+        )}
       </td>
       <td className="whitespace-nowrap px-2 py-2">
         <span title={getPreferredFootLabel(item.preferredFoot)}>

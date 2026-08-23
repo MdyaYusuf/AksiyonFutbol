@@ -113,7 +113,11 @@ export const DashboardPage = () => {
       allMatches,
       division.id,
       Math.max(1, division.currentMatchWeek),
-      division.currentSeason,
+      {
+        season: division.currentSeason,
+        isTutorial: division.isTutorial,
+        tier: division.tier,
+      },
     );
   }, [allMatches, club, division, divisionClubs]);
 

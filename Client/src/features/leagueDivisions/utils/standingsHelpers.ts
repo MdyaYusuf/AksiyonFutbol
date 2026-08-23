@@ -1,10 +1,71 @@
 import type { ClubPreview } from "../../clubs/clubTypes";
+import { LeagueTier } from "../../clubs/clubTypes";
 import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { MatchResponse } from "../../matches/matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
 
-export type StandingZone = "champions" | "europa" | "relegation" | null;
+/** Mirrors Api GameOptions.PromotionSlots / RelegationSlots defaults. */
+export const PROMOTION_SLOTS = 2;
+export const RELEGATION_SLOTS = 2;
+
+/** Mirrors Api GameOptions graduation point bands for tutorial placement. */
+export const GRADUATION_POINT_BANDS: {
+  zone: StandingZone;
+  label: string;
+  minPoints: number;
+  maxPoints: number;
+  tier: LeagueTier;
+}[] = [
+  {
+    zone: "placement-gold",
+    label: "Gold Placement",
+    minPoints: 15,
+    maxPoints: 18,
+    tier: LeagueTier.Gold,
+  },
+  {
+    zone: "placement-silver",
+    label: "Silver Placement",
+    minPoints: 10,
+    maxPoints: 14,
+    tier: LeagueTier.Silver,
+  },
+  {
+    zone: "placement-bronze",
+    label: "Bronze Placement",
+    minPoints: 5,
+    maxPoints: 9,
+    tier: LeagueTier.Bronze,
+  },
+  {
+    zone: "placement-iron",
+    label: "Iron Placement",
+    minPoints: 0,
+    maxPoints: 4,
+    tier: LeagueTier.Iron,
+  },
+];
+
+export type StandingZone =
+  | "promotion"
+  | "relegation"
+  | "placement-gold"
+  | "placement-silver"
+  | "placement-bronze"
+  | "placement-iron"
+  | null;
+
 export type FormResult = "W" | "D" | "L";
+
+export interface StandingMatchResult {
+  date: string;
+  result: FormResult;
+  matchWeek: number;
+  opponentName: string;
+  goalsFor: number;
+  goalsAgainst: number;
+  isHome: boolean;
+}
 
 export interface StandingRow {
   position: number;
@@ -19,13 +80,23 @@ export interface StandingRow {
   goalDifference: number;
   points: number;
   form: FormResult[];
+  matchResults: StandingMatchResult[];
   zone: StandingZone;
+}
+
+export interface BuildStandingsOptions {
+  season?: number;
+  isTutorial?: boolean;
+  /** LeagueTier numeric value (Gold=1 … Iron=4). */
+  tier?: number;
 }
 
 type MatchLike = Pick<
   MatchResponse,
   | "homeClubId"
   | "awayClubId"
+  | "homeClubName"
+  | "awayClubName"
   | "homeScore"
   | "awayScore"
   | "isPlayed"
@@ -44,7 +115,7 @@ interface ClubStats {
   lost: number;
   goalsFor: number;
   goalsAgainst: number;
-  results: { date: string; result: FormResult }[];
+  results: StandingMatchResult[];
 }
 
 const createEmptyStats = (club: ClubPreview): ClubStats => ({
@@ -64,48 +135,93 @@ const applyMatchResult = (
   goalsFor: number,
   goalsAgainst: number,
   matchDate: string,
+  matchWeek: number,
+  opponentName: string,
+  isHome: boolean,
 ) => {
   stats.played += 1;
   stats.goalsFor += goalsFor;
   stats.goalsAgainst += goalsAgainst;
 
+  let result: FormResult = "D";
+
   if (goalsFor > goalsAgainst) {
     stats.won += 1;
-    stats.results.push({ date: matchDate, result: "W" });
-    return;
-  }
-
-  if (goalsFor < goalsAgainst) {
+    result = "W";
+  } else if (goalsFor < goalsAgainst) {
     stats.lost += 1;
-    stats.results.push({ date: matchDate, result: "L" });
-    return;
+    result = "L";
+  } else {
+    stats.drawn += 1;
   }
 
-  stats.drawn += 1;
-  stats.results.push({ date: matchDate, result: "D" });
+  stats.results.push({
+    date: matchDate,
+    result,
+    matchWeek,
+    opponentName,
+    goalsFor,
+    goalsAgainst,
+    isHome,
+  });
+};
+
+export const canPromoteFromTier = (tier?: number): boolean => {
+  return tier != null && tier !== LeagueTier.Gold;
+};
+
+export const canRelegateFromTier = (tier?: number): boolean => {
+  return tier != null && tier !== LeagueTier.Iron;
+};
+
+export const getCompetitiveStandingZone = (
+  position: number,
+  totalClubs: number,
+  tier?: number,
+): StandingZone => {
+  if (totalClubs <= 0) {
+    return null;
+  }
+
+  const promotionSlots = Math.min(PROMOTION_SLOTS, totalClubs);
+  const relegationSlots = Math.min(RELEGATION_SLOTS, totalClubs);
+
+  if (canPromoteFromTier(tier) && position <= promotionSlots) {
+    return "promotion";
+  }
+
+  if (canRelegateFromTier(tier) && position > totalClubs - relegationSlots) {
+    return "relegation";
+  }
+
+  return null;
+};
+
+export const getTutorialPlacementZone = (points: number): StandingZone => {
+  for (const band of GRADUATION_POINT_BANDS) {
+    if (points >= band.minPoints && points <= band.maxPoints) {
+      return band.zone;
+    }
+  }
+
+  if (points > GRADUATION_POINT_BANDS[0].maxPoints) {
+    return "placement-gold";
+  }
+
+  return "placement-iron";
 };
 
 export const getStandingZone = (
   position: number,
   totalClubs: number,
+  points: number,
+  options?: BuildStandingsOptions,
 ): StandingZone => {
-  if (position <= 2) {
-    return "champions";
+  if (options?.isTutorial) {
+    return getTutorialPlacementZone(points);
   }
 
-  if (position <= 4 && totalClubs > 4) {
-    return "europa";
-  }
-
-  if (totalClubs >= 6 && position > totalClubs - 3) {
-    return "relegation";
-  }
-
-  if (totalClubs < 6 && position === totalClubs) {
-    return "relegation";
-  }
-
-  return null;
+  return getCompetitiveStandingZone(position, totalClubs, options?.tier);
 };
 
 export const buildStandings = (
@@ -113,7 +229,7 @@ export const buildStandings = (
   matches: MatchLike[],
   divisionId: number,
   upToMatchWeek: number,
-  season?: number,
+  options?: BuildStandingsOptions,
 ): StandingRow[] => {
   const statsByClubId = new Map<string, ClubStats>();
 
@@ -121,6 +237,7 @@ export const buildStandings = (
     statsByClubId.set(club.id, createEmptyStats(club));
   }
 
+  const season = options?.season;
   const relevantMatches = matches.filter(
     (match) =>
       match.divisionId === divisionId &&
@@ -141,6 +258,9 @@ export const buildStandings = (
         match.homeScore!,
         match.awayScore!,
         match.matchDate,
+        match.matchWeek,
+        match.awayClubName,
+        true,
       );
     }
 
@@ -150,6 +270,9 @@ export const buildStandings = (
         match.awayScore!,
         match.homeScore!,
         match.matchDate,
+        match.matchWeek,
+        match.homeClubName,
+        false,
       );
     }
   }
@@ -248,6 +371,10 @@ export const buildStandings = (
     const position = index + 1;
     const goalDifference = getGoalDifference(stats);
     const points = getPoints(stats);
+    const matchResults = [...stats.results].sort(
+      (left, right) =>
+        parseApiDate(left.date).getTime() - parseApiDate(right.date).getTime(),
+    );
     const form = [...stats.results]
       .sort(
         (left, right) =>
@@ -270,7 +397,8 @@ export const buildStandings = (
       goalDifference,
       points,
       form,
-      zone: getStandingZone(position, sorted.length),
+      matchResults,
+      zone: getStandingZone(position, sorted.length, points, options),
     };
   });
 };
@@ -284,12 +412,24 @@ export const formatGoalDifference = (goalDifference: number): string => {
 };
 
 export const getZoneDotClassName = (zone: StandingZone): string => {
-  if (zone === "champions") {
-    return "bg-primary-container";
+  if (zone === "placement-gold") {
+    return "bg-secondary";
   }
 
-  if (zone === "europa") {
-    return "bg-secondary";
+  if (zone === "placement-silver") {
+    return "bg-sky-400";
+  }
+
+  if (zone === "placement-bronze") {
+    return "bg-tertiary";
+  }
+
+  if (zone === "placement-iron") {
+    return "bg-violet-400";
+  }
+
+  if (zone === "promotion") {
+    return "bg-primary-container";
   }
 
   if (zone === "relegation") {
@@ -297,6 +437,22 @@ export const getZoneDotClassName = (zone: StandingZone): string => {
   }
 
   return "bg-transparent";
+};
+
+export const filterStandingResultsByOutcome = (
+  results: StandingMatchResult[],
+  outcome: FormResult,
+): StandingMatchResult[] => {
+  return results.filter((result) => result.result === outcome);
+};
+
+export const formatStandingResultScore = (result: StandingMatchResult): string => {
+  return `${result.goalsFor}-${result.goalsAgainst}`;
+};
+
+export const formatStandingResultOpponent = (result: StandingMatchResult): string => {
+  const venue = result.isHome ? "Home" : "Away";
+  return `${venue} vs ${result.opponentName}`;
 };
 
 export const getFormBadgeClassName = (result: FormResult): string => {
@@ -309,6 +465,90 @@ export const getFormBadgeClassName = (result: FormResult): string => {
   }
 
   return "border-outline-variant bg-surface-variant text-on-surface";
+};
+
+/** Same gray chip look as the Draw (D) form badge. */
+export const MATCH_WEEK_BADGE_CLASS_NAME =
+  "border-outline-variant bg-surface-variant text-on-surface";
+
+export const getVenueBadgeClassName = (isHome: boolean): string => {
+  if (isHome) {
+    return "border-sky-400/40 bg-sky-400/15 text-sky-400";
+  }
+
+  return "border-violet-400/40 bg-violet-400/15 text-violet-400";
+};
+
+export interface OutcomePopoverTheme {
+  panelBorder: string;
+  header: string;
+  headerTitle: string;
+  scoreBadge: string;
+  rowHover: string;
+}
+
+export const getOutcomePopoverTheme = (outcome: FormResult): OutcomePopoverTheme => {
+  if (outcome === "W") {
+    return {
+      panelBorder: "border-primary/30",
+      header: "border-b border-primary/20 bg-primary/10",
+      headerTitle: "text-primary",
+      scoreBadge: "border-primary/30 bg-primary/20 text-primary font-bold",
+      rowHover: "hover:bg-primary/10",
+    };
+  }
+
+  if (outcome === "L") {
+    return {
+      panelBorder: "border-error/30",
+      header: "border-b border-error/20 bg-error/10",
+      headerTitle: "text-error",
+      scoreBadge: "border-error/30 bg-error/20 text-error font-bold",
+      rowHover: "hover:bg-error/10",
+    };
+  }
+
+  return {
+    panelBorder: "border-secondary/30",
+    header: "border-b border-secondary/20 bg-secondary/10",
+    headerTitle: "text-secondary",
+    scoreBadge: "border-secondary/30 bg-secondary/20 text-secondary font-bold",
+    rowHover: "hover:bg-secondary/10",
+  };
+};
+
+export interface StandingsLegendItem {
+  zone: StandingZone;
+  label: string;
+}
+
+export const getStandingsLegendItems = (
+  options?: BuildStandingsOptions,
+): StandingsLegendItem[] => {
+  if (options?.isTutorial) {
+    return GRADUATION_POINT_BANDS.map((band) => ({
+      zone: band.zone,
+      label: `${band.label} (${band.minPoints}–${band.maxPoints} pts)`,
+    }));
+  }
+
+  const items: StandingsLegendItem[] = [];
+
+  if (canPromoteFromTier(options?.tier)) {
+    items.push({
+      zone: "promotion",
+      label: `Promotion (top ${PROMOTION_SLOTS})`,
+    });
+  }
+
+  if (canRelegateFromTier(options?.tier)) {
+    items.push({
+      zone: "relegation",
+      label: `Relegation (bottom ${RELEGATION_SLOTS})`,
+    });
+  }
+
+  return items;
 };
 
 export const exportStandingsCsv = (

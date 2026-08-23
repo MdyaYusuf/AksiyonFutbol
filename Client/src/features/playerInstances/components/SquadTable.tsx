@@ -30,11 +30,11 @@ export const SquadTable = ({
         <table className="w-full whitespace-nowrap text-left">
           <thead>
             <tr className="border-b border-outline-variant bg-surface-container-low">
-              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Pos</th>
+              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Nat</th>
               <th className="px-4 py-3 text-label-caps text-on-surface-variant">
                 Player Name
               </th>
-              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Nat</th>
+              <th className="px-4 py-3 text-label-caps text-on-surface-variant">Pos</th>
               <th
                 className="px-4 py-3 text-label-caps text-on-surface-variant"
                 title="Preferred foot"

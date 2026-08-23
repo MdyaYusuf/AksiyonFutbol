@@ -11,6 +11,7 @@ import { useGetLeagueDivisionByIdQuery } from "../leagueDivisionsApiSlice";
 import {
   buildStandings,
   exportStandingsCsv,
+  getStandingsLegendItems,
 } from "../utils/standingsHelpers";
 
 export const LeaguePage = () => {
@@ -52,9 +53,24 @@ export const LeaguePage = () => {
       allMatches,
       division.id,
       selectedMatchWeek,
-      division.currentSeason,
+      {
+        season: division.currentSeason,
+        isTutorial: division.isTutorial,
+        tier: division.tier,
+      },
     );
   }, [allMatches, club, division, divisionClubs, selectedMatchWeek]);
+
+  const legendItems = useMemo(() => {
+    if (!division) {
+      return [];
+    }
+
+    return getStandingsLegendItems({
+      isTutorial: division.isTutorial,
+      tier: division.tier,
+    });
+  }, [division]);
 
   const isLoading =
     isClubLoading || isDivisionLoading || isClubsLoading || isMatchesLoading;
@@ -158,7 +174,11 @@ export const LeaguePage = () => {
         </div>
       ) : null}
 
-      <StandingsTable standings={standings} currentClubId={club.id} />
+      <StandingsTable
+        standings={standings}
+        currentClubId={club.id}
+        legendItems={legendItems}
+      />
     </div>
   );
 };

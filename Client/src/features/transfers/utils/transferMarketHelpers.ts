@@ -118,6 +118,28 @@ export const formatMarketPosition = (position: string): string => {
   return position.toUpperCase().slice(0, 3);
 };
 
+export const parseMarketPosition = (position: string): PlayerPosition | null => {
+  const normalized = position.trim().toLowerCase();
+
+  if (normalized === "goalkeeper" || normalized === "1") {
+    return PlayerPosition.Goalkeeper;
+  }
+
+  if (normalized === "defender" || normalized === "2") {
+    return PlayerPosition.Defender;
+  }
+
+  if (normalized === "midfielder" || normalized === "3") {
+    return PlayerPosition.Midfielder;
+  }
+
+  if (normalized === "forward" || normalized === "4") {
+    return PlayerPosition.Forward;
+  }
+
+  return null;
+};
+
 export const formatTransferWage = (amount: number): string => {
   return `${formatSquadMoney(amount)}/w`;
 };

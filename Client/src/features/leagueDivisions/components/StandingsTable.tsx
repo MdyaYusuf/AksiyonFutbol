@@ -1,19 +1,22 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { StandingRow } from "../utils/standingsHelpers";
+import type { StandingRow, StandingsLegendItem } from "../utils/standingsHelpers";
 import {
   formatGoalDifference,
   getFormBadgeClassName,
   getZoneDotClassName,
 } from "../utils/standingsHelpers";
+import { StandingResultPopover } from "./StandingResultPopover";
 
 interface StandingsTableProps {
   standings: StandingRow[];
   currentClubId?: string;
+  legendItems?: StandingsLegendItem[];
 }
 
 export const StandingsTable = ({
   standings,
   currentClubId,
+  legendItems = [],
 }: StandingsTableProps) => {
   if (standings.length === 0) {
     return (
@@ -62,6 +65,9 @@ export const StandingsTable = ({
                   : row.goalDifference < 0
                     ? "text-error"
                     : "text-on-surface-variant";
+              const countClassName = isCurrentClub
+                ? "text-primary/80 group-hover:text-primary"
+                : "text-on-surface-variant group-hover:text-on-surface";
 
               return (
                 <tr
@@ -100,29 +106,40 @@ export const StandingsTable = ({
                       {isCurrentClub ? " (You)" : ""}
                     </div>
                   </td>
-                  <td
-                    className={`px-4 py-2.5 text-center ${isCurrentClub ? "text-primary/80 group-hover:text-primary" : "text-on-surface-variant group-hover:text-on-surface"}`}
-                  >
+                  <td className={`px-4 py-2.5 text-center ${countClassName}`}>
                     {row.played}
                   </td>
-                  <td
-                    className={`px-4 py-2.5 text-center ${isCurrentClub ? "text-primary/80 group-hover:text-primary" : "text-on-surface-variant group-hover:text-on-surface"}`}
-                  >
-                    {row.won}
+                  <td className={`px-4 py-2.5 text-center ${countClassName}`}>
+                    <StandingResultPopover
+                      clubName={row.clubName}
+                      outcome="W"
+                      results={row.matchResults}
+                      className="inline-flex cursor-pointer justify-center"
+                    >
+                      {row.won}
+                    </StandingResultPopover>
                   </td>
-                  <td
-                    className={`px-4 py-2.5 text-center ${isCurrentClub ? "text-primary/80 group-hover:text-primary" : "text-on-surface-variant group-hover:text-on-surface"}`}
-                  >
-                    {row.drawn}
+                  <td className={`px-4 py-2.5 text-center ${countClassName}`}>
+                    <StandingResultPopover
+                      clubName={row.clubName}
+                      outcome="D"
+                      results={row.matchResults}
+                      className="inline-flex cursor-pointer justify-center"
+                    >
+                      {row.drawn}
+                    </StandingResultPopover>
                   </td>
-                  <td
-                    className={`px-4 py-2.5 text-center ${isCurrentClub ? "text-primary/80 group-hover:text-primary" : "text-on-surface-variant group-hover:text-on-surface"}`}
-                  >
-                    {row.lost}
+                  <td className={`px-4 py-2.5 text-center ${countClassName}`}>
+                    <StandingResultPopover
+                      clubName={row.clubName}
+                      outcome="L"
+                      results={row.matchResults}
+                      className="inline-flex cursor-pointer justify-center"
+                    >
+                      {row.lost}
+                    </StandingResultPopover>
                   </td>
-                  <td
-                    className={`px-4 py-2.5 text-center ${isCurrentClub ? "text-primary/80 group-hover:text-primary" : "text-on-surface-variant group-hover:text-on-surface"}`}
-                  >
+                  <td className={`px-4 py-2.5 text-center ${countClassName}`}>
                     {row.goalsFor}:{row.goalsAgainst}
                   </td>
                   <td
@@ -158,20 +175,16 @@ export const StandingsTable = ({
         </table>
       </div>
 
-      <div className="flex flex-wrap gap-6 border-t border-outline-variant bg-surface-container-highest px-6 py-3 text-label-caps text-on-surface-variant">
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-primary-container" />
-          Champions League
+      {legendItems.length > 0 ? (
+        <div className="flex flex-wrap gap-6 border-t border-outline-variant bg-surface-container-highest px-6 py-3 text-label-caps text-on-surface-variant">
+          {legendItems.map((item) => (
+            <div key={item.label} className="flex items-center gap-2">
+              <div className={`h-2 w-2 rounded-full ${getZoneDotClassName(item.zone)}`} />
+              {item.label}
+            </div>
+          ))}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-secondary" />
-          Europa League
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-error" />
-          Relegation
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 };

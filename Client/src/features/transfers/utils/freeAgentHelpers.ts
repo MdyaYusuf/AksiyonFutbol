@@ -20,7 +20,7 @@ export const getDraftTierBadgeClassName = (tier: DraftTier): string => {
     return "border-tertiary/50 bg-transparent text-tertiary";
   }
 
-  return "border-teal-400/45 bg-transparent text-teal-300";
+  return "border-violet-400/45 bg-transparent text-violet-300";
 };
 
 export const getDraftTierFilterChipClassName = (
@@ -60,10 +60,10 @@ export const getDraftTierFilterChipClassName = (
   }
 
   if (isActive) {
-    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-teal-400/55 bg-transparent text-teal-300";
+    return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-violet-400/55 bg-transparent text-violet-300";
   }
 
-  return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-transparent text-on-surface-variant hover:border-teal-400 hover:text-teal-300";
+  return "rounded-full border px-3 py-1 font-label-caps text-label-caps transition-colors border-outline-variant bg-transparent text-on-surface-variant hover:border-violet-400 hover:text-violet-300";
 };
 
 export type FreeAgentSortOption =

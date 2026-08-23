@@ -7,10 +7,10 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
 import type { PlayerInstanceResponse } from "../playerInstanceTypes";
 import {
   getPlayerDisplayName,
-  getPositionLabel,
 } from "../utils/squadHelpers";
 import { PlayerAttributeProfile } from "./PlayerAttributeProfile";
 
@@ -217,6 +217,8 @@ export const PlayerAttributePopover = ({
   };
 
   const displayName = getPlayerDisplayName(player.firstName, player.lastName);
+  const flagSrc = getNationalityFlagSrc(player.nationality);
+  const nationalityLabel = player.nationality?.trim() || "Unknown";
 
   return (
     <div
@@ -242,11 +244,28 @@ export const PlayerAttributePopover = ({
               onMouseLeave={handleMouseLeave}
             >
               <div className="flex items-center justify-between gap-2 border-b border-outline-variant px-3 py-2">
-                <span className="truncate font-body-sm font-semibold text-on-surface">
-                  {displayName}
-                </span>
+                <div className="flex min-w-0 items-center gap-2">
+                  {flagSrc ? (
+                    <img
+                      src={flagSrc}
+                      alt={nationalityLabel}
+                      title={nationalityLabel}
+                      width={33}
+                      height={20}
+                      className="h-5 w-[33px] shrink-0 object-contain"
+                    />
+                  ) : (
+                    <span
+                      title={nationalityLabel}
+                      className="inline-block h-5 w-[33px] shrink-0 rounded-sm bg-surface-container-highest"
+                    />
+                  )}
+                  <span className="truncate font-body-sm font-semibold text-on-surface">
+                    {displayName}
+                  </span>
+                </div>
                 <span className="shrink-0 font-data-mono text-[11px] text-on-surface-variant">
-                  {getPositionLabel(player.position)} · {player.overallRating}
+                  Overall · {player.overallRating}
                 </span>
               </div>
               <div className="p-3">

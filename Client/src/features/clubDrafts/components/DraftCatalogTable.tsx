@@ -78,8 +78,8 @@ export const DraftCatalogTable = ({
       <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
         <table className="w-full table-fixed border-collapse text-left">
           <colgroup>
-            <col className="w-[19%]" />
             <col className="w-[6%]" />
+            <col className="w-[19%]" />
             <col className="w-[7%]" />
             <col className="w-[6%]" />
             <col className="w-[6%]" />
@@ -93,14 +93,14 @@ export const DraftCatalogTable = ({
           <thead>
             <tr className="border-b border-outline-variant bg-surface-container-high font-label-caps text-label-caps text-on-surface-variant">
               <SortableHeader
-                label="Player"
-                column="player"
+                label="Nat"
+                column="nationality"
                 sort={sort}
                 onSortChange={onSortChange}
               />
               <SortableHeader
-                label="Nat"
-                column="nationality"
+                label="Player"
+                column="player"
                 sort={sort}
                 onSortChange={onSortChange}
               />
