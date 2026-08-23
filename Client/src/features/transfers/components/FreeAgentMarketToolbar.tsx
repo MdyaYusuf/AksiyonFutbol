@@ -13,6 +13,8 @@ interface FreeAgentMarketToolbarProps {
   onSortOptionChange: (sort: FreeAgentSortOption) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
+  transferBudget?: number;
+  wageSpace?: number;
 }
 
 export const FreeAgentMarketToolbar = ({
@@ -24,6 +26,8 @@ export const FreeAgentMarketToolbar = ({
   onSortOptionChange,
   searchQuery,
   onSearchQueryChange,
+  transferBudget,
+  wageSpace,
 }: FreeAgentMarketToolbarProps) => {
   return (
     <TransferMarketToolbar
@@ -37,6 +41,8 @@ export const FreeAgentMarketToolbar = ({
       searchPlaceholder="Search free agents..."
       tierFilter={tierFilter}
       onTierFilterChange={onTierFilterChange}
+      transferBudget={transferBudget}
+      wageSpace={wageSpace}
     />
   );
 };

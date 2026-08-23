@@ -1,4 +1,4 @@
-import type { DraftTier, PlayerPosition } from "../basePlayers/basePlayerTypes";
+import type { DraftTier, PlayerPosition, PreferredFoot } from "../basePlayers/basePlayerTypes";
 
 export const TransferListingStatus = {
   Active: 1,
@@ -25,8 +25,12 @@ export interface TransferMarketItem {
   playerInstanceId: string;
   firstName: string;
   lastName: string;
+  nationality?: string | null;
   position: string;
+  preferredFoot: PreferredFoot;
   age: number;
+  heightCm: number;
+  weightKg: number;
   overallRating: number;
   marketValue: number;
   wage: number;

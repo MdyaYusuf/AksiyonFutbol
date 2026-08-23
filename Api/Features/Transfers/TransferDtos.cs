@@ -17,8 +17,12 @@ public sealed class TransferMarketItemDto
   public Guid PlayerInstanceId { get; init; }
   public string FirstName { get; init; } = default!;
   public string LastName { get; init; } = default!;
+  public string? Nationality { get; init; }
   public string Position { get; init; } = default!;
+  public PreferredFoot PreferredFoot { get; init; }
   public int Age { get; init; }
+  public int HeightCm { get; init; }
+  public int WeightKg { get; init; }
   public int OverallRating { get; init; }
   public decimal MarketValue { get; init; }
   public decimal Wage { get; init; }
@@ -88,8 +92,12 @@ public sealed class FreeAgentMarketItemDto
   public Guid BasePlayerId { get; init; }
   public string FirstName { get; init; } = default!;
   public string LastName { get; init; } = default!;
+  public string? Nationality { get; init; }
   public string Position { get; init; } = default!;
+  public PreferredFoot PreferredFoot { get; init; }
   public int Age { get; init; }
+  public int HeightCm { get; init; }
+  public int WeightKg { get; init; }
   public int OverallRating { get; init; }
   public DraftTier DraftTier { get; init; }
   public decimal SigningFee { get; init; }

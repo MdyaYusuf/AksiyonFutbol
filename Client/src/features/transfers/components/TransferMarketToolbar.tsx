@@ -1,5 +1,6 @@
 import type { DraftTier } from "../../basePlayers/basePlayerTypes";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { formatCash } from "../../dashboard/utils/dashboardFormatters";
 import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
 import { getSquadFilterChipClassName } from "../../playerInstances/utils/squadHelpers";
 import {
@@ -9,6 +10,7 @@ import {
 import {
   TRANSFER_POSITION_FILTERS,
   TRANSFER_SORT_OPTIONS,
+  formatTransferWage,
 } from "../utils/transferMarketHelpers";
 
 interface TransferMarketToolbarProps {
@@ -22,6 +24,8 @@ interface TransferMarketToolbarProps {
   searchPlaceholder?: string;
   tierFilter?: DraftTier | "ALL";
   onTierFilterChange?: (tier: DraftTier | "ALL") => void;
+  transferBudget?: number;
+  wageSpace?: number;
 }
 
 export const TransferMarketToolbar = ({
@@ -35,8 +39,12 @@ export const TransferMarketToolbar = ({
   searchPlaceholder = "Search players, clubs...",
   tierFilter,
   onTierFilterChange,
+  transferBudget,
+  wageSpace,
 }: TransferMarketToolbarProps) => {
   const showTierFilters = tierFilter !== undefined && onTierFilterChange !== undefined;
+  const showBudgetSummary =
+    transferBudget !== undefined && wageSpace !== undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -90,21 +98,38 @@ export const TransferMarketToolbar = ({
       </div>
 
       {showTierFilters ? (
-        <div className="flex flex-wrap gap-2">
-          {FREE_AGENT_TIER_FILTERS.map((option) => {
-            const isActive = tierFilter === option.value;
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {FREE_AGENT_TIER_FILTERS.map((option) => {
+              const isActive = tierFilter === option.value;
 
-            return (
-              <button
-                key={option.label}
-                type="button"
-                onClick={() => onTierFilterChange(option.value)}
-                className={getDraftTierFilterChipClassName(option.value, isActive)}
-              >
-                {option.label}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={option.label}
+                  type="button"
+                  onClick={() => onTierFilterChange(option.value)}
+                  className={getDraftTierFilterChipClassName(option.value, isActive)}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {showBudgetSummary ? (
+            <div className="ml-auto flex flex-wrap items-center gap-4 font-label-caps text-label-caps text-on-surface-variant">
+              <span>
+                Remaining Transfer Budget{" "}
+                <span className="text-primary">{formatCash(transferBudget)}</span>
+              </span>
+              <span>
+                Remaining Wage Budget{" "}
+                <span className="text-on-surface">
+                  {formatTransferWage(Math.max(0, wageSpace))}
+                </span>
+              </span>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

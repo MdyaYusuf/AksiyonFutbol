@@ -4,6 +4,7 @@ import type { DraftTier } from "../../basePlayers/basePlayerTypes";
 import { ClubLifecycleStatus } from "../../clubs/clubTypes";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
+import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
 import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
 import { FreeAgentMarketTable } from "../components/FreeAgentMarketTable";
 import { FreeAgentMarketToolbar } from "../components/FreeAgentMarketToolbar";
@@ -37,6 +38,7 @@ const canSignFreeAgents = (lifecycleStatus?: number): boolean => {
 export const TransferMarketPage = () => {
   const navigate = useNavigate();
   const { data: club } = useGetCurrentUserClubQuery();
+  const { data: myPlayers = [] } = useGetCurrentUserClubPlayersQuery();
   const [activeTab, setActiveTab] = useState<TransferMarketTab>("free-agents");
 
   const [positionFilter, setPositionFilter] = useState<SquadPositionFilter>("ALL");
@@ -49,6 +51,15 @@ export const TransferMarketPage = () => {
     useState<FreeAgentSortOption>("rating-desc");
   const [freeAgentSearchQuery, setFreeAgentSearchQuery] = useState("");
   const [signingBasePlayerId, setSigningBasePlayerId] = useState<string | null>(null);
+
+  const wageSpace = useMemo(() => {
+    if (!club) {
+      return 0;
+    }
+
+    const wageBill = myPlayers.reduce((sum, squadPlayer) => sum + squadPlayer.wage, 0);
+    return club.wageBudget - wageBill;
+  }, [club, myPlayers]);
 
   const marketQuery = useMemo(() => {
     const sort = sortOptionToApi(sortOption);
@@ -186,6 +197,8 @@ export const TransferMarketPage = () => {
             onSortOptionChange={setFreeAgentSortOption}
             searchQuery={freeAgentSearchQuery}
             onSearchQueryChange={setFreeAgentSearchQuery}
+            transferBudget={club?.cash}
+            wageSpace={wageSpace}
           />
 
           <FreeAgentMarketTable
@@ -209,6 +222,8 @@ export const TransferMarketPage = () => {
             onSearchQueryChange={setSearchQuery}
             tierFilter={listingTierFilter}
             onTierFilterChange={setListingTierFilter}
+            transferBudget={club?.cash}
+            wageSpace={wageSpace}
           />
 
           <TransferMarketTable
