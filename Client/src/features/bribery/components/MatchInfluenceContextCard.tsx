@@ -61,7 +61,7 @@ export const MatchInfluenceContextCard = ({
         <div className="flex flex-col justify-center gap-3">
           <div className="flex items-end justify-between">
             <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-              Bribery Difficulty
+              Approach Difficulty
             </span>
             <span className="font-data-mono text-data-mono text-secondary">
               {difficultyLabel} ({difficultyPercent}%)

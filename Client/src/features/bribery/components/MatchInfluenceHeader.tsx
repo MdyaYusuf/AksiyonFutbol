@@ -9,7 +9,7 @@ interface MatchInfluenceHeaderProps {
 
 export const MatchInfluenceHeader = ({
   backTo = "/app/actions",
-  title = "Bribe Referee",
+  title = "Match Influence",
   subtitle = "Weigh risk against reward before kickoff",
 }: MatchInfluenceHeaderProps) => {
   return (

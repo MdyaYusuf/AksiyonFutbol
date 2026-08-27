@@ -15,8 +15,8 @@ public static class ClubActionCatalog
       {
         Type = ClubActionType.MatchFixing,
         Category = ClubActionCategory.Match,
-        DisplayName = "Fix the Match",
-        Description = "Pay a key opponent player to underperform in the upcoming fixture.",
+        DisplayName = "Quiet Arrangement",
+        Description = "Persuade a key opponent to take their foot off the gas in the next fixture.",
         IsShady = true,
         IsMatchScoped = true
       },
@@ -24,8 +24,8 @@ public static class ClubActionCatalog
       {
         Type = ClubActionType.Doping,
         Category = ClubActionCategory.Match,
-        DisplayName = "Doping Program",
-        Description = "Boost your squad for the next match with banned substances.",
+        DisplayName = "Preparation Edge",
+        Description = "Push recovery and prep past regulation for a short-term boost next match.",
         IsShady = true,
         IsMatchScoped = true
       },
@@ -34,7 +34,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.Espionage,
         Category = ClubActionCategory.Match,
         DisplayName = "Scout the Opponent",
-        Description = "Spy on the opponent to reveal their setup and gain a small edge.",
+        Description = "Gather quiet intel on the opponent's setup for a small edge.",
         IsShady = true,
         IsMatchScoped = true
       },
@@ -42,8 +42,8 @@ public static class ClubActionCatalog
       {
         Type = ClubActionType.Sabotage,
         Category = ClubActionCategory.Match,
-        DisplayName = "Sabotage the Away Side",
-        Description = "Disrupt the visiting side's travel and rest. Only available when you are the home club.",
+        DisplayName = "Disrupt Away Prep",
+        Description = "Make travel and rest harder for the visitors. Only available when you are the home club.",
         IsShady = true,
         IsMatchScoped = true
       },
@@ -51,8 +51,8 @@ public static class ClubActionCatalog
       {
         Type = ClubActionType.IntimidateReferee,
         Category = ClubActionCategory.Match,
-        DisplayName = "Intimidate the Referee",
-        Description = "Lean on the referee for favorable calls. Backfires against strict or showman officials.",
+        DisplayName = "Pressure the Official",
+        Description = "Apply off-pitch pressure for friendlier decisions. Can backfire against strict or showman officials.",
         IsShady = true,
         IsMatchScoped = true
       },
@@ -100,32 +100,32 @@ public static class ClubActionCatalog
       {
         Type = ClubActionType.MediaSpin,
         Category = ClubActionCategory.Politics,
-        DisplayName = "Media Spin",
-        Description = "Work the press to unsettle the next opponent's morale, or repair your own reputation.",
+        DisplayName = "Shape the Narrative",
+        Description = "Steer the press to unsettle the next opponent's morale, or repair your own standing.",
         IsShady = true
       },
       new()
       {
         Type = ClubActionType.LobbyFederation,
         Category = ClubActionCategory.Politics,
-        DisplayName = "Lobby the Federation",
-        Description = "Spend reputation to reduce club suspicion at the federation.",
+        DisplayName = "Federation Favor",
+        Description = "Spend standing to cool federation scrutiny of your club.",
         IsShady = true
       },
       new()
       {
         Type = ClubActionType.DodgySponsorship,
         Category = ClubActionCategory.Politics,
-        DisplayName = "Dodgy Sponsorship",
-        Description = "Inject fast cash through a questionable sponsor. High exposure.",
+        DisplayName = "Shadow Sponsor Deal",
+        Description = "Unlock fast cash through an off-books sponsor. High exposure risk.",
         IsShady = true
       },
       new()
       {
         Type = ClubActionType.TapUpTarget,
         Category = ClubActionCategory.Politics,
-        DisplayName = "Tap Up a Target",
-        Description = "Illegally approach a transfer target to unlock a fee discount when you buy them.",
+        DisplayName = "Private Approach",
+        Description = "Quietly sound out a transfer target to unlock a fee discount if you buy them.",
         IsShady = true
       }
     }.ToDictionary(d => d.Type);

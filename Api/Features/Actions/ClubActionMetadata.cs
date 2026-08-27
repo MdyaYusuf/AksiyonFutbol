@@ -11,7 +11,7 @@ public sealed record ClubActionMetadata
   public required string DisplayName { get; init; }
   public required string Description { get; init; }
 
-  // Shady actions generate Heat and carry detection risk; legit ones do not.
+  // Shady flag drives Heat/detection; player-facing label is "Gray Area".
   public bool IsShady { get; init; }
 
   // Match-scoped actions target the next unplayed fixture and allow a single

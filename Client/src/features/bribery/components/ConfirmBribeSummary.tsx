@@ -57,8 +57,8 @@ export const ConfirmBribeRiskNote = ({ title }: ConfirmBribeRiskNoteProps) => {
       <div>
         <h3 className="mb-1 font-headline-sm text-headline-sm text-error">{title}</h3>
         <p className="font-body-sm text-body-sm text-error/80">
-          Attempting to influence a high-profile match carries significant risk. Exposure could
-          lead to a fine, point deduction, or managerial ban.
+          A quiet word with the official in a high-profile fixture carries real exposure risk.
+          Getting caught could mean a fine, point deduction, or ban — all in-game fiction.
         </p>
       </div>
     </div>

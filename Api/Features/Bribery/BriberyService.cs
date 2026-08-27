@@ -34,7 +34,7 @@ public class BriberyService(
       return new ReturnModel<BriberyContextResponseDto>()
       {
         Success = true,
-        Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+        Message = "Maç etkisi bağlamı başarılı bir şekilde getirildi.",
         Data = _mapper.ToUnavailableContextDto(
           clubContext,
           MatchLiveWindow.SpendLockedReason,
@@ -53,7 +53,7 @@ public class BriberyService(
       return new ReturnModel<BriberyContextResponseDto>()
       {
         Success = true,
-        Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+        Message = "Maç etkisi bağlamı başarılı bir şekilde getirildi.",
         Data = _mapper.ToUnavailableContextDto(
           clubContext,
           "No upcoming fixture available.",
@@ -68,10 +68,10 @@ public class BriberyService(
       return new ReturnModel<BriberyContextResponseDto>()
       {
         Success = true,
-        Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+        Message = "Maç etkisi bağlamı başarılı bir şekilde getirildi.",
         Data = _mapper.ToUnavailableContextDto(
           clubContext,
-          "No referee assigned to the upcoming fixture.",
+          "No official assigned to the upcoming fixture.",
           minAmount,
           maxAmount),
         StatusCode = 200
@@ -102,7 +102,7 @@ public class BriberyService(
     return new ReturnModel<BriberyContextResponseDto>()
     {
       Success = true,
-      Message = "Rüşvet bağlamı başarılı bir şekilde getirildi.",
+      Message = "Maç etkisi bağlamı başarılı bir şekilde getirildi.",
       Data = response,
       StatusCode = 200
     };
@@ -159,8 +159,8 @@ public class BriberyService(
       ?? attempt;
 
     string message = succeeded
-      ? "Rüşvet girişimi başarılı oldu. Hakem maçta kulübünüzü kayırabilir."
-      : "Rüşvet girişimi başarısız oldu. Ödenen tutar kasadan düşüldü.";
+      ? "Yaklaşım başarılı oldu. Hakem maçta kulübünüzü kayırabilir."
+      : "Yaklaşım başarısız oldu. Ödenen tutar kasadan düşüldü.";
 
     return new ReturnModel<BribeAttemptResponseDto>()
     {
@@ -192,7 +192,7 @@ public class BriberyService(
     return new ReturnModel<List<BribeAttemptResponseDto>>()
     {
       Success = true,
-      Message = "Rüşvet geçmişi başarılı bir şekilde getirildi.",
+      Message = "Maç etkisi geçmişi başarılı bir şekilde getirildi.",
       Data = response,
       StatusCode = 200
     };

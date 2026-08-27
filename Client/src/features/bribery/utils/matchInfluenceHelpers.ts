@@ -58,25 +58,25 @@ export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] =
   }[] = [
     {
       tier: "low",
-      title: "Subtle Persuasion",
+      title: "Quiet Word",
       description:
-        "Low risk. Minor favorable calls in midfield. Unlikely to impact major penalty decisions.",
+        "Low risk. Soft nudges on midfield calls. Unlikely to swing major decisions.",
       amount: lowAmount,
       detectionChance: 0.05,
     },
     {
       tier: "medium",
-      title: "Significant Incentive",
+      title: "Preparation Edge",
       description:
-        "Medium risk. Guaranteed leniency on cards for your team, harshness for the opposition.",
+        "Medium risk. Clearer leniency on cards for your side, firmer calls against the opponent.",
       amount: mediumAmount,
       detectionChance: 0.25,
     },
     {
       tier: "high",
-      title: "Absolute Guarantee",
+      title: "Full Arrangement",
       description:
-        "High risk. Direct manipulation of critical moments (penalties, red cards).",
+        "High risk. Strong tilt on critical moments — spot kicks, dismissals, and late drama.",
       amount: highAmount,
       detectionChance: 0.6,
     },
@@ -104,11 +104,11 @@ export const getPersonalityBlurb = (personality: string): string => {
   const key = personality.toLowerCase();
 
   if (key === "corruptible") {
-    return "Known to turn a blind eye for the right price, but cautious in high-profile matches.";
+    return "Open to a quiet arrangement when the stakes are right, but careful in the spotlight.";
   }
 
   if (key === "strict") {
-    return "By-the-book official. Extra cash rarely buys sympathy.";
+    return "By-the-book official. Soft approaches rarely move the needle.";
   }
 
   if (key === "lenient") {
@@ -119,7 +119,7 @@ export const getPersonalityBlurb = (personality: string): string => {
     return "Loves the spotlight. Bold approaches can backfire publicly.";
   }
 
-  return "Balanced temperament. Outcomes depend heavily on the offer size.";
+  return "Balanced temperament. Outcomes depend heavily on how far you push.";
 };
 
 export const formatChancePercent = (chance: number): string => {

@@ -64,7 +64,7 @@ export interface BribeStakeOption {
   detectionChance: number;
 }
 
-/** Location state passed from Match Influence → Confirm Bribe. */
+/** Location state passed from Match Influence → Confirm. */
 export interface MatchInfluenceConfirmState {
   matchId: string;
   amount: number;

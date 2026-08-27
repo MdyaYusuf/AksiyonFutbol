@@ -84,7 +84,7 @@ export const MatchInfluencePage = () => {
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
-        Loading bribe referee...
+        Loading match influence...
       </div>
     );
   }
@@ -95,7 +95,7 @@ export const MatchInfluencePage = () => {
         <MaterialIcon name="gavel" className="text-4xl text-on-surface-variant" />
         <p className="font-body-lg text-body-lg text-on-surface-variant">
           {context?.unavailableReason ??
-            "No upcoming fixture available to bribe, or the match has no assigned referee."}
+            "No upcoming fixture available for match influence, or the match has no assigned official."}
         </p>
         <Link to="/app/actions" className="text-primary hover:underline">
           Back to Actions
@@ -113,7 +113,7 @@ export const MatchInfluencePage = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <MatchInfluenceHeader backTo="/app/actions" title="Bribe Referee" />
+      <MatchInfluenceHeader backTo="/app/actions" title="Match Influence" />
 
       <MatchInfluenceContextCard context={context} />
 
@@ -148,9 +148,9 @@ export const MatchInfluencePage = () => {
       <div className="mt-2 flex items-start gap-3 rounded-lg border border-secondary/30 bg-surface-variant p-4">
         <MaterialIcon name="error" className="mt-0.5 text-secondary" />
         <p className="font-body-sm text-body-sm text-on-surface-variant">
-          <span className="font-bold text-secondary">Warning:</span> Failed attempts may
-          damage reputation and finances. Investigations by the league governing body could
-          result in severe point deductions or managerial bans.
+          <span className="font-bold text-secondary">Warning:</span> Failed approaches may
+          damage standing and finances. League scrutiny could mean fines, point deductions,
+          or bans — all in-game fiction.
         </p>
       </div>
 

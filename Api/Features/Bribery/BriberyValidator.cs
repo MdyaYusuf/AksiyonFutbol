@@ -12,8 +12,8 @@ public class CreateBribeAttemptRequestValidator : AbstractValidator<CreateBribeA
 
     RuleFor(x => x.Amount)
       .GreaterThanOrEqualTo(options.BribeMinAmount)
-      .WithMessage($"Rüşvet tutarı en az {options.BribeMinAmount} olmalıdır.")
+      .WithMessage($"Yaklaşım tutarı en az {options.BribeMinAmount} olmalıdır.")
       .LessThanOrEqualTo(options.BribeMaxAmount)
-      .WithMessage($"Rüşvet tutarı en fazla {options.BribeMaxAmount} olabilir.");
+      .WithMessage($"Yaklaşım tutarı en fazla {options.BribeMaxAmount} olabilir.");
   }
 }

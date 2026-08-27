@@ -29,7 +29,7 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
             </h3>
             {action.isShady ? (
               <span className="rounded border border-secondary/30 bg-secondary/10 px-2 py-0.5 font-label-caps text-label-caps text-secondary">
-                Shady
+                Gray Area
               </span>
             ) : null}
           </div>

@@ -34,14 +34,15 @@ export const BribeRefereeActionCard = ({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-headline-sm text-headline-sm text-on-surface">
-              Bribe Referee
+              Approach Referee
             </h3>
             <span className="rounded border border-secondary/30 bg-secondary/10 px-2 py-0.5 font-label-caps text-label-caps text-secondary">
-              Shady
+              Gray Area
             </span>
           </div>
           <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-            Pay the match official for favorable calls. Success boosts your scoring odds.
+            Quietly sound out the match official for friendlier decisions. Success tilts
+            scoring odds your way.
           </p>
         </div>
       </div>

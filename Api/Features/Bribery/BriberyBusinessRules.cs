@@ -93,7 +93,7 @@ public class BriberyBusinessRules(
   {
     if (match.IsPlayed)
     {
-      throw new BusinessException("Oynanmış maçlar için rüşvet girişiminde bulunulamaz.");
+      throw new BusinessException("Oynanmış maçlar için maç etkisi girişiminde bulunulamaz.");
     }
   }
 
@@ -109,7 +109,7 @@ public class BriberyBusinessRules(
   {
     if (!match.RefereeId.HasValue || match.Referee == null)
     {
-      throw new BusinessException("Rüşvet için maça hakem atanmış olmalıdır.");
+      throw new BusinessException("Maç etkisi için maça hakem atanmış olmalıdır.");
     }
   }
 
@@ -124,7 +124,7 @@ public class BriberyBusinessRules(
 
     if (exists)
     {
-      throw new BusinessException("Bu maç için zaten bir rüşvet girişiminde bulunulmuş.");
+      throw new BusinessException("Bu maç için zaten bir etki girişiminde bulunulmuş.");
     }
   }
 
@@ -132,7 +132,7 @@ public class BriberyBusinessRules(
   {
     if (club.Cash < amount)
     {
-      throw new BusinessException("Kulüp kasası bu rüşvet tutarını karşılamaya yetmiyor.");
+      throw new BusinessException("Kulüp kasası bu yaklaşım tutarını karşılamaya yetmiyor.");
     }
   }
 

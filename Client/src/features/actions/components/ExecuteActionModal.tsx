@@ -121,7 +121,7 @@ export const ExecuteActionModal = ({
           {needsMediaSpinMode ? (
             <div className="flex flex-col gap-2">
               <div className="font-label-caps text-label-caps text-on-surface-variant">
-                Media Spin Mode
+                Narrative Focus
               </div>
               <label className="flex items-center gap-2 rounded border border-outline-variant bg-surface-container-low px-3 py-2">
                 <input
@@ -146,7 +146,7 @@ export const ExecuteActionModal = ({
                   }}
                 />
                 <span className="font-body-sm text-body-sm text-on-surface">
-                  Repair own reputation
+                  Repair own standing
                 </span>
               </label>
               {mediaSpinMode === MediaSpinMode.OpponentMorale && !matchId ? (
@@ -194,7 +194,7 @@ export const ExecuteActionModal = ({
             <div className="flex items-start gap-2 rounded border border-secondary/30 bg-surface-variant p-3">
               <MaterialIcon name="warning" className="mt-0.5 text-secondary" />
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Shady actions raise Heat and may be detected. Cost is spent even on failure.
+                Gray-area moves raise Heat and may be exposed. Cost is spent even on failure.
               </p>
             </div>
           ) : null}

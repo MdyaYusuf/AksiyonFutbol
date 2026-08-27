@@ -27,6 +27,10 @@ export const ActionsHubHeader = ({
           <p className="font-body-lg text-body-lg text-on-surface-variant">
             Spend resources, tilt the odds, manage the heat
           </p>
+          <p className="mt-2 max-w-2xl font-body-sm text-body-sm text-on-surface-variant/80">
+            Fictional satire set in a made-up league. Gray-area moves are game mechanics only
+            and do not reflect or encourage real-world misconduct.
+          </p>
         </div>
 
         <div className="min-w-[140px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
@@ -47,7 +51,7 @@ export const ActionsHubHeader = ({
             <div>
               <h2 className="font-headline-sm text-headline-sm text-on-surface">Heat</h2>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Suspicion from shady actions. Higher heat raises detection risk.
+                Scrutiny from gray-area moves. Higher heat raises the chance of exposure.
               </p>
             </div>
           </div>

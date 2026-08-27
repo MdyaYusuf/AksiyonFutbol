@@ -39,10 +39,10 @@ export const ConfirmBribePage = () => {
         <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-high px-6 py-4">
           <div>
             <h1 className="font-headline-sm text-headline-sm text-on-background">
-              Confirm Bribe Attempt
+              Confirm Match Influence
             </h1>
             <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-              Please review the details of this action carefully.
+              Review this quiet approach carefully before you proceed.
             </p>
           </div>
           <MaterialIcon name="warning" className="text-3xl text-primary" />

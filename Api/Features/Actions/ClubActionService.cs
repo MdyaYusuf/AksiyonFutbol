@@ -456,29 +456,29 @@ public class ClubActionService(
         (match.Referee.PersonalityType == RefereePersonalityType.Strict ||
          match.Referee.PersonalityType == RefereePersonalityType.Showman))
     {
-      return "Tehdit geri tepti. Hakem rakibe yanaşacak.";
+      return "Baskı geri tepti. Hakem rakibe yanaşacak.";
     }
 
     if (succeeded && definition.Type == ClubActionType.MediaSpin)
     {
       return mediaSpinMode == MediaSpinMode.ReputationRepair
-        ? "Medya spin başarılı. İtibar onarıldı."
-        : "Medya spin başarılı. Rakip moral düşürüldü.";
+        ? "Anlatı başarılı. İtibar onarıldı."
+        : "Anlatı başarılı. Rakip moral düşürüldü.";
     }
 
     if (succeeded && definition.Type == ClubActionType.LobbyFederation)
     {
-      return "Federasyon lobiciliği başarılı. Şüphe azaltıldı.";
+      return "Federasyon yaklaşımı başarılı. İnceleme soğutuldu.";
     }
 
     if (succeeded && definition.Type == ClubActionType.DodgySponsorship)
     {
-      return "Şüpheli sponsorluk başarılı. Kasaya nakit girdi.";
+      return "Gölge sponsorluk başarılı. Kasaya nakit girdi.";
     }
 
     if (succeeded && definition.Type == ClubActionType.TapUpTarget)
     {
-      return "Tap-up başarılı. Hedef oyuncu için transfer indirimi aktif.";
+      return "Özel yaklaşım başarılı. Hedef oyuncu için transfer indirimi aktif.";
     }
 
     return succeeded
@@ -499,7 +499,7 @@ public class ClubActionService(
 
     if (request.MediaSpinMode != MediaSpinMode.OpponentMorale)
     {
-      throw new BusinessException("Geçerli bir medya spin modu belirtilmelidir.");
+      throw new BusinessException("Geçerli bir anlatı modu belirtilmelidir.");
     }
 
     Match? upcoming = await _businessRules.GetNextUnplayedMatchForClubOrNullAsync(
@@ -657,7 +657,7 @@ public class ClubActionService(
   {
     if (!targetPlayerInstanceId.HasValue)
     {
-      throw new BusinessException("Tap-up için bir oyuncu seçilmelidir.");
+      throw new BusinessException("Özel yaklaşım için bir oyuncu seçilmelidir.");
     }
 
     PlayerInstance? player = await _playerInstanceRepository.GetByIdAsync(
@@ -666,12 +666,12 @@ public class ClubActionService(
 
     if (player == null)
     {
-      throw new NotFoundException("Tap-up hedef oyuncu bulunamadı.");
+      throw new NotFoundException("Özel yaklaşım hedef oyuncu bulunamadı.");
     }
 
     if (player.ClubId == clubId)
     {
-      throw new BusinessException("Kendi oyuncunuza tap-up yapamazsınız.");
+      throw new BusinessException("Kendi oyuncunuza özel yaklaşım yapamazsınız.");
     }
 
     bool alreadyTapped = await _clubActionRepository.AnyAsync(
@@ -684,7 +684,7 @@ public class ClubActionService(
 
     if (alreadyTapped)
     {
-      throw new BusinessException("Bu oyuncu için zaten aktif bir tap-up mevcut.");
+      throw new BusinessException("Bu oyuncu için zaten aktif bir özel yaklaşım mevcut.");
     }
 
     return player.Id;
@@ -694,7 +694,7 @@ public class ClubActionService(
   {
     if (match.HomeClubId != clubId)
     {
-      throw new BusinessException("Deplasman sabotajı yalnızca ev sahibi olduğunuz maçlarda kullanılabilir.");
+      throw new BusinessException("Deplasman hazırlığını bozmak yalnızca ev sahibi olduğunuz maçlarda kullanılabilir.");
     }
   }
 }
