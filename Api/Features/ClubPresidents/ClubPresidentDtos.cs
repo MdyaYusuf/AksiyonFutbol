@@ -9,6 +9,11 @@ public sealed record ClubPresidentResponseDto
   public string Name { get; init; } = default!;
   public int ReputationPoints { get; init; }
   public string? Title { get; init; }
+  public int Charisma { get; init; }
+  public int Authority { get; init; }
+  public int Integrity { get; init; }
+  public int Cunning { get; init; }
+  public int Connections { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 
@@ -18,6 +23,11 @@ public sealed record ClubPresidentPreviewDto
   public string Name { get; init; } = default!;
   public int ReputationPoints { get; init; }
   public string? Title { get; init; }
+  public int Charisma { get; init; }
+  public int Authority { get; init; }
+  public int Integrity { get; init; }
+  public int Cunning { get; init; }
+  public int Connections { get; init; }
 }
 
 public sealed record CreatedClubPresidentResponseDto
@@ -25,12 +35,22 @@ public sealed record CreatedClubPresidentResponseDto
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
   public string? Title { get; init; }
+  public int Charisma { get; init; }
+  public int Authority { get; init; }
+  public int Integrity { get; init; }
+  public int Cunning { get; init; }
+  public int Connections { get; init; }
 }
 
 // Requests
 public sealed record CreateClubPresidentRequest(
   string Name,
-  string? Title);
+  string? Title,
+  int Charisma,
+  int Authority,
+  int Integrity,
+  int Cunning,
+  int Connections);
 
 public sealed record UpdateClubPresidentRequest(
   Guid Id,

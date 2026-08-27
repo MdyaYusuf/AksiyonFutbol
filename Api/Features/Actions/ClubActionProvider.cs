@@ -60,7 +60,12 @@ public class ClubActionProvider : IClubActionProvider
       HeatGenerated = balance.HeatGenerated,
       BaseSuccessChance = balance.BaseSuccessChance,
       BaseDetectionChance = balance.BaseDetectionChance,
-      CooldownDays = balance.CooldownDays
+      CooldownDays = balance.CooldownDays,
+      MinCharisma = metadata.MinCharisma,
+      MinAuthority = metadata.MinAuthority,
+      MinIntegrity = metadata.MinIntegrity,
+      MinCunning = metadata.MinCunning,
+      MinConnections = metadata.MinConnections
     };
   }
 

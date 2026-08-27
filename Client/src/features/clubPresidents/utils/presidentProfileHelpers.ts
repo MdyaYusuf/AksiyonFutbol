@@ -1,6 +1,50 @@
 import type { MatchPreview } from "../../matches/matchTypes";
 import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
 import { parseApiDate } from "../../../core/utils/dateTime";
+import type {
+  PresidentAttributeKey,
+  PresidentAttributes,
+} from "../clubPresidentTypes";
+
+export const PRESIDENT_ATTRIBUTE_MIN = 1;
+export const PRESIDENT_ATTRIBUTE_MAX = 5;
+export const PRESIDENT_ATTRIBUTE_POINT_BUDGET = 8;
+
+export const PRESIDENT_ATTRIBUTE_KEYS: PresidentAttributeKey[] = [
+  "charisma",
+  "authority",
+  "integrity",
+  "cunning",
+  "connections",
+];
+
+export const PRESIDENT_ATTRIBUTE_LABELS: Record<PresidentAttributeKey, string> = {
+  charisma: "Charisma",
+  authority: "Authority",
+  integrity: "Integrity",
+  cunning: "Cunning",
+  connections: "Connections",
+};
+
+export const createBasePresidentAttributes = (): PresidentAttributes => ({
+  charisma: PRESIDENT_ATTRIBUTE_MIN,
+  authority: PRESIDENT_ATTRIBUTE_MIN,
+  integrity: PRESIDENT_ATTRIBUTE_MIN,
+  cunning: PRESIDENT_ATTRIBUTE_MIN,
+  connections: PRESIDENT_ATTRIBUTE_MIN,
+});
+
+export const getSpentAttributePoints = (attributes: PresidentAttributes): number => {
+  return PRESIDENT_ATTRIBUTE_KEYS.reduce((sum, key) => {
+    return sum + (attributes[key] - PRESIDENT_ATTRIBUTE_MIN);
+  }, 0);
+};
+
+export const getRemainingAttributePoints = (
+  attributes: PresidentAttributes,
+): number => {
+  return PRESIDENT_ATTRIBUTE_POINT_BUDGET - getSpentAttributePoints(attributes);
+};
 
 export const formatMemberSince = (createdDate: string): string => {
   return parseApiDate(createdDate).toLocaleDateString("en-GB", {
@@ -15,9 +59,13 @@ export const formatCareerPeriod = (createdDate: string): string => {
   return `${startYear} - Present`;
 };
 
-export const getReputationXp = (reputationPoints: number): number => {
+/** Legitimacy XP display derived from reputationPoints storage. */
+export const getLegitimacyXp = (reputationPoints: number): number => {
   return reputationPoints * 100;
 };
+
+/** @deprecated Prefer getLegitimacyXp — ReputationPoints is Legitimacy storage. */
+export const getReputationXp = getLegitimacyXp;
 
 export const getWinRate = (
   matches: MatchPreview[],

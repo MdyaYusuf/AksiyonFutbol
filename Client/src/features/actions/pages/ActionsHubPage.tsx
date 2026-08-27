@@ -86,6 +86,7 @@ export const ActionsHubPage = () => {
         clubCash={context.clubCash}
         suspicion={context.suspicion}
         maxSuspicion={context.maxSuspicion}
+        president={context.president}
       />
 
       {context.cashSpendLocked ? <CashSpendLockBanner /> : null}

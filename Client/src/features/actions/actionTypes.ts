@@ -76,8 +76,20 @@ export interface ClubActionsContext {
   suspicion: number;
   maxSuspicion: number;
   cashSpendLocked?: boolean;
+  president?: ActionsPresidentSummary | null;
   upcomingMatch?: UpcomingMatchSummary | null;
   actions: ClubActionAvailability[];
+}
+
+export interface ActionsPresidentSummary {
+  name: string;
+  title?: string | null;
+  reputationPoints: number;
+  charisma: number;
+  authority: number;
+  integrity: number;
+  cunning: number;
+  connections: number;
 }
 
 export interface ClubActionHistoryItem {

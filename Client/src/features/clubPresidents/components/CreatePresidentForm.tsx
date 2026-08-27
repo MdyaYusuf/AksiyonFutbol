@@ -4,6 +4,13 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
 import { OnboardingTextField } from "../../../core/components/onboarding/OnboardingFields";
 import { useCreateClubPresidentMutation } from "../clubPresidentsApiSlice";
+import type { PresidentAttributes } from "../clubPresidentTypes";
+import {
+  PRESIDENT_ATTRIBUTE_POINT_BUDGET,
+  createBasePresidentAttributes,
+  getRemainingAttributePoints,
+} from "../utils/presidentProfileHelpers";
+import { PresidentAttributeAllocator } from "./PresidentAttributeAllocator";
 import { PresidentPreviewCard } from "./PresidentPreviewCard";
 
 const TITLE_SUGGESTIONS = ["The Visionary", "The Tactician", "Financial Tycoon"];
@@ -12,17 +19,30 @@ export const CreatePresidentForm = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
+  const [attributes, setAttributes] = useState<PresidentAttributes>(
+    createBasePresidentAttributes,
+  );
   const [createPresident, { isLoading }] = useCreateClubPresidentMutation();
 
-  const isReady = name.trim().length > 0;
+  const remainingPoints = getRemainingAttributePoints(attributes);
+  const isReady = name.trim().length > 0 && remainingPoints === 0;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!isReady) {
+      return;
+    }
 
     try {
       await createPresident({
         name: name.trim(),
         title: title.trim() || null,
+        charisma: attributes.charisma,
+        authority: attributes.authority,
+        integrity: attributes.integrity,
+        cunning: attributes.cunning,
+        connections: attributes.connections,
       }).unwrap();
 
       navigate("/app/onboarding/club", { replace: true });
@@ -44,8 +64,8 @@ export const CreatePresidentForm = () => {
               Establish Identity
             </h1>
             <p className="text-body-lg text-on-surface-variant">
-              Define your executive persona. This identity will be recorded in the
-              club&apos;s permanent ledger.
+              Define your executive persona and allocate {PRESIDENT_ATTRIBUTE_POINT_BUDGET}{" "}
+              build points. This identity is recorded in the club&apos;s permanent ledger.
             </p>
           </div>
 
@@ -88,9 +108,14 @@ export const CreatePresidentForm = () => {
               </div>
             </div>
 
+            <PresidentAttributeAllocator
+              attributes={attributes}
+              onChange={setAttributes}
+            />
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !isReady}
               className="group mt-4 flex w-full items-center justify-center gap-2 rounded bg-primary-container py-4 text-label-caps text-on-primary-container transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? "Kaydediliyor..." : "Finalize Persona"}
@@ -103,7 +128,13 @@ export const CreatePresidentForm = () => {
         </div>
 
         <div className="flex justify-center lg:col-span-7 lg:justify-end">
-          <PresidentPreviewCard name={name.trim()} title={title.trim()} isReady={isReady} />
+          <PresidentPreviewCard
+            name={name.trim()}
+            title={title.trim()}
+            attributes={attributes}
+            remainingPoints={remainingPoints}
+            isReady={isReady}
+          />
         </div>
       </div>
     </div>

@@ -17,4 +17,11 @@ public sealed record ClubActionMetadata
   // Match-scoped actions target the next unplayed fixture and allow a single
   // attempt per match. Non match-scoped actions use a cooldown instead.
   public bool IsMatchScoped { get; init; }
+
+  // President attribute gates. 0 means no minimum.
+  public int MinCharisma { get; init; }
+  public int MinAuthority { get; init; }
+  public int MinIntegrity { get; init; }
+  public int MinCunning { get; init; }
+  public int MinConnections { get; init; }
 }

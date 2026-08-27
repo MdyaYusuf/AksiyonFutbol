@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { ProgressBar } from "../../../core/components/ui/ProgressBar";
 import type { ClubPresidentResponse } from "../../clubPresidents/clubPresidentTypes";
+import { PresidentAttributesPanel } from "../../clubPresidents/components/PresidentAttributesPanel";
 import type { ClubResponse } from "../../clubs/clubTypes";
 
 interface PresidentSummaryCardProps {
@@ -37,10 +38,25 @@ export const PresidentSummaryCard = ({
         </div>
       </div>
 
+      {president ? (
+        <div className="mb-4">
+          <PresidentAttributesPanel
+            compact
+            attributes={{
+              charisma: president.charisma,
+              authority: president.authority,
+              integrity: president.integrity,
+              cunning: president.cunning,
+              connections: president.connections,
+            }}
+          />
+        </div>
+      ) : null}
+
       <div className="flex flex-1 flex-col justify-end space-y-4">
         <div>
           <div className="mb-1 flex justify-between">
-            <span className="text-body-sm text-on-surface-variant">Reputation</span>
+            <span className="text-body-sm text-on-surface-variant">Legitimacy</span>
             <span className="font-data-mono text-data-mono text-primary">
               {president?.reputationPoints ?? 0}/100
             </span>

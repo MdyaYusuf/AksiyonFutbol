@@ -1,5 +1,6 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.Matches;
 using Api.Features.Referees;
@@ -139,12 +140,73 @@ public class ClubActionBusinessRules(
 
     if (club.President!.ReputationPoints < Options.LobbyFederationReputationCost)
     {
-      throw new BusinessException("Federasyon lobiciliği için yeterli itibar puanı yok.");
+      throw new BusinessException("Federasyon yaklaşımı için yeterli meşruiyet puanı yok.");
     }
   }
 
-  // Effective detection chance after scaling by the club's current Suspicion.
-  public decimal CalculateDetectionChance(ClubActionDefinition definition, int currentSuspicion)
+  public void EnsurePresidentMeetsActionRequirements(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    string? reason = GetAttributeRequirementFailureReason(definition, president);
+
+    if (reason != null)
+    {
+      throw new BusinessException(reason);
+    }
+  }
+
+  public string? GetAttributeRequirementFailureReason(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    if (definition.MinCharisma <= 0 &&
+        definition.MinAuthority <= 0 &&
+        definition.MinIntegrity <= 0 &&
+        definition.MinCunning <= 0 &&
+        definition.MinConnections <= 0)
+    {
+      return null;
+    }
+
+    if (president == null)
+    {
+      return "Bu aksiyon için başkan bilgisi bulunamadı.";
+    }
+
+    if (definition.MinCharisma > 0 && president.Charisma < definition.MinCharisma)
+    {
+      return $"Needs Charisma {definition.MinCharisma}.";
+    }
+
+    if (definition.MinAuthority > 0 && president.Authority < definition.MinAuthority)
+    {
+      return $"Needs Authority {definition.MinAuthority}.";
+    }
+
+    if (definition.MinIntegrity > 0 && president.Integrity < definition.MinIntegrity)
+    {
+      return $"Needs Integrity {definition.MinIntegrity}.";
+    }
+
+    if (definition.MinCunning > 0 && president.Cunning < definition.MinCunning)
+    {
+      return $"Needs Cunning {definition.MinCunning}.";
+    }
+
+    if (definition.MinConnections > 0 && president.Connections < definition.MinConnections)
+    {
+      return $"Needs Connections {definition.MinConnections}.";
+    }
+
+    return null;
+  }
+
+  // Effective detection chance after Suspicion scaling and president affinity.
+  public decimal CalculateDetectionChance(
+    ClubActionDefinition definition,
+    int currentSuspicion,
+    ClubPresident? president = null)
   {
     if (!definition.IsShady)
     {
@@ -153,6 +215,7 @@ public class ClubActionBusinessRules(
 
     GameOptions options = Options;
     decimal scaled = definition.BaseDetectionChance + currentSuspicion * options.SuspicionDetectionScale;
+    scaled += GetPresidentDetectionAffinityDelta(definition, president);
 
     if (scaled < 0m)
     {
@@ -167,8 +230,11 @@ public class ClubActionBusinessRules(
     return Math.Round(scaled, 4);
   }
 
-  // Base success chance, with per-action modifiers (e.g. referee personality for intimidation).
-  public decimal CalculateSuccessChance(ClubActionDefinition definition, Match? match = null)
+  // Base success chance with referee personality and president affinity modifiers.
+  public decimal CalculateSuccessChance(
+    ClubActionDefinition definition,
+    Match? match = null,
+    ClubPresident? president = null)
   {
     decimal chance = definition.BaseSuccessChance;
 
@@ -176,6 +242,8 @@ public class ClubActionBusinessRules(
     {
       chance = ApplyIntimidatePersonalityModifier(chance, match.Referee.PersonalityType);
     }
+
+    chance += GetPresidentSuccessAffinityDelta(definition, president);
 
     if (chance < 0m)
     {
@@ -190,9 +258,67 @@ public class ClubActionBusinessRules(
     return Math.Round(chance, 4);
   }
 
+  // Integrity boosts positive honorable squad effect sizes (levels above 1).
+  public int ScaleHonorableEffectBonus(int baseBonus, ClubPresident? president)
+  {
+    if (president == null || baseBonus <= 0)
+    {
+      return baseBonus;
+    }
+
+    int levelsAboveBase = Math.Max(0, president.Integrity - ClubPresidentBusinessRules.AttributeMin);
+    int bonus = baseBonus + levelsAboveBase * Options.PresidentIntegrityEffectBonusPerLevel;
+
+    return Math.Max(0, bonus);
+  }
+
   public decimal GetPromiseWinBonusAmount() => Options.PromiseWinBonusAmount;
 
   public decimal GetTapUpDiscountRatio() => Options.TapUpTransferFeeDiscountRatio;
+
+  private decimal GetPresidentSuccessAffinityDelta(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    if (president == null)
+    {
+      return 0m;
+    }
+
+    GameOptions options = Options;
+    int integrityLevels = Math.Max(0, president.Integrity - ClubPresidentBusinessRules.AttributeMin);
+    int cunningLevels = Math.Max(0, president.Cunning - ClubPresidentBusinessRules.AttributeMin);
+
+    if (definition.IsShady)
+    {
+      return cunningLevels * options.PresidentCunningShadySuccessBonusPerLevel
+        - integrityLevels * options.PresidentIntegrityShadySuccessPenaltyPerLevel;
+    }
+
+    if (definition.Category == ClubActionCategory.Squad)
+    {
+      return integrityLevels * options.PresidentIntegrityHonorableSuccessBonusPerLevel;
+    }
+
+    return 0m;
+  }
+
+  private decimal GetPresidentDetectionAffinityDelta(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    if (!definition.IsShady || president == null)
+    {
+      return 0m;
+    }
+
+    GameOptions options = Options;
+    int integrityLevels = Math.Max(0, president.Integrity - ClubPresidentBusinessRules.AttributeMin);
+    int cunningLevels = Math.Max(0, president.Cunning - ClubPresidentBusinessRules.AttributeMin);
+
+    return integrityLevels * options.PresidentIntegrityShadyDetectionPenaltyPerLevel
+      - cunningLevels * options.PresidentCunningDetectionReductionPerLevel;
+  }
 
   private decimal ApplyIntimidatePersonalityModifier(
     decimal baseChance,

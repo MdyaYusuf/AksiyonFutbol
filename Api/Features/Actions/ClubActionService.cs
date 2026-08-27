@@ -2,6 +2,7 @@ using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.Matches;
 using Api.Features.PlayerInstances;
@@ -59,6 +60,19 @@ public class ClubActionService(
       Suspicion = view.Suspicion,
       MaxSuspicion = _businessRules.Options.MaxSuspicion,
       CashSpendLocked = view.CashSpendLocked,
+      President = club.President == null
+        ? null
+        : new ActionsPresidentSummaryDto
+        {
+          Name = club.President.Name,
+          Title = club.President.Title,
+          ReputationPoints = club.President.ReputationPoints,
+          Charisma = club.President.Charisma,
+          Authority = club.President.Authority,
+          Integrity = club.President.Integrity,
+          Cunning = club.President.Cunning,
+          Connections = club.President.Connections
+        },
       UpcomingMatch = upcomingMatch == null
         ? null
         : _mapper.ToUpcomingMatchSummary(upcomingMatch, club.Id),
@@ -152,10 +166,17 @@ public class ClubActionService(
     }
 
     _businessRules.ClubMustAfford(club, definition.Cost);
+    _businessRules.EnsurePresidentMeetsActionRequirements(definition, club.President);
 
     int suspicionBefore = club.Suspicion;
-    decimal successChance = _businessRules.CalculateSuccessChance(definition, match);
-    decimal detectionChance = _businessRules.CalculateDetectionChance(definition, suspicionBefore);
+    decimal successChance = _businessRules.CalculateSuccessChance(
+      definition,
+      match,
+      club.President);
+    decimal detectionChance = _businessRules.CalculateDetectionChance(
+      definition,
+      suspicionBefore,
+      club.President);
 
     club.Cash -= definition.Cost;
     int heatApplied = ApplyHeat(club, definition);
@@ -165,7 +186,7 @@ public class ClubActionService(
 
     if (succeeded && definition.Category == ClubActionCategory.Squad)
     {
-      ApplySquadEffects(club, definition.Type);
+      ApplySquadEffects(club, definition.Type, club.President);
     }
 
     if (succeeded && definition.Category == ClubActionCategory.Politics)
@@ -266,14 +287,29 @@ public class ClubActionService(
     decimal displayCash,
     bool cashSpendLocked)
   {
-    decimal detectionChance = _businessRules.CalculateDetectionChance(definition, club.Suspicion);
-    decimal successChance = _businessRules.CalculateSuccessChance(definition, upcomingMatch);
+    decimal detectionChance = _businessRules.CalculateDetectionChance(
+      definition,
+      club.Suspicion,
+      club.President);
+    decimal successChance = _businessRules.CalculateSuccessChance(
+      definition,
+      upcomingMatch,
+      club.President);
 
     bool isAvailable = true;
     string? unavailableReason = null;
     int cooldownRemainingDays = 0;
 
-    if (definition.IsMatchScoped)
+    string? attributeReason = _businessRules.GetAttributeRequirementFailureReason(
+      definition,
+      club.President);
+
+    if (attributeReason != null)
+    {
+      isAvailable = false;
+      unavailableReason = attributeReason;
+    }
+    else if (definition.IsMatchScoped)
     {
       if (upcomingMatch == null)
       {
@@ -327,7 +363,7 @@ public class ClubActionService(
         if (club.President == null || club.President.ReputationPoints < reputationCost)
         {
           isAvailable = false;
-          unavailableReason = "Insufficient reputation.";
+          unavailableReason = "Insufficient Legitimacy.";
         }
       }
     }
@@ -560,29 +596,47 @@ public class ClubActionService(
     }
   }
 
-  private void ApplySquadEffects(Club club, ClubActionType actionType)
+  private void ApplySquadEffects(
+    Club club,
+    ClubActionType actionType,
+    ClubPresident? president)
   {
     GameOptions options = _businessRules.Options;
 
     switch (actionType)
     {
       case ClubActionType.TeamBonding:
-        club.Chemistry = ClampStatus(club.Chemistry + options.TeamBondingChemistryBonus);
+        club.Chemistry = ClampStatus(
+          club.Chemistry + _businessRules.ScaleHonorableEffectBonus(
+            options.TeamBondingChemistryBonus,
+            president));
         club.Discipline = ClampStatus(club.Discipline - options.TeamBondingDisciplinePenalty);
         break;
       case ClubActionType.FinePlayer:
-        club.Discipline = ClampStatus(club.Discipline + options.FinePlayerDisciplineBonus);
+        club.Discipline = ClampStatus(
+          club.Discipline + _businessRules.ScaleHonorableEffectBonus(
+            options.FinePlayerDisciplineBonus,
+            president));
         club.Morale = ClampStatus(club.Morale - options.FinePlayerMoralePenalty);
         break;
       case ClubActionType.MotivationalTalk:
-        club.Morale = ClampStatus(club.Morale + options.MotivationalTalkMoraleBonus);
+        club.Morale = ClampStatus(
+          club.Morale + _businessRules.ScaleHonorableEffectBonus(
+            options.MotivationalTalkMoraleBonus,
+            president));
         break;
       case ClubActionType.BrutalTraining:
         club.Morale = ClampStatus(club.Morale - options.BrutalTrainingMoralePenalty);
-        club.Discipline = ClampStatus(club.Discipline + options.BrutalTrainingDisciplineBonus);
+        club.Discipline = ClampStatus(
+          club.Discipline + _businessRules.ScaleHonorableEffectBonus(
+            options.BrutalTrainingDisciplineBonus,
+            president));
         break;
       case ClubActionType.PromiseWinBonus:
-        club.Morale = ClampStatus(club.Morale + options.PromiseWinBonusMoraleBonus);
+        club.Morale = ClampStatus(
+          club.Morale + _businessRules.ScaleHonorableEffectBonus(
+            options.PromiseWinBonusMoraleBonus,
+            president));
         break;
     }
   }

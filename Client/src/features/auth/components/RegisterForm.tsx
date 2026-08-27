@@ -75,7 +75,7 @@ export const RegisterForm = () => {
         <div className="mx-auto mb-8 flex w-max items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface-container-high px-4 py-2">
           <MaterialIcon name="stars" className="text-sm text-secondary" />
           <span className="text-label-caps text-on-surface-variant">
-            Starting Reputation:
+            Starting Legitimacy:
           </span>
           <span className="font-data-mono text-data-mono font-bold text-primary">0</span>
         </div>

@@ -42,7 +42,7 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
               Cash {formatCashFull(result.newCash)} · Heat {result.newSuspicion} · Morale{" "}
               {result.newMorale}
               {result.newReputationPoints != null
-                ? ` · Reputation ${result.newReputationPoints}`
+                ? ` · Legitimacy ${result.newReputationPoints}`
                 : ""}
             </p>
 
@@ -55,7 +55,7 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
                   <li>Morale −{investigation.moralePenalty}</li>
                 ) : null}
                 {investigation.reputationPenalty > 0 ? (
-                  <li>Reputation −{investigation.reputationPenalty}</li>
+                  <li>Legitimacy −{investigation.reputationPenalty}</li>
                 ) : null}
                 {investigation.matchPenaltyApplied ? (
                   <li>Match penalty applied for the linked fixture</li>

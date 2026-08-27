@@ -16,8 +16,21 @@ public sealed class ClubActionsContextResponseDto
   public int Suspicion { get; init; }
   public int MaxSuspicion { get; init; }
   public bool CashSpendLocked { get; init; }
+  public ActionsPresidentSummaryDto? President { get; init; }
   public UpcomingMatchSummaryDto? UpcomingMatch { get; init; }
   public IReadOnlyList<ClubActionAvailabilityDto> Actions { get; init; } = [];
+}
+
+public sealed class ActionsPresidentSummaryDto
+{
+  public string Name { get; init; } = default!;
+  public string? Title { get; init; }
+  public int ReputationPoints { get; init; }
+  public int Charisma { get; init; }
+  public int Authority { get; init; }
+  public int Integrity { get; init; }
+  public int Cunning { get; init; }
+  public int Connections { get; init; }
 }
 
 public sealed class UpcomingMatchSummaryDto

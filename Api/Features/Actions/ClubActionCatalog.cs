@@ -18,7 +18,8 @@ public static class ClubActionCatalog
         DisplayName = "Quiet Arrangement",
         Description = "Persuade a key opponent to take their foot off the gas in the next fixture.",
         IsShady = true,
-        IsMatchScoped = true
+        IsMatchScoped = true,
+        MinCunning = 2
       },
       new()
       {
@@ -27,7 +28,8 @@ public static class ClubActionCatalog
         DisplayName = "Preparation Edge",
         Description = "Push recovery and prep past regulation for a short-term boost next match.",
         IsShady = true,
-        IsMatchScoped = true
+        IsMatchScoped = true,
+        MinCunning = 2
       },
       new()
       {
@@ -36,7 +38,8 @@ public static class ClubActionCatalog
         DisplayName = "Scout the Opponent",
         Description = "Gather quiet intel on the opponent's setup for a small edge.",
         IsShady = true,
-        IsMatchScoped = true
+        IsMatchScoped = true,
+        MinConnections = 2
       },
       new()
       {
@@ -45,7 +48,8 @@ public static class ClubActionCatalog
         DisplayName = "Disrupt Away Prep",
         Description = "Make travel and rest harder for the visitors. Only available when you are the home club.",
         IsShady = true,
-        IsMatchScoped = true
+        IsMatchScoped = true,
+        MinAuthority = 2
       },
       new()
       {
@@ -54,7 +58,8 @@ public static class ClubActionCatalog
         DisplayName = "Pressure the Official",
         Description = "Apply off-pitch pressure for friendlier decisions. Can backfire against strict or showman officials.",
         IsShady = true,
-        IsMatchScoped = true
+        IsMatchScoped = true,
+        MinAuthority = 2
       },
       new()
       {
@@ -62,7 +67,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Squad,
         DisplayName = "Team Bonding",
         Description = "Organize a squad event to build chemistry. Small discipline risk.",
-        IsShady = false
+        IsShady = false,
+        MinCharisma = 2
       },
       new()
       {
@@ -70,7 +76,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Squad,
         DisplayName = "Fine a Player",
         Description = "Discipline the squad. Improves discipline at the cost of morale.",
-        IsShady = false
+        IsShady = false,
+        MinAuthority = 2
       },
       new()
       {
@@ -78,7 +85,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Squad,
         DisplayName = "Motivational Talk",
         Description = "Rally the squad to lift morale.",
-        IsShady = false
+        IsShady = false,
+        MinCharisma = 2
       },
       new()
       {
@@ -86,7 +94,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Squad,
         DisplayName = "Brutal Training Week",
         Description = "Push the squad hard for short-term sharpness (discipline) at the cost of morale.",
-        IsShady = false
+        IsShady = false,
+        MinAuthority = 2
       },
       new()
       {
@@ -102,7 +111,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Politics,
         DisplayName = "Shape the Narrative",
         Description = "Steer the press to unsettle the next opponent's morale, or repair your own standing.",
-        IsShady = true
+        IsShady = true,
+        MinCharisma = 2
       },
       new()
       {
@@ -110,7 +120,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Politics,
         DisplayName = "Federation Favor",
         Description = "Spend standing to cool federation scrutiny of your club.",
-        IsShady = true
+        IsShady = true,
+        MinConnections = 2
       },
       new()
       {
@@ -118,7 +129,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Politics,
         DisplayName = "Shadow Sponsor Deal",
         Description = "Unlock fast cash through an off-books sponsor. High exposure risk.",
-        IsShady = true
+        IsShady = true,
+        MinCunning = 3
       },
       new()
       {
@@ -126,7 +138,8 @@ public static class ClubActionCatalog
         Category = ClubActionCategory.Politics,
         DisplayName = "Private Approach",
         Description = "Quietly sound out a transfer target to unlock a fee discount if you buy them.",
-        IsShady = true
+        IsShady = true,
+        MinConnections = 2
       }
     }.ToDictionary(d => d.Type);
 

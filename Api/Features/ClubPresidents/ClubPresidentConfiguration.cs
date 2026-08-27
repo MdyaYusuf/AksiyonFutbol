@@ -39,6 +39,26 @@ public class ClubPresidentConfiguration : IEntityTypeConfiguration<ClubPresident
       .HasDefaultValue("Amateur")
       .IsRequired(false);
 
+    builder.Property(cp => cp.Charisma)
+      .HasDefaultValue(1)
+      .IsRequired();
+
+    builder.Property(cp => cp.Authority)
+      .HasDefaultValue(1)
+      .IsRequired();
+
+    builder.Property(cp => cp.Integrity)
+      .HasDefaultValue(1)
+      .IsRequired();
+
+    builder.Property(cp => cp.Cunning)
+      .HasDefaultValue(1)
+      .IsRequired();
+
+    builder.Property(cp => cp.Connections)
+      .HasDefaultValue(1)
+      .IsRequired();
+
     builder.HasOne(cp => cp.User)
       .WithOne()
       .HasForeignKey<ClubPresident>(cp => cp.UserId)

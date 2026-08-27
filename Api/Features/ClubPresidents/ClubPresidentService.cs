@@ -169,6 +169,12 @@ public class ClubPresidentService(
     await _businessRules.UserMustNotHavePresidentAsync(currentUserId, cancellationToken);
     _businessRules.PresidentNameCannotBeRestrictedWord(request.Name);
     await _businessRules.PresidentNameMustBeUniqueAsync(request.Name, cancellationToken: cancellationToken);
+    _businessRules.EnsureValidAttributeAllocation(
+      request.Charisma,
+      request.Authority,
+      request.Integrity,
+      request.Cunning,
+      request.Connections);
 
     ClubPresident clubPresident = _mapper.CreateToEntity(request);
     clubPresident.UserId = currentUserId;

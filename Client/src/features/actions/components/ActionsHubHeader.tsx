@@ -1,18 +1,22 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { ProgressBar } from "../../../core/components/ui/ProgressBar";
 import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
+import { PresidentAttributesPanel } from "../../clubPresidents/components/PresidentAttributesPanel";
+import type { ActionsPresidentSummary } from "../actionTypes";
 import { getHeatBarColor, getHeatLabel } from "../utils/actionsHubHelpers";
 
 interface ActionsHubHeaderProps {
   clubCash: number;
   suspicion: number;
   maxSuspicion: number;
+  president?: ActionsPresidentSummary | null;
 }
 
 export const ActionsHubHeader = ({
   clubCash,
   suspicion,
   maxSuspicion,
+  president,
 }: ActionsHubHeaderProps) => {
   const heatColor = getHeatBarColor(suspicion, maxSuspicion);
   const heatLabel = getHeatLabel(suspicion, maxSuspicion);
@@ -33,13 +37,48 @@ export const ActionsHubHeader = ({
           </p>
         </div>
 
-        <div className="min-w-[140px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
-          <div className="mb-1 flex items-center gap-1 font-label-caps text-label-caps text-on-surface-variant">
-            <MaterialIcon name="account_balance_wallet" className="text-sm" />
-            Club Cash
-          </div>
-          <div className="font-stat-value text-stat-value text-primary">
-            {formatCashFull(clubCash)}
+        <div className="flex flex-wrap gap-3">
+          {president ? (
+            <div className="min-w-[220px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <div>
+                  <div className="font-label-caps text-label-caps text-on-surface-variant">
+                    President
+                  </div>
+                  <div className="font-body-sm text-body-sm font-semibold text-on-surface">
+                    {president.name}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-label-caps text-label-caps text-on-surface-variant">
+                    Legitimacy
+                  </div>
+                  <div className="font-data-mono text-data-mono text-primary">
+                    {president.reputationPoints}
+                  </div>
+                </div>
+              </div>
+              <PresidentAttributesPanel
+                compact
+                attributes={{
+                  charisma: president.charisma,
+                  authority: president.authority,
+                  integrity: president.integrity,
+                  cunning: president.cunning,
+                  connections: president.connections,
+                }}
+              />
+            </div>
+          ) : null}
+
+          <div className="min-w-[140px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
+            <div className="mb-1 flex items-center gap-1 font-label-caps text-label-caps text-on-surface-variant">
+              <MaterialIcon name="account_balance_wallet" className="text-sm" />
+              Club Cash
+            </div>
+            <div className="font-stat-value text-stat-value text-primary">
+              {formatCashFull(clubCash)}
+            </div>
           </div>
         </div>
       </div>

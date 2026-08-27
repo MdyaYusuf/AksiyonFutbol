@@ -3,7 +3,8 @@ import { ProgressBar } from "../../../core/components/ui/ProgressBar";
 import { resolveMediaUrl } from "../../../core/utils/mediaUrl";
 import type { ClubResponse } from "../../clubs/clubTypes";
 import type { ClubPresidentResponse } from "../clubPresidentTypes";
-import { getReputationXp } from "../utils/presidentProfileHelpers";
+import { getLegitimacyXp } from "../utils/presidentProfileHelpers";
+import { PresidentAttributesPanel } from "./PresidentAttributesPanel";
 
 interface PresidentIdentityCardProps {
   president: ClubPresidentResponse;
@@ -18,7 +19,7 @@ export const PresidentIdentityCard = ({
   winRate,
   profileImageUrl,
 }: PresidentIdentityCardProps) => {
-  const reputationXp = getReputationXp(president.reputationPoints);
+  const legitimacyXp = getLegitimacyXp(president.reputationPoints);
   const title = president.title?.trim() || "Club President";
   const avatarUrl = resolveMediaUrl(profileImageUrl);
 
@@ -57,11 +58,21 @@ export const PresidentIdentityCard = ({
           </p>
         </div>
 
+        <PresidentAttributesPanel
+          attributes={{
+            charisma: president.charisma,
+            authority: president.authority,
+            integrity: president.integrity,
+            cunning: president.cunning,
+            connections: president.connections,
+          }}
+        />
+
         <div className="mt-6 flex flex-wrap justify-center gap-4 md:justify-start">
           <div className="min-w-[120px] max-w-[200px] flex-1 rounded-lg border border-outline-variant bg-surface-variant p-3">
-            <p className="mb-1 text-label-caps text-on-surface-variant">Total Experience</p>
+            <p className="mb-1 text-label-caps text-on-surface-variant">Legitimacy</p>
             <p className="text-stat-value text-primary">
-              {reputationXp.toLocaleString("en-US")}{" "}
+              {legitimacyXp.toLocaleString("en-US")}{" "}
               <span className="text-sm font-normal text-on-surface-variant">XP</span>
             </p>
             <div className="mt-2">

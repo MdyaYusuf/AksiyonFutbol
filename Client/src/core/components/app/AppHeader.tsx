@@ -47,7 +47,7 @@ export const AppHeader = ({
         )}
         {reputation !== undefined && (
           <div className="font-data-mono text-data-mono text-on-surface-variant">
-            Rep: {reputation}
+            Leg: {reputation}
           </div>
         )}
         <div className="ml-2 border-l border-outline-variant pl-4">

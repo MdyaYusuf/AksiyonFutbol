@@ -323,6 +323,42 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("LobbyFederationReputationCost negatif olamaz.");
     }
 
+    if (options.PresidentIntegrityHonorableSuccessBonusPerLevel < 0 ||
+        options.PresidentIntegrityHonorableSuccessBonusPerLevel > 1)
+    {
+      failures.Add("PresidentIntegrityHonorableSuccessBonusPerLevel 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.PresidentCunningShadySuccessBonusPerLevel < 0 ||
+        options.PresidentCunningShadySuccessBonusPerLevel > 1)
+    {
+      failures.Add("PresidentCunningShadySuccessBonusPerLevel 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.PresidentCunningDetectionReductionPerLevel < 0 ||
+        options.PresidentCunningDetectionReductionPerLevel > 1)
+    {
+      failures.Add("PresidentCunningDetectionReductionPerLevel 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.PresidentIntegrityShadySuccessPenaltyPerLevel < 0 ||
+        options.PresidentIntegrityShadySuccessPenaltyPerLevel > 1)
+    {
+      failures.Add("PresidentIntegrityShadySuccessPenaltyPerLevel 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.PresidentIntegrityShadyDetectionPenaltyPerLevel < 0 ||
+        options.PresidentIntegrityShadyDetectionPenaltyPerLevel > 1)
+    {
+      failures.Add("PresidentIntegrityShadyDetectionPenaltyPerLevel 0 ile 1 arasında olmalıdır.");
+    }
+
+    if (options.PresidentIntegrityEffectBonusPerLevel < 0 ||
+        options.PresidentIntegrityEffectBonusPerLevel > 10)
+    {
+      failures.Add("PresidentIntegrityEffectBonusPerLevel 0 ile 10 arasında olmalıdır.");
+    }
+
     if (options.DodgySponsorshipCashGain < 0)
     {
       failures.Add("DodgySponsorshipCashGain negatif olamaz.");

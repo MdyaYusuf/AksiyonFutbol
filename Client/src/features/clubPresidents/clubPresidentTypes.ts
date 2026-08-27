@@ -6,6 +6,11 @@ export interface ClubPresidentResponse {
   name: string;
   reputationPoints: number;
   title?: string | null;
+  charisma: number;
+  authority: number;
+  integrity: number;
+  cunning: number;
+  connections: number;
   createdDate: string;
 }
 
@@ -14,18 +19,48 @@ export interface ClubPresidentPreview {
   name: string;
   reputationPoints: number;
   title?: string | null;
+  charisma: number;
+  authority: number;
+  integrity: number;
+  cunning: number;
+  connections: number;
 }
 
 export interface CreatedClubPresidentResponse {
   id: string;
   name: string;
   title?: string | null;
+  charisma: number;
+  authority: number;
+  integrity: number;
+  cunning: number;
+  connections: number;
+}
+
+export type PresidentAttributeKey =
+  | "charisma"
+  | "authority"
+  | "integrity"
+  | "cunning"
+  | "connections";
+
+export interface PresidentAttributes {
+  charisma: number;
+  authority: number;
+  integrity: number;
+  cunning: number;
+  connections: number;
 }
 
 // Requests
 export interface CreateClubPresidentRequest {
   name: string;
   title?: string | null;
+  charisma: number;
+  authority: number;
+  integrity: number;
+  cunning: number;
+  connections: number;
 }
 
 export interface UpdateClubPresidentRequest {

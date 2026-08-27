@@ -98,6 +98,14 @@ public class GameOptions
   public decimal DodgySponsorshipCashGain { get; set; } = 50000m;
   public decimal TapUpTransferFeeDiscountRatio { get; set; } = 0.15m;
 
+  // President attribute affinity (levels above 1). Infamy pep-talk tax arrives in Phase 2.
+  public decimal PresidentIntegrityHonorableSuccessBonusPerLevel { get; set; } = 0.025m;
+  public decimal PresidentCunningShadySuccessBonusPerLevel { get; set; } = 0.025m;
+  public decimal PresidentCunningDetectionReductionPerLevel { get; set; } = 0.02m;
+  public decimal PresidentIntegrityShadySuccessPenaltyPerLevel { get; set; } = 0.02m;
+  public decimal PresidentIntegrityShadyDetectionPenaltyPerLevel { get; set; } = 0.015m;
+  public int PresidentIntegrityEffectBonusPerLevel { get; set; } = 1;
+
   // Suspicion / "Heat" foundation. Shady actions raise Suspicion, which increases
   // detection risk and scales investigation consequences. It decays after matches.
   public int StartingSuspicion { get; set; } = 0;

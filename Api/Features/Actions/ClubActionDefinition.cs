@@ -30,4 +30,11 @@ public sealed record ClubActionDefinition
 
   // Minimum days between two uses of the same non match-scoped action.
   public int CooldownDays { get; init; }
+
+  // President attribute gates. 0 means no minimum.
+  public int MinCharisma { get; init; }
+  public int MinAuthority { get; init; }
+  public int MinIntegrity { get; init; }
+  public int MinCunning { get; init; }
+  public int MinConnections { get; init; }
 }
