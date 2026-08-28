@@ -237,14 +237,6 @@ public class ClubActionService(
         (definition.Type == ClubActionType.Doping || definition.Type == ClubActionType.MatchFixing);
 
       investigation = _scandalSettler.ApplyScandal(club, matchPenaltyApplied);
-
-      await _pressPublisher.PublishAsync(
-        new LeaguePressEvent(
-          LeaguePressEventType.ScandalDetected,
-          club.Id,
-          match?.Id,
-          "scandal.action.detected"),
-        cancellationToken);
     }
 
     _clubRepository.Update(club);
@@ -277,6 +269,29 @@ public class ClubActionService(
     };
 
     await _clubActionRepository.AddAsync(action, cancellationToken);
+
+    if (wasDetected)
+    {
+      await _pressPublisher.PublishAsync(
+        new LeaguePressEvent(
+          LeaguePressEventType.ScandalDetected,
+          ClubActionId: action.Id),
+        cancellationToken);
+    }
+    else if (succeeded)
+    {
+      ClubActionMetadata metadata = ClubActionCatalog.Get(definition.Type);
+
+      if (LeaguePressArticleGenerator.QualifiesForClubLifeArticle(metadata))
+      {
+        await _pressPublisher.PublishAsync(
+          new LeaguePressEvent(
+            LeaguePressEventType.ClubLifePositive,
+            ClubActionId: action.Id),
+          cancellationToken);
+      }
+    }
+
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     // In-memory only, so the mapper can surface the match week. Not persisted.

@@ -812,6 +812,81 @@ namespace AksiyonFutbol.Api.Migrations
                     b.ToTable("LeagueDivisions", (string)null);
                 });
 
+            modelBuilder.Entity("Api.Features.LeaguePress.NewsArticle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<int>("DivisionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Headline")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MatchWeek")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Season")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SourceBribeAttemptId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SourceClubActionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SourceMatchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SubjectClubId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Tone")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DivisionId");
+
+                    b.HasIndex("SourceBribeAttemptId")
+                        .IsUnique()
+                        .HasFilter("[SourceBribeAttemptId] IS NOT NULL");
+
+                    b.HasIndex("SourceClubActionId")
+                        .IsUnique()
+                        .HasFilter("[SourceClubActionId] IS NOT NULL");
+
+                    b.HasIndex("SourceMatchId")
+                        .IsUnique()
+                        .HasFilter("[SourceMatchId] IS NOT NULL");
+
+                    b.HasIndex("SubjectClubId");
+
+                    b.HasIndex("DivisionId", "CreatedDate");
+
+                    b.ToTable("NewsArticles", (string)null);
+                });
+
             modelBuilder.Entity("Api.Features.Matches.Match", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1472,6 +1547,16 @@ namespace AksiyonFutbol.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Club");
+                });
+
+            modelBuilder.Entity("Api.Features.LeaguePress.NewsArticle", b =>
+                {
+                    b.HasOne("Api.Features.Clubs.Club", "SubjectClub")
+                        .WithMany()
+                        .HasForeignKey("SubjectClubId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("SubjectClub");
                 });
 
             modelBuilder.Entity("Api.Features.Matches.Match", b =>

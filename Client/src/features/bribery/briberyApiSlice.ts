@@ -29,6 +29,7 @@ export const briberyApiSlice = apiSlice.injectEndpoints({
         { type: "Club", id: "ME" },
         { type: "ClubPresident", id: "ME" },
         { type: "Actions", id: "CONTEXT" },
+        { type: "News", id: "FEED" },
       ],
     }),
   }),

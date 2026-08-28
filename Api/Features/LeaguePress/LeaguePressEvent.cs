@@ -1,28 +1,66 @@
 namespace Api.Features.LeaguePress;
 
-/// <summary>
-/// Lightweight hook for Phase 5 League Press. Publishers are no-ops until the feed exists.
-/// </summary>
 public enum LeaguePressEventType
 {
-  ScandalDetected = 1
+  ScandalDetected = 1,
+  ClubLifePositive = 2,
+  MatchFinished = 3
 }
 
 public sealed record LeaguePressEvent(
   LeaguePressEventType EventType,
-  Guid ClubId,
-  Guid? MatchId,
-  string SummaryKey);
+  Guid? ClubActionId = null,
+  Guid? BribeAttemptId = null,
+  Guid? MatchId = null);
 
 public interface ILeaguePressEventPublisher
 {
   Task PublishAsync(LeaguePressEvent leaguePressEvent, CancellationToken cancellationToken = default);
 }
 
-public class NullLeaguePressEventPublisher : ILeaguePressEventPublisher
+public class LeaguePressEventPublisher(LeaguePressArticleGenerator _articleGenerator) : ILeaguePressEventPublisher
 {
-  public Task PublishAsync(LeaguePressEvent leaguePressEvent, CancellationToken cancellationToken = default)
+  public async Task PublishAsync(
+    LeaguePressEvent leaguePressEvent,
+    CancellationToken cancellationToken = default)
   {
-    return Task.CompletedTask;
+    switch (leaguePressEvent.EventType)
+    {
+      case LeaguePressEventType.ScandalDetected:
+        if (leaguePressEvent.ClubActionId.HasValue)
+        {
+          await _articleGenerator.TryGenerateScandalFromActionAsync(
+            leaguePressEvent.ClubActionId.Value,
+            cancellationToken);
+        }
+        else if (leaguePressEvent.BribeAttemptId.HasValue)
+        {
+          await _articleGenerator.TryGenerateScandalFromBribeAsync(
+            leaguePressEvent.BribeAttemptId.Value,
+            cancellationToken);
+        }
+
+        break;
+
+      case LeaguePressEventType.ClubLifePositive:
+        if (leaguePressEvent.ClubActionId.HasValue)
+        {
+          await _articleGenerator.TryGenerateClubLifeFromActionAsync(
+            leaguePressEvent.ClubActionId.Value,
+            cancellationToken);
+        }
+
+        break;
+
+      case LeaguePressEventType.MatchFinished:
+        if (leaguePressEvent.MatchId.HasValue)
+        {
+          await _articleGenerator.TryGenerateMatchReportAsync(
+            leaguePressEvent.MatchId.Value,
+            cancellationToken);
+        }
+
+        break;
+    }
   }
 }

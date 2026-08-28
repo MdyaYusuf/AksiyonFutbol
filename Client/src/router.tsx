@@ -41,6 +41,7 @@ import { ActionsHubPage } from "./features/actions/pages/ActionsHubPage";
 import { FacilitiesHubPage } from "./features/facilities/pages/FacilitiesHubPage";
 import { FacilityUpgradeDetailPage } from "./features/facilities/pages/FacilityUpgradeDetailPage";
 import { EndOfSeasonMovementsPage } from "./features/seasonTransitions/pages/EndOfSeasonMovementsPage";
+import { NewsPage } from "./features/news/pages/NewsPage";
 import { AdminProcessSeasonEndPage } from "./features/seasonTransitions/pages/AdminProcessSeasonEndPage";
 import { LandingPage } from "./pages/public/LandingPage";
 import { PrivacyPolicyPage } from "./pages/public/PrivacyPolicyPage";
@@ -178,6 +179,10 @@ export const router = createBrowserRouter([
                       {
                         path: "league",
                         element: <LeaguePage />,
+                      },
+                      {
+                        path: "news",
+                        element: <NewsPage />,
                       },
                       {
                         path: "season-end",

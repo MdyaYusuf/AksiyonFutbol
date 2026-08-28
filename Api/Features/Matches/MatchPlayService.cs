@@ -4,6 +4,7 @@ using Api.Features.ClubPresidents;
 using Api.Features.ClubLineups;
 using Api.Features.CompetitiveSeating;
 using Api.Features.LeagueDivisions;
+using Api.Features.LeaguePress;
 using Api.Features.SeasonTransitions;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,7 @@ public class MatchPlayService(
   ITutorialGraduationService _tutorialGraduationService,
   IMatchWeekProgressService _matchWeekProgressService,
   ICompetitiveSeasonEndService _competitiveSeasonEndService,
+  ILeaguePressEventPublisher _pressPublisher,
   IUnitOfWork _unitOfWork) : IMatchPlayService
 {
   public async Task<Match> PlayAndPersistAsync(
@@ -100,6 +102,12 @@ public class MatchPlayService(
       cancellationToken);
 
     _matchRepository.Update(match);
+
+    await _pressPublisher.PublishAsync(
+      new LeaguePressEvent(
+        LeaguePressEventType.MatchFinished,
+        MatchId: match.Id),
+      cancellationToken);
 
     await _tutorialGraduationService.TryGraduateAfterMatchAsync(match, cancellationToken);
   }

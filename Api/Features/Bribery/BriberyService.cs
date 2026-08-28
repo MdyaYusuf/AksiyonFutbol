@@ -189,14 +189,6 @@ public class BriberyService(
     if (wasDetected)
     {
       scandal = _scandalSettler.ApplyScandal(club);
-
-      await _pressPublisher.PublishAsync(
-        new LeaguePressEvent(
-          LeaguePressEventType.ScandalDetected,
-          club.Id,
-          match.Id,
-          "scandal.bribery.detected"),
-        cancellationToken);
     }
 
     _clubRepository.Update(club);
@@ -218,6 +210,16 @@ public class BriberyService(
     };
 
     await _bribeAttemptRepository.AddAsync(attempt, cancellationToken);
+
+    if (wasDetected)
+    {
+      await _pressPublisher.PublishAsync(
+        new LeaguePressEvent(
+          LeaguePressEventType.ScandalDetected,
+          BribeAttemptId: attempt.Id),
+        cancellationToken);
+    }
+
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     BribeAttempt created = await _bribeAttemptRepository.GetByIdAsync(

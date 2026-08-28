@@ -22,6 +22,7 @@ import { NextMatchCard } from "../components/NextMatchCard";
 import { PresidentIdentityBanner } from "../components/PresidentIdentityBanner";
 import { PresidentSummaryCard } from "../components/PresidentSummaryCard";
 import { RecentFormCard } from "../components/RecentFormCard";
+import { NewsHeadlinesCard } from "../../news/components/NewsHeadlinesCard";
 import { getNextMatch, getRecentMatches } from "../utils/matchHelpers";
 
 /** Poll live-status only while waiting for simulation to finish. */
@@ -157,6 +158,7 @@ export const DashboardPage = () => {
         currentClubId={club?.id}
       />
       {club && <RecentFormCard clubId={club.id} matches={recentMatches} />}
+      <NewsHeadlinesCard />
     </div>
   );
 };
