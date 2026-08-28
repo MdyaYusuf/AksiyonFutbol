@@ -49,6 +49,59 @@ export const EndOfSeasonBoardReview = ({
   );
 };
 
+interface EndOfSeasonPresidentPackageProps {
+  identityTrack: string;
+  flavorTitle: string;
+  cashAwarded: number;
+  summary: string;
+}
+
+export const EndOfSeasonPresidentPackage = ({
+  identityTrack,
+  flavorTitle,
+  cashAwarded,
+  summary,
+}: EndOfSeasonPresidentPackageProps) => {
+  const trackClass =
+    identityTrack.toLowerCase() === "honorable"
+      ? "text-primary border-primary/30 bg-primary/10"
+      : identityTrack.toLowerCase() === "shady"
+        ? "text-error border-error/30 bg-error/10"
+        : "text-secondary border-secondary/30 bg-secondary/10";
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-outline-variant bg-surface-container p-6 shadow-lg">
+      <div className="absolute -top-10 -right-10 opacity-10">
+        <MaterialIcon name="military_tech" className="text-[150px]" />
+      </div>
+      <h3 className="relative z-10 mb-4 text-xl font-bold text-on-surface">
+        President Identity
+      </h3>
+      <div className="relative z-10 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm text-on-surface-variant">Season Path</span>
+          <span
+            className={`rounded border px-2 py-0.5 font-label-caps text-label-caps ${trackClass}`}
+          >
+            {identityTrack}
+          </span>
+        </div>
+        <div className="flex items-end justify-between border-b border-outline-variant pb-2">
+          <span className="text-sm text-on-surface-variant">New Title</span>
+          <span className="text-right font-semibold text-on-surface">{flavorTitle}</span>
+        </div>
+        <div className="flex items-end justify-between border-b border-outline-variant pb-2">
+          <span className="text-sm text-on-surface-variant">Package</span>
+          <span className="font-data-mono text-data-mono text-secondary">
+            {cashAwarded.toLocaleString("en-GB")}
+          </span>
+        </div>
+        <p className="font-body-sm text-body-sm text-on-surface-variant">{summary}</p>
+      </div>
+    </div>
+  );
+};
+
 interface EndOfSeasonMovementsPanelProps {
   promoted: SeasonClubMovement[];
   relegated: SeasonClubMovement[];

@@ -78,6 +78,7 @@ public class SeasonTransitionBusinessRules(
   {
     return await _clubRepository.GetAllAsync(
       filter: c => c.DivisionId == divisionId,
+      include: query => query.Include(c => c.President),
       orderBy: query => query.OrderBy(c => c.Name),
       enableTracking: enableTracking,
       cancellationToken: cancellationToken);

@@ -25,6 +25,7 @@ export const seasonTransitionsApiSlice = apiSlice.injectEndpoints({
         { type: "LeagueDivision", id: "LIST" },
         { type: "LeagueDivision", id: `SEASON-END-${divisionId}` },
         { type: "Club", id: "ME" },
+        { type: "ClubPresident", id: "ME" },
         { type: "Club", id: "LIST" },
         { type: "Match", id: "LIST" },
       ],

@@ -5,6 +5,7 @@ import { EndOfSeasonHeader } from "../components/EndOfSeasonHeader";
 import {
   EndOfSeasonBoardReview,
   EndOfSeasonMovementsPanel,
+  EndOfSeasonPresidentPackage,
 } from "../components/EndOfSeasonSidePanel";
 import { EndOfSeasonStandingsTable } from "../components/EndOfSeasonStandingsTable";
 import {
@@ -88,6 +89,8 @@ export const EndOfSeasonMovementsPage = () => {
     preview.swapSlots,
   );
   const board = getBoardReview(userDivision.standings, club.id);
+  const userMovement = preview.movements.find((movement) => movement.clubId === club.id);
+  const presidentPackage = userMovement?.presidentPackage ?? null;
   const promoteTargetName = promoted[0]?.toDivisionName;
   const relegateTargetName = relegated[0]?.toDivisionName;
 
@@ -118,6 +121,14 @@ export const EndOfSeasonMovementsPage = () => {
             achieved={board.achieved}
             rating={board.rating}
           />
+          {presidentPackage ? (
+            <EndOfSeasonPresidentPackage
+              identityTrack={presidentPackage.identityTrack}
+              flavorTitle={presidentPackage.flavorTitle}
+              cashAwarded={presidentPackage.cashAwarded}
+              summary={presidentPackage.summary}
+            />
+          ) : null}
           <EndOfSeasonMovementsPanel
             promoted={promoted}
             relegated={relegated}

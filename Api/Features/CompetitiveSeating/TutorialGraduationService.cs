@@ -1,8 +1,10 @@
 using Api.Core.Options;
+using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
 using Api.Features.Matches;
 using Api.Features.SeasonTransitions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Api.Features.CompetitiveSeating;
@@ -11,6 +13,7 @@ public class TutorialGraduationService(
   IClubRepository _clubRepository,
   IMatchRepository _matchRepository,
   ILeagueDivisionRepository _leagueDivisionRepository,
+  IPresidentSeasonIdentitySettler _seasonIdentitySettler,
   IOptions<GameOptions> _gameOptions) : ITutorialGraduationService
 {
   public async Task TryGraduateAfterMatchAsync(
@@ -43,6 +46,7 @@ public class TutorialGraduationService(
 
     List<Club> clubs = await _clubRepository.GetAllAsync(
       filter: c => c.DivisionId == division.Id,
+      include: query => query.Include(c => c.President),
       enableTracking: true,
       cancellationToken: cancellationToken);
 
@@ -81,10 +85,20 @@ public class TutorialGraduationService(
         continue;
       }
 
-      club.PlacementTargetTier = TutorialGraduationBusinessRules.ResolvePlacementTier(
+      LeagueTier tier = TutorialGraduationBusinessRules.ResolvePlacementTier(
         row.Points,
         options);
+      club.PlacementTargetTier = tier;
       club.LifecycleStatus = ClubLifecycleStatus.AwaitingPlacement;
+
+      if (club.President != null)
+      {
+        _seasonIdentitySettler.ApplyTutorialGraduationPackage(
+          club,
+          club.President,
+          tier);
+      }
+
       _clubRepository.Update(club);
     }
 

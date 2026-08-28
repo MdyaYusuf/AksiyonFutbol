@@ -2,6 +2,7 @@ using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
 using Api.Features.Matches;
@@ -20,6 +21,7 @@ public class SeasonTransitionService(
   IFixtureSchedulingService _fixtureSchedulingService,
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions,
+  IPresidentSeasonIdentitySettler _seasonIdentitySettler,
   HybridCache _cache) : ISeasonTransitionService, ICompetitiveSeasonEndService
 {
   private const string LeagueCacheTag = "league-divisions";
@@ -226,6 +228,10 @@ public class SeasonTransitionService(
       _clubRepository.Update(club);
     }
 
+    List<SeasonPresidentPackageDto> appliedPackages = ApplySeasonIdentityPackages(
+      preview.Movements,
+      clubsById);
+
     await ResetSeasonStatsForClubsAsync(clubsById.Keys, cancellationToken);
 
     int resetWeek = _businessRules.Options.MinimumMatchWeek;
@@ -298,8 +304,40 @@ public class SeasonTransitionService(
       DivisionsReset = ladder.Count,
       ResetMatchWeek = resetWeek,
       FixturesGenerated = fixturesGenerated,
-      Movements = appliedMovements
+      Movements = appliedMovements,
+      PresidentPackages = appliedPackages
     };
+  }
+
+  private List<SeasonPresidentPackageDto> ApplySeasonIdentityPackages(
+    IReadOnlyList<SeasonClubMovementDto> movements,
+    Dictionary<Guid, Club> clubsById)
+  {
+    List<SeasonPresidentPackageDto> packages = [];
+
+    foreach (SeasonClubMovementDto movement in movements)
+    {
+      if (!clubsById.TryGetValue(movement.ClubId, out Club? club))
+      {
+        continue;
+      }
+
+      if (club.IsBot || club.President == null)
+      {
+        continue;
+      }
+
+      SeasonPresidentPackageDto package = _seasonIdentitySettler.ApplySeasonPackage(
+        club,
+        club.President,
+        movement.Outcome,
+        movement.Position);
+
+      packages.Add(package);
+      _clubRepository.Update(club);
+    }
+
+    return packages;
   }
 
   private async Task<SeasonEndPreviewDto> BuildPreviewAsync(
@@ -372,6 +410,7 @@ public class SeasonTransitionService(
       _businessRules.Options.RelegationSlots);
 
     var movements = new List<SeasonClubMovementDto>();
+    var presidentPackages = new List<SeasonPresidentPackageDto>();
     var projectedCounts = ladder.ToDictionary(d => d.Id, d => clubsByDivisionId[d.Id].Count);
 
     for (int i = 0; i < ladder.Count - 1; i++)
@@ -393,14 +432,24 @@ public class SeasonTransitionService(
 
       foreach (StandingRowDto row in higherStandings.TakeLast(swapSlots))
       {
-        movements.Add(CreateMovement(row, higher, lower, SeasonMovementOutcome.Relegated));
+        movements.Add(CreateMovement(
+          row,
+          higher,
+          lower,
+          SeasonMovementOutcome.Relegated,
+          clubsByDivisionId));
         projectedCounts[higher.Id] -= 1;
         projectedCounts[lower.Id] += 1;
       }
 
       foreach (StandingRowDto row in lowerStandings.Take(swapSlots))
       {
-        movements.Add(CreateMovement(row, lower, higher, SeasonMovementOutcome.Promoted));
+        movements.Add(CreateMovement(
+          row,
+          lower,
+          higher,
+          SeasonMovementOutcome.Promoted,
+          clubsByDivisionId));
         projectedCounts[lower.Id] -= 1;
         projectedCounts[higher.Id] += 1;
       }
@@ -417,21 +466,23 @@ public class SeasonTransitionService(
           continue;
         }
 
-        movements.Add(new SeasonClubMovementDto
-        {
-          ClubId = row.ClubId,
-          ClubName = row.ClubName,
-          Position = row.Position,
-          Points = row.Points,
-          FromDivisionId = division.Id,
-          FromDivisionName = division.Name,
-          FromTier = division.Tier,
-          ToDivisionId = division.Id,
-          ToDivisionName = division.Name,
-          ToTier = division.Tier,
-          Outcome = SeasonMovementOutcome.Stayed
-        });
+        movements.Add(CreateMovement(
+          row,
+          division,
+          division,
+          SeasonMovementOutcome.Stayed,
+          clubsByDivisionId));
       }
+    }
+
+    foreach (SeasonClubMovementDto movement in movements)
+    {
+      if (movement.PresidentPackage == null)
+      {
+        continue;
+      }
+
+      presidentPackages.Add(movement.PresidentPackage);
     }
 
     if (canProcess)
@@ -460,7 +511,8 @@ public class SeasonTransitionService(
         .OrderBy(m => m.FromTier)
         .ThenBy(m => m.Outcome)
         .ThenBy(m => m.Position)
-        .ToList()
+        .ToList(),
+      PresidentPackages = presidentPackages
     };
   }
 
@@ -491,12 +543,26 @@ public class SeasonTransitionService(
     }
   }
 
-  private static SeasonClubMovementDto CreateMovement(
+  private SeasonClubMovementDto CreateMovement(
     StandingRowDto row,
     LeagueDivision from,
     LeagueDivision to,
-    SeasonMovementOutcome outcome)
+    SeasonMovementOutcome outcome,
+    Dictionary<int, List<Club>> clubsByDivisionId)
   {
+    Club? club = clubsByDivisionId[from.Id]
+      .FirstOrDefault(c => c.Id == row.ClubId);
+
+    SeasonPresidentPackageDto? presidentPackage = null;
+
+    if (club?.President != null && !club.IsBot)
+    {
+      presidentPackage = _seasonIdentitySettler.BuildSeasonPackagePreview(
+        club.President,
+        outcome,
+        row.Position);
+    }
+
     return new SeasonClubMovementDto
     {
       ClubId = row.ClubId,
@@ -509,7 +575,8 @@ public class SeasonTransitionService(
       ToDivisionId = to.Id,
       ToDivisionName = to.Name,
       ToTier = to.Tier,
-      Outcome = outcome
+      Outcome = outcome,
+      PresidentPackage = presidentPackage
     };
   }
 }

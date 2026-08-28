@@ -33,6 +33,14 @@ export interface SeasonClubMovement {
   toDivisionName?: string | null;
   toTier?: number | null;
   outcome: SeasonMovementOutcome;
+  presidentPackage?: SeasonPresidentPackage | null;
+}
+
+export interface SeasonPresidentPackage {
+  identityTrack: string;
+  cashAwarded: number;
+  flavorTitle: string;
+  summary: string;
 }
 
 export interface SeasonDivisionPreview {
@@ -55,6 +63,7 @@ export interface SeasonEndPreview {
   blockReason?: string | null;
   divisions: SeasonDivisionPreview[];
   movements: SeasonClubMovement[];
+  presidentPackages: SeasonPresidentPackage[];
 }
 
 export interface SeasonEndProcessResult {
@@ -65,4 +74,5 @@ export interface SeasonEndProcessResult {
   resetMatchWeek: number;
   fixturesGenerated: number;
   movements: SeasonClubMovement[];
+  presidentPackages: SeasonPresidentPackage[];
 }

@@ -17,6 +17,7 @@ public class MatchPlayService(
   IMatchInfluenceProvider _matchInfluenceProvider,
   IPromiseWinBonusSettler _promiseWinBonusSettler,
   IPresidentMatchMoralitySettler _presidentMatchMoralitySettler,
+  IPresidentAttributeGrowthSettler _presidentAttributeGrowthSettler,
   ITutorialGraduationService _tutorialGraduationService,
   IMatchWeekProgressService _matchWeekProgressService,
   ICompetitiveSeasonEndService _competitiveSeasonEndService,
@@ -87,6 +88,12 @@ public class MatchPlayService(
       cancellationToken);
 
     await _presidentMatchMoralitySettler.SettleAfterMatchAsync(
+      match,
+      result.HomeScore,
+      result.AwayScore,
+      cancellationToken);
+
+    await _presidentAttributeGrowthSettler.SettleAfterMatchAsync(
       match,
       result.HomeScore,
       result.AwayScore,

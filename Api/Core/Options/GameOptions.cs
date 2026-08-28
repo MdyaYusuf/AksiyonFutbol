@@ -133,6 +133,29 @@ public class GameOptions
   public int CleanWinLegitimacyGain { get; set; } = 2;
   public decimal PresidentInfamyPepTalkMaxEffectReduction { get; set; } = 0.25m;
 
+  // Post-match president attribute growth (build evolves from play).
+  public int PostMatchCleanWinIntegrityGain { get; set; } = 1;
+  public int PostMatchCleanWinCharismaGain { get; set; } = 1;
+  public int PostMatchUndetectedShadyCunningGain { get; set; } = 1;
+  public int PostMatchScandalIntegrityLoss { get; set; } = 1;
+  public int PresidentMoralityDominanceThreshold { get; set; } = 10;
+
+  // End-of-season identity packages (Legitimacy vs Infamy).
+  public decimal SeasonHonorableCashReward { get; set; } = 25_000m;
+  public decimal SeasonShadyCashReward { get; set; } = 35_000m;
+  public decimal SeasonNeutralCashReward { get; set; } = 15_000m;
+  public decimal SeasonPromotionCashBonus { get; set; } = 10_000m;
+  public decimal SeasonRelegationCashPenalty { get; set; } = 5_000m;
+
+  // Tutorial graduation identity packages.
+  public decimal TutorialGraduationHonorableCash { get; set; } = 10_000m;
+  public decimal TutorialGraduationShadyCash { get; set; } = 15_000m;
+  public decimal TutorialGraduationNeutralCash { get; set; } = 8_000m;
+  public decimal TutorialGraduationGoldCashBonus { get; set; } = 5_000m;
+  public decimal TutorialGraduationSilverCashBonus { get; set; } = 3_000m;
+  public decimal TutorialGraduationBronzeCashBonus { get; set; } = 1_500m;
+  public decimal TutorialGraduationIronCashBonus { get; set; } = 500m;
+
   // President attribute affinity (levels above 1).
   public decimal PresidentIntegrityHonorableSuccessBonusPerLevel { get; set; } = 0.025m;
   public decimal PresidentCunningShadySuccessBonusPerLevel { get; set; } = 0.025m;

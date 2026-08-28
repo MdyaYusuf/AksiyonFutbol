@@ -1,5 +1,7 @@
 namespace Api.Features.SeasonTransitions;
 
+using Api.Features.ClubPresidents;
+
 public sealed class StandingRowDto
 {
   public int Position { get; init; }
@@ -28,6 +30,7 @@ public sealed class SeasonClubMovementDto
   public string? ToDivisionName { get; init; }
   public int? ToTier { get; init; }
   public SeasonMovementOutcome Outcome { get; init; }
+  public SeasonPresidentPackageDto? PresidentPackage { get; init; }
 }
 
 public sealed class SeasonDivisionPreviewDto
@@ -52,6 +55,7 @@ public sealed class SeasonEndPreviewDto
   public string? BlockReason { get; init; }
   public IReadOnlyList<SeasonDivisionPreviewDto> Divisions { get; init; } = [];
   public IReadOnlyList<SeasonClubMovementDto> Movements { get; init; } = [];
+  public IReadOnlyList<SeasonPresidentPackageDto> PresidentPackages { get; init; } = [];
 }
 
 public sealed class SeasonEndProcessResultDto
@@ -63,4 +67,5 @@ public sealed class SeasonEndProcessResultDto
   public int ResetMatchWeek { get; init; }
   public int FixturesGenerated { get; init; }
   public IReadOnlyList<SeasonClubMovementDto> Movements { get; init; } = [];
+  public IReadOnlyList<SeasonPresidentPackageDto> PresidentPackages { get; init; } = [];
 }

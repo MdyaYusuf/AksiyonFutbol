@@ -9,6 +9,8 @@ public static class ClubPresidentRegistration
     services.AddScoped<ClubPresidentMoralityBusinessRules>();
     services.AddScoped<IPresidentMoralitySettler, PresidentMoralitySettler>();
     services.AddScoped<IPresidentMatchMoralitySettler, PresidentMatchMoralitySettler>();
+    services.AddScoped<IPresidentAttributeGrowthSettler, PresidentAttributeGrowthSettler>();
+    services.AddScoped<IPresidentSeasonIdentitySettler, PresidentSeasonIdentitySettler>();
     services.AddScoped<IClubPresidentService, ClubPresidentService>();
     services.AddSingleton<ClubPresidentMapper>();
 
