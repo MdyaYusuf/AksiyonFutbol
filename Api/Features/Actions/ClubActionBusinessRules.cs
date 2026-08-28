@@ -148,12 +148,26 @@ public class ClubActionBusinessRules(
     ClubActionDefinition definition,
     ClubPresident? president)
   {
-    string? reason = GetAttributeRequirementFailureReason(definition, president);
+    string? reason = GetRequirementFailureReason(definition, president);
 
     if (reason != null)
     {
       throw new BusinessException(reason);
     }
+  }
+
+  public string? GetRequirementFailureReason(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    string? attributeReason = GetAttributeRequirementFailureReason(definition, president);
+
+    if (attributeReason != null)
+    {
+      return attributeReason;
+    }
+
+    return GetMoralityRequirementFailureReason(definition, president);
   }
 
   public string? GetAttributeRequirementFailureReason(
@@ -200,6 +214,101 @@ public class ClubActionBusinessRules(
     }
 
     return null;
+  }
+
+  public string? GetMoralityRequirementFailureReason(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    if (definition.MinLegitimacy <= 0 && !definition.RequiresShadyTierII)
+    {
+      return null;
+    }
+
+    if (president == null)
+    {
+      return "This action requires president standing.";
+    }
+
+    if (definition.MinLegitimacy > 0 &&
+        president.ReputationPoints < definition.MinLegitimacy)
+    {
+      return $"Needs Legitimacy {definition.MinLegitimacy}.";
+    }
+
+    if (definition.RequiresShadyTierII &&
+        !ClubPresidentMoralityBusinessRules.HasShadyTierIIUnlock(president.InfamyPoints))
+    {
+      return $"Needs Infamy {ClubPresidentMoralityBusinessRules.ShadyTierIIInfamyThreshold}.";
+    }
+
+    return null;
+  }
+
+  public static bool ShouldHideSupersededAction(
+    ClubActionDefinition definition,
+    ClubPresident? president)
+  {
+    if (president == null)
+    {
+      return definition.RequiresShadyTierII;
+    }
+
+    bool hasTierII = ClubPresidentMoralityBusinessRules.HasShadyTierIIUnlock(
+      president.InfamyPoints);
+
+    if (!hasTierII)
+    {
+      return definition.RequiresShadyTierII;
+    }
+
+    if (definition.Type == ClubActionType.Espionage)
+    {
+      return true;
+    }
+
+    if (definition.Type == ClubActionType.TapUpTarget)
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  public bool HasActiveFairPlayPledgeLock(IEnumerable<ClubAction> actions)
+  {
+    ClubAction? lastPledge = actions
+      .Where(a =>
+        a.ActionType == ClubActionType.FairPlayPledge &&
+        a.Outcome == ClubActionOutcome.Succeeded)
+      .OrderByDescending(a => a.CreatedDate)
+      .FirstOrDefault();
+
+    if (lastPledge == null)
+    {
+      return false;
+    }
+
+    DateTime lockEndsAt = lastPledge.CreatedDate.AddDays(Options.FairPlayPledgeLockDays);
+
+    return DateTime.UtcNow < lockEndsAt;
+  }
+
+  public bool ConflictsWithEspionageTierOnMatch(
+    ClubActionType actionType,
+    Guid matchId,
+    IEnumerable<ClubAction> actions)
+  {
+    if (actionType != ClubActionType.Espionage &&
+        actionType != ClubActionType.EspionageII)
+    {
+      return false;
+    }
+
+    return actions.Any(a =>
+      a.MatchId == matchId &&
+      (a.ActionType == ClubActionType.Espionage ||
+       a.ActionType == ClubActionType.EspionageII));
   }
 
   // Effective detection chance after Suspicion scaling and president affinity.
@@ -289,6 +398,16 @@ public class ClubActionBusinessRules(
 
   public decimal GetPromiseWinBonusAmount() => Options.PromiseWinBonusAmount;
 
+  public decimal GetTapUpDiscountRatio(ClubActionType actionType)
+  {
+    if (actionType == ClubActionType.TapUpTargetII)
+    {
+      return Options.TapUpTransferFeeDiscountRatioTierII;
+    }
+
+    return Options.TapUpTransferFeeDiscountRatio;
+  }
+
   public decimal GetTapUpDiscountRatio() => Options.TapUpTransferFeeDiscountRatio;
 
   private decimal GetPresidentSuccessAffinityDelta(
@@ -311,6 +430,11 @@ public class ClubActionBusinessRules(
     }
 
     if (definition.Category == ClubActionCategory.Squad)
+    {
+      return integrityLevels * options.PresidentIntegrityHonorableSuccessBonusPerLevel;
+    }
+
+    if (!definition.IsShady && definition.MinLegitimacy > 0)
     {
       return integrityLevels * options.PresidentIntegrityHonorableSuccessBonusPerLevel;
     }

@@ -727,9 +727,11 @@ public class MatchSimulationService(IOptions<GameOptions> _gameOptions) : IMatch
     double dopingModifier = influence.HasDoping(club.Id)
       ? (double)_gameOptions.Value.DopingPowerMultiplier
       : 1.0;
-    double espionageModifier = influence.HasEspionage(club.Id)
-      ? (double)_gameOptions.Value.EspionageEdgeMultiplier
-      : 1.0;
+    double espionageModifier = influence.HasEspionageTierII(club.Id)
+      ? (double)_gameOptions.Value.EspionageTierIIEdgeMultiplier
+      : influence.HasEspionage(club.Id)
+        ? (double)_gameOptions.Value.EspionageEdgeMultiplier
+        : 1.0;
 
     // Sabotage targets the away side: if the opponent successfully sabotaged and
     // this club is away, apply the travel/rest penalty.

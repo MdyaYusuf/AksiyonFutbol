@@ -62,6 +62,8 @@ public sealed class ClubActionAvailabilityDto
   public decimal DetectionChance { get; init; }
   public bool IsShady { get; init; }
   public bool RequiresMatch { get; init; }
+  public bool IsHonorablePower { get; init; }
+  public bool RequiresShadyTierII { get; init; }
   public bool IsAvailable { get; init; }
   public string? UnavailableReason { get; init; }
   public int CooldownDays { get; init; }

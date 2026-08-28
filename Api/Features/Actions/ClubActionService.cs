@@ -47,6 +47,9 @@ public class ClubActionService(
     ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
 
     List<ClubActionAvailabilityDto> availabilities = _actionProvider.All()
+      .Where(definition => !ClubActionBusinessRules.ShouldHideSupersededAction(
+        definition,
+        club.President))
       .Select(definition => BuildAvailability(
         definition,
         club,
@@ -98,6 +101,21 @@ public class ClubActionService(
 
     await _settlementGate.MustAllowClubSpendAsync(club.Id, cancellationToken);
 
+    if (ClubActionBusinessRules.ShouldHideSupersededAction(definition, club.President))
+    {
+      throw new BusinessException("This action is no longer available for your president build.");
+    }
+
+    List<ClubAction> recentClubActions = await _clubActionRepository.GetAllAsync(
+      filter: a => a.ClubId == club.Id,
+      orderBy: query => query.OrderByDescending(a => a.CreatedDate),
+      cancellationToken: cancellationToken);
+
+    if (definition.IsShady && _businessRules.HasActiveFairPlayPledgeLock(recentClubActions))
+    {
+      throw new BusinessException("Fair Play Pledge is active. Gray-area actions are locked.");
+    }
+
     Match? match = null;
     decimal pledgedWinBonus = 0m;
     Guid? targetPlayerInstanceId = null;
@@ -109,6 +127,14 @@ public class ClubActionService(
       _businessRules.MatchMustBeUnplayed(match);
       _businessRules.MatchMustBelongToClub(match, club.Id);
       await EnsureMatchActionNotRepeatedAsync(club.Id, match.Id, definition.Type, cancellationToken);
+
+      if (_businessRules.ConflictsWithEspionageTierOnMatch(
+        definition.Type,
+        match.Id,
+        recentClubActions))
+      {
+        throw new BusinessException("Only one espionage tier can be used per fixture.");
+      }
 
       if (definition.Type == ClubActionType.Sabotage)
       {
@@ -150,7 +176,8 @@ public class ClubActionService(
       {
         _businessRules.EnsurePresidentCanAffordLobby(club);
       }
-      else if (definition.Type == ClubActionType.TapUpTarget)
+      else if (definition.Type == ClubActionType.TapUpTarget ||
+               definition.Type == ClubActionType.TapUpTargetII)
       {
         targetPlayerInstanceId = await ValidateTapUpTargetAsync(
           club.Id,
@@ -312,7 +339,7 @@ public class ClubActionService(
     string? unavailableReason = null;
     int cooldownRemainingDays = 0;
 
-    string? attributeReason = _businessRules.GetAttributeRequirementFailureReason(
+    string? attributeReason = _businessRules.GetRequirementFailureReason(
       definition,
       club.President);
 
@@ -320,6 +347,11 @@ public class ClubActionService(
     {
       isAvailable = false;
       unavailableReason = attributeReason;
+    }
+    else if (definition.IsShady && _businessRules.HasActiveFairPlayPledgeLock(actions))
+    {
+      isAvailable = false;
+      unavailableReason = "Fair Play Pledge is active. Gray-area actions are locked.";
     }
     else if (definition.IsMatchScoped)
     {
@@ -333,7 +365,18 @@ public class ClubActionService(
         isAvailable = false;
         unavailableReason = "Already used for this fixture.";
       }
-      else if (definition.Type == ClubActionType.Sabotage && upcomingMatch.HomeClubId != club.Id)
+      else if (upcomingMatch != null &&
+               _businessRules.ConflictsWithEspionageTierOnMatch(
+                 definition.Type,
+                 upcomingMatch.Id,
+                 actions))
+      {
+        isAvailable = false;
+        unavailableReason = "Espionage already used for this fixture.";
+      }
+      else if (definition.Type == ClubActionType.Sabotage &&
+               upcomingMatch != null &&
+               upcomingMatch.HomeClubId != club.Id)
       {
         isAvailable = false;
         unavailableReason = "Only available when playing at home.";
@@ -408,6 +451,10 @@ public class ClubActionService(
       DetectionChance = detectionChance,
       IsShady = definition.IsShady,
       RequiresMatch = definition.IsMatchScoped || definition.Type == ClubActionType.PromiseWinBonus,
+      IsHonorablePower = definition.MinLegitimacy >=
+        ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold &&
+        !definition.IsShady,
+      RequiresShadyTierII = definition.RequiresShadyTierII,
       IsAvailable = isAvailable,
       UnavailableReason = unavailableReason,
       CooldownDays = definition.CooldownDays,
@@ -529,6 +576,36 @@ public class ClubActionService(
       return "Özel yaklaşım başarılı. Hedef oyuncu için transfer indirimi aktif.";
     }
 
+    if (succeeded && definition.Type == ClubActionType.TapUpTargetII)
+    {
+      return "Hard tap başarılı. Hedef oyuncu için güçlü transfer indirimi aktif.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.CommunityDay)
+    {
+      return "Community Day başarılı. Moral ve kimya yükseldi.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.AcademyPush)
+    {
+      return "Academy Push başarılı. Genç yatırımı disiplin ve kimyayı güçlendirdi.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.FairPlayPledge)
+    {
+      return "Fair Play Pledge yayımlandı. Gray-area aksiyonlar geçici olarak kilitlendi.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.CleanMediaCampaign)
+    {
+      return "Clean Media Campaign başarılı. Isı düştü, meşruiyet güçlendi.";
+    }
+
+    if (succeeded && definition.Type == ClubActionType.FederationAlly)
+    {
+      return "Federation Ally başarılı. Federasyon ısısı soğutuldu.";
+    }
+
     return succeeded
       ? "Aksiyon başarılı oldu."
       : "Aksiyon başarısız oldu. Harcanan tutar kasadan düşüldü.";
@@ -607,7 +684,64 @@ public class ClubActionService(
         club.Cash += options.DodgySponsorshipCashGain;
         break;
       case ClubActionType.TapUpTarget:
+      case ClubActionType.TapUpTargetII:
         // Effect is deferred: discount applies at transfer accept time.
+        break;
+      case ClubActionType.CommunityDay:
+        _businessRules.EnsurePresidentExists(club);
+        club.Morale = ClampStatus(
+          club.Morale + _businessRules.ScaleHonorableEffectBonus(
+            options.CommunityDayMoraleBonus,
+            club.President,
+            actionType));
+        club.Chemistry = ClampStatus(
+          club.Chemistry + _businessRules.ScaleHonorableEffectBonus(
+            options.CommunityDayChemistryBonus,
+            club.President,
+            actionType));
+        _moralitySettler.ApplyLegitimacyGain(
+          club.President!,
+          options.CommunityDayLegitimacyGain);
+        break;
+      case ClubActionType.AcademyPush:
+        _businessRules.EnsurePresidentExists(club);
+        club.Chemistry = ClampStatus(
+          club.Chemistry + _businessRules.ScaleHonorableEffectBonus(
+            options.AcademyPushChemistryBonus,
+            club.President,
+            actionType));
+        club.Discipline = ClampStatus(
+          club.Discipline + _businessRules.ScaleHonorableEffectBonus(
+            options.AcademyPushDisciplineBonus,
+            club.President,
+            actionType));
+        _moralitySettler.ApplyLegitimacyGain(
+          club.President!,
+          options.AcademyPushLegitimacyGain);
+        break;
+      case ClubActionType.FairPlayPledge:
+        _businessRules.EnsurePresidentExists(club);
+        _moralitySettler.ApplyLegitimacyGain(
+          club.President!,
+          options.FairPlayPledgeLegitimacyGain);
+        break;
+      case ClubActionType.CleanMediaCampaign:
+        _businessRules.EnsurePresidentExists(club);
+        _moralitySettler.ApplyLegitimacyGain(
+          club.President!,
+          options.CleanMediaCampaignLegitimacyGain);
+        club.Suspicion = Math.Max(
+          0,
+          club.Suspicion - options.CleanMediaCampaignSuspicionReduction);
+        break;
+      case ClubActionType.FederationAlly:
+        _businessRules.EnsurePresidentExists(club);
+        _moralitySettler.ApplyLegitimacyGain(
+          club.President!,
+          options.FederationAllyLegitimacyGain);
+        club.Suspicion = Math.Max(
+          0,
+          club.Suspicion - options.FederationAllySuspicionReduction);
         break;
     }
   }
@@ -748,7 +882,8 @@ public class ClubActionService(
       a =>
         a.ClubId == clubId &&
         a.TargetPlayerInstanceId == player.Id &&
-        a.ActionType == ClubActionType.TapUpTarget &&
+        (a.ActionType == ClubActionType.TapUpTarget ||
+         a.ActionType == ClubActionType.TapUpTargetII) &&
         a.Outcome == ClubActionOutcome.Succeeded,
       cancellationToken);
 

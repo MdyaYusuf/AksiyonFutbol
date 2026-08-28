@@ -37,4 +37,6 @@ public sealed record ClubActionDefinition
   public int MinIntegrity { get; init; }
   public int MinCunning { get; init; }
   public int MinConnections { get; init; }
+  public int MinLegitimacy { get; init; }
+  public bool RequiresShadyTierII { get; init; }
 }

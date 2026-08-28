@@ -71,10 +71,27 @@ public class GameOptions
   public decimal BribeMediumBaseDetectionChance { get; set; } = 0.25m;
   public int BribeHighHeatGenerated { get; set; } = 35;
   public decimal BribeHighBaseDetectionChance { get; set; } = 0.60m;
+  public decimal BribeTierIIStakeSpanMultiplier { get; set; } = 1.15m;
+  public decimal BribeTierIIMaxSuccessChanceBonus { get; set; } = 0.05m;
+
+  // Honorable power action effect sizes.
+  public int CommunityDayMoraleBonus { get; set; } = 4;
+  public int CommunityDayChemistryBonus { get; set; } = 5;
+  public int CommunityDayLegitimacyGain { get; set; } = 3;
+  public int AcademyPushChemistryBonus { get; set; } = 4;
+  public int AcademyPushDisciplineBonus { get; set; } = 3;
+  public int AcademyPushLegitimacyGain { get; set; } = 2;
+  public int FairPlayPledgeLegitimacyGain { get; set; } = 5;
+  public int FairPlayPledgeLockDays { get; set; } = 7;
+  public int CleanMediaCampaignLegitimacyGain { get; set; } = 4;
+  public int CleanMediaCampaignSuspicionReduction { get; set; } = 10;
+  public int FederationAllyLegitimacyGain { get; set; } = 2;
+  public int FederationAllySuspicionReduction { get; set; } = 15;
 
   // Match-scoped ClubAction effect sizes consumed by MatchInfluence / the sim.
   public decimal MatchFixingOpponentGoalMultiplier { get; set; } = 0.85m;
   public decimal EspionageEdgeMultiplier { get; set; } = 1.05m;
+  public decimal EspionageTierIIEdgeMultiplier { get; set; } = 1.10m;
   public decimal DopingPowerMultiplier { get; set; } = 1.08m;
   public decimal SabotageAwayPowerMultiplier { get; set; } = 0.92m;
 
@@ -103,6 +120,7 @@ public class GameOptions
   public int LobbyFederationReputationCost { get; set; } = 10;
   public decimal DodgySponsorshipCashGain { get; set; } = 50000m;
   public decimal TapUpTransferFeeDiscountRatio { get; set; } = 0.15m;
+  public decimal TapUpTransferFeeDiscountRatioTierII { get; set; } = 0.25m;
 
   // President morality economy (Legitimacy stored in ReputationPoints).
   public int MaxLegitimacy { get; set; } = 100;

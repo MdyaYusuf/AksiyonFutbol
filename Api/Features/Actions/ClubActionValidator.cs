@@ -22,7 +22,9 @@ public class ExecuteClubActionRequestValidator : AbstractValidator<ExecuteClubAc
 
     RuleFor(x => x.TargetPlayerInstanceId)
       .NotNull()
-      .When(x => x.ActionType == ClubActionType.TapUpTarget)
+      .When(x =>
+        x.ActionType == ClubActionType.TapUpTarget ||
+        x.ActionType == ClubActionType.TapUpTargetII)
       .WithMessage("Özel yaklaşım için bir oyuncu seçilmelidir.");
   }
 }

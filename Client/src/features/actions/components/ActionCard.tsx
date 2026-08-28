@@ -32,6 +32,16 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
                 Gray Area
               </span>
             ) : null}
+            {action.isHonorablePower ? (
+              <span className="rounded border border-primary/30 bg-primary/10 px-2 py-0.5 font-label-caps text-label-caps text-primary">
+                Honorable Power
+              </span>
+            ) : null}
+            {action.requiresShadyTierII ? (
+              <span className="rounded border border-error/30 bg-error/10 px-2 py-0.5 font-label-caps text-label-caps text-error">
+                Tier II
+              </span>
+            ) : null}
           </div>
           <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
             {action.description}

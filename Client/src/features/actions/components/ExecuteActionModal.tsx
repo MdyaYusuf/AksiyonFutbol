@@ -25,7 +25,9 @@ export const ExecuteActionModal = ({
   onConfirm,
 }: ExecuteActionModalProps) => {
   const needsMediaSpinMode = action.actionType === ClubActionType.MediaSpin;
-  const needsTapUpTarget = action.actionType === ClubActionType.TapUpTarget;
+  const needsTapUpTarget =
+    action.actionType === ClubActionType.TapUpTarget ||
+    action.actionType === ClubActionType.TapUpTargetII;
 
   const [mediaSpinMode, setMediaSpinMode] = useState<MediaSpinModeType>(
     MediaSpinMode.OpponentMorale,

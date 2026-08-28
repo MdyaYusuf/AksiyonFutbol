@@ -65,7 +65,9 @@ public class ClubActionProvider : IClubActionProvider
       MinAuthority = metadata.MinAuthority,
       MinIntegrity = metadata.MinIntegrity,
       MinCunning = metadata.MinCunning,
-      MinConnections = metadata.MinConnections
+      MinConnections = metadata.MinConnections,
+      MinLegitimacy = metadata.MinLegitimacy,
+      RequiresShadyTierII = metadata.RequiresShadyTierII
     };
   }
 

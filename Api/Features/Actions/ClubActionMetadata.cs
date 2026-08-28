@@ -24,4 +24,10 @@ public sealed record ClubActionMetadata
   public int MinIntegrity { get; init; }
   public int MinCunning { get; init; }
   public int MinConnections { get; init; }
+
+  // Legitimacy gate (ReputationPoints). 0 means no minimum.
+  public int MinLegitimacy { get; init; }
+
+  // Infamy ≥ threshold unlock required (shady tier II progression).
+  public bool RequiresShadyTierII { get; init; }
 }

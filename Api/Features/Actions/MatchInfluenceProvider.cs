@@ -46,6 +46,7 @@ public class MatchInfluenceProvider(
 
     HashSet<Guid> matchFixingClubIds = new();
     HashSet<Guid> espionageClubIds = new();
+    HashSet<Guid> espionageTierIIClubIds = new();
     HashSet<Guid> dopingClubIds = new();
     HashSet<Guid> sabotageClubIds = new();
     HashSet<Guid> matchPenaltyClubIds = new();
@@ -77,6 +78,9 @@ public class MatchInfluenceProvider(
         case ClubActionType.Espionage when action.Outcome == ClubActionOutcome.Succeeded:
           espionageClubIds.Add(action.ClubId);
           break;
+        case ClubActionType.EspionageII when action.Outcome == ClubActionOutcome.Succeeded:
+          espionageTierIIClubIds.Add(action.ClubId);
+          break;
         case ClubActionType.Doping:
           if (action.WasDetected || action.MatchPenaltyApplied)
           {
@@ -97,6 +101,7 @@ public class MatchInfluenceProvider(
     if (favoredClubIds.Count == 0 &&
         matchFixingClubIds.Count == 0 &&
         espionageClubIds.Count == 0 &&
+        espionageTierIIClubIds.Count == 0 &&
         dopingClubIds.Count == 0 &&
         sabotageClubIds.Count == 0 &&
         matchPenaltyClubIds.Count == 0)
@@ -109,6 +114,7 @@ public class MatchInfluenceProvider(
       FavoredClubIds = favoredClubIds,
       MatchFixingClubIds = matchFixingClubIds,
       EspionageClubIds = espionageClubIds,
+      EspionageTierIIClubIds = espionageTierIIClubIds,
       DopingClubIds = dopingClubIds,
       SabotageClubIds = sabotageClubIds,
       MatchPenaltyClubIds = matchPenaltyClubIds

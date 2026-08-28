@@ -33,6 +33,13 @@ public static class ClubActionBalanceDefaults
         BaseSuccessChance = 0.90m,
         BaseDetectionChance = 0.10m
       },
+      [ClubActionType.EspionageII] = new()
+      {
+        Cost = 12000m,
+        HeatGenerated = 14,
+        BaseSuccessChance = 0.93m,
+        BaseDetectionChance = 0.15m
+      },
       [ClubActionType.Sabotage] = new()
       {
         Cost = 15000m,
@@ -108,6 +115,44 @@ public static class ClubActionBalanceDefaults
         BaseSuccessChance = 0.70m,
         BaseDetectionChance = 0.20m,
         CooldownDays = 7
+      },
+      [ClubActionType.TapUpTargetII] = new()
+      {
+        Cost = 9000m,
+        HeatGenerated = 18,
+        BaseSuccessChance = 0.75m,
+        BaseDetectionChance = 0.28m,
+        CooldownDays = 7
+      },
+      [ClubActionType.CommunityDay] = new()
+      {
+        Cost = 3000m,
+        BaseSuccessChance = 1m,
+        CooldownDays = 7
+      },
+      [ClubActionType.AcademyPush] = new()
+      {
+        Cost = 4500m,
+        BaseSuccessChance = 1m,
+        CooldownDays = 10
+      },
+      [ClubActionType.FairPlayPledge] = new()
+      {
+        Cost = 0m,
+        BaseSuccessChance = 1m,
+        CooldownDays = 14
+      },
+      [ClubActionType.CleanMediaCampaign] = new()
+      {
+        Cost = 3500m,
+        BaseSuccessChance = 1m,
+        CooldownDays = 7
+      },
+      [ClubActionType.FederationAlly] = new()
+      {
+        Cost = 2000m,
+        BaseSuccessChance = 1m,
+        CooldownDays = 14
       }
     };
   }

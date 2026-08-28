@@ -13,6 +13,7 @@ export const ClubActionType = {
   Espionage: 3,
   Sabotage: 4,
   IntimidateReferee: 5,
+  EspionageII: 6,
   TeamBonding: 20,
   FinePlayer: 21,
   MotivationalTalk: 22,
@@ -22,6 +23,12 @@ export const ClubActionType = {
   LobbyFederation: 41,
   DodgySponsorship: 42,
   TapUpTarget: 43,
+  TapUpTargetII: 44,
+  CommunityDay: 50,
+  AcademyPush: 51,
+  FairPlayPledge: 52,
+  CleanMediaCampaign: 53,
+  FederationAlly: 54,
 } as const;
 
 export type ClubActionType = (typeof ClubActionType)[keyof typeof ClubActionType];
@@ -63,6 +70,8 @@ export interface ClubActionAvailability {
   detectionChance: number;
   isShady: boolean;
   requiresMatch: boolean;
+  isHonorablePower: boolean;
+  requiresShadyTierII: boolean;
   isAvailable: boolean;
   unavailableReason?: string | null;
   cooldownDays: number;

@@ -1,4 +1,5 @@
 using Api.Core.Exceptions;
+using Api.Features.ClubPresidents;
 
 namespace Api.Features.Actions;
 
@@ -40,6 +41,17 @@ public static class ClubActionCatalog
         IsShady = true,
         IsMatchScoped = true,
         MinConnections = 2
+      },
+      new()
+      {
+        Type = ClubActionType.EspionageII,
+        Category = ClubActionCategory.Match,
+        DisplayName = "Deep Cover Scout",
+        Description = "A deeper intel push for a stronger match-day edge. Unlocked at high Infamy.",
+        IsShady = true,
+        IsMatchScoped = true,
+        MinCunning = 3,
+        RequiresShadyTierII = true
       },
       new()
       {
@@ -140,6 +152,66 @@ public static class ClubActionCatalog
         Description = "Quietly sound out a transfer target to unlock a fee discount if you buy them.",
         IsShady = true,
         MinConnections = 2
+      },
+      new()
+      {
+        Type = ClubActionType.TapUpTargetII,
+        Category = ClubActionCategory.Politics,
+        DisplayName = "Hard Tap",
+        Description = "A bolder private approach for a larger transfer fee discount. Unlocked at high Infamy.",
+        IsShady = true,
+        MinCunning = 4,
+        RequiresShadyTierII = true
+      },
+      new()
+      {
+        Type = ClubActionType.CommunityDay,
+        Category = ClubActionCategory.Politics,
+        DisplayName = "Community Day",
+        Description = "Host a public club event to lift morale and chemistry. Honorable Power.",
+        IsShady = false,
+        MinCharisma = 3,
+        MinLegitimacy = ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold
+      },
+      new()
+      {
+        Type = ClubActionType.AcademyPush,
+        Category = ClubActionCategory.Politics,
+        DisplayName = "Academy Push",
+        Description = "Invest in youth pathways to sharpen discipline and squad chemistry. Honorable Power.",
+        IsShady = false,
+        MinIntegrity = 3,
+        MinLegitimacy = ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold
+      },
+      new()
+      {
+        Type = ClubActionType.FairPlayPledge,
+        Category = ClubActionCategory.Politics,
+        DisplayName = "Fair Play Pledge",
+        Description = "Publicly commit to clean competition. Blocks gray-area moves for a short period. Honorable Power.",
+        IsShady = false,
+        MinIntegrity = 4,
+        MinLegitimacy = ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold
+      },
+      new()
+      {
+        Type = ClubActionType.CleanMediaCampaign,
+        Category = ClubActionCategory.Politics,
+        DisplayName = "Clean Media Campaign",
+        Description = "Run a positive press tour to cool scrutiny and rebuild standing. Honorable Power.",
+        IsShady = false,
+        MinCharisma = 3,
+        MinLegitimacy = ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold
+      },
+      new()
+      {
+        Type = ClubActionType.FederationAlly,
+        Category = ClubActionCategory.Politics,
+        DisplayName = "Federation Ally",
+        Description = "Leverage clean federation ties to reduce heat without shady favors. Honorable Power.",
+        IsShady = false,
+        MinConnections = 3,
+        MinLegitimacy = ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold
       }
     }.ToDictionary(d => d.Type);
 

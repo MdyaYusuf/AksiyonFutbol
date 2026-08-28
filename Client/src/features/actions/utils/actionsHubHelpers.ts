@@ -74,6 +74,8 @@ export const getActionIcon = (actionType: number): string => {
       return "science";
     case ClubActionType.Espionage:
       return "visibility";
+    case ClubActionType.EspionageII:
+      return "travel_explore";
     case ClubActionType.Sabotage:
       return "build";
     case ClubActionType.IntimidateReferee:
@@ -96,6 +98,18 @@ export const getActionIcon = (actionType: number): string => {
       return "payments";
     case ClubActionType.TapUpTarget:
       return "person_search";
+    case ClubActionType.TapUpTargetII:
+      return "person_add";
+    case ClubActionType.CommunityDay:
+      return "festival";
+    case ClubActionType.AcademyPush:
+      return "school";
+    case ClubActionType.FairPlayPledge:
+      return "verified_user";
+    case ClubActionType.CleanMediaCampaign:
+      return "campaign";
+    case ClubActionType.FederationAlly:
+      return "handshake";
     default:
       return "bolt";
   }

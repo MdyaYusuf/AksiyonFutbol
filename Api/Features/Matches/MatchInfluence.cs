@@ -23,6 +23,9 @@ public sealed class MatchInfluence
   /// <summary>Clubs that successfully ran espionage and get a small midfield/attack edge.</summary>
   public IReadOnlySet<Guid> EspionageClubIds { get; init; } = new HashSet<Guid>();
 
+  /// <summary>Clubs that successfully ran tier-II espionage for a stronger edge.</summary>
+  public IReadOnlySet<Guid> EspionageTierIIClubIds { get; init; } = new HashSet<Guid>();
+
   /// <summary>Clubs that successfully doped and get a general power boost.</summary>
   public IReadOnlySet<Guid> DopingClubIds { get; init; } = new HashSet<Guid>();
 
@@ -43,6 +46,8 @@ public sealed class MatchInfluence
   public bool HasMatchFixing(Guid clubId) => MatchFixingClubIds.Contains(clubId);
 
   public bool HasEspionage(Guid clubId) => EspionageClubIds.Contains(clubId);
+
+  public bool HasEspionageTierII(Guid clubId) => EspionageTierIIClubIds.Contains(clubId);
 
   public bool HasDoping(Guid clubId) => DopingClubIds.Contains(clubId);
 

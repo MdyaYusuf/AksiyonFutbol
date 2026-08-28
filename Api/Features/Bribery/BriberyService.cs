@@ -98,7 +98,10 @@ public class BriberyService(
       minAmount,
       maxAmount);
 
-    decimal estimatedChance = _businessRules.CalculateSuccessChance(previewAmount, match.Referee);
+    decimal estimatedChance = _businessRules.CalculateSuccessChance(
+      previewAmount,
+      match.Referee,
+      club.President);
     List<BriberyStakeOptionDto> stakeOptions = _businessRules.BuildStakeOptions(
       minAmount,
       maxAmount,
@@ -165,7 +168,10 @@ public class BriberyService(
       baseDetection,
       suspicionBefore,
       club.President);
-    decimal successChance = _businessRules.CalculateSuccessChance(request.Amount, match.Referee!);
+    decimal successChance = _businessRules.CalculateSuccessChance(
+      request.Amount,
+      match.Referee!,
+      club.President);
 
     club.Cash -= request.Amount;
     int heatApplied = _scandalSettler.ApplyHeat(club, heatAmount);

@@ -137,7 +137,10 @@ public class BriberyBusinessRules(
     }
   }
 
-  public decimal CalculateSuccessChance(decimal amount, Referee referee)
+  public decimal CalculateSuccessChance(
+    decimal amount,
+    Referee referee,
+    ClubPresident? president = null)
   {
     GameOptions options = Options;
     decimal difficulty = Math.Max(1, referee.BriberyDifficulty);
@@ -146,6 +149,12 @@ public class BriberyBusinessRules(
     if (referee.PersonalityType == RefereePersonalityType.Corruptible)
     {
       rawChance += options.BribeCorruptibleBonus;
+    }
+
+    if (president != null &&
+        ClubPresidentMoralityBusinessRules.HasShadyTierIIUnlock(president.InfamyPoints))
+    {
+      rawChance += options.BribeTierIIMaxSuccessChanceBonus;
     }
 
     if (rawChance < options.BribeMinSuccessChance)
@@ -249,6 +258,14 @@ public class BriberyBusinessRules(
   {
     (decimal low, decimal medium, decimal high) = ResolveStakeAmounts(minAmount, maxAmount);
 
+    if (president != null &&
+        ClubPresidentMoralityBusinessRules.HasShadyTierIIUnlock(president.InfamyPoints))
+    {
+      decimal multiplier = Options.BribeTierIIStakeSpanMultiplier;
+      medium = Math.Min(maxAmount, Math.Round(medium * multiplier));
+      high = Math.Min(maxAmount, Math.Round(high * multiplier));
+    }
+
     BribeStakeTier[] tiers =
     [
       BribeStakeTier.Low,
@@ -272,7 +289,7 @@ public class BriberyBusinessRules(
         Title = title,
         Description = description,
         Amount = amount,
-        SuccessChance = CalculateSuccessChance(amount, referee),
+        SuccessChance = CalculateSuccessChance(amount, referee, president),
         BaseDetectionChance = baseDetection,
         DetectionChance = CalculateDetectionChance(baseDetection, suspicion, president),
         HeatGenerated = GetHeatForTier(tier)
