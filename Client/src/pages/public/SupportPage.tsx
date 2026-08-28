@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FictionalDisclaimer } from "../../core/components/legal/FictionalDisclaimer";
 import { MaterialIcon } from "../../core/components/ui/MaterialIcon";
 
 const FAQ_ITEMS = [
@@ -19,6 +20,29 @@ const FAQ_ITEMS = [
   },
 ] as const;
 
+const MOBILE_LAUNCH_CHECKLIST = [
+  {
+    title: "IARC content rating",
+    detail:
+      "Complete the IARC questionnaire for Google Play / App Store before shipping a mobile build. Map gray-area actions, bribery, and scandal themes honestly.",
+  },
+  {
+    title: "Age gate",
+    detail:
+      "The web client now asks players to confirm they are 13+. Reuse the same minimum age and copy in native onboarding.",
+  },
+  {
+    title: "Fictional disclaimer",
+    detail:
+      "Landing, registration, support, and in-game hubs state that clubs, leagues, and press stories are invented gameplay fiction.",
+  },
+  {
+    title: "No real-world trademarks",
+    detail:
+      "Avoid real club, federation, or player names in marketing copy, demo text, and seeded content. User-created club names remain player responsibility.",
+  },
+] as const;
+
 export const SupportPage = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -34,6 +58,27 @@ export const SupportPage = () => {
         </h1>
         <p className="text-headline-md text-on-surface-variant">How can we help you?</p>
       </header>
+
+      <FictionalDisclaimer />
+
+      <section className="space-y-4 rounded-xl border border-outline-variant bg-surface-container p-6">
+        <h2 className="text-headline-sm font-bold text-on-surface">Mobile launch checklist</h2>
+        <p className="text-body-sm text-on-surface-variant">
+          Use this list when preparing store listings and compliance review for a future mobile
+          client.
+        </p>
+        <ul className="space-y-4">
+          {MOBILE_LAUNCH_CHECKLIST.map((item) => (
+            <li
+              key={item.title}
+              className="rounded-lg border border-outline-variant bg-surface-container-high p-4"
+            >
+              <h3 className="text-body-sm font-semibold text-on-surface">{item.title}</h3>
+              <p className="mt-1 text-body-sm text-on-surface-variant">{item.detail}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="flex flex-col items-center justify-center space-y-4 rounded-xl border border-outline-variant bg-surface-container-high p-8 text-center transition-colors hover:bg-surface-variant">
         <MaterialIcon name="mail" filled className="text-4xl text-secondary" />

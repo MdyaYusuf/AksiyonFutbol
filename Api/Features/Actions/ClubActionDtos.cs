@@ -50,6 +50,15 @@ public sealed class UpcomingMatchSummaryDto
   public bool IsHome { get; init; }
 }
 
+public sealed class ClubActionRequirementDto
+{
+  public string Key { get; init; } = default!;
+  public string Label { get; init; } = default!;
+  public int RequiredValue { get; init; }
+  public int CurrentValue { get; init; }
+  public bool IsMet { get; init; }
+}
+
 public sealed class ClubActionAvailabilityDto
 {
   public ClubActionType ActionType { get; init; }
@@ -64,6 +73,12 @@ public sealed class ClubActionAvailabilityDto
   public bool RequiresMatch { get; init; }
   public bool IsHonorablePower { get; init; }
   public bool RequiresShadyTierII { get; init; }
+  public ClubActionPathAffinity PathAffinity { get; init; }
+  public IReadOnlyList<ClubActionRequirementDto> Requirements { get; init; } = [];
+  public int? LegitimacyDeltaOnSuccess { get; init; }
+  public int? InfamyDeltaOnSuccess { get; init; }
+  public bool IsUnlockTeaser { get; init; }
+  public string? UnlockHint { get; init; }
   public bool IsAvailable { get; init; }
   public string? UnavailableReason { get; init; }
   public int CooldownDays { get; init; }

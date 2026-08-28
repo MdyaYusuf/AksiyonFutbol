@@ -1,7 +1,17 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
 import type { ClubActionAvailability } from "../actionTypes";
-import { formatChancePercent, getActionIcon } from "../utils/actionsHubHelpers";
+import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
+import {
+  formatChancePercent,
+  getActionIcon,
+} from "../utils/actionsHubHelpers";
+import {
+  getPathAffinityBadgeClass,
+  getPathAffinityIcon,
+  getPathAffinityLabel,
+} from "../utils/actionPresentationHelpers";
+import { ActionMoralityDeltas } from "./ActionMoralityDeltas";
+import { ActionRequirementChips } from "./ActionRequirementChips";
 
 interface ActionCardProps {
   action: ClubActionAvailability;
@@ -16,8 +26,17 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
         : `${action.cooldownDays}d`
       : "None";
 
+  const isLocked = !action.isAvailable;
+
   return (
-    <div className="flex flex-col rounded-xl border border-outline-variant bg-surface-container p-5">
+    <div
+      className={[
+        "flex flex-col rounded-xl border bg-surface-container p-5",
+        action.isUnlockTeaser
+          ? "border-dashed border-outline-variant opacity-90"
+          : "border-outline-variant",
+      ].join(" ")}
+    >
       <div className="mb-4 flex items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-outline-variant bg-surface-container-low text-primary">
           <MaterialIcon name={getActionIcon(action.actionType)} className="text-2xl" />
@@ -27,6 +46,15 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
             <h3 className="font-headline-sm text-headline-sm text-on-surface">
               {action.displayName}
             </h3>
+            <span
+              className={[
+                "inline-flex items-center gap-1 rounded border px-2 py-0.5 font-label-caps text-label-caps",
+                getPathAffinityBadgeClass(action.pathAffinity),
+              ].join(" ")}
+            >
+              <MaterialIcon name={getPathAffinityIcon(action.pathAffinity)} className="text-xs" />
+              {getPathAffinityLabel(action.pathAffinity)}
+            </span>
             {action.isShady ? (
               <span className="rounded border border-secondary/30 bg-secondary/10 px-2 py-0.5 font-label-caps text-label-caps text-secondary">
                 Gray Area
@@ -49,6 +77,14 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
         </div>
       </div>
 
+      <div className="mb-3 space-y-3">
+        <ActionRequirementChips requirements={action.requirements ?? []} />
+        <ActionMoralityDeltas
+          legitimacyDeltaOnSuccess={action.legitimacyDeltaOnSuccess}
+          infamyDeltaOnSuccess={action.infamyDeltaOnSuccess}
+        />
+      </div>
+
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Stat
           label="Cost"
@@ -68,10 +104,21 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
         />
       </div>
 
-      {!action.isAvailable ? (
-        <div className="mt-auto flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
-          <MaterialIcon name="lock" className="text-sm" />
-          {action.unavailableReason ?? "Unavailable"}
+      {isLocked ? (
+        <div className="mt-auto space-y-2">
+          {action.isUnlockTeaser && action.unlockHint ? (
+            <div className="rounded border border-primary/30 bg-primary/5 px-3 py-2 font-body-sm text-body-sm text-on-surface">
+              <div className="mb-1 flex items-center gap-2 font-label-caps text-label-caps text-primary">
+                <MaterialIcon name="auto_awesome" className="text-sm" />
+                Unlock path
+              </div>
+              {action.unlockHint}
+            </div>
+          ) : null}
+          <div className="flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
+            <MaterialIcon name="lock" className="text-sm" />
+            {action.unavailableReason ?? "Unavailable"}
+          </div>
         </div>
       ) : (
         <div className="mt-auto flex justify-end">

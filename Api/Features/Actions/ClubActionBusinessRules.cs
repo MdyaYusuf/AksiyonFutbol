@@ -259,7 +259,7 @@ public class ClubActionBusinessRules(
 
     if (!hasTierII)
     {
-      return definition.RequiresShadyTierII;
+      return false;
     }
 
     if (definition.Type == ClubActionType.Espionage)

@@ -41,6 +41,15 @@ export const ClubActionOutcome = {
 export type ClubActionOutcome =
   (typeof ClubActionOutcome)[keyof typeof ClubActionOutcome];
 
+export const ClubActionPathAffinity = {
+  Neutral: 1,
+  Honorable: 2,
+  Shady: 3,
+} as const;
+
+export type ClubActionPathAffinity =
+  (typeof ClubActionPathAffinity)[keyof typeof ClubActionPathAffinity];
+
 export const MediaSpinMode = {
   OpponentMorale: 1,
   ReputationRepair: 2,
@@ -59,6 +68,14 @@ export interface UpcomingMatchSummary {
   isHome: boolean;
 }
 
+export interface ClubActionRequirement {
+  key: string;
+  label: string;
+  requiredValue: number;
+  currentValue: number;
+  isMet: boolean;
+}
+
 export interface ClubActionAvailability {
   actionType: ClubActionType;
   category: ClubActionCategory;
@@ -72,6 +89,12 @@ export interface ClubActionAvailability {
   requiresMatch: boolean;
   isHonorablePower: boolean;
   requiresShadyTierII: boolean;
+  pathAffinity: ClubActionPathAffinity;
+  requirements: ClubActionRequirement[];
+  legitimacyDeltaOnSuccess?: number | null;
+  infamyDeltaOnSuccess?: number | null;
+  isUnlockTeaser: boolean;
+  unlockHint?: string | null;
   isAvailable: boolean;
   unavailableReason?: string | null;
   cooldownDays: number;

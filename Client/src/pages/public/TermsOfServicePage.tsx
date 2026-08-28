@@ -20,8 +20,10 @@ export const TermsOfServicePage = () => {
             <p>
               These terms govern your access to the club presidency tools, player
               databases, fixtures, and match simulation systems that constitute the
-              AksiyonFutbol experience. We reserve the right to update these terms to
-              reflect changes in our platform or legal requirements.
+              AksiyonFutbol experience. The game world, clubs, leagues, and characters
+              are fictional and are not affiliated with any real organization. We reserve
+              the right to update these terms to reflect changes in our platform or legal
+              requirements.
             </p>
           </div>
         </section>

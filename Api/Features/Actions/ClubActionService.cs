@@ -454,6 +454,19 @@ public class ClubActionService(
       ? _businessRules.GetPromiseWinBonusAmount()
       : definition.Cost;
 
+    string? unlockHint = ClubActionPresentationRules.GetUnlockHint(definition, club.President);
+    bool isUnlockTeaser = ClubActionPresentationRules.IsUnlockTeaser(definition, club.President);
+
+    if (isUnlockTeaser && isAvailable)
+    {
+      isAvailable = false;
+      unavailableReason ??= unlockHint;
+    }
+
+    (int? legitimacyDelta, int? infamyDelta) = ClubActionPresentationRules.GetSuccessMoralityPreview(
+      definition,
+      _businessRules.Options);
+
     return new ClubActionAvailabilityDto
     {
       ActionType = definition.Type,
@@ -466,10 +479,14 @@ public class ClubActionService(
       DetectionChance = detectionChance,
       IsShady = definition.IsShady,
       RequiresMatch = definition.IsMatchScoped || definition.Type == ClubActionType.PromiseWinBonus,
-      IsHonorablePower = definition.MinLegitimacy >=
-        ClubPresidentMoralityBusinessRules.HonorablePowerLegitimacyThreshold &&
-        !definition.IsShady,
+      IsHonorablePower = ClubActionPresentationRules.IsHonorablePowerAction(definition),
       RequiresShadyTierII = definition.RequiresShadyTierII,
+      PathAffinity = ClubActionPresentationRules.GetPathAffinity(definition),
+      Requirements = ClubActionPresentationRules.BuildRequirements(definition, club.President),
+      LegitimacyDeltaOnSuccess = legitimacyDelta,
+      InfamyDeltaOnSuccess = infamyDelta,
+      IsUnlockTeaser = isUnlockTeaser,
+      UnlockHint = unlockHint,
       IsAvailable = isAvailable,
       UnavailableReason = unavailableReason,
       CooldownDays = definition.CooldownDays,

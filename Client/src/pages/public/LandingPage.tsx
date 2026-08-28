@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { FictionalDisclaimer } from "../../core/components/legal/FictionalDisclaimer";
 import { MaterialIcon } from "../../core/components/ui/MaterialIcon";
 
 export const LandingPage = () => {
@@ -25,6 +26,7 @@ export const LandingPage = () => {
               decision, every transfer, and every contract negotiation shapes your
               legacy.
             </p>
+            <FictionalDisclaimer compact className="max-w-xl" />
           </div>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row">
             <Link
@@ -56,7 +58,7 @@ export const LandingPage = () => {
               <div className="flex gap-4 opacity-40">
                 <span className="w-8 text-on-surface-variant">72&apos;</span>
                 <span>
-                  Midfield interception by <span className="text-secondary">Kovacic</span>.
+                  Midfield interception by <span className="text-secondary">Demir</span>.
                 </span>
               </div>
               <div className="flex gap-4 opacity-60">

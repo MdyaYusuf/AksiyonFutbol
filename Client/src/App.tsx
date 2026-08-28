@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AgeGateModal } from "./core/components/legal/AgeGateModal";
 import { useAppDispatch } from "./core/store/hooks";
 import { authService } from "./features/auth/authService";
 import { setCredentials } from "./features/auth/authSlice";
@@ -34,6 +35,7 @@ function App() {
 
   return (
     <>
+      <AgeGateModal />
       <Outlet />
       <ToastContainer position="bottom-right" theme="dark" />
     </>

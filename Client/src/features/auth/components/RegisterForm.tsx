@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FictionalDisclaimer } from "../../../core/components/legal/FictionalDisclaimer";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { authService } from "../authService";
 import { AuthPageShell, AuthTextField } from "./AuthFormFields";
@@ -72,13 +73,15 @@ export const RegisterForm = () => {
           </p>
         </div>
 
-        <div className="mx-auto mb-8 flex w-max items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface-container-high px-4 py-2">
+        <div className="mx-auto mb-4 flex w-max items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface-container-high px-4 py-2">
           <MaterialIcon name="stars" className="text-sm text-secondary" />
           <span className="text-label-caps text-on-surface-variant">
             Starting Legitimacy:
           </span>
           <span className="font-data-mono text-data-mono font-bold text-primary">0</span>
         </div>
+
+        <FictionalDisclaimer compact className="mb-6 text-center" />
 
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
           <AuthTextField
