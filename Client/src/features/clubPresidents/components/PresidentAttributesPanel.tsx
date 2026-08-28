@@ -26,18 +26,16 @@ export const PresidentAttributesPanel = ({
           key={key}
           className={[
             "rounded border border-outline-variant bg-surface-variant text-center",
-            compact ? "px-1 py-2" : "p-3",
+            compact ? "px-0.5 py-1.5" : "p-3",
           ].join(" ")}
         >
           <div
             className={[
               "font-label-caps text-label-caps text-on-surface-variant",
-              compact ? "text-[9px]" : "",
+              compact ? "text-[10px] leading-tight" : "",
             ].join(" ")}
           >
-            {compact
-              ? PRESIDENT_ATTRIBUTE_LABELS[key].slice(0, 3)
-              : PRESIDENT_ATTRIBUTE_LABELS[key]}
+            {PRESIDENT_ATTRIBUTE_LABELS[key]}
           </div>
           <div
             className={[

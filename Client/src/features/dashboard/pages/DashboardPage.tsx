@@ -1,8 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useState } from "react";
-import { useAppSelector } from "../../../core/store/hooks";
 import { useGetCurrentUserClubPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
-import { getWinRate } from "../../clubPresidents/utils/presidentProfileHelpers";
+import { PresidentCompactSummary } from "../../clubPresidents/components/PresidentCompactSummary";
 import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { ClubLifecycleStatus } from "../../clubs/clubTypes";
 import { useGetLeagueDivisionByIdQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
@@ -19,7 +18,6 @@ import {
 import { filterCurrentSeasonMatches } from "../../matches/utils/seasonHelpers";
 import { ClubStatusCard } from "../components/ClubStatusCard";
 import { DashboardLifecycleBanner } from "../components/DashboardLifecycleBanner";
-import { DashboardPresidentHero } from "../components/DashboardPresidentHero";
 import { LeagueStandingsCard } from "../components/LeagueStandingsCard";
 import { NextMatchCard } from "../components/NextMatchCard";
 import { RecentFormCard } from "../components/RecentFormCard";
@@ -53,7 +51,6 @@ const startKickoffWakeTimer = (
 
 export const DashboardPage = () => {
   const [nowMs, setNowMs] = useState(() => Date.now());
-  const { user } = useAppSelector((state) => state.auth);
   const { data: club, isLoading: isClubLoading } = useGetCurrentUserClubQuery();
   const { data: president, isLoading: isPresidentLoading } =
     useGetCurrentUserClubPresidentQuery();
@@ -142,23 +139,22 @@ export const DashboardPage = () => {
   }
 
   const recentMatches = getRecentMatches(currentSeasonMatches);
-  const winRate = club ? getWinRate(currentSeasonMatches, club.id) : null;
+  const showNextMatch =
+    club != null && club.lifecycleStatus !== ClubLifecycleStatus.AwaitingPlacement;
 
   return (
     <div className="grid grid-cols-1 gap-card-gap md:grid-cols-8 lg:grid-cols-12">
       {club ? (
         <DashboardLifecycleBanner club={club} division={division} />
       ) : null}
-      {president ? (
-        <DashboardPresidentHero
-          president={president}
-          club={club}
-          winRate={winRate}
-          profileImageUrl={user?.profileImageUrl}
-        />
-      ) : null}
-      {club && club.lifecycleStatus !== ClubLifecycleStatus.AwaitingPlacement ? (
+      {showNextMatch ? (
         <NextMatchCard clubId={club.id} nextMatch={nextMatch} />
+      ) : null}
+      {president ? (
+        <PresidentCompactSummary
+          president={president}
+          className="col-span-1 md:col-span-4 lg:col-span-4"
+        />
       ) : null}
       <ClubStatusCard club={club} />
       <LeagueStandingsCard

@@ -1,8 +1,7 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { ProgressBar } from "../../../core/components/ui/ProgressBar";
 import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import { LegitimacyInfamyMeters } from "../../clubPresidents/components/LegitimacyInfamyMeters";
-import { PresidentAttributesPanel } from "../../clubPresidents/components/PresidentAttributesPanel";
+import { PresidentCompactSummary } from "../../clubPresidents/components/PresidentCompactSummary";
 import type { ActionsPresidentSummary } from "../actionTypes";
 import { getHeatBarColor, getHeatLabel } from "../utils/actionsHubHelpers";
 
@@ -40,38 +39,12 @@ export const ActionsHubHeader = ({
 
         <div className="flex flex-wrap gap-3">
           {president ? (
-            <div className="min-w-[280px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <div>
-                  <div className="font-label-caps text-label-caps text-on-surface-variant">
-                    President
-                  </div>
-                  <div className="font-body-sm text-body-sm font-semibold text-on-surface">
-                    {president.name}
-                  </div>
-                </div>
-              </div>
-              <PresidentAttributesPanel
-                compact
-                attributes={{
-                  charisma: president.charisma,
-                  authority: president.authority,
-                  integrity: president.integrity,
-                  cunning: president.cunning,
-                  connections: president.connections,
-                }}
-              />
-              <div className="mt-3">
-                <LegitimacyInfamyMeters
-                  compact
-                  showUnlockBadges={false}
-                  legitimacy={president.reputationPoints}
-                  infamy={president.infamyPoints}
-                  maxLegitimacy={president.maxLegitimacy}
-                  maxInfamy={president.maxInfamy}
-                />
-              </div>
-            </div>
+            <PresidentCompactSummary
+              president={president}
+              className="min-w-[280px]"
+              showUnlockBadges={false}
+              showProfileLink={false}
+            />
           ) : null}
 
           <div className="min-w-[140px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
