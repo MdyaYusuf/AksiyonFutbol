@@ -21,7 +21,8 @@ public class ClubActionService(
   ClubActionMapper _mapper,
   IUnitOfWork _unitOfWork,
   IValidator<ExecuteClubActionRequest> _executeValidator,
-  IMatchSettlementGate _settlementGate) : IClubActionService
+  IMatchSettlementGate _settlementGate,
+  IPresidentMoralitySettler _moralitySettler) : IClubActionService
 {
   public async Task<ReturnModel<ClubActionsContextResponseDto>> GetContextForCurrentUserAsync(
     Guid currentUserId,
@@ -62,17 +63,7 @@ public class ClubActionService(
       CashSpendLocked = view.CashSpendLocked,
       President = club.President == null
         ? null
-        : new ActionsPresidentSummaryDto
-        {
-          Name = club.President.Name,
-          Title = club.President.Title,
-          ReputationPoints = club.President.ReputationPoints,
-          Charisma = club.President.Charisma,
-          Authority = club.President.Authority,
-          Integrity = club.President.Integrity,
-          Cunning = club.President.Cunning,
-          Connections = club.President.Connections
-        },
+        : MapPresidentSummary(club.President),
       UpcomingMatch = upcomingMatch == null
         ? null
         : _mapper.ToUpcomingMatchSummary(upcomingMatch, club.Id),
@@ -187,6 +178,16 @@ public class ClubActionService(
     if (succeeded && definition.Category == ClubActionCategory.Squad)
     {
       ApplySquadEffects(club, definition.Type, club.President);
+    }
+
+    if (succeeded && definition.Category == ClubActionCategory.Squad && !definition.IsShady)
+    {
+      ApplyHonorableSquadLegitimacyGain(club);
+    }
+
+    if (succeeded && definition.IsShady && !wasDetected)
+    {
+      ApplyShadySuccessInfamyGain(club);
     }
 
     if (succeeded && definition.Category == ClubActionCategory.Politics)
@@ -571,7 +572,9 @@ public class ClubActionService(
     {
       case ClubActionType.MediaSpin when mediaSpinMode == MediaSpinMode.ReputationRepair:
         _businessRules.EnsurePresidentExists(club);
-        club.President!.ReputationPoints += options.MediaSpinReputationRepair;
+        _moralitySettler.ApplyLegitimacyGain(
+          club.President!,
+          options.MediaSpinReputationRepair);
         break;
       case ClubActionType.MediaSpin when mediaSpinMode == MediaSpinMode.OpponentMorale:
         if (mediaSpinOpponent == null)
@@ -584,7 +587,9 @@ public class ClubActionService(
         break;
       case ClubActionType.LobbyFederation:
         _businessRules.EnsurePresidentCanAffordLobby(club);
-        club.President!.ReputationPoints -= options.LobbyFederationReputationCost;
+        _moralitySettler.ApplyLegitimacyLoss(
+          club.President!,
+          options.LobbyFederationReputationCost);
         club.Suspicion = Math.Max(0, club.Suspicion - options.LobbyFederationSuspicionReduction);
         break;
       case ClubActionType.DodgySponsorship:
@@ -609,34 +614,39 @@ public class ClubActionService(
         club.Chemistry = ClampStatus(
           club.Chemistry + _businessRules.ScaleHonorableEffectBonus(
             options.TeamBondingChemistryBonus,
-            president));
+            president,
+            actionType));
         club.Discipline = ClampStatus(club.Discipline - options.TeamBondingDisciplinePenalty);
         break;
       case ClubActionType.FinePlayer:
         club.Discipline = ClampStatus(
           club.Discipline + _businessRules.ScaleHonorableEffectBonus(
             options.FinePlayerDisciplineBonus,
-            president));
+            president,
+            actionType));
         club.Morale = ClampStatus(club.Morale - options.FinePlayerMoralePenalty);
         break;
       case ClubActionType.MotivationalTalk:
         club.Morale = ClampStatus(
           club.Morale + _businessRules.ScaleHonorableEffectBonus(
             options.MotivationalTalkMoraleBonus,
-            president));
+            president,
+            actionType));
         break;
       case ClubActionType.BrutalTraining:
         club.Morale = ClampStatus(club.Morale - options.BrutalTrainingMoralePenalty);
         club.Discipline = ClampStatus(
           club.Discipline + _businessRules.ScaleHonorableEffectBonus(
             options.BrutalTrainingDisciplineBonus,
-            president));
+            president,
+            actionType));
         break;
       case ClubActionType.PromiseWinBonus:
         club.Morale = ClampStatus(
           club.Morale + _businessRules.ScaleHonorableEffectBonus(
             options.PromiseWinBonusMoraleBonus,
-            president));
+            president,
+            actionType));
         break;
     }
   }
@@ -680,14 +690,23 @@ public class ClubActionService(
     int moralePenalty = moraleBefore - club.Morale;
 
     int reputationPenalty = 0;
+    int infamyGain = 0;
 
-    if (club.President != null && options.ScandalReputationPenalty > 0)
+    if (club.President != null)
     {
-      int reputationBefore = club.President.ReputationPoints;
-      club.President.ReputationPoints = Math.Max(
-        0,
-        club.President.ReputationPoints - options.ScandalReputationPenalty);
-      reputationPenalty = reputationBefore - club.President.ReputationPoints;
+      if (options.ScandalReputationPenalty > 0)
+      {
+        reputationPenalty = _moralitySettler.ApplyLegitimacyLoss(
+          club.President,
+          options.ScandalReputationPenalty);
+      }
+
+      if (options.ScandalInfamyGain > 0)
+      {
+        infamyGain = _moralitySettler.ApplyInfamyGain(
+          club.President,
+          options.ScandalInfamyGain);
+      }
     }
 
     bool matchPenaltyApplied = isMatchScoped &&
@@ -698,7 +717,64 @@ public class ClubActionService(
       FineAmount = fineAmount,
       MoralePenalty = moralePenalty,
       ReputationPenalty = reputationPenalty,
+      InfamyGain = infamyGain,
       MatchPenaltyApplied = matchPenaltyApplied
+    };
+  }
+
+  private void ApplyHonorableSquadLegitimacyGain(Club club)
+  {
+    if (club.President == null)
+    {
+      return;
+    }
+
+    int gain = _businessRules.Options.HonorableSquadLegitimacyGain;
+
+    if (gain <= 0)
+    {
+      return;
+    }
+
+    _moralitySettler.ApplyLegitimacyGain(club.President, gain);
+  }
+
+  private void ApplyShadySuccessInfamyGain(Club club)
+  {
+    if (club.President == null)
+    {
+      return;
+    }
+
+    int gain = _businessRules.Options.ShadySuccessInfamyGain;
+
+    if (gain <= 0)
+    {
+      return;
+    }
+
+    _moralitySettler.ApplyInfamyGain(club.President, gain);
+  }
+
+  private static ActionsPresidentSummaryDto MapPresidentSummary(ClubPresident president)
+  {
+    return new ActionsPresidentSummaryDto
+    {
+      Name = president.Name,
+      Title = president.Title,
+      ReputationPoints = president.ReputationPoints,
+      InfamyPoints = president.InfamyPoints,
+      MaxLegitimacy = ClubPresidentMoralityBusinessRules.MaxLegitimacy,
+      MaxInfamy = ClubPresidentMoralityBusinessRules.MaxInfamy,
+      HasHonorablePowerUnlock = ClubPresidentMoralityBusinessRules.HasHonorablePowerUnlock(
+        president.ReputationPoints),
+      HasShadyTierIIUnlock = ClubPresidentMoralityBusinessRules.HasShadyTierIIUnlock(
+        president.InfamyPoints),
+      Charisma = president.Charisma,
+      Authority = president.Authority,
+      Integrity = president.Integrity,
+      Cunning = president.Cunning,
+      Connections = president.Connections
     };
   }
 

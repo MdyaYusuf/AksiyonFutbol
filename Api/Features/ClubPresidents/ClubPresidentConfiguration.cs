@@ -34,6 +34,10 @@ public class ClubPresidentConfiguration : IEntityTypeConfiguration<ClubPresident
       .HasDefaultValue(0)
       .IsRequired();
 
+    builder.Property(cp => cp.InfamyPoints)
+      .HasDefaultValue(0)
+      .IsRequired();
+
     builder.Property(cp => cp.Title)
       .HasMaxLength(50)
       .HasDefaultValue("Amateur")

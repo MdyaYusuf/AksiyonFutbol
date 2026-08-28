@@ -26,6 +26,11 @@ public sealed class ActionsPresidentSummaryDto
   public string Name { get; init; } = default!;
   public string? Title { get; init; }
   public int ReputationPoints { get; init; }
+  public int InfamyPoints { get; init; }
+  public int MaxLegitimacy { get; init; }
+  public int MaxInfamy { get; init; }
+  public bool HasHonorablePowerUnlock { get; init; }
+  public bool HasShadyTierIIUnlock { get; init; }
   public int Charisma { get; init; }
   public int Authority { get; init; }
   public int Integrity { get; init; }
@@ -94,6 +99,7 @@ public sealed class ClubActionResultDto
   public int NewChemistry { get; init; }
   public int NewDiscipline { get; init; }
   public int? NewReputationPoints { get; init; }
+  public int? NewInfamyPoints { get; init; }
   public InvestigationConsequenceDto? Investigation { get; init; }
 }
 
@@ -102,5 +108,6 @@ public sealed class InvestigationConsequenceDto
   public decimal FineAmount { get; init; }
   public int MoralePenalty { get; init; }
   public int ReputationPenalty { get; init; }
+  public int InfamyGain { get; init; }
   public bool MatchPenaltyApplied { get; init; }
 }

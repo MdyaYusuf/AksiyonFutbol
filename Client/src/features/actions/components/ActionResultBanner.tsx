@@ -44,6 +44,7 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
               {result.newReputationPoints != null
                 ? ` · Legitimacy ${result.newReputationPoints}`
                 : ""}
+              {result.newInfamyPoints != null ? ` · Infamy ${result.newInfamyPoints}` : ""}
             </p>
 
             {investigation ? (
@@ -56,6 +57,9 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
                 ) : null}
                 {investigation.reputationPenalty > 0 ? (
                   <li>Legitimacy −{investigation.reputationPenalty}</li>
+                ) : null}
+                {investigation.infamyGain > 0 ? (
+                  <li>Infamy +{investigation.infamyGain}</li>
                 ) : null}
                 {investigation.matchPenaltyApplied ? (
                   <li>Match penalty applied for the linked fixture</li>

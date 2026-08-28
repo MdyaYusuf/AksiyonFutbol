@@ -359,6 +359,54 @@ public sealed class GameOptionsValidator : IValidateOptions<GameOptions>
       failures.Add("PresidentIntegrityEffectBonusPerLevel 0 ile 10 arasında olmalıdır.");
     }
 
+    if (options.MaxLegitimacy < 1 || options.MaxLegitimacy > 1000)
+    {
+      failures.Add("MaxLegitimacy 1 ile 1000 arasında olmalıdır.");
+    }
+
+    if (options.MaxInfamy < 1 || options.MaxInfamy > 1000)
+    {
+      failures.Add("MaxInfamy 1 ile 1000 arasında olmalıdır.");
+    }
+
+    if (options.HonorablePowerLegitimacyThreshold < 0 ||
+        options.HonorablePowerLegitimacyThreshold > options.MaxLegitimacy)
+    {
+      failures.Add("HonorablePowerLegitimacyThreshold 0 ile MaxLegitimacy arasında olmalıdır.");
+    }
+
+    if (options.ShadyTierIIInfamyThreshold < 0 ||
+        options.ShadyTierIIInfamyThreshold > options.MaxInfamy)
+    {
+      failures.Add("ShadyTierIIInfamyThreshold 0 ile MaxInfamy arasında olmalıdır.");
+    }
+
+    if (options.ShadySuccessInfamyGain < 0)
+    {
+      failures.Add("ShadySuccessInfamyGain negatif olamaz.");
+    }
+
+    if (options.ScandalInfamyGain < 0)
+    {
+      failures.Add("ScandalInfamyGain negatif olamaz.");
+    }
+
+    if (options.HonorableSquadLegitimacyGain < 0)
+    {
+      failures.Add("HonorableSquadLegitimacyGain negatif olamaz.");
+    }
+
+    if (options.CleanWinLegitimacyGain < 0)
+    {
+      failures.Add("CleanWinLegitimacyGain negatif olamaz.");
+    }
+
+    if (options.PresidentInfamyPepTalkMaxEffectReduction < 0 ||
+        options.PresidentInfamyPepTalkMaxEffectReduction > 1)
+    {
+      failures.Add("PresidentInfamyPepTalkMaxEffectReduction 0 ile 1 arasında olmalıdır.");
+    }
+
     if (options.DodgySponsorshipCashGain < 0)
     {
       failures.Add("DodgySponsorshipCashGain negatif olamaz.");

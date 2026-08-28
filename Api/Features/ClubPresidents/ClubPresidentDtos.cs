@@ -8,6 +8,7 @@ public sealed record ClubPresidentResponseDto
   public string UserName { get; init; } = default!;
   public string Name { get; init; } = default!;
   public int ReputationPoints { get; init; }
+  public int InfamyPoints { get; init; }
   public string? Title { get; init; }
   public int Charisma { get; init; }
   public int Authority { get; init; }
@@ -22,6 +23,7 @@ public sealed record ClubPresidentPreviewDto
   public Guid Id { get; init; }
   public string Name { get; init; } = default!;
   public int ReputationPoints { get; init; }
+  public int InfamyPoints { get; init; }
   public string? Title { get; init; }
   public int Charisma { get; init; }
   public int Authority { get; init; }

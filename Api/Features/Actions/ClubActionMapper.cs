@@ -46,6 +46,7 @@ public class ClubActionMapper
       NewChemistry = club.Chemistry,
       NewDiscipline = club.Discipline,
       NewReputationPoints = club.President?.ReputationPoints,
+      NewInfamyPoints = club.President?.InfamyPoints,
       Investigation = investigation == null
         ? null
         : new InvestigationConsequenceDto
@@ -53,6 +54,7 @@ public class ClubActionMapper
           FineAmount = investigation.FineAmount,
           MoralePenalty = investigation.MoralePenalty,
           ReputationPenalty = investigation.ReputationPenalty,
+          InfamyGain = investigation.InfamyGain,
           MatchPenaltyApplied = investigation.MatchPenaltyApplied
         }
     };

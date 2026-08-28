@@ -19,6 +19,7 @@ import { ClubStatusCard } from "../components/ClubStatusCard";
 import { DashboardLifecycleBanner } from "../components/DashboardLifecycleBanner";
 import { LeagueStandingsCard } from "../components/LeagueStandingsCard";
 import { NextMatchCard } from "../components/NextMatchCard";
+import { PresidentIdentityBanner } from "../components/PresidentIdentityBanner";
 import { PresidentSummaryCard } from "../components/PresidentSummaryCard";
 import { RecentFormCard } from "../components/RecentFormCard";
 import { getNextMatch, getRecentMatches } from "../utils/matchHelpers";
@@ -144,6 +145,7 @@ export const DashboardPage = () => {
       {club ? (
         <DashboardLifecycleBanner club={club} division={division} />
       ) : null}
+      <PresidentIdentityBanner president={president} />
       {club && club.lifecycleStatus !== ClubLifecycleStatus.AwaitingPlacement ? (
         <NextMatchCard clubId={club.id} nextMatch={nextMatch} />
       ) : null}

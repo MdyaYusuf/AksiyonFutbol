@@ -1,9 +1,9 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
 import { resolveMediaUrl } from "../../../core/utils/mediaUrl";
 import type { ClubResponse } from "../../clubs/clubTypes";
 import type { ClubPresidentResponse } from "../clubPresidentTypes";
 import { getLegitimacyXp } from "../utils/presidentProfileHelpers";
+import { LegitimacyInfamyMeters } from "./LegitimacyInfamyMeters";
 import { PresidentAttributesPanel } from "./PresidentAttributesPanel";
 
 interface PresidentIdentityCardProps {
@@ -68,16 +68,18 @@ export const PresidentIdentityCard = ({
           }}
         />
 
+        <LegitimacyInfamyMeters
+          legitimacy={president.reputationPoints}
+          infamy={president.infamyPoints}
+        />
+
         <div className="mt-6 flex flex-wrap justify-center gap-4 md:justify-start">
           <div className="min-w-[120px] max-w-[200px] flex-1 rounded-lg border border-outline-variant bg-surface-variant p-3">
-            <p className="mb-1 text-label-caps text-on-surface-variant">Legitimacy</p>
+            <p className="mb-1 text-label-caps text-on-surface-variant">Legitimacy XP</p>
             <p className="text-stat-value text-primary">
               {legitimacyXp.toLocaleString("en-US")}{" "}
               <span className="text-sm font-normal text-on-surface-variant">XP</span>
             </p>
-            <div className="mt-2">
-              <ProgressBar value={president.reputationPoints} />
-            </div>
           </div>
 
           <div className="min-w-[120px] max-w-[200px] flex-1 rounded-lg border border-outline-variant bg-surface-variant p-3">

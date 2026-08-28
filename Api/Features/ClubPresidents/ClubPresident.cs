@@ -16,6 +16,7 @@ public class ClubPresident : Entity<Guid>
 
   public required string Name { get; set; }
   public int ReputationPoints { get; set; }
+  public int InfamyPoints { get; set; }
   public string? Title { get; set; }
 
   // Build attributes (1–5). Creation spends a fixed point budget on top of base 1.

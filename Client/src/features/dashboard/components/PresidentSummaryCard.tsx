@@ -3,6 +3,7 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { ProgressBar } from "../../../core/components/ui/ProgressBar";
 import type { ClubPresidentResponse } from "../../clubPresidents/clubPresidentTypes";
 import { PresidentAttributesPanel } from "../../clubPresidents/components/PresidentAttributesPanel";
+import { LegitimacyInfamyMeters } from "../../clubPresidents/components/LegitimacyInfamyMeters";
 import type { ClubResponse } from "../../clubs/clubTypes";
 
 interface PresidentSummaryCardProps {
@@ -39,7 +40,7 @@ export const PresidentSummaryCard = ({
       </div>
 
       {president ? (
-        <div className="mb-4">
+        <div className="mb-4 space-y-4">
           <PresidentAttributesPanel
             compact
             attributes={{
@@ -50,19 +51,16 @@ export const PresidentSummaryCard = ({
               connections: president.connections,
             }}
           />
+          <LegitimacyInfamyMeters
+            compact
+            showUnlockBadges={false}
+            legitimacy={president.reputationPoints}
+            infamy={president.infamyPoints}
+          />
         </div>
       ) : null}
 
       <div className="flex flex-1 flex-col justify-end space-y-4">
-        <div>
-          <div className="mb-1 flex justify-between">
-            <span className="text-body-sm text-on-surface-variant">Legitimacy</span>
-            <span className="font-data-mono text-data-mono text-primary">
-              {president?.reputationPoints ?? 0}/100
-            </span>
-          </div>
-          <ProgressBar value={president?.reputationPoints ?? 0} />
-        </div>
         <div>
           <div className="mb-1 flex justify-between">
             <span className="text-body-sm text-on-surface-variant">Board Confidence</span>

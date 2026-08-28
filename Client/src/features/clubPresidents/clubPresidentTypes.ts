@@ -5,6 +5,7 @@ export interface ClubPresidentResponse {
   userName: string;
   name: string;
   reputationPoints: number;
+  infamyPoints: number;
   title?: string | null;
   charisma: number;
   authority: number;
@@ -18,6 +19,7 @@ export interface ClubPresidentPreview {
   id: string;
   name: string;
   reputationPoints: number;
+  infamyPoints: number;
   title?: string | null;
   charisma: number;
   authority: number;

@@ -1,5 +1,6 @@
 using Api.Core.Repositories;
 using Api.Features.Actions;
+using Api.Features.ClubPresidents;
 using Api.Features.ClubLineups;
 using Api.Features.CompetitiveSeating;
 using Api.Features.LeagueDivisions;
@@ -15,6 +16,7 @@ public class MatchPlayService(
   IMatchSimulationService _matchSimulationService,
   IMatchInfluenceProvider _matchInfluenceProvider,
   IPromiseWinBonusSettler _promiseWinBonusSettler,
+  IPresidentMatchMoralitySettler _presidentMatchMoralitySettler,
   ITutorialGraduationService _tutorialGraduationService,
   IMatchWeekProgressService _matchWeekProgressService,
   ICompetitiveSeasonEndService _competitiveSeasonEndService,
@@ -84,6 +86,12 @@ public class MatchPlayService(
       result.AwayScore,
       cancellationToken);
 
+    await _presidentMatchMoralitySettler.SettleAfterMatchAsync(
+      match,
+      result.HomeScore,
+      result.AwayScore,
+      cancellationToken);
+
     _matchRepository.Update(match);
 
     await _tutorialGraduationService.TryGraduateAfterMatchAsync(match, cancellationToken);
@@ -111,7 +119,9 @@ public class MatchPlayService(
     return query
       .Include(m => m.Division)
       .Include(m => m.HomeClub)
+        .ThenInclude(c => c.President)
       .Include(m => m.AwayClub)
+        .ThenInclude(c => c.President)
       .Include(m => m.Referee);
   }
 }

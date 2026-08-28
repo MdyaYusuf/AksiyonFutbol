@@ -540,6 +540,11 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<int>("InfamyPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<int>("Integrity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")

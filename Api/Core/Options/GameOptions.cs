@@ -98,7 +98,18 @@ public class GameOptions
   public decimal DodgySponsorshipCashGain { get; set; } = 50000m;
   public decimal TapUpTransferFeeDiscountRatio { get; set; } = 0.15m;
 
-  // President attribute affinity (levels above 1). Infamy pep-talk tax arrives in Phase 2.
+  // President morality economy (Legitimacy stored in ReputationPoints).
+  public int MaxLegitimacy { get; set; } = 100;
+  public int MaxInfamy { get; set; } = 100;
+  public int HonorablePowerLegitimacyThreshold { get; set; } = 40;
+  public int ShadyTierIIInfamyThreshold { get; set; } = 40;
+  public int ShadySuccessInfamyGain { get; set; } = 3;
+  public int ScandalInfamyGain { get; set; } = 12;
+  public int HonorableSquadLegitimacyGain { get; set; } = 2;
+  public int CleanWinLegitimacyGain { get; set; } = 2;
+  public decimal PresidentInfamyPepTalkMaxEffectReduction { get; set; } = 0.25m;
+
+  // President attribute affinity (levels above 1).
   public decimal PresidentIntegrityHonorableSuccessBonusPerLevel { get; set; } = 0.025m;
   public decimal PresidentCunningShadySuccessBonusPerLevel { get; set; } = 0.025m;
   public decimal PresidentCunningDetectionReductionPerLevel { get; set; } = 0.02m;

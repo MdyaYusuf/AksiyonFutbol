@@ -259,7 +259,11 @@ public class ClubActionBusinessRules(
   }
 
   // Integrity boosts positive honorable squad effect sizes (levels above 1).
-  public int ScaleHonorableEffectBonus(int baseBonus, ClubPresident? president)
+  // Motivational Talk is weakened slightly at high Infamy (pep-talk tax).
+  public int ScaleHonorableEffectBonus(
+    int baseBonus,
+    ClubPresident? president,
+    ClubActionType actionType)
   {
     if (president == null || baseBonus <= 0)
     {
@@ -268,6 +272,14 @@ public class ClubActionBusinessRules(
 
     int levelsAboveBase = Math.Max(0, president.Integrity - ClubPresidentBusinessRules.AttributeMin);
     int bonus = baseBonus + levelsAboveBase * Options.PresidentIntegrityEffectBonusPerLevel;
+
+    if (actionType == ClubActionType.MotivationalTalk && president.InfamyPoints > 0)
+    {
+      decimal infamyRatio = president.InfamyPoints / (decimal)ClubPresidentMoralityBusinessRules.MaxInfamy;
+      decimal reduction = infamyRatio * Options.PresidentInfamyPepTalkMaxEffectReduction;
+      decimal multiplier = 1m - reduction;
+      bonus = (int)Math.Round(bonus * multiplier, MidpointRounding.AwayFromZero);
+    }
 
     return Math.Max(0, bonus);
   }

@@ -46,6 +46,19 @@ export const getRemainingAttributePoints = (
   return PRESIDENT_ATTRIBUTE_POINT_BUDGET - getSpentAttributePoints(attributes);
 };
 
+export const PRESIDENT_MAX_LEGITIMACY = 100;
+export const PRESIDENT_MAX_INFAMY = 100;
+export const PRESIDENT_HONORABLE_POWER_THRESHOLD = 40;
+export const PRESIDENT_SHADY_TIER_II_THRESHOLD = 40;
+
+export const hasHonorablePowerUnlock = (legitimacy: number): boolean => {
+  return legitimacy >= PRESIDENT_HONORABLE_POWER_THRESHOLD;
+};
+
+export const hasShadyTierIIUnlock = (infamy: number): boolean => {
+  return infamy >= PRESIDENT_SHADY_TIER_II_THRESHOLD;
+};
+
 export const formatMemberSince = (createdDate: string): string => {
   return parseApiDate(createdDate).toLocaleDateString("en-GB", {
     day: "2-digit",

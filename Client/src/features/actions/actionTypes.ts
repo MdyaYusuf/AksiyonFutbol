@@ -85,6 +85,11 @@ export interface ActionsPresidentSummary {
   name: string;
   title?: string | null;
   reputationPoints: number;
+  infamyPoints: number;
+  maxLegitimacy: number;
+  maxInfamy: number;
+  hasHonorablePowerUnlock: boolean;
+  hasShadyTierIIUnlock: boolean;
   charisma: number;
   authority: number;
   integrity: number;
@@ -117,6 +122,7 @@ export interface InvestigationConsequence {
   fineAmount: number;
   moralePenalty: number;
   reputationPenalty: number;
+  infamyGain: number;
   matchPenaltyApplied: boolean;
 }
 
@@ -128,6 +134,7 @@ export interface ClubActionResult {
   newChemistry: number;
   newDiscipline: number;
   newReputationPoints?: number | null;
+  newInfamyPoints?: number | null;
   investigation?: InvestigationConsequence | null;
 }
 

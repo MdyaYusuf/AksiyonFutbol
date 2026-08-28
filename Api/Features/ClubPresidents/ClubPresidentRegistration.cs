@@ -6,6 +6,9 @@ public static class ClubPresidentRegistration
   {
     services.AddScoped<IClubPresidentRepository, EfClubPresidentRepository>();
     services.AddScoped<ClubPresidentBusinessRules>();
+    services.AddScoped<ClubPresidentMoralityBusinessRules>();
+    services.AddScoped<IPresidentMoralitySettler, PresidentMoralitySettler>();
+    services.AddScoped<IPresidentMatchMoralitySettler, PresidentMatchMoralitySettler>();
     services.AddScoped<IClubPresidentService, ClubPresidentService>();
     services.AddSingleton<ClubPresidentMapper>();
 
