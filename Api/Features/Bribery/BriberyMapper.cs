@@ -21,7 +21,13 @@ public class BriberyMapper
       BriberyDifficulty = attempt.Referee.BriberyDifficulty,
       Amount = attempt.Amount,
       SuccessChance = attempt.SuccessChance,
+      DetectionChance = attempt.DetectionChance,
       Outcome = attempt.Outcome,
+      WasDetected = attempt.WasDetected,
+      HeatGenerated = attempt.HeatGenerated,
+      FineAmount = attempt.FineAmount,
+      ScandalMoralePenaltyApplied = attempt.ScandalMoralePenaltyApplied,
+      ScandalReputationPenaltyApplied = attempt.ScandalReputationPenaltyApplied,
       CreatedDate = attempt.CreatedDate
     };
   }
@@ -37,6 +43,8 @@ public class BriberyMapper
       ClubId = club.Id,
       ClubName = club.Name,
       ClubCash = club.Cash,
+      Suspicion = club.Suspicion,
+      MaxSuspicion = club.MaxSuspicion,
       CanAttempt = false,
       UnavailableReason = unavailableReason,
       MinAmount = minAmount,
@@ -52,7 +60,8 @@ public class BriberyMapper
     BribeAttemptOutcome? existingOutcome,
     decimal estimatedSuccessChance,
     decimal minAmount,
-    decimal maxAmount)
+    decimal maxAmount,
+    List<BriberyStakeOptionDto> stakeOptions)
   {
     bool isHome = match.HomeClubId == club.Id;
 
@@ -61,6 +70,8 @@ public class BriberyMapper
       ClubId = club.Id,
       ClubName = club.Name,
       ClubCash = club.Cash,
+      Suspicion = club.Suspicion,
+      MaxSuspicion = club.MaxSuspicion,
       CanAttempt = true,
       MatchId = match.Id,
       MatchWeek = match.MatchWeek,
@@ -78,9 +89,15 @@ public class BriberyMapper
       ExistingOutcome = existingOutcome,
       EstimatedSuccessChance = estimatedSuccessChance,
       MinAmount = minAmount,
-      MaxAmount = maxAmount
+      MaxAmount = maxAmount,
+      StakeOptions = stakeOptions
     };
   }
 }
 
-public sealed record ClubContext(Guid Id, string Name, decimal Cash);
+public sealed record ClubContext(
+  Guid Id,
+  string Name,
+  decimal Cash,
+  int Suspicion,
+  int MaxSuspicion);

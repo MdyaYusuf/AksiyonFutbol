@@ -1,5 +1,6 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.Matches;
 using Api.Features.Referees;
@@ -158,6 +159,142 @@ public class BriberyBusinessRules(
     }
 
     return Math.Round(rawChance, 4);
+  }
+
+  public (decimal Low, decimal Medium, decimal High) ResolveStakeAmounts(
+    decimal minAmount,
+    decimal maxAmount)
+  {
+    decimal span = maxAmount - minAmount;
+
+    return (
+      Math.Round(minAmount),
+      Math.Round(minAmount + span * 0.4m),
+      Math.Round(maxAmount));
+  }
+
+  public BribeStakeTier ResolveStakeTier(decimal amount, decimal minAmount, decimal maxAmount)
+  {
+    (decimal low, decimal medium, decimal high) = ResolveStakeAmounts(minAmount, maxAmount);
+
+    if (amount >= high)
+    {
+      return BribeStakeTier.High;
+    }
+
+    if (amount >= medium)
+    {
+      return BribeStakeTier.Medium;
+    }
+
+    return BribeStakeTier.Low;
+  }
+
+  public int GetHeatForTier(BribeStakeTier tier)
+  {
+    GameOptions options = Options;
+
+    return tier switch
+    {
+      BribeStakeTier.Low => options.BribeLowHeatGenerated,
+      BribeStakeTier.Medium => options.BribeMediumHeatGenerated,
+      BribeStakeTier.High => options.BribeHighHeatGenerated,
+      _ => options.BribeLowHeatGenerated
+    };
+  }
+
+  public decimal GetBaseDetectionForTier(BribeStakeTier tier)
+  {
+    GameOptions options = Options;
+
+    return tier switch
+    {
+      BribeStakeTier.Low => options.BribeLowBaseDetectionChance,
+      BribeStakeTier.Medium => options.BribeMediumBaseDetectionChance,
+      BribeStakeTier.High => options.BribeHighBaseDetectionChance,
+      _ => options.BribeLowBaseDetectionChance
+    };
+  }
+
+  public decimal CalculateDetectionChance(
+    decimal baseDetectionChance,
+    int currentSuspicion,
+    ClubPresident? president = null)
+  {
+    decimal scaled = ClubScandalBusinessRules.CalculateDetectionChance(
+      Options,
+      baseDetectionChance,
+      currentSuspicion);
+    scaled += GetPresidentDetectionAffinityDelta(president);
+
+    if (scaled < 0m)
+    {
+      return 0m;
+    }
+
+    if (scaled > Options.SuspicionMaxDetectionChance)
+    {
+      return Options.SuspicionMaxDetectionChance;
+    }
+
+    return Math.Round(scaled, 4);
+  }
+
+  public List<BriberyStakeOptionDto> BuildStakeOptions(
+    decimal minAmount,
+    decimal maxAmount,
+    int suspicion,
+    Referee referee,
+    ClubPresident? president)
+  {
+    (decimal low, decimal medium, decimal high) = ResolveStakeAmounts(minAmount, maxAmount);
+
+    BribeStakeTier[] tiers =
+    [
+      BribeStakeTier.Low,
+      BribeStakeTier.Medium,
+      BribeStakeTier.High
+    ];
+
+    decimal[] amounts = [low, medium, high];
+    List<BriberyStakeOptionDto> options = [];
+
+    for (int i = 0; i < tiers.Length; i++)
+    {
+      BribeStakeTier tier = tiers[i];
+      decimal amount = amounts[i];
+      decimal baseDetection = GetBaseDetectionForTier(tier);
+      (string title, string description) = BriberyStakeCatalog.GetCopy(tier);
+
+      options.Add(new BriberyStakeOptionDto
+      {
+        Tier = tier.ToString().ToLowerInvariant(),
+        Title = title,
+        Description = description,
+        Amount = amount,
+        SuccessChance = CalculateSuccessChance(amount, referee),
+        BaseDetectionChance = baseDetection,
+        DetectionChance = CalculateDetectionChance(baseDetection, suspicion, president),
+        HeatGenerated = GetHeatForTier(tier)
+      });
+    }
+
+    return options;
+  }
+
+  private decimal GetPresidentDetectionAffinityDelta(ClubPresident? president)
+  {
+    if (president == null)
+    {
+      return 0m;
+    }
+
+    GameOptions options = Options;
+    int integrityLevels = Math.Max(0, president.Integrity - ClubPresidentBusinessRules.AttributeMin);
+    int cunningLevels = Math.Max(0, president.Cunning - ClubPresidentBusinessRules.AttributeMin);
+
+    return integrityLevels * options.PresidentIntegrityShadyDetectionPenaltyPerLevel
+      - cunningLevels * options.PresidentCunningDetectionReductionPerLevel;
   }
 
   public Func<IQueryable<BribeAttempt>, IQueryable<BribeAttempt>> AttemptDetailInclude()

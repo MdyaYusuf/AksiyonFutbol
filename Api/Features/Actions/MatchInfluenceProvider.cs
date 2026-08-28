@@ -32,7 +32,8 @@ public class MatchInfluenceProvider(
     List<BribeAttempt> successfulBribes = await _bribeAttemptRepository.GetAllAsync(
       filter: a =>
         a.MatchId == matchId &&
-        a.Outcome == BribeAttemptOutcome.Succeeded,
+        a.Outcome == BribeAttemptOutcome.Succeeded &&
+        !a.WasDetected,
       cancellationToken: cancellationToken);
 
     List<ClubAction> matchActions = await _clubActionRepository.GetAllAsync(

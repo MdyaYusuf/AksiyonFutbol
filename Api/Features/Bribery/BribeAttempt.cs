@@ -12,11 +12,22 @@ public class BribeAttempt : Entity<Guid>
   public BribeAttempt()
   {
     Outcome = BribeAttemptOutcome.Failed;
+    WasDetected = false;
+    HeatGenerated = 0;
+    FineAmount = 0m;
+    ScandalMoralePenaltyApplied = 0;
+    ScandalReputationPenaltyApplied = 0;
   }
 
   public decimal Amount { get; set; }
   public decimal SuccessChance { get; set; }
+  public decimal DetectionChance { get; set; }
   public BribeAttemptOutcome Outcome { get; set; }
+  public bool WasDetected { get; set; }
+  public int HeatGenerated { get; set; }
+  public decimal FineAmount { get; set; }
+  public int ScandalMoralePenaltyApplied { get; set; }
+  public int ScandalReputationPenaltyApplied { get; set; }
 
   public Guid ClubId { get; set; }
   public Guid MatchId { get; set; }

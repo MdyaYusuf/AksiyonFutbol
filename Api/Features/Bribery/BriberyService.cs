@@ -1,6 +1,8 @@
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
+using Api.Features.LeaguePress;
 using Api.Features.Matches;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,10 @@ public class BriberyService(
   BriberyMapper _mapper,
   IUnitOfWork _unitOfWork,
   IValidator<CreateBribeAttemptRequest> _createValidator,
-  IMatchSettlementGate _settlementGate) : IBriberyService
+  IMatchSettlementGate _settlementGate,
+  IClubScandalSettler _scandalSettler,
+  IPresidentMoralitySettler _moralitySettler,
+  ILeaguePressEventPublisher _pressPublisher) : IBriberyService
 {
   public async Task<ReturnModel<BriberyContextResponseDto>> GetContextForCurrentUserAsync(
     Guid currentUserId,
@@ -22,10 +27,16 @@ public class BriberyService(
   {
     Club club = await _businessRules.GetClubByUserIdIfExistAsync(
       currentUserId,
+      include: query => query.Include(c => c.President),
       cancellationToken: cancellationToken);
 
     ClubPublicView view = await _settlementGate.GetPublicViewAsync(club, cancellationToken);
-    ClubContext clubContext = new(club.Id, club.DisplayName, view.Cash);
+    ClubContext clubContext = new(
+      club.Id,
+      club.DisplayName,
+      view.Cash,
+      club.Suspicion,
+      _businessRules.Options.MaxSuspicion);
     decimal minAmount = _businessRules.Options.BribeMinAmount;
     decimal maxAmount = _businessRules.Options.BribeMaxAmount;
 
@@ -88,6 +99,12 @@ public class BriberyService(
       maxAmount);
 
     decimal estimatedChance = _businessRules.CalculateSuccessChance(previewAmount, match.Referee);
+    List<BriberyStakeOptionDto> stakeOptions = _businessRules.BuildStakeOptions(
+      minAmount,
+      maxAmount,
+      club.Suspicion,
+      match.Referee,
+      club.President);
 
     BriberyContextResponseDto response = _mapper.ToContextDto(
       clubContext,
@@ -97,7 +114,8 @@ public class BriberyService(
       existingOutcome: existing?.Outcome,
       estimatedSuccessChance: estimatedChance,
       minAmount: minAmount,
-      maxAmount: maxAmount);
+      maxAmount: maxAmount,
+      stakeOptions: stakeOptions);
 
     return new ReturnModel<BriberyContextResponseDto>()
     {
@@ -133,10 +151,48 @@ public class BriberyService(
     await _businessRules.EnsureNoExistingAttemptAsync(club.Id, match.Id, cancellationToken);
     _businessRules.ClubMustAffordBribe(club, request.Amount);
 
+    decimal minAmount = _businessRules.Options.BribeMinAmount;
+    decimal maxAmount = _businessRules.Options.BribeMaxAmount;
+    BribeStakeTier stakeTier = _businessRules.ResolveStakeTier(
+      request.Amount,
+      minAmount,
+      maxAmount);
+    int heatAmount = _businessRules.GetHeatForTier(stakeTier);
+    decimal baseDetection = _businessRules.GetBaseDetectionForTier(stakeTier);
+
+    int suspicionBefore = club.Suspicion;
+    decimal detectionChance = _businessRules.CalculateDetectionChance(
+      baseDetection,
+      suspicionBefore,
+      club.President);
     decimal successChance = _businessRules.CalculateSuccessChance(request.Amount, match.Referee!);
-    bool succeeded = Random.Shared.NextDouble() <= (double)successChance;
 
     club.Cash -= request.Amount;
+    int heatApplied = _scandalSettler.ApplyHeat(club, heatAmount);
+
+    bool succeeded = Random.Shared.NextDouble() <= (double)successChance;
+    bool wasDetected = Random.Shared.NextDouble() <= (double)detectionChance;
+
+    ClubScandalConsequence? scandal = null;
+
+    if (succeeded && !wasDetected)
+    {
+      ApplyShadySuccessInfamyGain(club);
+    }
+
+    if (wasDetected)
+    {
+      scandal = _scandalSettler.ApplyScandal(club);
+
+      await _pressPublisher.PublishAsync(
+        new LeaguePressEvent(
+          LeaguePressEventType.ScandalDetected,
+          club.Id,
+          match.Id,
+          "scandal.bribery.detected"),
+        cancellationToken);
+    }
+
     _clubRepository.Update(club);
 
     BribeAttempt attempt = new()
@@ -146,7 +202,13 @@ public class BriberyService(
       RefereeId = match.RefereeId!.Value,
       Amount = request.Amount,
       SuccessChance = successChance,
-      Outcome = succeeded ? BribeAttemptOutcome.Succeeded : BribeAttemptOutcome.Failed
+      DetectionChance = detectionChance,
+      Outcome = succeeded ? BribeAttemptOutcome.Succeeded : BribeAttemptOutcome.Failed,
+      WasDetected = wasDetected,
+      HeatGenerated = heatApplied,
+      FineAmount = scandal?.FineAmount ?? 0m,
+      ScandalMoralePenaltyApplied = scandal?.MoralePenalty ?? 0,
+      ScandalReputationPenaltyApplied = scandal?.ReputationPenalty ?? 0
     };
 
     await _bribeAttemptRepository.AddAsync(attempt, cancellationToken);
@@ -158,9 +220,7 @@ public class BriberyService(
       cancellationToken: cancellationToken)
       ?? attempt;
 
-    string message = succeeded
-      ? "Yaklaşım başarılı oldu. Hakem maçta kulübünüzü kayırabilir."
-      : "Yaklaşım başarısız oldu. Ödenen tutar kasadan düşüldü.";
+    string message = BuildResultMessage(succeeded, wasDetected);
 
     return new ReturnModel<BribeAttemptResponseDto>()
     {
@@ -196,5 +256,39 @@ public class BriberyService(
       Data = response,
       StatusCode = 200
     };
+  }
+
+  private void ApplyShadySuccessInfamyGain(Club club)
+  {
+    if (club.President == null)
+    {
+      return;
+    }
+
+    int gain = _businessRules.Options.ShadySuccessInfamyGain;
+
+    if (gain <= 0)
+    {
+      return;
+    }
+
+    _moralitySettler.ApplyInfamyGain(club.President, gain);
+  }
+
+  private static string BuildResultMessage(bool succeeded, bool wasDetected)
+  {
+    if (wasDetected)
+    {
+      return succeeded
+        ? "Yaklaşım başarılı oldu ancak yakalandınız. Soruşturma sonuçları uygulandı."
+        : "Yaklaşım başarısız oldu ve yakalandınız. Soruşturma sonuçları uygulandı.";
+    }
+
+    if (succeeded)
+    {
+      return "Yaklaşım başarılı oldu. Hakem maçta kulübünüzü kayırabilir.";
+    }
+
+    return "Yaklaşım başarısız oldu. Ödenen tutar kasadan düşüldü.";
   }
 }

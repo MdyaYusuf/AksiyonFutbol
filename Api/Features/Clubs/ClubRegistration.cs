@@ -8,6 +8,7 @@ public static class ClubRegistration
     services.AddScoped<ClubBusinessRules>();
     services.AddScoped<IStarterSquadService, StarterSquadService>();
     services.AddScoped<IClubService, ClubService>();
+    services.AddScoped<IClubScandalSettler, ClubScandalSettler>();
     services.AddSingleton<ClubMapper>();
 
     return services;

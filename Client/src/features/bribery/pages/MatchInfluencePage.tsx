@@ -71,6 +71,7 @@ export const MatchInfluencePage = () => {
       title: selectedOption.title,
       successChance: selectedOption.successChance,
       detectionChance: selectedOption.detectionChance,
+      heatGenerated: selectedOption.heatGenerated,
       refereeName: context.refereeName ?? "",
       refereePersonality: context.refereePersonality ?? "",
       matchWeek: context.matchWeek ?? 0,
@@ -148,9 +149,9 @@ export const MatchInfluencePage = () => {
       <div className="mt-2 flex items-start gap-3 rounded-lg border border-secondary/30 bg-surface-variant p-4">
         <MaterialIcon name="error" className="mt-0.5 text-secondary" />
         <p className="font-body-sm text-body-sm text-on-surface-variant">
-          <span className="font-bold text-secondary">Warning:</span> Failed approaches may
-          damage standing and finances. League scrutiny could mean fines, point deductions,
-          or bans — all in-game fiction.
+          <span className="font-bold text-secondary">Note:</span> Every approach adds club
+          heat and carries a detection roll. Getting caught triggers fines, morale loss,
+          and Legitimacy damage — all in-game fiction.
         </p>
       </div>
 

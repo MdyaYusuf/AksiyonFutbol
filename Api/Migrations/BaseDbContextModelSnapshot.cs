@@ -370,6 +370,17 @@ namespace AksiyonFutbol.Api.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("CreatedDate");
 
+                    b.Property<decimal>("DetectionChance")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<decimal>("FineAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("HeatGenerated")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("MatchId")
                         .HasColumnType("uniqueidentifier");
 
@@ -379,6 +390,12 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<int>("RefereeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ScandalMoralePenaltyApplied")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScandalReputationPenaltyApplied")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("SuccessChance")
                         .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
@@ -386,6 +403,9 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UpdatedDate");
+
+                    b.Property<bool>("WasDetected")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

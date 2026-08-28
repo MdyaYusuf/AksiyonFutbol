@@ -214,7 +214,10 @@ public class ClubActionBusinessRules(
     }
 
     GameOptions options = Options;
-    decimal scaled = definition.BaseDetectionChance + currentSuspicion * options.SuspicionDetectionScale;
+    decimal scaled = ClubScandalBusinessRules.CalculateDetectionChance(
+      options,
+      definition.BaseDetectionChance,
+      currentSuspicion);
     scaled += GetPresidentDetectionAffinityDelta(definition, president);
 
     if (scaled < 0m)

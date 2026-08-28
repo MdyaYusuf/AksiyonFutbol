@@ -1,9 +1,9 @@
-namespace Api.Features.Actions;
+namespace Api.Features.Clubs;
 
 /// <summary>
-/// Result of applying investigation consequences after a shady action is detected.
+/// Result of applying scandal consequences after a gray-area move is detected.
 /// </summary>
-public sealed class InvestigationConsequence
+public sealed class ClubScandalConsequence
 {
   public decimal FineAmount { get; init; }
   public int MoralePenalty { get; init; }

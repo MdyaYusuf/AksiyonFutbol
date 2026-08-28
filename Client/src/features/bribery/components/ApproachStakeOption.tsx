@@ -64,6 +64,12 @@ export const ApproachStakeOption = ({
         ) : (
           <div className="mt-2 flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-1">
+              <MaterialIcon name="local_fire_department" className="text-[16px] text-secondary" />
+              <span className="font-label-caps text-label-caps text-on-surface-variant">
+                Heat: +{option.heatGenerated}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
               <MaterialIcon name="check_circle" className="text-[16px] text-primary" />
               <span className="font-label-caps text-label-caps text-on-surface-variant">
                 Success: {formatChancePercent(option.successChance)}

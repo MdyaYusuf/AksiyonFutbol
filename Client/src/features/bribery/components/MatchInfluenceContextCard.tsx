@@ -18,6 +18,10 @@ export const MatchInfluenceContextCard = ({
   const personality = context.refereePersonality ?? "";
   const difficultyLabel = getDifficultyLabel(difficulty);
   const difficultyPercent = Math.min(100, Math.max(0, difficulty));
+  const heatPercent = Math.min(
+    100,
+    Math.max(0, (context.suspicion / Math.max(1, context.maxSuspicion)) * 100),
+  );
 
   return (
     <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-high">
@@ -33,6 +37,26 @@ export const MatchInfluenceContextCard = ({
         <span className="rounded border border-outline-variant bg-surface px-3 py-1 font-data-mono text-data-mono text-on-surface-variant">
           {context.matchDate ? formatInfluenceMatchDate(context.matchDate) : "—"}
         </span>
+      </div>
+
+      <div className="border-b border-outline-variant px-6 py-4">
+        <div className="mb-2 flex items-end justify-between">
+          <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
+            Club Heat
+          </span>
+          <span className="font-data-mono text-data-mono text-secondary">
+            {context.suspicion} / {context.maxSuspicion}
+          </span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full border border-outline-variant bg-surface">
+          <div
+            className="h-full bg-secondary"
+            style={{ width: `${heatPercent}%` }}
+          />
+        </div>
+        <p className="mt-2 font-body-sm text-body-sm text-on-surface-variant">
+          Higher heat raises detection odds on every gray-area move.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">

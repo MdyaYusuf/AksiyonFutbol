@@ -1,5 +1,6 @@
 using Api.Core.Options;
 using Api.Features.Actions;
+using Api.Features.Bribery;
 using Api.Features.Clubs;
 using Api.Features.Matches;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,7 @@ public interface IPresidentMatchMoralitySettler
 
 public class PresidentMatchMoralitySettler(
   IClubActionRepository _clubActionRepository,
+  IBribeAttemptRepository _bribeAttemptRepository,
   IPresidentMoralitySettler _moralitySettler,
   IOptions<GameOptions> _gameOptions) : IPresidentMatchMoralitySettler
 {
@@ -60,6 +62,16 @@ public class PresidentMatchMoralitySettler(
         a.ClubId == winnerClubId &&
         a.WasDetected,
       cancellationToken);
+
+    if (!hadDetectedScandal)
+    {
+      hadDetectedScandal = await _bribeAttemptRepository.AnyAsync(
+        a =>
+          a.MatchId == match.Id &&
+          a.ClubId == winnerClubId &&
+          a.WasDetected,
+        cancellationToken);
+    }
 
     if (hadDetectedScandal)
     {

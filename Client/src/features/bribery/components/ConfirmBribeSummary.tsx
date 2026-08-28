@@ -42,6 +42,22 @@ export const ConfirmBribeSummary = ({ state }: ConfirmBribeSummaryProps) => {
           {formatChancePercent(state.successChance)}
         </span>
       </div>
+      <div>
+        <span className="mb-1 block font-label-caps text-label-caps text-on-surface-variant">
+          Heat
+        </span>
+        <span className="font-data-mono text-data-mono text-secondary">
+          +{state.heatGenerated}
+        </span>
+      </div>
+      <div>
+        <span className="mb-1 block font-label-caps text-label-caps text-on-surface-variant">
+          Detection %
+        </span>
+        <span className="font-data-mono text-data-mono text-error">
+          {formatChancePercent(state.detectionChance)}
+        </span>
+      </div>
     </div>
   );
 };
@@ -57,8 +73,8 @@ export const ConfirmBribeRiskNote = ({ title }: ConfirmBribeRiskNoteProps) => {
       <div>
         <h3 className="mb-1 font-headline-sm text-headline-sm text-error">{title}</h3>
         <p className="font-body-sm text-body-sm text-error/80">
-          A quiet word with the official in a high-profile fixture carries real exposure risk.
-          Getting caught could mean a fine, point deduction, or ban — all in-game fiction.
+          Detection triggers a scandal: cash fine, squad morale hit, Legitimacy loss, and
+          Infamy gain. All consequences are in-game fiction.
         </p>
       </div>
     </div>

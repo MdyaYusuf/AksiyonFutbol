@@ -7,6 +7,32 @@ const BRIBE_MIN_SUCCESS_CHANCE = 0.05;
 const BRIBE_MAX_SUCCESS_CHANCE = 0.85;
 const BRIBE_CORRUPTIBLE_BONUS = 0.15;
 
+const BRIBE_LOW_HEAT = 8;
+const BRIBE_MEDIUM_HEAT = 20;
+const BRIBE_HIGH_HEAT = 35;
+const BRIBE_LOW_BASE_DETECTION = 0.05;
+const BRIBE_MEDIUM_BASE_DETECTION = 0.25;
+const BRIBE_HIGH_BASE_DETECTION = 0.6;
+const SUSPICION_DETECTION_SCALE = 0.005;
+const SUSPICION_MAX_DETECTION = 0.95;
+
+export const scaleDetectionChance = (
+  baseDetectionChance: number,
+  suspicion: number,
+): number => {
+  let scaled = baseDetectionChance + suspicion * SUSPICION_DETECTION_SCALE;
+
+  if (scaled < 0) {
+    return 0;
+  }
+
+  if (scaled > SUSPICION_MAX_DETECTION) {
+    return SUSPICION_MAX_DETECTION;
+  }
+
+  return Math.round(scaled * 10000) / 10000;
+};
+
 export const estimateSuccessChance = (
   amount: number,
   difficulty: number,
@@ -30,7 +56,7 @@ export const estimateSuccessChance = (
   return Math.round(chance * 10000) / 10000;
 };
 
-export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] => {
+const buildLocalStakeOptions = (context: BriberyContext): BribeStakeOption[] => {
   if (
     !context.canAttempt ||
     context.briberyDifficulty == null ||
@@ -44,6 +70,7 @@ export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] =
   const min = context.minAmount;
   const max = Math.max(min, context.maxAmount);
   const span = max - min;
+  const suspicion = context.suspicion ?? 0;
 
   const lowAmount = Math.round(min);
   const mediumAmount = Math.round(min + span * 0.4);
@@ -54,38 +81,67 @@ export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] =
     title: string;
     description: string;
     amount: number;
-    detectionChance: number;
+    baseDetectionChance: number;
+    heatGenerated: number;
   }[] = [
     {
       tier: "low",
       title: "Quiet Word",
       description:
-        "Low risk. Soft nudges on midfield calls. Unlikely to swing major decisions.",
+        "Low exposure. Soft nudges on midfield calls. Unlikely to swing major decisions.",
       amount: lowAmount,
-      detectionChance: 0.05,
+      baseDetectionChance: BRIBE_LOW_BASE_DETECTION,
+      heatGenerated: BRIBE_LOW_HEAT,
     },
     {
       tier: "medium",
       title: "Preparation Edge",
       description:
-        "Medium risk. Clearer leniency on cards for your side, firmer calls against the opponent.",
+        "Moderate exposure. Clearer leniency on cards for your side, firmer calls against the opponent.",
       amount: mediumAmount,
-      detectionChance: 0.25,
+      baseDetectionChance: BRIBE_MEDIUM_BASE_DETECTION,
+      heatGenerated: BRIBE_MEDIUM_HEAT,
     },
     {
       tier: "high",
       title: "Full Arrangement",
       description:
-        "High risk. Strong tilt on critical moments — spot kicks, dismissals, and late drama.",
+        "High exposure. Strong tilt on critical moments — spot kicks, dismissals, and late drama.",
       amount: highAmount,
-      detectionChance: 0.6,
+      baseDetectionChance: BRIBE_HIGH_BASE_DETECTION,
+      heatGenerated: BRIBE_HIGH_HEAT,
     },
   ];
 
   return defs.map((def) => ({
     ...def,
     successChance: estimateSuccessChance(def.amount, difficulty, personality),
+    detectionChance: scaleDetectionChance(def.baseDetectionChance, suspicion),
   }));
+};
+
+export const buildStakeOptions = (context: BriberyContext): BribeStakeOption[] => {
+  if (context.stakeOptions?.length) {
+    return context.stakeOptions.map((option) => ({
+      tier: option.tier,
+      title: option.title,
+      description: option.description,
+      amount: option.amount,
+      successChance: option.successChance,
+      baseDetectionChance: option.baseDetectionChance,
+      detectionChance: option.detectionChance,
+      heatGenerated: option.heatGenerated,
+    }));
+  }
+
+  return buildLocalStakeOptions(context);
+};
+
+export const getPreviewStakeOption = (
+  context: BriberyContext,
+): BribeStakeOption | null => {
+  const options = buildStakeOptions(context);
+  return options.find((option) => option.tier === "medium") ?? options[0] ?? null;
 };
 
 export const getDifficultyLabel = (difficulty: number): string => {

@@ -31,6 +31,26 @@ public class BribeAttemptConfiguration : IEntityTypeConfiguration<BribeAttempt>
       .HasPrecision(5, 4)
       .IsRequired();
 
+    builder.Property(a => a.DetectionChance)
+      .HasPrecision(5, 4)
+      .IsRequired();
+
+    builder.Property(a => a.WasDetected)
+      .IsRequired();
+
+    builder.Property(a => a.HeatGenerated)
+      .IsRequired();
+
+    builder.Property(a => a.FineAmount)
+      .HasPrecision(18, 2)
+      .IsRequired();
+
+    builder.Property(a => a.ScandalMoralePenaltyApplied)
+      .IsRequired();
+
+    builder.Property(a => a.ScandalReputationPenaltyApplied)
+      .IsRequired();
+
     builder.Property(a => a.Outcome)
       .HasConversion<int>()
       .IsRequired();

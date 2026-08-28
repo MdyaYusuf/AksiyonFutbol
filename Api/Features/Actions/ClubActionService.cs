@@ -4,6 +4,7 @@ using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
+using Api.Features.LeaguePress;
 using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
@@ -22,7 +23,9 @@ public class ClubActionService(
   IUnitOfWork _unitOfWork,
   IValidator<ExecuteClubActionRequest> _executeValidator,
   IMatchSettlementGate _settlementGate,
-  IPresidentMoralitySettler _moralitySettler) : IClubActionService
+  IPresidentMoralitySettler _moralitySettler,
+  IClubScandalSettler _scandalSettler,
+  ILeaguePressEventPublisher _pressPublisher) : IClubActionService
 {
   public async Task<ReturnModel<ClubActionsContextResponseDto>> GetContextForCurrentUserAsync(
     Guid currentUserId,
@@ -170,7 +173,7 @@ public class ClubActionService(
       club.President);
 
     club.Cash -= definition.Cost;
-    int heatApplied = ApplyHeat(club, definition);
+    int heatApplied = _scandalSettler.ApplyHeat(club, definition.IsShady ? definition.HeatGenerated : 0);
 
     bool succeeded = Random.Shared.NextDouble() <= (double)successChance;
     bool wasDetected = definition.IsShady && Random.Shared.NextDouble() <= (double)detectionChance;
@@ -199,14 +202,22 @@ public class ClubActionService(
         mediaSpinOpponent);
     }
 
-    InvestigationConsequence? investigation = null;
+    ClubScandalConsequence? investigation = null;
 
     if (wasDetected)
     {
-      investigation = ApplyDetectionConsequences(
-        club,
-        definition.Type,
-        definition.IsMatchScoped);
+      bool matchPenaltyApplied = definition.IsMatchScoped &&
+        (definition.Type == ClubActionType.Doping || definition.Type == ClubActionType.MatchFixing);
+
+      investigation = _scandalSettler.ApplyScandal(club, matchPenaltyApplied);
+
+      await _pressPublisher.PublishAsync(
+        new LeaguePressEvent(
+          LeaguePressEventType.ScandalDetected,
+          club.Id,
+          match?.Id,
+          "scandal.action.detected"),
+        cancellationToken);
     }
 
     _clubRepository.Update(club);
@@ -651,76 +662,7 @@ public class ClubActionService(
     }
   }
 
-  private int ApplyHeat(Club club, ClubActionDefinition definition)
-  {
-    if (!definition.IsShady || definition.HeatGenerated <= 0)
-    {
-      return 0;
-    }
-
-    int newSuspicion = Math.Clamp(
-      club.Suspicion + definition.HeatGenerated,
-      0,
-      _businessRules.Options.MaxSuspicion);
-
-    int applied = newSuspicion - club.Suspicion;
-    club.Suspicion = newSuspicion;
-
-    return applied;
-  }
-
-  private InvestigationConsequence ApplyDetectionConsequences(
-    Club club,
-    ClubActionType actionType,
-    bool isMatchScoped)
-  {
-    GameOptions options = _businessRules.Options;
-
-    decimal fineAmount = Math.Round(club.Cash * options.ScandalFineCashRatio, 2);
-
-    if (fineAmount < 0m)
-    {
-      fineAmount = 0m;
-    }
-
-    club.Cash = Math.Max(0m, club.Cash - fineAmount);
-
-    int moraleBefore = club.Morale;
-    club.Morale = ClampStatus(club.Morale - options.ScandalMoralePenalty);
-    int moralePenalty = moraleBefore - club.Morale;
-
-    int reputationPenalty = 0;
-    int infamyGain = 0;
-
-    if (club.President != null)
-    {
-      if (options.ScandalReputationPenalty > 0)
-      {
-        reputationPenalty = _moralitySettler.ApplyLegitimacyLoss(
-          club.President,
-          options.ScandalReputationPenalty);
-      }
-
-      if (options.ScandalInfamyGain > 0)
-      {
-        infamyGain = _moralitySettler.ApplyInfamyGain(
-          club.President,
-          options.ScandalInfamyGain);
-      }
-    }
-
-    bool matchPenaltyApplied = isMatchScoped &&
-      (actionType == ClubActionType.Doping || actionType == ClubActionType.MatchFixing);
-
-    return new InvestigationConsequence
-    {
-      FineAmount = fineAmount,
-      MoralePenalty = moralePenalty,
-      ReputationPenalty = reputationPenalty,
-      InfamyGain = infamyGain,
-      MatchPenaltyApplied = matchPenaltyApplied
-    };
-  }
+  private static int ClampStatus(int value) => Math.Clamp(value, 0, 100);
 
   private void ApplyHonorableSquadLegitimacyGain(Club club)
   {
@@ -777,8 +719,6 @@ public class ClubActionService(
       Connections = president.Connections
     };
   }
-
-  private static int ClampStatus(int value) => Math.Clamp(value, 0, 100);
 
   private async Task<Guid> ValidateTapUpTargetAsync(
     Guid clubId,

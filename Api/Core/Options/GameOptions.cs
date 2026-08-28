@@ -65,6 +65,12 @@ public class GameOptions
   public decimal BribeCorruptibleBonus { get; set; } = 0.15m;
   public decimal BribeFavoredGoalMultiplier { get; set; } = 1.18m;
   public decimal BribeOpponentGoalMultiplier { get; set; } = 0.90m;
+  public int BribeLowHeatGenerated { get; set; } = 8;
+  public decimal BribeLowBaseDetectionChance { get; set; } = 0.05m;
+  public int BribeMediumHeatGenerated { get; set; } = 20;
+  public decimal BribeMediumBaseDetectionChance { get; set; } = 0.25m;
+  public int BribeHighHeatGenerated { get; set; } = 35;
+  public decimal BribeHighBaseDetectionChance { get; set; } = 0.60m;
 
   // Match-scoped ClubAction effect sizes consumed by MatchInfluence / the sim.
   public decimal MatchFixingOpponentGoalMultiplier { get; set; } = 0.85m;

@@ -4,11 +4,25 @@ public sealed record CreateBribeAttemptRequest(
   Guid? MatchId,
   decimal Amount);
 
+public sealed class BriberyStakeOptionDto
+{
+  public string Tier { get; init; } = default!;
+  public string Title { get; init; } = default!;
+  public string Description { get; init; } = default!;
+  public decimal Amount { get; init; }
+  public decimal SuccessChance { get; init; }
+  public decimal BaseDetectionChance { get; init; }
+  public decimal DetectionChance { get; init; }
+  public int HeatGenerated { get; init; }
+}
+
 public sealed class BriberyContextResponseDto
 {
   public Guid ClubId { get; init; }
   public string ClubName { get; init; } = default!;
   public decimal ClubCash { get; init; }
+  public int Suspicion { get; init; }
+  public int MaxSuspicion { get; init; }
   public bool CanAttempt { get; init; }
   public string? UnavailableReason { get; init; }
   public Guid? MatchId { get; init; }
@@ -28,6 +42,7 @@ public sealed class BriberyContextResponseDto
   public decimal EstimatedSuccessChance { get; init; }
   public decimal MinAmount { get; init; }
   public decimal MaxAmount { get; init; }
+  public List<BriberyStakeOptionDto> StakeOptions { get; init; } = [];
 }
 
 public sealed class BribeAttemptResponseDto
@@ -44,6 +59,12 @@ public sealed class BribeAttemptResponseDto
   public int BriberyDifficulty { get; init; }
   public decimal Amount { get; init; }
   public decimal SuccessChance { get; init; }
+  public decimal DetectionChance { get; init; }
   public BribeAttemptOutcome Outcome { get; init; }
+  public bool WasDetected { get; init; }
+  public int HeatGenerated { get; init; }
+  public decimal FineAmount { get; init; }
+  public int ScandalMoralePenaltyApplied { get; init; }
+  public int ScandalReputationPenaltyApplied { get; init; }
   public DateTime CreatedDate { get; init; }
 }

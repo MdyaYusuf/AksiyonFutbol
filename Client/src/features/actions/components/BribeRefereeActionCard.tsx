@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
 import type { BriberyContext } from "../../bribery/briberyTypes";
 import { BribeAttemptOutcome } from "../../bribery/briberyTypes";
-import { formatChancePercent } from "../../bribery/utils/matchInfluenceHelpers";
+import {
+  formatChancePercent,
+  getPreviewStakeOption,
+} from "../../bribery/utils/matchInfluenceHelpers";
 
 interface BribeRefereeActionCardProps {
   briberyContext?: BriberyContext;
@@ -17,6 +19,7 @@ export const BribeRefereeActionCard = ({
   const alreadyAttempted = briberyContext?.alreadyAttempted ?? false;
   const canAttempt = briberyContext?.canAttempt ?? false;
   const canOpen = canAttempt && !alreadyAttempted;
+  const previewStake = briberyContext ? getPreviewStakeOption(briberyContext) : null;
 
   const outcomeLabel =
     briberyContext?.existingOutcome === BribeAttemptOutcome.Succeeded
@@ -42,7 +45,7 @@ export const BribeRefereeActionCard = ({
           </div>
           <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
             Quietly sound out the match official for friendlier decisions. Success tilts
-            scoring odds your way.
+            scoring odds your way — but scrutiny rises with every push.
           </p>
         </div>
       </div>
@@ -52,16 +55,27 @@ export const BribeRefereeActionCard = ({
         <Stat
           label="Success"
           value={
-            canAttempt
-              ? formatChancePercent(briberyContext!.estimatedSuccessChance)
+            canAttempt && previewStake
+              ? formatChancePercent(previewStake.successChance)
+              : canAttempt
+                ? formatChancePercent(briberyContext!.estimatedSuccessChance)
+                : "—"
+          }
+        />
+        <Stat
+          label="Heat"
+          value={
+            previewStake && previewStake.heatGenerated > 0
+              ? `+${previewStake.heatGenerated}`
               : "—"
           }
         />
-        <Stat label="Heat" value="Via detection" />
         <Stat
-          label="Cash"
+          label="Detection"
           value={
-            briberyContext ? formatCashFull(briberyContext.clubCash) : "—"
+            previewStake
+              ? formatChancePercent(previewStake.detectionChance)
+              : "—"
           }
         />
       </div>

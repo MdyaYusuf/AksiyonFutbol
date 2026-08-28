@@ -35,7 +35,7 @@ public class ClubActionMapper
   public ClubActionResultDto ToResultDto(
     ClubAction action,
     Club club,
-    InvestigationConsequence? investigation = null)
+    ClubScandalConsequence? investigation = null)
   {
     return new ClubActionResultDto
     {

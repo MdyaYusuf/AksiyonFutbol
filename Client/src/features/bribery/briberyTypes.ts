@@ -8,10 +8,23 @@ export type BribeAttemptOutcome =
 
 export type BribeStakeTier = "low" | "medium" | "high";
 
+export interface BriberyStakeOptionDto {
+  tier: BribeStakeTier;
+  title: string;
+  description: string;
+  amount: number;
+  successChance: number;
+  baseDetectionChance: number;
+  detectionChance: number;
+  heatGenerated: number;
+}
+
 export interface BriberyContext {
   clubId: string;
   clubName: string;
   clubCash: number;
+  suspicion: number;
+  maxSuspicion: number;
   canAttempt: boolean;
   unavailableReason?: string | null;
   matchId?: string | null;
@@ -31,6 +44,7 @@ export interface BriberyContext {
   estimatedSuccessChance: number;
   minAmount: number;
   maxAmount: number;
+  stakeOptions: BriberyStakeOptionDto[];
 }
 
 export interface BribeAttemptResponse {
@@ -46,7 +60,13 @@ export interface BribeAttemptResponse {
   briberyDifficulty: number;
   amount: number;
   successChance: number;
+  detectionChance: number;
   outcome: BribeAttemptOutcome;
+  wasDetected: boolean;
+  heatGenerated: number;
+  fineAmount: number;
+  scandalMoralePenaltyApplied: number;
+  scandalReputationPenaltyApplied: number;
   createdDate: string;
 }
 
@@ -61,7 +81,9 @@ export interface BribeStakeOption {
   description: string;
   amount: number;
   successChance: number;
+  baseDetectionChance: number;
   detectionChance: number;
+  heatGenerated: number;
 }
 
 /** Location state passed from Match Influence → Confirm. */
@@ -72,6 +94,7 @@ export interface MatchInfluenceConfirmState {
   title: string;
   successChance: number;
   detectionChance: number;
+  heatGenerated: number;
   refereeName: string;
   refereePersonality: string;
   matchWeek: number;
