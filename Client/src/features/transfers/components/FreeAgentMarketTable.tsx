@@ -1,5 +1,6 @@
 import type { FreeAgentMarketItem } from "../freeAgentTypes";
 import { FreeAgentMarketRow } from "./FreeAgentMarketRow";
+import { TransferMarketPagination } from "./TransferMarketPagination";
 
 interface FreeAgentMarketTableProps {
   items: FreeAgentMarketItem[];
@@ -7,6 +8,11 @@ interface FreeAgentMarketTableProps {
   disabledReason?: string;
   signingBasePlayerId?: string | null;
   onSign: (item: FreeAgentMarketItem) => void;
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  onPrevPage: () => void;
+  onNextPage: () => void;
 }
 
 export const FreeAgentMarketTable = ({
@@ -15,6 +21,11 @@ export const FreeAgentMarketTable = ({
   disabledReason,
   signingBasePlayerId,
   onSign,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPrevPage,
+  onNextPage,
 }: FreeAgentMarketTableProps) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-outline-variant bg-surface-container">
@@ -62,6 +73,15 @@ export const FreeAgentMarketTable = ({
           </tbody>
         </table>
       </div>
+
+      <TransferMarketPagination
+        totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPrevPage={onPrevPage}
+        onNextPage={onNextPage}
+        itemLabel="free agents"
+      />
     </div>
   );
 };

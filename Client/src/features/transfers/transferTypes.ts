@@ -100,4 +100,6 @@ export interface TransferMarketQuery {
   search?: string;
   sortBy?: string;
   sortDescending?: boolean;
+  currentPage?: number;
+  pageSize?: number;
 }

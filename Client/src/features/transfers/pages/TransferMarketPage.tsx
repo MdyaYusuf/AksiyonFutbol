@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { DraftTier } from "../../basePlayers/basePlayerTypes";
 import { ClubLifecycleStatus } from "../../clubs/clubTypes";
@@ -28,6 +28,8 @@ import {
   type TransferMarketSortOption,
 } from "../utils/transferMarketHelpers";
 
+const MARKET_PAGE_SIZE = 10;
+
 const canSignFreeAgents = (lifecycleStatus?: number): boolean => {
   return (
     lifecycleStatus === ClubLifecycleStatus.Tutorial
@@ -45,11 +47,13 @@ export const TransferMarketPage = () => {
   const [sortOption, setSortOption] = useState<TransferMarketSortOption>("rating-desc");
   const [searchQuery, setSearchQuery] = useState("");
   const [listingTierFilter, setListingTierFilter] = useState<DraftTier | "ALL">("ALL");
+  const [listingsPage, setListingsPage] = useState(1);
 
   const [freeAgentTierFilter, setFreeAgentTierFilter] = useState<DraftTier | "ALL">("ALL");
   const [freeAgentSortOption, setFreeAgentSortOption] =
     useState<FreeAgentSortOption>("rating-desc");
   const [freeAgentSearchQuery, setFreeAgentSearchQuery] = useState("");
+  const [freeAgentsPage, setFreeAgentsPage] = useState(1);
   const [signingBasePlayerId, setSigningBasePlayerId] = useState<string | null>(null);
 
   const wageSpace = useMemo(() => {
@@ -61,6 +65,14 @@ export const TransferMarketPage = () => {
     return club.wageBudget - wageBill;
   }, [club, myPlayers]);
 
+  useEffect(() => {
+    setListingsPage(1);
+  }, [positionFilter, listingTierFilter, sortOption, searchQuery]);
+
+  useEffect(() => {
+    setFreeAgentsPage(1);
+  }, [positionFilter, freeAgentTierFilter, freeAgentSortOption, freeAgentSearchQuery]);
+
   const marketQuery = useMemo(() => {
     const sort = sortOptionToApi(sortOption);
     const trimmedSearch = searchQuery.trim();
@@ -71,8 +83,10 @@ export const TransferMarketPage = () => {
       search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
       sortBy: sort.sortBy,
       sortDescending: sort.sortDescending,
+      currentPage: listingsPage,
+      pageSize: MARKET_PAGE_SIZE,
     };
-  }, [positionFilter, listingTierFilter, sortOption, searchQuery]);
+  }, [positionFilter, listingTierFilter, sortOption, searchQuery, listingsPage]);
 
   const freeAgentQuery = useMemo(() => {
     const sort = freeAgentSortOptionToApi(freeAgentSortOption);
@@ -84,17 +98,25 @@ export const TransferMarketPage = () => {
       search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
       sortBy: sort.sortBy,
       sortDescending: sort.sortDescending,
+      currentPage: freeAgentsPage,
+      pageSize: MARKET_PAGE_SIZE,
     };
-  }, [positionFilter, freeAgentTierFilter, freeAgentSortOption, freeAgentSearchQuery]);
+  }, [
+    positionFilter,
+    freeAgentTierFilter,
+    freeAgentSortOption,
+    freeAgentSearchQuery,
+    freeAgentsPage,
+  ]);
 
   const {
-    data: marketItems = [],
+    data: marketPage,
     isLoading: isListingsLoading,
     isFetching: isListingsFetching,
   } = useGetTransferMarketQuery(marketQuery, { skip: activeTab !== "listings" });
 
   const {
-    data: freeAgents = [],
+    data: freeAgentsPageData,
     isLoading: isFreeAgentsLoading,
     isFetching: isFreeAgentsFetching,
   } = useGetFreeAgentsQuery(freeAgentQuery, { skip: activeTab !== "free-agents" });
@@ -102,7 +124,7 @@ export const TransferMarketPage = () => {
   const [signFreeAgent] = useSignFreeAgentMutation();
 
   const handleMakeOffer = (item: TransferMarketItem) => {
-    navigate(`/app/transfers/${item.listingId}/offer`);
+    navigate(`/app/transfers/${item.listingId}/offer`, { state: { listing: item } });
   };
 
   const freeAgentSignAllowed = canSignFreeAgents(club?.lifecycleStatus);
@@ -110,7 +132,7 @@ export const TransferMarketPage = () => {
     ? club?.cashSpendLocked
       ? "Cash spending is locked during a live match."
       : undefined
-    : "Free agents can only be signed during tutorial or competitive seasons.";
+    : "Free agents can only be signed during placement or competitive seasons.";
 
   const handleSignFreeAgent = async (basePlayerId: string) => {
     if (!freeAgentSignAllowed || club?.cashSpendLocked) {
@@ -140,6 +162,11 @@ export const TransferMarketPage = () => {
       </div>
     );
   }
+
+  const marketItems = marketPage?.items ?? [];
+  const marketTotalCount = marketPage?.totalCount ?? 0;
+  const freeAgents = freeAgentsPageData?.items ?? [];
+  const freeAgentsTotalCount = freeAgentsPageData?.totalCount ?? 0;
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6">
@@ -207,6 +234,11 @@ export const TransferMarketPage = () => {
             disabledReason={freeAgentDisabledReason}
             signingBasePlayerId={signingBasePlayerId}
             onSign={(item) => handleSignFreeAgent(item.basePlayerId)}
+            totalCount={freeAgentsTotalCount}
+            currentPage={freeAgentsPage}
+            pageSize={MARKET_PAGE_SIZE}
+            onPrevPage={() => setFreeAgentsPage((page) => Math.max(1, page - 1))}
+            onNextPage={() => setFreeAgentsPage((page) => page + 1)}
           />
         </>
       ) : (
@@ -230,6 +262,11 @@ export const TransferMarketPage = () => {
             items={marketItems}
             currentClubId={club?.id}
             onMakeOffer={handleMakeOffer}
+            totalCount={marketTotalCount}
+            currentPage={listingsPage}
+            pageSize={MARKET_PAGE_SIZE}
+            onPrevPage={() => setListingsPage((page) => Math.max(1, page - 1))}
+            onNextPage={() => setListingsPage((page) => page + 1)}
           />
         </>
       )}

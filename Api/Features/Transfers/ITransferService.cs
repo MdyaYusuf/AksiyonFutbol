@@ -4,8 +4,12 @@ namespace Api.Features.Transfers;
 
 public interface ITransferService
 {
-  Task<ReturnModel<List<TransferMarketItemDto>>> GetMarketAsync(
+  Task<ReturnModel<PagedResponse<TransferMarketItemDto>>> GetMarketAsync(
     TransferMarketQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<TransferMarketItemDto>> GetMarketItemAsync(
+    Guid listingId,
     CancellationToken cancellationToken = default);
 
   Task<ReturnModel<List<TransferListingResponseDto>>> GetMyListingsAsync(
@@ -46,7 +50,7 @@ public interface ITransferService
     Guid currentUserId,
     CancellationToken cancellationToken = default);
 
-  Task<ReturnModel<List<FreeAgentMarketItemDto>>> GetFreeAgentsAsync(
+  Task<ReturnModel<PagedResponse<FreeAgentMarketItemDto>>> GetFreeAgentsAsync(
     FreeAgentMarketQuery query,
     CancellationToken cancellationToken = default);
 

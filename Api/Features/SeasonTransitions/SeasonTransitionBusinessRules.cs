@@ -117,7 +117,7 @@ public class SeasonTransitionBusinessRules(
   {
     if (division.IsTutorial)
     {
-      throw new BusinessException("Tutorial liglerinde sezon sonu işlenemez.");
+      throw new BusinessException("Placement liglerinde sezon sonu işlenemez.");
     }
   }
 

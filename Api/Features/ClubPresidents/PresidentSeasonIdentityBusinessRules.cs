@@ -88,7 +88,7 @@ public static class PresidentSeasonIdentityBusinessRules
     cash += tierBonus;
 
     string flavorTitle = ResolveTutorialFlavorTitle(track, tier);
-    string summary = $"Tutorial complete. {ResolveTrackLabel(track)} path package: {cash:N0} cash.";
+    string summary = $"Placement complete. {ResolveTrackLabel(track)} path package: {cash:N0} cash.";
 
     return new SeasonPresidentPackageDto
     {

@@ -236,7 +236,7 @@ public class TransferBusinessRules(
         && club.LifecycleStatus != ClubLifecycleStatus.Competitive)
     {
       throw new BusinessException(
-        "Serbest ajan yalnızca tutorial veya rekabetçi kulüpler tarafından transfer edilebilir.");
+        "Serbest ajan yalnızca placement veya rekabetçi kulüpler tarafından transfer edilebilir.");
     }
   }
 

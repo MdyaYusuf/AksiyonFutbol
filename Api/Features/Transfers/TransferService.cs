@@ -27,7 +27,7 @@ public class TransferService(
   IValidator<CreateTransferOfferRequest> _createOfferValidator,
   IMatchSettlementGate _settlementGate) : ITransferService
 {
-  public async Task<ReturnModel<List<TransferMarketItemDto>>> GetMarketAsync(
+  public async Task<ReturnModel<PagedResponse<TransferMarketItemDto>>> GetMarketAsync(
     TransferMarketQuery query,
     CancellationToken cancellationToken = default)
   {
@@ -64,15 +64,41 @@ public class TransferService(
 
     filtered = ApplyMarketSort(filtered, query);
 
-    List<TransferMarketItemDto> items = filtered
+    (List<TransferListing> pageItems, int totalCount, int currentPage, int pageSize) =
+      PageItems(filtered, query.CurrentPage, query.PageSize);
+
+    List<TransferMarketItemDto> items = pageItems
       .Select(_mapper.ListingToMarketItemDto)
       .ToList();
 
-    return new ReturnModel<List<TransferMarketItemDto>>()
+    return new ReturnModel<PagedResponse<TransferMarketItemDto>>()
     {
       Success = true,
       Message = "Transfer piyasası başarılı bir şekilde getirildi.",
-      Data = items,
+      Data = new PagedResponse<TransferMarketItemDto>(items, totalCount, currentPage, pageSize),
+      StatusCode = 200
+    };
+  }
+
+  public async Task<ReturnModel<TransferMarketItemDto>> GetMarketItemAsync(
+    Guid listingId,
+    CancellationToken cancellationToken = default)
+  {
+    TransferListing listing = await _businessRules.GetListingIfExistAsync(
+      listingId,
+      include: q => q
+        .Include(l => l.Club)
+        .Include(l => l.PlayerInstance)
+          .ThenInclude(p => p.BasePlayer),
+      cancellationToken: cancellationToken);
+
+    _businessRules.ListingMustBeActive(listing);
+
+    return new ReturnModel<TransferMarketItemDto>()
+    {
+      Success = true,
+      Message = "Transfer ilanı başarılı bir şekilde getirildi.",
+      Data = _mapper.ListingToMarketItemDto(listing),
       StatusCode = 200
     };
   }
@@ -464,7 +490,7 @@ public class TransferService(
     _clubLineupSelectionRepository.DeleteRange(selections);
   }
 
-  public async Task<ReturnModel<List<FreeAgentMarketItemDto>>> GetFreeAgentsAsync(
+  public async Task<ReturnModel<PagedResponse<FreeAgentMarketItemDto>>> GetFreeAgentsAsync(
     FreeAgentMarketQuery query,
     CancellationToken cancellationToken = default)
   {
@@ -494,15 +520,18 @@ public class TransferService(
 
     filtered = ApplyFreeAgentSort(filtered, query);
 
-    List<FreeAgentMarketItemDto> items = filtered
+    (List<BasePlayer> pageItems, int totalCount, int currentPage, int pageSize) =
+      PageItems(filtered, query.CurrentPage, query.PageSize);
+
+    List<FreeAgentMarketItemDto> items = pageItems
       .Select(_mapper.BasePlayerToFreeAgentMarketItemDto)
       .ToList();
 
-    return new ReturnModel<List<FreeAgentMarketItemDto>>()
+    return new ReturnModel<PagedResponse<FreeAgentMarketItemDto>>()
     {
       Success = true,
       Message = "Serbest ajan listesi başarılı bir şekilde getirildi.",
-      Data = items,
+      Data = new PagedResponse<FreeAgentMarketItemDto>(items, totalCount, currentPage, pageSize),
       StatusCode = 200
     };
   }
@@ -558,6 +587,30 @@ public class TransferService(
       },
       StatusCode = 201
     };
+  }
+
+  private static (List<T> Items, int TotalCount, int CurrentPage, int PageSize) PageItems<T>(
+    IEnumerable<T> source,
+    int currentPage,
+    int pageSize)
+  {
+    List<T> allItems = source.ToList();
+    int totalCount = allItems.Count;
+    int safePage = currentPage < 1 ? 1 : currentPage;
+    int safeSize = pageSize < 1 ? 1 : Math.Min(pageSize, 50);
+    int totalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)safeSize));
+
+    if (safePage > totalPages)
+    {
+      safePage = totalPages;
+    }
+
+    List<T> pageItems = allItems
+      .Skip((safePage - 1) * safeSize)
+      .Take(safeSize)
+      .ToList();
+
+    return (pageItems, totalCount, safePage, safeSize);
   }
 
   private static IEnumerable<TransferListing> ApplyMarketSort(

@@ -26,6 +26,30 @@ export const MENTALITY_OPTIONS: { value: TeamMentality; label: string }[] = [
   { value: TeamMentality.Defensive, label: "Defensive" },
 ];
 
+export const getMentalityEffectSummary = (mentality: TeamMentality): string => {
+  switch (mentality) {
+    case TeamMentality.Attacking:
+      return "More chances and higher tempo. Leaves you more open at the back.";
+    case TeamMentality.Defensive:
+      return "Harder to break down. Fewer chances going forward.";
+    default:
+      return "No attack or defense bias. Steady tempo.";
+  }
+};
+
+export const getFormationEffectSummary = (formation: TeamFormation): string => {
+  switch (formation) {
+    case TeamFormation.FourFourTwo:
+      return "More midfield presence. Slightly less punch up top.";
+    case TeamFormation.ThreeFiveTwo:
+      return "Dominates midfield. The back three is more exposed.";
+    case TeamFormation.FourTwoThreeOne:
+      return "Midfield-heavy with one striker. Less raw finishing weight.";
+    default:
+      return "Front-loaded baseline. Stronger in attack, thinner midfield than mid-heavy shapes.";
+  }
+};
+
 export const LINEUP_STARTER_COUNT = 11;
 export const LINEUP_MAX_BENCH = 7;
 

@@ -34,10 +34,11 @@ export const ExecuteActionModal = ({
   );
   const [targetPlayerId, setTargetPlayerId] = useState("");
 
-  const { data: marketItems = [], isLoading: marketLoading } = useGetTransferMarketQuery(
-    undefined,
+  const { data: marketPage, isLoading: marketLoading } = useGetTransferMarketQuery(
+    { currentPage: 1, pageSize: 50 },
     { skip: !needsTapUpTarget },
   );
+  const marketItems = marketPage?.items ?? [];
 
   const canConfirm = useMemo(() => {
     if (needsTapUpTarget) {

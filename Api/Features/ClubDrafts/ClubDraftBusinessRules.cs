@@ -142,7 +142,7 @@ public class ClubDraftBusinessRules(
 
     if (botCount <= 0)
     {
-      throw new BusinessException("Tutorial bot sayısı yapılandırması geçersiz.");
+      throw new BusinessException("Placement bot sayısı yapılandırması geçersiz.");
     }
 
     List<BaseBotClub> templates = await _baseBotClubRepository.GetAllAsync(
@@ -153,7 +153,7 @@ public class ClubDraftBusinessRules(
     if (templates.Count < botCount)
     {
       throw new BusinessException(
-        $"Tutorial için yeterli bot şablonu yok. Gereken: {botCount}, mevcut: {templates.Count}.");
+        $"Placement ligi için yeterli bot şablonu yok. Gereken: {botCount}, mevcut: {templates.Count}.");
     }
 
     return templates.Take(botCount).ToList();

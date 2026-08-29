@@ -4,7 +4,7 @@ import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerI
 import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
 import { getPositionLabel } from "../../playerInstances/utils/squadHelpers";
 import { TacticsBench } from "../components/TacticsBench";
-import { TacticsControls } from "../components/TacticsControls";
+import { TacticsPlanPanel } from "../components/TacticsPlanPanel";
 import { TacticsPitch } from "../components/TacticsPitch";
 import { TacticsSlotPicker } from "../components/TacticsSlotPicker";
 import {
@@ -299,7 +299,7 @@ export const TacticsBoardPage = () => {
         <div>
           <h1 className="font-headline-sm text-headline-sm font-black text-primary">Tactics</h1>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Set your preferred lineup
+            Set your lineup, formation, and mentality
             {isDirty ? " · Unsaved changes" : ""}
           </p>
         </div>
@@ -315,14 +315,15 @@ export const TacticsBoardPage = () => {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-container-padding md:flex-row">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
-          <TacticsControls
-            formation={formation}
-            mentality={mentality}
-            onFormationChange={handleFormationChange}
-            onMentalityChange={setMentality}
-            onReset={handleReset}
-          />
+        <TacticsPlanPanel
+          formation={formation}
+          mentality={mentality}
+          onFormationChange={handleFormationChange}
+          onMentalityChange={setMentality}
+          onReset={handleReset}
+        />
+
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <TacticsPitch
             formation={formation}
             starterIds={starterIds}

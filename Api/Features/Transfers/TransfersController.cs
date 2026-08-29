@@ -17,6 +17,8 @@ public class TransfersController(ITransferService _transferService) : CustomBase
     [FromQuery] string? search,
     [FromQuery] string? sortBy,
     [FromQuery] bool sortDescending = true,
+    [FromQuery] int currentPage = 1,
+    [FromQuery] int pageSize = 10,
     CancellationToken cancellationToken = default)
   {
     var result = await _transferService.GetMarketAsync(
@@ -26,8 +28,22 @@ public class TransfersController(ITransferService _transferService) : CustomBase
         Tier = tier,
         Search = search,
         SortBy = sortBy,
-        SortDescending = sortDescending
+        SortDescending = sortDescending,
+        CurrentPage = currentPage,
+        PageSize = pageSize
       },
+      cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpGet("market/{listingId:guid}")]
+  public async Task<IActionResult> GetMarketItem(
+    Guid listingId,
+    CancellationToken cancellationToken)
+  {
+    var result = await _transferService.GetMarketItemAsync(
+      listingId: listingId,
       cancellationToken: cancellationToken);
 
     return CreateActionResult(result);
@@ -138,6 +154,8 @@ public class TransfersController(ITransferService _transferService) : CustomBase
     [FromQuery] string? search,
     [FromQuery] string? sortBy,
     [FromQuery] bool sortDescending = true,
+    [FromQuery] int currentPage = 1,
+    [FromQuery] int pageSize = 10,
     CancellationToken cancellationToken = default)
   {
     var result = await _transferService.GetFreeAgentsAsync(
@@ -147,7 +165,9 @@ public class TransfersController(ITransferService _transferService) : CustomBase
         Tier = tier,
         Search = search,
         SortBy = sortBy,
-        SortDescending = sortDescending
+        SortDescending = sortDescending,
+        CurrentPage = currentPage,
+        PageSize = pageSize
       },
       cancellationToken: cancellationToken);
 

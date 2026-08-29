@@ -1,16 +1,27 @@
 import type { TransferMarketItem } from "../transferTypes";
+import { TransferMarketPagination } from "./TransferMarketPagination";
 import { TransferMarketRow } from "./TransferMarketRow";
 
 interface TransferMarketTableProps {
   items: TransferMarketItem[];
   currentClubId?: string;
   onMakeOffer: (item: TransferMarketItem) => void;
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
+  onPrevPage: () => void;
+  onNextPage: () => void;
 }
 
 export const TransferMarketTable = ({
   items,
   currentClubId,
   onMakeOffer,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPrevPage,
+  onNextPage,
 }: TransferMarketTableProps) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-outline-variant bg-surface-container">
@@ -57,6 +68,15 @@ export const TransferMarketTable = ({
           </tbody>
         </table>
       </div>
+
+      <TransferMarketPagination
+        totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPrevPage={onPrevPage}
+        onNextPage={onNextPage}
+        itemLabel="players"
+      />
     </div>
   );
 };

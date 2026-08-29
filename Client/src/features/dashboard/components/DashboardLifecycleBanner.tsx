@@ -40,7 +40,7 @@ export const DashboardLifecycleBanner = ({
             {getTutorialWeekBanner(division.currentMatchWeek)}
           </p>
           <p className="text-body-sm text-on-surface-variant">
-            Private tutorial vs Kardelenspor, Anadoluspor, and Poyrazspor. Kickoff is 19:00 Istanbul.
+            Private placement league vs Kardelenspor, Anadoluspor, and Poyrazspor. Kickoff is 19:00 Istanbul.
           </p>
         </div>
       </div>

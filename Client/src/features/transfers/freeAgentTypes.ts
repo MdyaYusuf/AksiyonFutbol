@@ -23,6 +23,8 @@ export interface FreeAgentMarketQuery {
   search?: string;
   sortBy?: string;
   sortDescending?: boolean;
+  currentPage?: number;
+  pageSize?: number;
 }
 
 export interface SignFreeAgentResponse {

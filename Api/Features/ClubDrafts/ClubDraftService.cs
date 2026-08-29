@@ -315,7 +315,7 @@ public class ClubDraftService(
     return new ReturnModel<FinalizeClubDraftResponseDto>()
     {
       Success = true,
-      Message = "Draft tamamlandı. Tutorial ligi ve fikstür oluşturuldu.",
+      Message = "Draft tamamlandı. Placement ligi ve fikstür oluşturuldu.",
       Data = new FinalizeClubDraftResponseDto
       {
         ClubId = club.Id,
@@ -424,6 +424,6 @@ public class ClubDraftService(
       trimmed = trimmed[..80];
     }
 
-    return $"{trimmed} Tutorial";
+    return $"{trimmed} Placement";
   }
 }

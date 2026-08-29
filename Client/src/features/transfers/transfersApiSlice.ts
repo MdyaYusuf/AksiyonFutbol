@@ -1,4 +1,5 @@
 import { apiSlice } from "../../core/api/apiSlice";
+import type { PagedResponse } from "../../core/types/ApiResponse";
 import type {
   CreateTransferListingRequest,
   CreateTransferOfferRequest,
@@ -16,7 +17,7 @@ import type {
 
 export const transfersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getTransferMarket: builder.query<TransferMarketItem[], TransferMarketQuery | void>({
+    getTransferMarket: builder.query<PagedResponse<TransferMarketItem>, TransferMarketQuery | void>({
       query: (arg) => ({
         url: "transfers/market",
         params: arg
@@ -26,10 +27,17 @@ export const transfersApiSlice = apiSlice.injectEndpoints({
               search: arg.search,
               sortBy: arg.sortBy,
               sortDescending: arg.sortDescending,
+              currentPage: arg.currentPage,
+              pageSize: arg.pageSize,
             }
           : undefined,
       }),
       providesTags: [{ type: "Transfer", id: "MARKET" }],
+    }),
+
+    getTransferMarketItem: builder.query<TransferMarketItem, string>({
+      query: (listingId) => ({ url: `transfers/market/${listingId}` }),
+      providesTags: (_result, _error, listingId) => [{ type: "Transfer", id: listingId }],
     }),
 
     getMyTransferListings: builder.query<TransferListingResponse[], void>({
@@ -115,7 +123,7 @@ export const transfersApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    getFreeAgents: builder.query<FreeAgentMarketItem[], FreeAgentMarketQuery | void>({
+    getFreeAgents: builder.query<PagedResponse<FreeAgentMarketItem>, FreeAgentMarketQuery | void>({
       query: (arg) => ({
         url: "transfers/free-agents",
         params: arg
@@ -125,6 +133,8 @@ export const transfersApiSlice = apiSlice.injectEndpoints({
               search: arg.search,
               sortBy: arg.sortBy,
               sortDescending: arg.sortDescending,
+              currentPage: arg.currentPage,
+              pageSize: arg.pageSize,
             }
           : undefined,
       }),
@@ -148,6 +158,7 @@ export const transfersApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetTransferMarketQuery,
+  useGetTransferMarketItemQuery,
   useGetMyTransferListingsQuery,
   useCreateTransferListingMutation,
   useWithdrawTransferListingMutation,

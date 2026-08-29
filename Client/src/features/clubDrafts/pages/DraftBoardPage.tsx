@@ -146,7 +146,7 @@ export const DraftBoardPage = () => {
           </h1>
           <p className="max-w-3xl text-body-sm text-on-surface-variant">
             Fill {draft.clubName}&apos;s quotas under the fee and wage caps. Bots
-            draft the leftovers after you finalize, then your private tutorial starts.
+            draft the leftovers after you finalize, then your private placement league starts.
           </p>
           <OnboardingSteps currentStep="draft" className="mt-2 max-w-3xl" />
         </div>

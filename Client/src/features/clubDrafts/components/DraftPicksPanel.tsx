@@ -96,7 +96,7 @@ export const DraftPicksPanel = ({
 
       {!draft.canFinalize ? (
         <p className="text-center text-body-sm text-on-surface-variant">
-          Fill every position quota without going over cash or wages to enter the tutorial.
+          Fill every position quota without going over cash or wages to enter the placement league.
         </p>
       ) : null}
     </aside>

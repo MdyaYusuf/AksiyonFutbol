@@ -14,10 +14,10 @@ interface LeagueStandingsHeaderProps {
 const getDivisionSubtitle = (division: LeagueDivisionResponse): string => {
   if (division.isTutorial) {
     if (division.lifecycleStatus === DivisionLifecycleStatus.Sealed) {
-      return "Tutorial complete";
+      return "Placement complete";
     }
 
-    return "Private tutorial";
+    return "Private placement league";
   }
 
   return `Group ${division.groupNumber} Standings`;

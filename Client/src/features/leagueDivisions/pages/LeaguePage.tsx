@@ -124,7 +124,7 @@ export const LeaguePage = () => {
               {getPlacementQueueMessage(club.placementTargetTier)}
             </p>
             <p className="text-body-sm text-on-surface-variant">
-              Your tutorial table is archived. Competitive fixtures appear after Monday seating.
+              Your placement table is archived. Competitive fixtures appear after Monday seating.
             </p>
           </div>
         </div>
@@ -155,7 +155,7 @@ export const LeaguePage = () => {
             {getPlacementQueueMessage(club.placementTargetTier)}
           </p>
           <p className="text-body-sm text-on-surface-variant">
-            This tutorial table is sealed. Competitive seating packs 8-club divisions on Monday.
+            This placement table is sealed. Competitive seating packs 8-club divisions on Monday.
           </p>
         </div>
       ) : null}

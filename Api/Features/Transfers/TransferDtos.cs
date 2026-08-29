@@ -85,6 +85,8 @@ public sealed class TransferMarketQuery
   public string? Search { get; init; }
   public string? SortBy { get; init; }
   public bool SortDescending { get; init; } = true;
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
 }
 
 public sealed class FreeAgentMarketItemDto
@@ -112,6 +114,8 @@ public sealed class FreeAgentMarketQuery
   public string? Search { get; init; }
   public string? SortBy { get; init; }
   public bool SortDescending { get; init; } = true;
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
 }
 
 public sealed class SignFreeAgentResponseDto

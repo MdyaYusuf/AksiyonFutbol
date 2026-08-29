@@ -38,7 +38,7 @@ export const CreateClubForm = () => {
             Found Your Club
           </h1>
           <p className="max-w-xl text-body-lg text-on-surface-variant">
-            Name your club, then draft your squad and enter a private tutorial league.
+            Name your club, then draft your squad and enter a private placement league.
           </p>
         </div>
 

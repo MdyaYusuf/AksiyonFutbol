@@ -8,7 +8,7 @@ import { parseApiDate } from "../../../core/utils/dateTime";
 export const PROMOTION_SLOTS = 2;
 export const RELEGATION_SLOTS = 2;
 
-/** Mirrors Api GameOptions graduation point bands for tutorial placement. */
+/** Mirrors Api GameOptions graduation point bands for placement league seating. */
 export const GRADUATION_POINT_BANDS: {
   zone: StandingZone;
   label: string;

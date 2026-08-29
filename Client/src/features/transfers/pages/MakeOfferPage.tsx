@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
 import {
@@ -12,21 +12,40 @@ import { MakeOfferPlayerHeader } from "../components/MakeOfferPlayerHeader";
 import { MakeOfferScoutReport } from "../components/MakeOfferScoutReport";
 import {
   useCreateTransferOfferMutation,
-  useGetTransferMarketQuery,
+  useGetTransferMarketItemQuery,
 } from "../transfersApiSlice";
+import type { TransferMarketItem } from "../transferTypes";
+
+interface MakeOfferLocationState {
+  listing?: TransferMarketItem;
+}
 
 export const MakeOfferPage = () => {
   const { listingId } = useParams<{ listingId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationListing = (location.state as MakeOfferLocationState | null)?.listing;
+  const hasLocationListing = Boolean(
+    locationListing && locationListing.listingId === listingId,
+  );
 
   const { data: club } = useGetCurrentUserClubQuery();
   const { data: myPlayers = [] } = useGetCurrentUserClubPlayersQuery();
-  const { data: marketItems = [], isLoading: isMarketLoading } = useGetTransferMarketQuery();
+  const {
+    data: fetchedListing,
+    isLoading: isMarketLoading,
+    isError: isMarketError,
+  } = useGetTransferMarketItemQuery(listingId ?? "", {
+    skip: !listingId || hasLocationListing,
+  });
 
-  const listing = useMemo(
-    () => marketItems.find((item) => item.listingId === listingId),
-    [marketItems, listingId],
-  );
+  const listing = useMemo(() => {
+    if (hasLocationListing && locationListing) {
+      return locationListing;
+    }
+
+    return fetchedListing;
+  }, [hasLocationListing, locationListing, fetchedListing]);
 
   const {
     data: player,
@@ -83,7 +102,7 @@ export const MakeOfferPage = () => {
     );
   }
 
-  if (!listing || isPlayerError || !player) {
+  if (!listing || isMarketError || isPlayerError || !player) {
     return (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-on-surface-variant">
         <p>This listing is no longer available.</p>

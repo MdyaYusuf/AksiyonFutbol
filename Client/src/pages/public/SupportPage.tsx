@@ -16,7 +16,7 @@ const FAQ_ITEMS = [
   {
     question: "How do I join a league?",
     answer:
-      "After you register, create your club president profile and club. Your club is placed into a league division during onboarding. From there you can follow standings, fixtures, and results for your division.",
+      "After you register, create your club president profile and club. You draft a squad, then play a private placement league that seats you into Gold, Silver, Bronze, or Iron. From there you can follow standings, fixtures, and results for your division.",
   },
 ] as const;
 

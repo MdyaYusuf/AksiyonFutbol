@@ -30,7 +30,7 @@ export const getPlacementQueueMessage = (
 
 export const getTutorialWeekBanner = (currentMatchWeek: number): string => {
   const week = Math.min(Math.max(1, currentMatchWeek), TUTORIAL_MATCH_WEEKS);
-  return `Tutorial MW ${week}/${TUTORIAL_MATCH_WEEKS}`;
+  return `Placement MW ${week}/${TUTORIAL_MATCH_WEEKS}`;
 };
 
 export const isDraftingClub = (
