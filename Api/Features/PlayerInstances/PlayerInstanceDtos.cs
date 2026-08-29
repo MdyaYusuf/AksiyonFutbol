@@ -104,3 +104,13 @@ public sealed record UpdatePlayerInstanceSeasonStatsRequest(
   int SeasonAssists,
   int SeasonYellowCards,
   int SeasonRedCards);
+
+public sealed class PlayerInstanceListQuery
+{
+  public string? Search { get; init; }
+  public Guid? ClubId { get; init; }
+  public PlayerPosition? Position { get; init; }
+  public bool? IsInjured { get; init; }
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
+}

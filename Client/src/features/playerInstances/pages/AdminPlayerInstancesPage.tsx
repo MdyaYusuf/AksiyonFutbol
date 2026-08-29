@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetBasePlayersQuery } from "../../basePlayers/basePlayersApiSlice";
+import { useGetBasePlayerOptionsQuery } from "../../basePlayers/basePlayersApiSlice";
 import {
   PlayerPosition,
   PreferredFoot,
 } from "../../basePlayers/basePlayerTypes";
-import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import { paginateItems } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
+import { useGetClubOptionsQuery } from "../../clubs/clubsApiSlice";
 import {
   AdminPlayerInstanceFormPanel,
   type AssignFromBaseFormValues,
@@ -32,10 +30,9 @@ import {
   attributesForPosition,
   buildDefaultAttributes,
 } from "../utils/playerAttributeHelpers";
-import {
-  filterAdminPlayerInstances,
-  type PlayerPositionFilter,
-  type PlayerStatusFilter,
+import type {
+  PlayerPositionFilter,
+  PlayerStatusFilter,
 } from "../utils/adminPlayerInstancesHelpers";
 
 const PAGE_SIZE = 15;
@@ -119,18 +116,20 @@ export const AdminPlayerInstancesPage = () => {
   );
   const [editValues, setEditValues] = useState<EditPlayerFormValues>(emptyEditValues());
 
+  const isInjuredFilter =
+    statusFilter === "injured" ? true : statusFilter === "available" ? false : undefined;
+
   const { data: playersData, isLoading: isPlayersLoading } = useGetPlayerInstancesQuery({
-    currentPage: 1,
-    pageSize: 500,
+    currentPage,
+    pageSize: PAGE_SIZE,
+    search: searchQuery.trim() || undefined,
+    clubId: clubFilter === "all" ? undefined : clubFilter,
+    position: positionFilter === "all" ? undefined : positionFilter,
+    isInjured: isInjuredFilter,
   });
-  const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    currentPage: 1,
-    pageSize: 500,
-  });
-  const { data: basePlayersData, isLoading: isBasePlayersLoading } = useGetBasePlayersQuery({
-    currentPage: 1,
-    pageSize: 500,
-  });
+  const { data: clubs = [], isLoading: isClubsLoading } = useGetClubOptionsQuery();
+  const { data: basePlayers = [], isLoading: isBasePlayersLoading } =
+    useGetBasePlayerOptionsQuery();
 
   const [assignFromBase, { isLoading: isAssigning }] =
     useCreatePlayerInstanceFromBasePlayerMutation();
@@ -147,25 +146,7 @@ export const AdminPlayerInstancesPage = () => {
   const [deletePlayer] = useDeletePlayerInstanceMutation();
 
   const players = playersData?.items ?? [];
-  const clubs = clubsData?.items ?? [];
-  const basePlayers = basePlayersData?.items ?? [];
-
-  const filteredPlayers = useMemo(
-    () =>
-      filterAdminPlayerInstances(
-        players,
-        searchQuery,
-        clubFilter,
-        positionFilter,
-        statusFilter,
-      ),
-    [players, searchQuery, clubFilter, positionFilter, statusFilter],
-  );
-
-  const paginatedPlayers = useMemo(
-    () => paginateItems(filteredPlayers, currentPage, PAGE_SIZE),
-    [filteredPlayers, currentPage],
-  );
+  const totalCount = playersData?.totalCount ?? 0;
 
   const editingPlayer = useMemo(
     () => players.find((player) => player.id === editingPlayerId),
@@ -177,12 +158,12 @@ export const AdminPlayerInstancesPage = () => {
   }, [searchQuery, clubFilter, positionFilter, statusFilter]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / PAGE_SIZE));
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
-  }, [currentPage, filteredPlayers.length]);
+  }, [currentPage, totalCount]);
 
   const isLoading = isPlayersLoading || isClubsLoading || isBasePlayersLoading;
   const isSubmitting =
@@ -427,7 +408,7 @@ export const AdminPlayerInstancesPage = () => {
                 <option value="all">All Clubs</option>
                 {clubs.map((club) => (
                   <option key={club.id} value={club.id}>
-                    {getClubDisplayName(club)}
+                    {club.displayName}
                   </option>
                 ))}
               </select>
@@ -463,10 +444,10 @@ export const AdminPlayerInstancesPage = () => {
           </div>
 
           <AdminPlayerInstancesTable
-            players={paginatedPlayers}
+            players={players}
             currentPage={currentPage}
             pageSize={PAGE_SIZE}
-            totalCount={filteredPlayers.length}
+            totalCount={totalCount}
             onPageChange={setCurrentPage}
             onFilterByClub={(clubId) => setClubFilter(clubId)}
             onEdit={openEditPanel}

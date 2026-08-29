@@ -1,4 +1,5 @@
 import { apiSlice } from "../../core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
 import type {
   CreatedMatchResponse,
   CreateMatchRequest,
@@ -7,6 +8,14 @@ import type {
   MatchResponse,
   UpdateMatchScheduleRequest,
 } from "./matchTypes";
+
+export type AdminMatchesQuery = PaginationRequest & {
+  search?: string;
+  divisionId?: number;
+  matchWeek?: number;
+  isPlayed?: boolean;
+  currentSeasonOnly?: boolean;
+};
 
 export const matchesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -20,6 +29,28 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
             { type: "Match", id: "LIST" },
           ]
           : [{ type: "Match", id: "LIST" }],
+    }),
+
+    getAdminMatches: builder.query<PagedResponse<MatchResponse>, AdminMatchesQuery>({
+      query: (params) => ({
+        url: "matches/admin",
+        params: {
+          currentPage: params.currentPage,
+          pageSize: params.pageSize,
+          search: params.search,
+          divisionId: params.divisionId,
+          matchWeek: params.matchWeek,
+          isPlayed: params.isPlayed,
+          currentSeasonOnly: params.currentSeasonOnly ?? true,
+        },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+            ...result.items.map(({ id }) => ({ type: "Match" as const, id })),
+            { type: "Match", id: "ADMIN-LIST" },
+          ]
+          : [{ type: "Match", id: "ADMIN-LIST" }],
     }),
 
     getMatchById: builder.query<MatchResponse, string>({
@@ -113,6 +144,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, arg) => [
         { type: "Match", id: "LIST" },
+        { type: "Match", id: "ADMIN-LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "Match", id: `CLUB-${arg.homeClubId}` },
         { type: "Match", id: `CLUB-${arg.awayClubId}` },
@@ -133,6 +165,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, arg) => [
         { type: "Match", id: arg.id },
         { type: "Match", id: "LIST" },
+        { type: "Match", id: "ADMIN-LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "Match", id: `CLUB-${arg.homeClubId}` },
         { type: "Match", id: `CLUB-${arg.awayClubId}` },
@@ -150,6 +183,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, _error, id) => [
         { type: "Match", id },
         { type: "Match", id: "LIST" },
+        { type: "Match", id: "ADMIN-LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "PlayerInstance", id: "LIST" },
         { type: "PlayerInstance", id: "MY-CLUB" },
@@ -182,6 +216,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, id) => [
         { type: "Match", id },
         { type: "Match", id: "LIST" },
+        { type: "Match", id: "ADMIN-LIST" },
         { type: "Match", id: "SCHEDULED-UNPLAYED" },
         { type: "PlayerInstance", id: "LIST" },
         { type: "Club", id: "LIST" },
@@ -193,6 +228,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetMatchesQuery,
+  useGetAdminMatchesQuery,
   useGetMatchByIdQuery,
   useGetMatchLiveStatusQuery,
   useGetMatchesByClubIdQuery,

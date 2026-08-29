@@ -26,6 +26,17 @@ public class ClubService(
   IOptions<GameOptions> _gameOptions,
   IMatchSettlementGate _settlementGate) : IClubService
 {
+  public Task<ReturnModel<PagedResponse<ClubResponseDto>>> GetAllAsync(
+    ClubListQuery query,
+    CancellationToken cancellationToken = default)
+  {
+    return GetAllAsync(
+      filter: BuildListFilter(query),
+      currentPage: query.CurrentPage,
+      pageSize: query.PageSize,
+      cancellationToken: cancellationToken);
+  }
+
   public async Task<ReturnModel<PagedResponse<ClubResponseDto>>> GetAllAsync(
     Expression<Func<Club, bool>>? filter = null,
     Func<IQueryable<Club>, IQueryable<Club>>? include = null,
@@ -202,6 +213,35 @@ public class ClubService(
       Data = defaults,
       StatusCode = 200
     });
+  }
+
+  public async Task<ReturnModel<List<ClubOptionDto>>> GetOptionsAsync(
+    CancellationToken cancellationToken = default)
+  {
+    List<Club> clubs = await _clubRepository.GetAllAsync(
+      include: q => q.Include(c => c.President),
+      orderBy: query => query.OrderBy(c => c.DisplayName).ThenBy(c => c.Name),
+      cancellationToken: cancellationToken);
+
+    List<ClubOptionDto> options = clubs
+      .Select(c => new ClubOptionDto
+      {
+        Id = c.Id,
+        DisplayName = c.DisplayName,
+        IsBot = c.IsBot,
+        DivisionId = c.DivisionId,
+        PresidentName = c.President?.Name,
+        CreatedDate = c.CreatedDate,
+      })
+      .ToList();
+
+    return new ReturnModel<List<ClubOptionDto>>()
+    {
+      Success = true,
+      Message = "Kulüp seçenekleri başarılı bir şekilde getirildi.",
+      Data = options,
+      StatusCode = 200
+    };
   }
 
   public async Task<ReturnModel<CreatedClubResponseDto>> AddAsync(
@@ -485,6 +525,32 @@ public class ClubService(
     }
 
     return dtos;
+  }
+
+  private static Expression<Func<Club, bool>>? BuildListFilter(ClubListQuery query)
+  {
+    string? trimmedSearch = query.Search?.Trim();
+    bool hasSearch = !string.IsNullOrWhiteSpace(trimmedSearch);
+    bool hasDivisionId = query.DivisionId.HasValue;
+    bool hasIsBot = query.IsBot.HasValue;
+
+    if (!hasSearch && !hasDivisionId && !hasIsBot)
+    {
+      return null;
+    }
+
+    string term = trimmedSearch ?? string.Empty;
+    int divisionId = query.DivisionId ?? 0;
+    bool isBot = query.IsBot ?? false;
+
+    return c =>
+      (!hasDivisionId || c.DivisionId == divisionId)
+      && (!hasIsBot || c.IsBot == isBot)
+      && (!hasSearch
+        || c.Name.Contains(term)
+        || c.DisplayName.Contains(term)
+        || (c.Division != null && c.Division.Name.Contains(term))
+        || (c.President != null && c.President.Name.Contains(term)));
   }
 
   private static ClubResponseDto ApplyPublicView(ClubResponseDto dto, ClubPublicView view)

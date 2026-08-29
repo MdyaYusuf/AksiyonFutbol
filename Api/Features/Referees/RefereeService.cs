@@ -18,6 +18,17 @@ public class RefereeService(
 {
   private const string CacheTag = "referees";
 
+  public Task<ReturnModel<PagedResponse<RefereeResponseDto>>> GetAllAsync(
+    RefereeListQuery query,
+    CancellationToken cancellationToken = default)
+  {
+    return GetAllAsync(
+      filter: BuildListFilter(query),
+      currentPage: query.CurrentPage,
+      pageSize: query.PageSize,
+      cancellationToken: cancellationToken);
+  }
+
   public async Task<ReturnModel<PagedResponse<RefereeResponseDto>>> GetAllAsync(
     Expression<Func<Referee, bool>>? filter = null,
     Func<IQueryable<Referee>, IQueryable<Referee>>? include = null,
@@ -279,6 +290,27 @@ public class RefereeService(
       Message = "Hakem başarılı bir şekilde silindi.",
       StatusCode = 200
     };
+  }
+
+  private static Expression<Func<Referee, bool>>? BuildListFilter(RefereeListQuery query)
+  {
+    string? trimmedSearch = query.Search?.Trim();
+    bool hasSearch = !string.IsNullOrWhiteSpace(trimmedSearch);
+    bool hasPersonality = query.PersonalityType.HasValue;
+
+    if (!hasSearch && !hasPersonality)
+    {
+      return null;
+    }
+
+    string term = trimmedSearch ?? string.Empty;
+    RefereePersonalityType personality = query.PersonalityType ?? default;
+
+    return r =>
+      (!hasPersonality || r.PersonalityType == personality)
+      && (!hasSearch
+        || r.Name.Contains(term)
+        || (r.Biography != null && r.Biography.Contains(term)));
   }
 
   private async Task<PagedResponse<RefereeResponseDto>> GetPagedRefereesAsync(

@@ -6,6 +6,16 @@ public interface IMatchService
 {
   Task<ReturnModel<List<MatchResponseDto>>> GetAllAsync(CancellationToken cancellationToken = default);
 
+  Task<ReturnModel<PagedResponse<MatchResponseDto>>> GetAdminPagedAsync(
+    string? search = null,
+    int? divisionId = null,
+    int? matchWeek = null,
+    bool? isPlayed = null,
+    bool currentSeasonOnly = true,
+    int currentPage = 1,
+    int pageSize = 10,
+    CancellationToken cancellationToken = default);
+
   Task<ReturnModel<MatchResponseDto>> GetByIdAsync(
     Guid id,
     CancellationToken cancellationToken = default);

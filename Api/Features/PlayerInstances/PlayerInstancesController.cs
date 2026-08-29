@@ -1,5 +1,6 @@
 using Api.Core.Controllers;
 using Api.Core.Requests;
+using Api.Features.BasePlayers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,22 @@ public class PlayerInstancesController(IPlayerInstanceService _playerInstanceSer
   [HttpGet]
   public async Task<IActionResult> GetAll(
     [FromQuery] PaginationRequest pagination,
+    [FromQuery] string? search,
+    [FromQuery] Guid? clubId,
+    [FromQuery] PlayerPosition? position,
+    [FromQuery] bool? isInjured,
     CancellationToken cancellationToken = default)
   {
     var result = await _playerInstanceService.GetAllAsync(
-      currentPage: pagination.CurrentPage,
-      pageSize: pagination.PageSize,
+      query: new PlayerInstanceListQuery
+      {
+        Search = search,
+        ClubId = clubId,
+        Position = position,
+        IsInjured = isInjured,
+        CurrentPage = pagination.CurrentPage,
+        PageSize = pagination.PageSize
+      },
       cancellationToken: cancellationToken);
 
     return CreateActionResult(result);

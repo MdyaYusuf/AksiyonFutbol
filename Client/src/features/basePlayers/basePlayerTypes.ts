@@ -132,6 +132,13 @@ export interface CreatedBasePlayerResponse {
   preferredFoot: PreferredFoot;
 }
 
+export interface BasePlayerOption {
+  id: string;
+  defaultFirstName: string;
+  defaultLastName: string;
+  position: PlayerPosition;
+}
+
 // Requests
 export interface CreateBasePlayerRequest {
   defaultFirstName: string;

@@ -15,12 +15,24 @@ import type {
 export const playerInstancesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
 
-    getPlayerInstances: builder.query<PagedResponse<PlayerInstanceResponse>, PaginationRequest>({
+    getPlayerInstances: builder.query<
+      PagedResponse<PlayerInstanceResponse>,
+      PaginationRequest & {
+        search?: string;
+        clubId?: string;
+        position?: number;
+        isInjured?: boolean;
+      }
+    >({
       query: (params) => ({
         url: "playerInstances",
         params: {
           currentPage: params.currentPage,
           pageSize: params.pageSize,
+          search: params.search,
+          clubId: params.clubId,
+          position: params.position,
+          isInjured: params.isInjured,
         },
       }),
       providesTags: (result) =>

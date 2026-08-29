@@ -6,6 +6,10 @@ namespace Api.Features.LeagueDivisions;
 public interface ILeagueDivisionService
 {
   Task<ReturnModel<PagedResponse<LeagueDivisionResponseDto>>> GetAllAsync(
+    LeagueDivisionListQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<PagedResponse<LeagueDivisionResponseDto>>> GetAllAsync(
     Expression<Func<LeagueDivision, bool>>? filter = null,
     Func<IQueryable<LeagueDivision>, IQueryable<LeagueDivision>>? include = null,
     Func<IQueryable<LeagueDivision>, IOrderedQueryable<LeagueDivision>>? orderBy = null,

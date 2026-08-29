@@ -13,12 +13,30 @@ public class ClubsController(IClubService _clubService) : CustomBaseController
   [HttpGet]
   public async Task<IActionResult> GetAll(
     [FromQuery] PaginationRequest pagination,
+    [FromQuery] string? search,
+    [FromQuery] int? divisionId,
+    [FromQuery] bool? isBot,
     CancellationToken cancellationToken = default)
   {
     var result = await _clubService.GetAllAsync(
-      currentPage: pagination.CurrentPage,
-      pageSize: pagination.PageSize,
+      query: new ClubListQuery
+      {
+        Search = search,
+        DivisionId = divisionId,
+        IsBot = isBot,
+        CurrentPage = pagination.CurrentPage,
+        PageSize = pagination.PageSize
+      },
       cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpGet("options")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> GetOptions(CancellationToken cancellationToken = default)
+  {
+    var result = await _clubService.GetOptionsAsync(cancellationToken);
 
     return CreateActionResult(result);
   }

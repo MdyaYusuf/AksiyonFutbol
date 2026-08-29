@@ -1,13 +1,13 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import type { LeagueDivisionResponse } from "../leagueDivisionTypes";
 import {
   getGroupDisplayLabel,
   getTierBadgeLabel,
   getTierDotClassName,
-  type AdminDivisionTableRow,
 } from "../utils/adminLeagueDivisionsHelpers";
 
 interface AdminDivisionsTableProps {
-  rows: AdminDivisionTableRow[];
+  divisions: LeagueDivisionResponse[];
   currentPage: number;
   pageSize: number;
   totalCount: number;
@@ -19,7 +19,7 @@ interface AdminDivisionsTableProps {
 }
 
 export const AdminDivisionsTable = ({
-  rows,
+  divisions,
   currentPage,
   pageSize,
   totalCount,
@@ -60,14 +60,14 @@ export const AdminDivisionsTable = ({
             </tr>
           </thead>
           <tbody className="text-body-sm text-on-surface">
-            {rows.length === 0 ? (
+            {divisions.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-4 py-10 text-center text-on-surface-variant">
                   No divisions found.
                 </td>
               </tr>
             ) : (
-              rows.map(({ division, clubCount }) => (
+              divisions.map((division) => (
                 <tr
                   key={division.id}
                   className="group border-b border-outline-variant transition-colors last:border-b-0 hover:bg-surface-container-highest"
@@ -89,7 +89,7 @@ export const AdminDivisionsTable = ({
                     {getGroupDisplayLabel(division.groupNumber)}
                   </td>
                   <td className="px-4 py-3 text-center font-data-mono text-data-mono">
-                    {clubCount}
+                    {division.clubCount ?? 0}
                   </td>
                   <td className="px-4 py-3 text-center font-data-mono text-data-mono">
                     {division.currentMatchWeek}

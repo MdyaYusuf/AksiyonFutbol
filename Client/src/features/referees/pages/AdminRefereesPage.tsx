@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { paginateItems } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
 import {
   AdminRefereeFormPanel,
   type AdminRefereeFormValues,
@@ -16,10 +15,7 @@ import {
   RefereePersonalityType,
   type RefereeResponse,
 } from "../refereeTypes";
-import {
-  filterReferees,
-  type RefereePersonalityFilter,
-} from "../utils/adminRefereesHelpers";
+import { type RefereePersonalityFilter } from "../utils/adminRefereesHelpers";
 
 const PAGE_SIZE = 10;
 
@@ -55,9 +51,14 @@ export const AdminRefereesPage = () => {
   const [formValues, setFormValues] =
     useState<AdminRefereeFormValues>(emptyFormValues);
 
+  const trimmedSearch = searchQuery.trim();
+
   const { data: refereesData, isLoading } = useGetRefereesQuery({
-    currentPage: 1,
-    pageSize: 500,
+    currentPage,
+    pageSize: PAGE_SIZE,
+    search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
+    personalityType:
+      personalityFilter === "ALL" ? undefined : personalityFilter,
   });
 
   const [createReferee, { isLoading: isCreating }] = useCreateRefereeMutation();
@@ -65,28 +66,19 @@ export const AdminRefereesPage = () => {
   const [deleteReferee] = useDeleteRefereeMutation();
 
   const referees = refereesData?.items ?? [];
-
-  const filteredReferees = useMemo(
-    () => filterReferees(referees, searchQuery, personalityFilter),
-    [referees, searchQuery, personalityFilter],
-  );
-
-  const paginatedReferees = useMemo(
-    () => paginateItems(filteredReferees, currentPage, PAGE_SIZE),
-    [filteredReferees, currentPage],
-  );
+  const totalCount = refereesData?.totalCount ?? 0;
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, personalityFilter]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(filteredReferees.length / PAGE_SIZE));
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
-  }, [currentPage, filteredReferees.length]);
+  }, [currentPage, totalCount]);
 
   const isSubmitting = isCreating || isUpdating;
 
@@ -225,10 +217,10 @@ export const AdminRefereesPage = () => {
         </div>
 
         <AdminRefereesTable
-          referees={paginatedReferees}
+          referees={referees}
           currentPage={currentPage}
           pageSize={PAGE_SIZE}
-          totalCount={filteredReferees.length}
+          totalCount={totalCount}
           onPageChange={setCurrentPage}
           onEdit={openEditPanel}
           onDelete={handleDelete}

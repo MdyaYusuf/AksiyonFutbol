@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
 import {
   AdminDivisionFormPanel,
   type AdminDivisionFormValues,
@@ -15,11 +14,6 @@ import {
   useUpdateLeagueDivisionMutation,
 } from "../leagueDivisionsApiSlice";
 import type { LeagueDivisionResponse } from "../leagueDivisionTypes";
-import {
-  buildAdminDivisionTableRows,
-  filterDivisionsByName,
-  paginateItems,
-} from "../utils/adminLeagueDivisionsHelpers";
 
 const PAGE_SIZE = 10;
 
@@ -46,13 +40,12 @@ export const AdminLeagueDivisionsPage = () => {
   const [formValues, setFormValues] = useState<AdminDivisionFormValues>(emptyFormValues);
   const [advancingDivisionId, setAdvancingDivisionId] = useState<number | null>(null);
 
+  const trimmedSearch = searchQuery.trim();
+
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
-    currentPage: 1,
-    pageSize: 100,
-  });
-  const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    currentPage: 1,
-    pageSize: 500,
+    currentPage,
+    pageSize: PAGE_SIZE,
+    search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
   });
 
   const [createDivision, { isLoading: isCreating }] = useCreateLeagueDivisionMutation();
@@ -63,22 +56,7 @@ export const AdminLeagueDivisionsPage = () => {
   const [deleteDivision] = useDeleteLeagueDivisionMutation();
 
   const divisions = divisionsData?.items ?? [];
-  const clubs = clubsData?.items ?? [];
-
-  const filteredDivisions = useMemo(
-    () => filterDivisionsByName(divisions, searchQuery),
-    [divisions, searchQuery],
-  );
-
-  const tableRows = useMemo(
-    () => buildAdminDivisionTableRows(filteredDivisions, clubs),
-    [filteredDivisions, clubs],
-  );
-
-  const paginatedRows = useMemo(
-    () => paginateItems(tableRows, currentPage, PAGE_SIZE),
-    [tableRows, currentPage],
-  );
+  const totalCount = divisionsData?.totalCount ?? 0;
 
   const editingDivision = useMemo(
     () => divisions.find((division) => division.id === editingDivisionId),
@@ -90,15 +68,15 @@ export const AdminLeagueDivisionsPage = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(tableRows.length / PAGE_SIZE));
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
-  }, [currentPage, tableRows.length]);
+  }, [currentPage, totalCount]);
 
   const isSubmitting = isCreating || isUpdating || isUpdatingMatchWeek;
-  const isLoading = isDivisionsLoading || isClubsLoading;
+  const isLoading = isDivisionsLoading;
 
   const openCreatePanel = () => {
     setPanelMode("create");
@@ -239,10 +217,10 @@ export const AdminLeagueDivisionsPage = () => {
         </div>
 
         <AdminDivisionsTable
-          rows={paginatedRows}
+          divisions={divisions}
           currentPage={currentPage}
           pageSize={PAGE_SIZE}
-          totalCount={tableRows.length}
+          totalCount={totalCount}
           onPageChange={setCurrentPage}
           onEdit={openEditPanel}
           onDelete={handleDelete}

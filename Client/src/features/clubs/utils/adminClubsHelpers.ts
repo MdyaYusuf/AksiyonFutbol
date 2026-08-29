@@ -1,5 +1,3 @@
-import type { ClubResponse } from "../clubTypes";
-
 export type ClubTypeFilter = "all" | "human" | "bot";
 
 export const getClubInitials = (name: string): string => {
@@ -38,42 +36,4 @@ export const getStatusBarColor = (value: number): string => {
   }
 
   return "bg-error";
-};
-
-export const filterAdminClubs = (
-  clubs: ClubResponse[],
-  searchQuery: string,
-  divisionId: number | "all",
-  typeFilter: ClubTypeFilter,
-): ClubResponse[] => {
-  const normalizedQuery = searchQuery.trim().toLowerCase();
-
-  return clubs.filter((club) => {
-    if (divisionId !== "all" && club.divisionId !== divisionId) {
-      return false;
-    }
-
-    if (typeFilter === "human" && club.isBot) {
-      return false;
-    }
-
-    if (typeFilter === "bot" && !club.isBot) {
-      return false;
-    }
-
-    if (!normalizedQuery) {
-      return true;
-    }
-
-    const presidentName = club.presidentName?.toLowerCase() ?? "";
-    const displayName = club.displayName?.toLowerCase() ?? "";
-    const divisionName = club.divisionName?.toLowerCase() ?? "";
-
-    return (
-      club.name.toLowerCase().includes(normalizedQuery) ||
-      displayName.includes(normalizedQuery) ||
-      divisionName.includes(normalizedQuery) ||
-      presidentName.includes(normalizedQuery)
-    );
-  });
 };

@@ -12,6 +12,7 @@ public sealed record LeagueDivisionResponseDto
   public bool IsTutorial { get; init; }
   public Guid? OwnerUserId { get; init; }
   public DivisionLifecycleStatus LifecycleStatus { get; init; }
+  public int ClubCount { get; init; }
   public DateTime CreatedDate { get; init; }
 }
 
@@ -62,3 +63,10 @@ public sealed record UpdateLeagueDivisionRequest(
 public sealed record UpdateLeagueDivisionMatchWeekRequest(
   int Id,
   int CurrentMatchWeek);
+
+public sealed class LeagueDivisionListQuery
+{
+  public string? Search { get; init; }
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
+}

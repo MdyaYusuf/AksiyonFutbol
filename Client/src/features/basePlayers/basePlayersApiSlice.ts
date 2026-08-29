@@ -1,6 +1,7 @@
 import { apiSlice } from "../../core/api/apiSlice";
 import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
 import type {
+  BasePlayerOption,
   BasePlayerPreview,
   BasePlayerResponse,
   CreatedBasePlayerResponse,
@@ -12,12 +13,20 @@ import type {
 export const basePlayersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
 
-    getBasePlayers: builder.query<PagedResponse<BasePlayerResponse>, PaginationRequest>({
+    getBasePlayers: builder.query<
+      PagedResponse<BasePlayerResponse>,
+      PaginationRequest & {
+        search?: string;
+        position?: PlayerPosition;
+      }
+    >({
       query: (params) => ({
         url: "basePlayers",
         params: {
           currentPage: params.currentPage,
           pageSize: params.pageSize,
+          search: params.search,
+          position: params.position,
         },
       }),
       providesTags: (result) =>
@@ -27,6 +36,11 @@ export const basePlayersApiSlice = apiSlice.injectEndpoints({
             { type: "BasePlayer", id: "LIST" },
           ]
           : [{ type: "BasePlayer", id: "LIST" }],
+    }),
+
+    getBasePlayerOptions: builder.query<BasePlayerOption[], void>({
+      query: () => ({ url: "basePlayers/options" }),
+      providesTags: [{ type: "BasePlayer", id: "OPTIONS" }],
     }),
 
     getBasePlayerById: builder.query<BasePlayerResponse, string>({
@@ -53,6 +67,7 @@ export const basePlayersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, arg) => [
         { type: "BasePlayer", id: "LIST" },
+        { type: "BasePlayer", id: "OPTIONS" },
         { type: "BasePlayer", id: `POSITION-${arg.position}` },
       ],
     }),
@@ -66,6 +81,7 @@ export const basePlayersApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, arg) => [
         { type: "BasePlayer", id: arg.id },
         { type: "BasePlayer", id: "LIST" },
+        { type: "BasePlayer", id: "OPTIONS" },
         { type: "BasePlayer", id: `POSITION-${arg.position}` },
       ],
     }),
@@ -78,6 +94,7 @@ export const basePlayersApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, id) => [
         { type: "BasePlayer", id },
         { type: "BasePlayer", id: "LIST" },
+        { type: "BasePlayer", id: "OPTIONS" },
       ],
     }),
 
@@ -86,6 +103,7 @@ export const basePlayersApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetBasePlayersQuery,
+  useGetBasePlayerOptionsQuery,
   useGetBasePlayerByIdQuery,
   useGetBasePlayersByPositionQuery,
   useCreateBasePlayerMutation,

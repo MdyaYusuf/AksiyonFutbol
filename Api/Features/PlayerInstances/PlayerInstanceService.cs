@@ -20,6 +20,17 @@ public class PlayerInstanceService(
   IValidator<UpdatePlayerInstanceHealthRequest> _updateHealthValidator,
   IValidator<UpdatePlayerInstanceSeasonStatsRequest> _updateSeasonStatsValidator) : IPlayerInstanceService
 {
+  public Task<ReturnModel<PagedResponse<PlayerInstanceResponseDto>>> GetAllAsync(
+    PlayerInstanceListQuery query,
+    CancellationToken cancellationToken = default)
+  {
+    return GetAllAsync(
+      filter: BuildListFilter(query),
+      currentPage: query.CurrentPage,
+      pageSize: query.PageSize,
+      cancellationToken: cancellationToken);
+  }
+
   public async Task<ReturnModel<PagedResponse<PlayerInstanceResponseDto>>> GetAllAsync(
     Expression<Func<PlayerInstance, bool>>? filter = null,
     Func<IQueryable<PlayerInstance>, IQueryable<PlayerInstance>>? include = null,
@@ -402,6 +413,35 @@ public class PlayerInstanceService(
       Message = "Oyuncu başarılı bir şekilde silindi.",
       StatusCode = 200
     };
+  }
+
+  private static Expression<Func<PlayerInstance, bool>>? BuildListFilter(PlayerInstanceListQuery query)
+  {
+    string? trimmedSearch = query.Search?.Trim();
+    bool hasSearch = !string.IsNullOrWhiteSpace(trimmedSearch);
+    bool hasClubId = query.ClubId.HasValue;
+    bool hasPosition = query.Position.HasValue;
+    bool hasIsInjured = query.IsInjured.HasValue;
+
+    if (!hasSearch && !hasClubId && !hasPosition && !hasIsInjured)
+    {
+      return null;
+    }
+
+    string term = trimmedSearch ?? string.Empty;
+    Guid clubId = query.ClubId ?? Guid.Empty;
+    PlayerPosition position = query.Position ?? default;
+    bool isInjured = query.IsInjured ?? false;
+
+    return pi =>
+      (!hasClubId || pi.ClubId == clubId)
+      && (!hasPosition || pi.Position == position)
+      && (!hasIsInjured || pi.IsInjured == isInjured)
+      && (!hasSearch
+        || pi.FirstName.Contains(term)
+        || pi.LastName.Contains(term)
+        || (pi.Club != null
+          && (pi.Club.DisplayName.Contains(term) || pi.Club.Name.Contains(term))));
   }
 
   private static IQueryable<PlayerInstance> IncludePlayerRelations(IQueryable<PlayerInstance> query)

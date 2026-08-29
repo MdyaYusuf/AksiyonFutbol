@@ -54,6 +54,14 @@ public sealed record CreatedBasePlayerResponseDto
   public PreferredFoot PreferredFoot { get; init; }
 }
 
+public sealed record BasePlayerOptionDto
+{
+  public Guid Id { get; init; }
+  public string DefaultFirstName { get; init; } = default!;
+  public string DefaultLastName { get; init; } = default!;
+  public PlayerPosition Position { get; init; }
+}
+
 // Requests
 public sealed record CreateBasePlayerRequest(
   string DefaultFirstName,
@@ -89,3 +97,11 @@ public sealed record UpdateBasePlayerRequest(
   decimal MarketValue,
   bool IsFreeAgentTemplate,
   bool IsDraftOnly);
+
+public sealed class BasePlayerListQuery
+{
+  public string? Search { get; init; }
+  public PlayerPosition? Position { get; init; }
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
+}

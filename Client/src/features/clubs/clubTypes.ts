@@ -69,6 +69,23 @@ export interface ClubCreationDefaults {
   startingClubStatus: number;
 }
 
+export interface ClubOption {
+  id: string;
+  displayName: string;
+  isBot: boolean;
+  divisionId?: number | null;
+  presidentName?: string | null;
+  createdDate: string;
+}
+
+export interface GetClubsParams {
+  currentPage: number;
+  pageSize: number;
+  search?: string;
+  divisionId?: number;
+  isBot?: boolean;
+}
+
 // Requests
 export interface CreateClubRequest {
   name: string;

@@ -6,6 +6,10 @@ namespace Api.Features.Clubs;
 public interface IClubService
 {
   Task<ReturnModel<PagedResponse<ClubResponseDto>>> GetAllAsync(
+    ClubListQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<PagedResponse<ClubResponseDto>>> GetAllAsync(
     Expression<Func<Club, bool>>? filter = null,
     Func<IQueryable<Club>, IQueryable<Club>>? include = null,
     Func<IQueryable<Club>, IOrderedQueryable<Club>>? orderBy = null,
@@ -44,6 +48,9 @@ public interface IClubService
     CancellationToken cancellationToken = default);
 
   Task<ReturnModel<ClubCreationDefaultsDto>> GetCreationDefaultsAsync(
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<List<ClubOptionDto>>> GetOptionsAsync(
     CancellationToken cancellationToken = default);
 
   Task<ReturnModel<CreatedClubResponseDto>> AddAsync(

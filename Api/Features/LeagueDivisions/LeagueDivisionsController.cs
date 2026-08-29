@@ -17,11 +17,16 @@ public class LeagueDivisionsController(
   [HttpGet]
   public async Task<IActionResult> GetAll(
     [FromQuery] PaginationRequest pagination,
+    [FromQuery] string? search,
     CancellationToken cancellationToken = default)
   {
     var result = await _leagueDivisionService.GetAllAsync(
-      currentPage: pagination.CurrentPage,
-      pageSize: pagination.PageSize,
+      query: new LeagueDivisionListQuery
+      {
+        Search = search,
+        CurrentPage = pagination.CurrentPage,
+        PageSize = pagination.PageSize
+      },
       cancellationToken: cancellationToken);
 
     return CreateActionResult(result);

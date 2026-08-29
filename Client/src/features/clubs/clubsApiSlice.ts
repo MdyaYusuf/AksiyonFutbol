@@ -1,12 +1,14 @@
 import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import type { PagedResponse } from "../../core/types/ApiResponse";
 import type {
   ClubCreationDefaults,
+  ClubOption,
   ClubPreview,
   ClubResponse,
   CreatedClubResponse,
   CreateBotClubRequest,
   CreateClubRequest,
+  GetClubsParams,
   UpdateClubFinancesRequest,
   UpdateClubRequest,
   UpdateClubStatusRequest,
@@ -15,12 +17,15 @@ import type {
 export const clubsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
 
-    getClubs: builder.query<PagedResponse<ClubResponse>, PaginationRequest>({
+    getClubs: builder.query<PagedResponse<ClubResponse>, GetClubsParams>({
       query: (params) => ({
         url: "clubs",
         params: {
           currentPage: params.currentPage,
           pageSize: params.pageSize,
+          search: params.search,
+          divisionId: params.divisionId,
+          isBot: params.isBot,
         },
       }),
       providesTags: (result) =>
@@ -30,6 +35,11 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
             { type: "Club", id: "LIST" },
           ]
           : [{ type: "Club", id: "LIST" }],
+    }),
+
+    getClubOptions: builder.query<ClubOption[], void>({
+      query: () => ({ url: "clubs/options" }),
+      providesTags: [{ type: "Club", id: "OPTIONS" }],
     }),
 
     getClubById: builder.query<ClubResponse, string>({
@@ -91,6 +101,7 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
       },
       invalidatesTags: () => [
         { type: "Club", id: "LIST" },
+        { type: "Club", id: "OPTIONS" },
         { type: "Club", id: "ME" },
         { type: "ClubPresident", id: "ME" },
         { type: "ClubDraft", id: "ME" },
@@ -106,8 +117,10 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, arg) => [
         { type: "Club", id: "LIST" },
+        { type: "Club", id: "OPTIONS" },
         { type: "Club", id: `DIVISION-${arg.divisionId}` },
         { type: "LeagueDivision", id: arg.divisionId },
+        { type: "LeagueDivision", id: "LIST" },
       ],
     }),
 
@@ -120,6 +133,7 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, arg) => [
         { type: "Club", id: arg.id },
         { type: "Club", id: "LIST" },
+        { type: "Club", id: "OPTIONS" },
         { type: "Club", id: "ME" },
       ],
     }),
@@ -158,7 +172,9 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_result, _error, id) => [
         { type: "Club", id },
         { type: "Club", id: "LIST" },
+        { type: "Club", id: "OPTIONS" },
         { type: "Club", id: "ME" },
+        { type: "LeagueDivision", id: "LIST" },
       ],
     }),
 
@@ -167,6 +183,7 @@ export const clubsApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetClubsQuery,
+  useGetClubOptionsQuery,
   useGetClubByIdQuery,
   useGetCurrentUserClubQuery,
   useCheckCurrentUserHasClubQuery,

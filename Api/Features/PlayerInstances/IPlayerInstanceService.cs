@@ -6,6 +6,10 @@ namespace Api.Features.PlayerInstances;
 public interface IPlayerInstanceService
 {
   Task<ReturnModel<PagedResponse<PlayerInstanceResponseDto>>> GetAllAsync(
+    PlayerInstanceListQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<PagedResponse<PlayerInstanceResponseDto>>> GetAllAsync(
     Expression<Func<PlayerInstance, bool>>? filter = null,
     Func<IQueryable<PlayerInstance>, IQueryable<PlayerInstance>>? include = null,
     Func<IQueryable<PlayerInstance>, IOrderedQueryable<PlayerInstance>>? orderBy = null,

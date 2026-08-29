@@ -24,7 +24,7 @@ export const AdminProcessSeasonEndPage = () => {
 
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
     currentPage: 1,
-    pageSize: 100,
+    pageSize: 50,
   });
 
   const divisions = useMemo(() => {

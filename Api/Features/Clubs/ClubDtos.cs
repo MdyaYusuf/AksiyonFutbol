@@ -56,6 +56,16 @@ public sealed record ClubCreationDefaultsDto
   public int StartingClubStatus { get; init; }
 }
 
+public sealed record ClubOptionDto
+{
+  public Guid Id { get; init; }
+  public string DisplayName { get; init; } = default!;
+  public bool IsBot { get; init; }
+  public int? DivisionId { get; init; }
+  public string? PresidentName { get; init; }
+  public DateTime CreatedDate { get; init; }
+}
+
 // Requests
 public sealed record CreateClubRequest(
   string Name);
@@ -83,3 +93,12 @@ public sealed record UpdateClubStatusRequest(
   int Morale,
   int Chemistry,
   int Discipline);
+
+public sealed class ClubListQuery
+{
+  public string? Search { get; init; }
+  public int? DivisionId { get; init; }
+  public bool? IsBot { get; init; }
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
+}

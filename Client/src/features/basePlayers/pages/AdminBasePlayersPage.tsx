@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { paginateItems } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
 import {
   AdminBasePlayerFormPanel,
   type AdminBasePlayerFormValues,
@@ -23,7 +22,6 @@ import {
   buildDefaultAttributes,
 } from "../../playerInstances/utils/playerAttributeHelpers";
 import {
-  filterBasePlayers,
   getDraftTierPricingDefaults,
   type BasePlayerPositionFilter,
 } from "../utils/adminBasePlayersHelpers";
@@ -99,9 +97,13 @@ export const AdminBasePlayersPage = () => {
   const [formValues, setFormValues] =
     useState<AdminBasePlayerFormValues>(emptyFormValues);
 
+  const trimmedSearch = searchQuery.trim();
+
   const { data: playersData, isLoading } = useGetBasePlayersQuery({
-    currentPage: 1,
-    pageSize: 500,
+    currentPage,
+    pageSize: PAGE_SIZE,
+    search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
+    position: positionFilter === "ALL" ? undefined : positionFilter,
   });
 
   const [createBasePlayer, { isLoading: isCreating }] =
@@ -111,28 +113,19 @@ export const AdminBasePlayersPage = () => {
   const [deleteBasePlayer] = useDeleteBasePlayerMutation();
 
   const players = playersData?.items ?? [];
-
-  const filteredPlayers = useMemo(
-    () => filterBasePlayers(players, searchQuery, positionFilter),
-    [players, searchQuery, positionFilter],
-  );
-
-  const paginatedPlayers = useMemo(
-    () => paginateItems(filteredPlayers, currentPage, PAGE_SIZE),
-    [filteredPlayers, currentPage],
-  );
+  const totalCount = playersData?.totalCount ?? 0;
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, positionFilter]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / PAGE_SIZE));
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
-  }, [currentPage, filteredPlayers.length]);
+  }, [currentPage, totalCount]);
 
   const isSubmitting = isCreating || isUpdating;
 
@@ -266,10 +259,10 @@ export const AdminBasePlayersPage = () => {
       </div>
 
       <AdminBasePlayersTable
-        players={paginatedPlayers}
+        players={players}
         currentPage={currentPage}
         pageSize={PAGE_SIZE}
-        totalCount={filteredPlayers.length}
+        totalCount={totalCount}
         onPageChange={setCurrentPage}
         onEdit={openEditPanel}
         onDelete={handleDelete}

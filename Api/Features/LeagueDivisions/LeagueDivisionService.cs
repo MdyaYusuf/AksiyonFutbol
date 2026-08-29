@@ -3,7 +3,9 @@ using Api.Core.Helpers;
 using Api.Core.Options;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.Clubs;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 
@@ -11,6 +13,7 @@ namespace Api.Features.LeagueDivisions;
 
 public class LeagueDivisionService(
   ILeagueDivisionRepository _leagueDivisionRepository,
+  IClubRepository _clubRepository,
   LeagueDivisionMapper _mapper,
   LeagueDivisionBusinessRules _businessRules,
   IUnitOfWork _unitOfWork,
@@ -21,6 +24,17 @@ public class LeagueDivisionService(
   HybridCache _cache) : ILeagueDivisionService
 {
   private const string CacheTag = "league-divisions";
+
+  public Task<ReturnModel<PagedResponse<LeagueDivisionResponseDto>>> GetAllAsync(
+    LeagueDivisionListQuery query,
+    CancellationToken cancellationToken = default)
+  {
+    return GetAllAsync(
+      filter: BuildListFilter(query),
+      currentPage: query.CurrentPage,
+      pageSize: query.PageSize,
+      cancellationToken: cancellationToken);
+  }
 
   public async Task<ReturnModel<PagedResponse<LeagueDivisionResponseDto>>> GetAllAsync(
     Expression<Func<LeagueDivision, bool>>? filter = null,
@@ -57,6 +71,15 @@ public class LeagueDivisionService(
       List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
       pagedResponse = new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, currentPage, pageSize);
     }
+
+    List<LeagueDivisionResponseDto> withClubCounts = await AttachClubCountsAsync(
+      [.. pagedResponse.Items],
+      cancellationToken);
+    pagedResponse = new PagedResponse<LeagueDivisionResponseDto>(
+      withClubCounts,
+      pagedResponse.TotalCount,
+      pagedResponse.CurrentPage,
+      pagedResponse.PageSize);
 
     return new ReturnModel<PagedResponse<LeagueDivisionResponseDto>>()
     {
@@ -370,5 +393,46 @@ public class LeagueDivisionService(
 
     List<LeagueDivisionResponseDto> responseDtos = _mapper.EntityToResponseDtoList(leagueDivisions);
     return new PagedResponse<LeagueDivisionResponseDto>(responseDtos, totalCount, currentPage, pageSize);
+  }
+
+  private static Expression<Func<LeagueDivision, bool>>? BuildListFilter(LeagueDivisionListQuery query)
+  {
+    string? trimmedSearch = query.Search?.Trim();
+
+    if (string.IsNullOrWhiteSpace(trimmedSearch))
+    {
+      return null;
+    }
+
+    string term = trimmedSearch;
+    return ld => ld.Name.Contains(term);
+  }
+
+  private async Task<List<LeagueDivisionResponseDto>> AttachClubCountsAsync(
+    List<LeagueDivisionResponseDto> dtos,
+    CancellationToken cancellationToken)
+  {
+    if (dtos.Count == 0)
+    {
+      return dtos;
+    }
+
+    List<int> divisionIds = dtos.Select(d => d.Id).ToList();
+
+    Dictionary<int, int> countByDivisionId = await _clubRepository.Query(false)
+      .Where(c => c.DivisionId != null && divisionIds.Contains(c.DivisionId.Value))
+      .GroupBy(c => c.DivisionId!.Value)
+      .Select(g => new { DivisionId = g.Key, Count = g.Count() })
+      .ToDictionaryAsync(x => x.DivisionId, x => x.Count, cancellationToken);
+
+    List<LeagueDivisionResponseDto> withCounts = new(dtos.Count);
+
+    foreach (LeagueDivisionResponseDto dto in dtos)
+    {
+      int clubCount = countByDivisionId.GetValueOrDefault(dto.Id);
+      withCounts.Add(dto with { ClubCount = clubCount });
+    }
+
+    return withCounts;
   }
 }

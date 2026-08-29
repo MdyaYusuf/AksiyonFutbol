@@ -1,4 +1,5 @@
 using Api.Core.Controllers;
+using Api.Core.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,30 @@ public class MatchesController(IMatchService _matchService) : CustomBaseControll
   public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
   {
     var result = await _matchService.GetAllAsync(cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpGet("admin")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> GetAdminPaged(
+    [FromQuery] PaginationRequest pagination,
+    [FromQuery] string? search,
+    [FromQuery] int? divisionId,
+    [FromQuery] int? matchWeek,
+    [FromQuery] bool? isPlayed,
+    [FromQuery] bool currentSeasonOnly = true,
+    CancellationToken cancellationToken = default)
+  {
+    var result = await _matchService.GetAdminPagedAsync(
+      search: search,
+      divisionId: divisionId,
+      matchWeek: matchWeek,
+      isPlayed: isPlayed,
+      currentSeasonOnly: currentSeasonOnly,
+      currentPage: pagination.CurrentPage,
+      pageSize: pagination.PageSize,
+      cancellationToken: cancellationToken);
 
     return CreateActionResult(result);
   }

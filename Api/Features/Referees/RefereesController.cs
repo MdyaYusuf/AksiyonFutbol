@@ -13,11 +13,18 @@ public class RefereesController(IRefereeService _refereeService) : CustomBaseCon
   [HttpGet]
   public async Task<IActionResult> GetAll(
     [FromQuery] PaginationRequest pagination,
+    [FromQuery] string? search,
+    [FromQuery] RefereePersonalityType? personalityType,
     CancellationToken cancellationToken = default)
   {
     var result = await _refereeService.GetAllAsync(
-      currentPage: pagination.CurrentPage,
-      pageSize: pagination.PageSize,
+      query: new RefereeListQuery
+      {
+        Search = search,
+        PersonalityType = personalityType,
+        CurrentPage = pagination.CurrentPage,
+        PageSize = pagination.PageSize
+      },
       cancellationToken: cancellationToken);
 
     return CreateActionResult(result);

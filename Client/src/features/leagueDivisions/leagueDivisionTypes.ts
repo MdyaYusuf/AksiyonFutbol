@@ -18,6 +18,7 @@ export interface LeagueDivisionResponse {
   isTutorial: boolean;
   ownerUserId?: string | null;
   lifecycleStatus: DivisionLifecycleStatus;
+  clubCount?: number;
   createdDate: string;
 }
 

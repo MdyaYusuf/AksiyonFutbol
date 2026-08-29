@@ -6,6 +6,10 @@ namespace Api.Features.BasePlayers;
 public interface IBasePlayerService
 {
   Task<ReturnModel<PagedResponse<BasePlayerResponseDto>>> GetAllAsync(
+    BasePlayerListQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<PagedResponse<BasePlayerResponseDto>>> GetAllAsync(
     Expression<Func<BasePlayer, bool>>? filter = null,
     Func<IQueryable<BasePlayer>, IQueryable<BasePlayer>>? include = null,
     Func<IQueryable<BasePlayer>, IOrderedQueryable<BasePlayer>>? orderBy = null,
@@ -29,6 +33,9 @@ public interface IBasePlayerService
 
   Task<ReturnModel<List<BasePlayerPreviewDto>>> GetByPositionAsync(
     PlayerPosition position,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<List<BasePlayerOptionDto>>> GetOptionsAsync(
     CancellationToken cancellationToken = default);
 
   Task<ReturnModel<CreatedBasePlayerResponseDto>> AddAsync(

@@ -13,12 +13,28 @@ public class BasePlayersController(IBasePlayerService _basePlayerService) : Cust
   [HttpGet]
   public async Task<IActionResult> GetAll(
     [FromQuery] PaginationRequest pagination,
+    [FromQuery] string? search,
+    [FromQuery] PlayerPosition? position,
     CancellationToken cancellationToken = default)
   {
     var result = await _basePlayerService.GetAllAsync(
-      currentPage: pagination.CurrentPage,
-      pageSize: pagination.PageSize,
+      query: new BasePlayerListQuery
+      {
+        Search = search,
+        Position = position,
+        CurrentPage = pagination.CurrentPage,
+        PageSize = pagination.PageSize
+      },
       cancellationToken: cancellationToken);
+
+    return CreateActionResult(result);
+  }
+
+  [HttpGet("options")]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> GetOptions(CancellationToken cancellationToken = default)
+  {
+    var result = await _basePlayerService.GetOptionsAsync(cancellationToken);
 
     return CreateActionResult(result);
   }

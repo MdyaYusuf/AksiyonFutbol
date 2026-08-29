@@ -6,6 +6,10 @@ namespace Api.Features.Referees;
 public interface IRefereeService
 {
   Task<ReturnModel<PagedResponse<RefereeResponseDto>>> GetAllAsync(
+    RefereeListQuery query,
+    CancellationToken cancellationToken = default);
+
+  Task<ReturnModel<PagedResponse<RefereeResponseDto>>> GetAllAsync(
     Expression<Func<Referee, bool>>? filter = null,
     Func<IQueryable<Referee>, IQueryable<Referee>>? include = null,
     Func<IQueryable<Referee>, IOrderedQueryable<Referee>>? orderBy = null,

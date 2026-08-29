@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
@@ -32,6 +33,51 @@ public class MatchService(
       Success = true,
       Message = "Maç listesi başarılı bir şekilde getirildi.",
       Data = response,
+      StatusCode = 200
+    };
+  }
+
+  public async Task<ReturnModel<PagedResponse<MatchResponseDto>>> GetAdminPagedAsync(
+    string? search = null,
+    int? divisionId = null,
+    int? matchWeek = null,
+    bool? isPlayed = null,
+    bool currentSeasonOnly = true,
+    int currentPage = 1,
+    int pageSize = 10,
+    CancellationToken cancellationToken = default)
+  {
+    Expression<Func<Match, bool>>? filter = BuildAdminFilter(
+      search,
+      divisionId,
+      matchWeek,
+      isPlayed,
+      currentSeasonOnly);
+
+    var (matches, totalCount) = await _matchRepository.GetPagedListAsync(
+      currentPage,
+      pageSize,
+      filter,
+      include: IncludeMatchRelations,
+      orderBy: query => query
+        .OrderBy(m => m.MatchWeek)
+        .ThenBy(m => m.MatchDate),
+      cancellationToken: cancellationToken);
+
+    List<MatchResponseDto> responseDtos = _mapper.EntityToResponseDtoList(matches);
+    _settlementGate.ConcealResponseScores(matches, responseDtos);
+
+    var pagedResponse = new PagedResponse<MatchResponseDto>(
+      responseDtos,
+      totalCount,
+      currentPage,
+      pageSize);
+
+    return new ReturnModel<PagedResponse<MatchResponseDto>>()
+    {
+      Success = true,
+      Message = "Admin maç listesi başarılı bir şekilde getirildi.",
+      Data = pagedResponse,
       StatusCode = 200
     };
   }
@@ -347,6 +393,43 @@ public class MatchService(
       Data = "Maç silindi.",
       StatusCode = 200
     };
+  }
+
+  private static Expression<Func<Match, bool>>? BuildAdminFilter(
+    string? search,
+    int? divisionId,
+    int? matchWeek,
+    bool? isPlayed,
+    bool currentSeasonOnly)
+  {
+    string? trimmedSearch = search?.Trim();
+    bool hasSearch = !string.IsNullOrWhiteSpace(trimmedSearch);
+    bool hasDivisionId = divisionId.HasValue;
+    bool hasMatchWeek = matchWeek.HasValue;
+    bool hasIsPlayed = isPlayed.HasValue;
+
+    if (!hasSearch && !hasDivisionId && !hasMatchWeek && !hasIsPlayed && !currentSeasonOnly)
+    {
+      return null;
+    }
+
+    string term = trimmedSearch ?? string.Empty;
+    int selectedDivisionId = divisionId ?? 0;
+    int selectedMatchWeek = matchWeek ?? 0;
+    bool selectedIsPlayed = isPlayed ?? false;
+
+    return m =>
+      (!currentSeasonOnly || (m.Division != null && m.Season == m.Division.CurrentSeason))
+      && (!hasDivisionId || m.DivisionId == selectedDivisionId)
+      && (!hasMatchWeek || m.MatchWeek == selectedMatchWeek)
+      && (!hasIsPlayed || m.IsPlayed == selectedIsPlayed)
+      && (!hasSearch
+        || (m.HomeClub != null
+          && (m.HomeClub.DisplayName.Contains(term) || m.HomeClub.Name.Contains(term)))
+        || (m.AwayClub != null
+          && (m.AwayClub.DisplayName.Contains(term) || m.AwayClub.Name.Contains(term)))
+        || (m.Division != null && m.Division.Name.Contains(term))
+        || (m.Referee != null && m.Referee.Name.Contains(term)));
   }
 
   private static IQueryable<Match> IncludeMatchRelations(IQueryable<Match> query)

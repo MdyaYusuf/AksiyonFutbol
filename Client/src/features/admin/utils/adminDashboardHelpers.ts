@@ -1,4 +1,4 @@
-import type { ClubResponse } from "../../clubs/clubTypes";
+import type { ClubOption } from "../../clubs/clubTypes";
 import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { MatchResponse } from "../../matches/matchTypes";
@@ -40,6 +40,11 @@ export interface RecentActivityItem {
   sortDate: Date;
 }
 
+type DashboardClub = Pick<
+  ClubOption,
+  "id" | "displayName" | "isBot" | "divisionId" | "presidentName" | "createdDate"
+>;
+
 const getDivisionStatus = (
   unplayedThisWeek: number,
   botClubs: number,
@@ -57,7 +62,7 @@ const getDivisionStatus = (
 
 export const buildAdminDashboardStats = (
   divisions: LeagueDivisionResponse[],
-  clubs: ClubResponse[],
+  clubs: DashboardClub[],
   matches: MatchResponse[],
 ): AdminDashboardStats => {
   const humanClubs = clubs.filter((club) => !club.isBot).length;
@@ -92,7 +97,7 @@ export const buildAdminDashboardStats = (
 
 export const buildDivisionGlanceRows = (
   divisions: LeagueDivisionResponse[],
-  clubs: ClubResponse[],
+  clubs: DashboardClub[],
   matches: MatchResponse[],
 ): DivisionGlanceRow[] => {
   return [...divisions]
@@ -122,7 +127,7 @@ export const buildDivisionGlanceRows = (
         tier: division.tier,
         groupNumber: division.groupNumber,
         currentMatchWeek: division.currentMatchWeek,
-        totalClubs: divisionClubs.length,
+        totalClubs: division.clubCount ?? divisionClubs.length,
         humanClubs,
         botClubs,
         unplayedThisWeek,
@@ -133,7 +138,7 @@ export const buildDivisionGlanceRows = (
 };
 
 export const buildRecentActivity = (
-  clubs: ClubResponse[],
+  clubs: DashboardClub[],
   matches: MatchResponse[],
 ): RecentActivityItem[] => {
   const activities: RecentActivityItem[] = [];
@@ -143,7 +148,9 @@ export const buildRecentActivity = (
       id: `club-${club.id}`,
       type: "club-created",
       title: `New Club Founded: ${getClubDisplayName(club)}`,
-      subtitle: club.isBot ? "Bot club • Admin" : `Human club • ${club.presidentName ?? "No president"}`,
+      subtitle: club.isBot
+        ? "Bot club • Admin"
+        : `Human club • ${club.presidentName ?? "No president"}`,
       sortDate: parseApiDate(club.createdDate),
     });
   }

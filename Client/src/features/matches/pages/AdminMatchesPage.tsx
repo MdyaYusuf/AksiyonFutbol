@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { ConfirmDialog } from "../../../core/components/ui/ConfirmDialog";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
+import { useGetClubsByDivisionIdQuery } from "../../clubs/clubsApiSlice";
 import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
 import { useGetRefereesQuery } from "../../referees/refereesApiSlice";
 import {
@@ -12,13 +13,13 @@ import { AdminMatchesTable } from "../components/AdminMatchesTable";
 import {
   useCreateMatchMutation,
   useDeleteMatchMutation,
+  useGetAdminMatchesQuery,
   useGetMatchesQuery,
   useSimulateMatchMutation,
   useUpdateMatchScheduleMutation,
 } from "../matchesApiSlice";
 import type { MatchResponse } from "../matchTypes";
 import {
-  filterAdminMatches,
   findUnplayedWeekAlert,
   formatDivisionOption,
   fromDateTimeLocalValue,
@@ -29,6 +30,8 @@ import {
   type MatchStatusFilter,
 } from "../utils/adminMatchesHelpers";
 import { isMatchInDivisionCurrentSeason } from "../utils/seasonHelpers";
+
+const PAGE_SIZE = 15;
 
 const emptyFormValues = (
   defaultDivisionId: number | "" = "",
@@ -56,6 +59,7 @@ export const AdminMatchesPage = () => {
   const [divisionFilter, setDivisionFilter] = useState<number | "all">("all");
   const [matchWeekFilter, setMatchWeekFilter] = useState<number | "all">("all");
   const [statusFilter, setStatusFilter] = useState<MatchStatusFilter>("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
@@ -65,18 +69,33 @@ export const AdminMatchesPage = () => {
   const [matchPendingDelete, setMatchPendingDelete] = useState<MatchResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
+  const isPlayedFilter =
+    statusFilter === "played" ? true : statusFilter === "scheduled" ? false : undefined;
+
+  const { data: adminMatchesData, isLoading: isAdminMatchesLoading } = useGetAdminMatchesQuery({
+    currentPage,
+    pageSize: PAGE_SIZE,
+    search: searchQuery.trim() || undefined,
+    divisionId: divisionFilter === "all" ? undefined : divisionFilter,
+    matchWeek: matchWeekFilter === "all" ? undefined : matchWeekFilter,
+    isPlayed: isPlayedFilter,
+    currentSeasonOnly: true,
+  });
+
+  // Full current-season set kept only for weekAlert / availableWeeks / simulate-week helpers.
+  // Table uses getAdminMatches (paged). Slim alerts later if this fetch becomes too heavy.
+  const { data: allMatches = [], isLoading: isAllMatchesLoading } = useGetMatchesQuery();
+
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
     currentPage: 1,
-    pageSize: 100,
+    pageSize: 50,
   });
-  const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    currentPage: 1,
-    pageSize: 500,
-  });
+  const { data: divisionClubs = [] } = useGetClubsByDivisionIdQuery(
+    formValues.divisionId === "" ? skipToken : formValues.divisionId,
+  );
   const { data: refereesData, isLoading: isRefereesLoading } = useGetRefereesQuery({
     currentPage: 1,
-    pageSize: 200,
+    pageSize: 50,
   });
 
   const [createMatch, { isLoading: isCreating }] = useCreateMatchMutation();
@@ -85,23 +104,13 @@ export const AdminMatchesPage = () => {
   const [deleteMatch] = useDeleteMatchMutation();
 
   const divisions = divisionsData?.items ?? [];
-  const clubs = clubsData?.items ?? [];
   const referees = refereesData?.items ?? [];
-  const currentSeasonMatches = useMemo(
-    () => matches.filter((match) => isMatchInDivisionCurrentSeason(match, divisions)),
-    [matches, divisions],
-  );
+  const pagedMatches = adminMatchesData?.items ?? [];
+  const totalCount = adminMatchesData?.totalCount ?? 0;
 
-  const filteredMatches = useMemo(
-    () =>
-      filterAdminMatches(
-        currentSeasonMatches,
-        searchQuery,
-        divisionFilter,
-        matchWeekFilter,
-        statusFilter,
-      ),
-    [currentSeasonMatches, searchQuery, divisionFilter, matchWeekFilter, statusFilter],
+  const currentSeasonMatches = useMemo(
+    () => allMatches.filter((match) => isMatchInDivisionCurrentSeason(match, divisions)),
+    [allMatches, divisions],
   );
 
   const availableWeeks = useMemo(
@@ -115,14 +124,33 @@ export const AdminMatchesPage = () => {
   );
 
   useEffect(() => {
-    if (matchWeekFilter !== "all" && !availableWeeks.includes(matchWeekFilter)) {
+    setCurrentPage(1);
+  }, [searchQuery, divisionFilter, matchWeekFilter, statusFilter]);
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalCount]);
+
+  useEffect(() => {
+    if (matchWeekFilter !== "all" && availableWeeks.length > 0 && !availableWeeks.includes(matchWeekFilter)) {
       setMatchWeekFilter("all");
     }
   }, [availableWeeks, matchWeekFilter]);
 
   const isLoading =
-    isMatchesLoading || isDivisionsLoading || isClubsLoading || isRefereesLoading;
+    isAdminMatchesLoading || isAllMatchesLoading || isDivisionsLoading || isRefereesLoading;
   const isSubmitting = isCreating || isUpdating;
+
+  const findMatch = (matchId: string): MatchResponse | undefined => {
+    return (
+      pagedMatches.find((item) => item.id === matchId) ??
+      allMatches.find((item) => item.id === matchId)
+    );
+  };
 
   const openCreatePanel = () => {
     const defaultDivision = divisions[0];
@@ -138,7 +166,7 @@ export const AdminMatchesPage = () => {
   };
 
   const openEditPanel = (matchId: string) => {
-    const match = matches.find((item) => item.id === matchId);
+    const match = findMatch(matchId);
 
     if (!match || match.isPlayed) {
       return;
@@ -231,7 +259,7 @@ export const AdminMatchesPage = () => {
   };
 
   const handleDeleteRequest = (matchId: string) => {
-    const match = matches.find((item) => item.id === matchId);
+    const match = findMatch(matchId);
 
     if (!match) {
       return;
@@ -404,8 +432,12 @@ export const AdminMatchesPage = () => {
         </div>
 
         <AdminMatchesTable
-          matches={filteredMatches}
+          matches={pagedMatches}
+          currentPage={currentPage}
+          pageSize={PAGE_SIZE}
+          totalCount={totalCount}
           simulatingMatchId={simulatingMatchId}
+          onPageChange={setCurrentPage}
           onSimulate={handleSimulate}
           onEdit={openEditPanel}
           onDelete={handleDeleteRequest}
@@ -418,7 +450,7 @@ export const AdminMatchesPage = () => {
           isOpen={isPanelOpen}
           values={formValues}
           divisions={divisions}
-          clubs={clubs}
+          clubs={divisionClubs}
           referees={referees}
           isSubmitting={isSubmitting}
           onChange={setFormValues}

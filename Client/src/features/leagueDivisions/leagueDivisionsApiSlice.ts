@@ -10,15 +10,20 @@ import type {
   UpdateLeagueDivisionRequest,
 } from "./leagueDivisionTypes";
 
+export type GetLeagueDivisionsParams = PaginationRequest & {
+  search?: string;
+};
+
 export const leagueDivisionsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
 
-    getLeagueDivisions: builder.query<PagedResponse<LeagueDivisionResponse>, PaginationRequest>({
+    getLeagueDivisions: builder.query<PagedResponse<LeagueDivisionResponse>, GetLeagueDivisionsParams>({
       query: (params) => ({
         url: "leagueDivisions",
         params: {
           currentPage: params.currentPage,
           pageSize: params.pageSize,
+          search: params.search,
         },
       }),
       providesTags: (result) =>

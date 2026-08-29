@@ -1,5 +1,5 @@
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubResponse } from "../../clubs/clubTypes";
+import type { ClubPreview } from "../../clubs/clubTypes";
 import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { RefereeResponse } from "../../referees/refereeTypes";
@@ -19,7 +19,7 @@ interface AdminMatchFormPanelProps {
   isOpen: boolean;
   values: AdminMatchFormValues;
   divisions: LeagueDivisionResponse[];
-  clubs: ClubResponse[];
+  clubs: ClubPreview[];
   referees: RefereeResponse[];
   isSubmitting: boolean;
   onChange: (values: AdminMatchFormValues) => void;
@@ -45,9 +45,7 @@ export const AdminMatchFormPanel = ({
 
   const title = mode === "create" ? "Schedule Match" : "Edit Match Schedule";
   const submitLabel = mode === "create" ? "Create Match" : "Update Match";
-  const divisionClubs = clubs.filter(
-    (club) => values.divisionId !== "" && club.divisionId === values.divisionId,
-  );
+  const divisionClubs = clubs;
 
   return (
     <aside className="flex h-full w-full shrink-0 flex-col border-l border-outline-variant bg-surface-container-low xl:flex xl:w-80">

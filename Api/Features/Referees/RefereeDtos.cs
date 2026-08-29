@@ -39,3 +39,11 @@ public sealed record UpdateRefereeRequest(
   int BriberyDifficulty,
   RefereePersonalityType PersonalityType,
   string? Biography);
+
+public sealed class RefereeListQuery
+{
+  public string? Search { get; init; }
+  public RefereePersonalityType? PersonalityType { get; init; }
+  public int CurrentPage { get; init; } = 1;
+  public int PageSize { get; init; } = 10;
+}

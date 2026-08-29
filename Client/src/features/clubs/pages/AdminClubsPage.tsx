@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
-import { paginateItems } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
 import {
   AdminClubFormPanel,
   type AdminClubFormValues,
@@ -18,10 +17,7 @@ import {
 } from "../clubsApiSlice";
 import type { ClubCreationDefaults, ClubResponse } from "../clubTypes";
 import { getClubDisplayName } from "../utils/clubDisplayName";
-import {
-  filterAdminClubs,
-  type ClubTypeFilter,
-} from "../utils/adminClubsHelpers";
+import type { ClubTypeFilter } from "../utils/adminClubsHelpers";
 
 const PAGE_SIZE = 15;
 
@@ -66,13 +62,30 @@ export const AdminClubsPage = () => {
     discipline: 0,
   });
 
-  const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    currentPage: 1,
-    pageSize: 500,
-  });
+  const trimmedSearch = searchQuery.trim();
+
+  const clubsQuery = useMemo(() => {
+    let isBot: boolean | undefined;
+
+    if (typeFilter === "human") {
+      isBot = false;
+    } else if (typeFilter === "bot") {
+      isBot = true;
+    }
+
+    return {
+      currentPage,
+      pageSize: PAGE_SIZE,
+      search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
+      divisionId: divisionFilter === "all" ? undefined : divisionFilter,
+      isBot,
+    };
+  }, [currentPage, trimmedSearch, divisionFilter, typeFilter]);
+
+  const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery(clubsQuery);
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
     currentPage: 1,
-    pageSize: 100,
+    pageSize: 50,
   });
   const { data: creationDefaults, isLoading: isDefaultsLoading } =
     useGetClubCreationDefaultsQuery();
@@ -84,18 +97,9 @@ export const AdminClubsPage = () => {
   const [deleteClub] = useDeleteClubMutation();
 
   const clubs = clubsData?.items ?? [];
+  const totalCount = clubsData?.totalCount ?? 0;
   const divisions = divisionsData?.items ?? [];
   const hasSeededDefaults = useRef(false);
-
-  const filteredClubs = useMemo(
-    () => filterAdminClubs(clubs, searchQuery, divisionFilter, typeFilter),
-    [clubs, searchQuery, divisionFilter, typeFilter],
-  );
-
-  const paginatedClubs = useMemo(
-    () => paginateItems(filteredClubs, currentPage, PAGE_SIZE),
-    [filteredClubs, currentPage],
-  );
 
   const editingClub = useMemo(
     () => clubs.find((club) => club.id === editingClubId),
@@ -107,12 +111,12 @@ export const AdminClubsPage = () => {
   }, [searchQuery, divisionFilter, typeFilter]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(filteredClubs.length / PAGE_SIZE));
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
-  }, [currentPage, filteredClubs.length]);
+  }, [currentPage, totalCount]);
 
   useEffect(() => {
     if (!creationDefaults || hasSeededDefaults.current) {
@@ -183,7 +187,7 @@ export const AdminClubsPage = () => {
       return;
     }
 
-    if (formValues.name.trim() !== editingClub.name) {
+    if (formValues.name.trim() !== getClubDisplayName(editingClub)) {
       await updateClub({
         id: editingClub.id,
         name: formValues.name.trim(),
@@ -324,10 +328,10 @@ export const AdminClubsPage = () => {
         </div>
 
         <AdminClubsTable
-          clubs={paginatedClubs}
+          clubs={clubs}
           currentPage={currentPage}
           pageSize={PAGE_SIZE}
-          totalCount={filteredClubs.length}
+          totalCount={totalCount}
           onPageChange={setCurrentPage}
           onEdit={openEditPanel}
           onDelete={handleDelete}

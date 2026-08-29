@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetClubsQuery } from "../../clubs/clubsApiSlice";
+import { useGetClubOptionsQuery } from "../../clubs/clubsApiSlice";
 import {
   useGetLeagueDivisionsQuery,
   useProcessLeagueDivisionWeekMutation,
@@ -24,12 +24,9 @@ import {
 export const AdminDashboardPage = () => {
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
     currentPage: 1,
-    pageSize: 100,
+    pageSize: 50,
   });
-  const { data: clubsData, isLoading: isClubsLoading } = useGetClubsQuery({
-    currentPage: 1,
-    pageSize: 500,
-  });
+  const { data: clubs = [], isLoading: isClubsLoading } = useGetClubOptionsQuery();
   const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
   const { data: scheduledMatches = [] } = useGetScheduledUnplayedMatchesQuery(1);
 
@@ -38,7 +35,6 @@ export const AdminDashboardPage = () => {
   const [simulateMatch, { isLoading: isSimulating }] = useSimulateMatchMutation();
 
   const divisions = divisionsData?.items ?? [];
-  const clubs = clubsData?.items ?? [];
 
   const stats = useMemo(
     () => buildAdminDashboardStats(divisions, clubs, matches),

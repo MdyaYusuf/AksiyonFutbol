@@ -18,6 +18,17 @@ public class BasePlayerService(
 {
   private const string CacheTag = "base-players";
 
+  public Task<ReturnModel<PagedResponse<BasePlayerResponseDto>>> GetAllAsync(
+    BasePlayerListQuery query,
+    CancellationToken cancellationToken = default)
+  {
+    return GetAllAsync(
+      filter: BuildListFilter(query),
+      currentPage: query.CurrentPage,
+      pageSize: query.PageSize,
+      cancellationToken: cancellationToken);
+  }
+
   public async Task<ReturnModel<PagedResponse<BasePlayerResponseDto>>> GetAllAsync(
     Expression<Func<BasePlayer, bool>>? filter = null,
     Func<IQueryable<BasePlayer>, IQueryable<BasePlayer>>? include = null,
@@ -169,6 +180,35 @@ public class BasePlayerService(
     };
   }
 
+  public async Task<ReturnModel<List<BasePlayerOptionDto>>> GetOptionsAsync(
+    CancellationToken cancellationToken = default)
+  {
+    List<BasePlayer> basePlayers = await _basePlayerRepository.GetAllAsync(
+      orderBy: query => query
+        .OrderBy(bp => bp.Position)
+        .ThenBy(bp => bp.DefaultLastName)
+        .ThenBy(bp => bp.DefaultFirstName),
+      cancellationToken: cancellationToken);
+
+    List<BasePlayerOptionDto> options = basePlayers
+      .Select(bp => new BasePlayerOptionDto
+      {
+        Id = bp.Id,
+        DefaultFirstName = bp.DefaultFirstName,
+        DefaultLastName = bp.DefaultLastName,
+        Position = bp.Position
+      })
+      .ToList();
+
+    return new ReturnModel<List<BasePlayerOptionDto>>()
+    {
+      Success = true,
+      Message = "Oyuncu şablonu seçenekleri başarılı bir şekilde getirildi.",
+      Data = options,
+      StatusCode = 200
+    };
+  }
+
   public async Task<ReturnModel<CreatedBasePlayerResponseDto>> AddAsync(
     CreateBasePlayerRequest request,
     string userRole,
@@ -278,6 +318,28 @@ public class BasePlayerService(
       Message = "Oyuncu şablonu başarılı bir şekilde silindi.",
       StatusCode = 200
     };
+  }
+
+  private static Expression<Func<BasePlayer, bool>>? BuildListFilter(BasePlayerListQuery query)
+  {
+    string? trimmedSearch = query.Search?.Trim();
+    bool hasSearch = !string.IsNullOrWhiteSpace(trimmedSearch);
+    bool hasPosition = query.Position.HasValue;
+
+    if (!hasSearch && !hasPosition)
+    {
+      return null;
+    }
+
+    string term = trimmedSearch ?? string.Empty;
+    PlayerPosition position = query.Position ?? default;
+
+    return bp =>
+      (!hasPosition || bp.Position == position)
+      && (!hasSearch
+        || bp.DefaultFirstName.Contains(term)
+        || bp.DefaultLastName.Contains(term)
+        || (bp.Nationality != null && bp.Nationality.Contains(term)));
   }
 
   private async Task<PagedResponse<BasePlayerResponseDto>> GetPagedBasePlayersAsync(

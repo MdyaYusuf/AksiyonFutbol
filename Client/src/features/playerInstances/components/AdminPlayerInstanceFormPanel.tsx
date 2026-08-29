@@ -2,12 +2,13 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import {
   PlayerPosition,
   PreferredFoot,
-  type BasePlayerResponse,
+  type BasePlayerOption,
   type PlayerAttributes,
 } from "../../basePlayers/basePlayerTypes";
-import type { ClubResponse } from "../../clubs/clubTypes";
+import type { ClubOption } from "../../clubs/clubTypes";
 import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
 import { applyPositionChange } from "../utils/playerAttributeHelpers";
+import { getPositionLabel } from "../utils/squadHelpers";
 import { AdminAttributeEditor } from "./AdminAttributeEditor";
 
 export type PlayerInstancePanelTab = "assign" | "custom" | "edit";
@@ -59,8 +60,8 @@ interface AdminPlayerInstanceFormPanelProps {
   isOpen: boolean;
   isSubmitting: boolean;
   hasEditingPlayer: boolean;
-  clubs: ClubResponse[];
-  basePlayers: BasePlayerResponse[];
+  clubs: ClubOption[];
+  basePlayers: BasePlayerOption[];
   assignValues: AssignFromBaseFormValues;
   customValues: CustomPlayerFormValues;
   editValues: EditPlayerFormValues;
@@ -196,8 +197,8 @@ export const AdminPlayerInstanceFormPanel = ({
                 <option value="">Select base player</option>
                 {basePlayers.map((player) => (
                   <option key={player.id} value={player.id}>
-                    {player.defaultFirstName} {player.defaultLastName} (OVR{" "}
-                    {player.overallRating})
+                    {player.defaultFirstName} {player.defaultLastName} (
+                    {getPositionLabel(player.position)})
                   </option>
                 ))}
               </select>

@@ -12,12 +12,20 @@ import type {
 export const refereesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
 
-    getReferees: builder.query<PagedResponse<RefereeResponse>, PaginationRequest>({
+    getReferees: builder.query<
+      PagedResponse<RefereeResponse>,
+      PaginationRequest & {
+        search?: string;
+        personalityType?: RefereePersonalityType;
+      }
+    >({
       query: (params) => ({
         url: "referees",
         params: {
           currentPage: params.currentPage,
           pageSize: params.pageSize,
+          search: params.search,
+          personalityType: params.personalityType,
         },
       }),
       providesTags: (result) =>
