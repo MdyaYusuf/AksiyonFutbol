@@ -4,18 +4,26 @@ import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 interface AdminQuickActionsProps {
   onAdvanceMatchWeek: () => void;
   onSimulateNextFixture: () => void;
+  onRunCompetitiveSeating: () => void;
   isAdvancing: boolean;
   isSimulating: boolean;
+  isRunningSeating: boolean;
   canSimulate: boolean;
+  canRunSeating: boolean;
+  seatingQueueSummary: string;
   advanceLabel?: string;
 }
 
 export const AdminQuickActions = ({
   onAdvanceMatchWeek,
   onSimulateNextFixture,
+  onRunCompetitiveSeating,
   isAdvancing,
   isSimulating,
+  isRunningSeating,
   canSimulate,
+  canRunSeating,
+  seatingQueueSummary,
   advanceLabel,
 }: AdminQuickActionsProps) => {
   return (
@@ -38,6 +46,31 @@ export const AdminQuickActions = ({
           <MaterialIcon
             name="arrow_forward"
             className="text-[18px] opacity-50 transition-all group-hover:translate-x-1 group-hover:opacity-100"
+          />
+        </button>
+
+        <div className="my-1 h-px w-full bg-outline-variant" />
+
+        <div className="rounded border border-outline-variant bg-surface-container-low px-3 py-2">
+          <p className="text-[10px] text-label-caps text-on-surface-variant">
+            Competitive seating queue
+          </p>
+          <p className="mt-1 text-body-sm text-on-surface">{seatingQueueSummary}</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onRunCompetitiveSeating}
+          disabled={isRunningSeating || !canRunSeating}
+          className="group flex w-full items-center justify-between rounded border border-secondary-container bg-secondary-container px-4 py-2.5 text-label-caps text-on-secondary-container transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span className="flex items-center gap-2">
+            <MaterialIcon name="event_seat" className="text-[16px]" />
+            {isRunningSeating ? "Seating..." : "Run Competitive Seating"}
+          </span>
+          <MaterialIcon
+            name="play_arrow"
+            className="text-[16px] opacity-0 transition-opacity group-hover:opacity-100"
           />
         </button>
 

@@ -1,6 +1,7 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
 using Api.Core.Repositories;
+using Api.Core.Responses;
 using Api.Features.BaseBotClubs;
 using Api.Features.BasePlayers;
 using Api.Features.ClubDrafts;
@@ -24,6 +25,74 @@ public class CompetitiveSeatingService(
   IUnitOfWork _unitOfWork,
   IOptions<GameOptions> _gameOptions) : ICompetitiveSeatingService
 {
+  public async Task<ReturnModel<CompetitiveSeatingQueuePreviewDto>> GetQueuePreviewAsync(
+    CancellationToken cancellationToken = default)
+  {
+    List<Club> queuedClubs = await _clubRepository.GetAllAsync(
+      filter: c => c.LifecycleStatus == ClubLifecycleStatus.AwaitingPlacement,
+      cancellationToken: cancellationToken);
+
+    List<CompetitiveSeatingQueueTierDto> byTier = Enum.GetValues<LeagueTier>()
+      .OrderBy(t => (int)t)
+      .Select(tier => new CompetitiveSeatingQueueTierDto
+      {
+        Tier = tier,
+        ClubCount = queuedClubs.Count(c => c.PlacementTargetTier == tier)
+      })
+      .Where(x => x.ClubCount > 0)
+      .ToList();
+
+    return new ReturnModel<CompetitiveSeatingQueuePreviewDto>
+    {
+      Success = true,
+      StatusCode = StatusCodes.Status200OK,
+      Data = new CompetitiveSeatingQueuePreviewDto
+      {
+        TotalQueuedClubs = queuedClubs.Count,
+        ByTier = byTier
+      }
+    };
+  }
+
+  public async Task<ReturnModel<CompetitiveSeatingRunResultDto>> RunSeatingAsync(
+    CancellationToken cancellationToken = default)
+  {
+    List<Club> queuedClubs = await _clubRepository.GetAllAsync(
+      filter: c => c.LifecycleStatus == ClubLifecycleStatus.AwaitingPlacement,
+      cancellationToken: cancellationToken);
+
+    int clubsQueued = queuedClubs.Count;
+
+    if (clubsQueued == 0)
+    {
+      return new ReturnModel<CompetitiveSeatingRunResultDto>
+      {
+        Success = true,
+        StatusCode = StatusCodes.Status200OK,
+        Message = "Bekleyen kulüp yok.",
+        Data = new CompetitiveSeatingRunResultDto
+        {
+          DivisionsCreated = 0,
+          ClubsSeated = 0
+        }
+      };
+    }
+
+    int divisionsCreated = await SeatQueuedClubsAsync(cancellationToken);
+
+    return new ReturnModel<CompetitiveSeatingRunResultDto>
+    {
+      Success = true,
+      StatusCode = StatusCodes.Status200OK,
+      Message = $"{divisionsCreated} rekabetçi lig oluşturuldu, {clubsQueued} kulüp yerleştirildi.",
+      Data = new CompetitiveSeatingRunResultDto
+      {
+        DivisionsCreated = divisionsCreated,
+        ClubsSeated = clubsQueued
+      }
+    };
+  }
+
   public async Task<int> SeatQueuedClubsAsync(CancellationToken cancellationToken = default)
   {
     GameOptions options = _gameOptions.Value;

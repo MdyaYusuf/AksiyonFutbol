@@ -19,7 +19,12 @@ import {
   buildDivisionGlanceRows,
   buildRecentActivity,
   findAdvanceMatchWeekTarget,
+  formatSeatingQueueSummary,
 } from "../utils/adminDashboardHelpers";
+import {
+  useGetCompetitiveSeatingQueueQuery,
+  useRunCompetitiveSeatingMutation,
+} from "../../competitiveSeating/competitiveSeatingApiSlice";
 
 export const AdminDashboardPage = () => {
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({
@@ -29,10 +34,13 @@ export const AdminDashboardPage = () => {
   const { data: clubs = [], isLoading: isClubsLoading } = useGetClubOptionsQuery();
   const { data: matches = [], isLoading: isMatchesLoading } = useGetMatchesQuery();
   const { data: scheduledMatches = [] } = useGetScheduledUnplayedMatchesQuery(1);
+  const { data: seatingQueue } = useGetCompetitiveSeatingQueueQuery();
 
   const [processWeek, { isLoading: isProcessingWeek }] =
     useProcessLeagueDivisionWeekMutation();
   const [simulateMatch, { isLoading: isSimulating }] = useSimulateMatchMutation();
+  const [runCompetitiveSeating, { isLoading: isRunningSeating }] =
+    useRunCompetitiveSeatingMutation();
 
   const divisions = divisionsData?.items ?? [];
 
@@ -76,6 +84,13 @@ export const AdminDashboardPage = () => {
     await simulateMatch(nextMatch.id);
   };
 
+  const handleRunCompetitiveSeating = async () => {
+    await runCompetitiveSeating();
+  };
+
+  const seatingQueueSummary = formatSeatingQueueSummary(seatingQueue);
+  const canRunSeating = (seatingQueue?.totalQueuedClubs ?? 0) > 0;
+
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-on-surface-variant">
@@ -106,9 +121,13 @@ export const AdminDashboardPage = () => {
         <AdminQuickActions
           onAdvanceMatchWeek={handleProcessWeek}
           onSimulateNextFixture={handleSimulateNextFixture}
+          onRunCompetitiveSeating={handleRunCompetitiveSeating}
           isAdvancing={isProcessingWeek}
           isSimulating={isSimulating}
+          isRunningSeating={isRunningSeating}
           canSimulate={scheduledMatches.length > 0}
+          canRunSeating={canRunSeating}
+          seatingQueueSummary={seatingQueueSummary}
           advanceLabel={
             advanceTarget
               ? `Process Week (${advanceTarget.name})`

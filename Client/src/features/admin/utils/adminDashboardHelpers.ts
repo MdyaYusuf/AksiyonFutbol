@@ -1,10 +1,28 @@
 import type { ClubOption } from "../../clubs/clubTypes";
+import { getLeagueTierLabel } from "../../clubs/utils/clubLifecycleHelpers";
 import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
+import type { CompetitiveSeatingQueuePreview } from "../../competitiveSeating/competitiveSeatingTypes";
 import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
 import type { MatchResponse } from "../../matches/matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
 
 export { getGroupDisplayLabel } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
+
+export const formatSeatingQueueSummary = (
+  preview?: CompetitiveSeatingQueuePreview,
+): string => {
+  if (!preview || preview.totalQueuedClubs === 0) {
+    return "No clubs queued for competitive seating";
+  }
+
+  const tierParts = preview.byTier.map(
+    (entry) => `${entry.clubCount} ${getLeagueTierLabel(entry.tier)}`,
+  );
+
+  const clubLabel = preview.totalQueuedClubs === 1 ? "club" : "clubs";
+
+  return `${preview.totalQueuedClubs} ${clubLabel} queued (${tierParts.join(", ")})`;
+};
 
 export type DivisionHealthStatus = "healthy" | "pending" | "alert";
 export type ActivityType = "match-created" | "club-created" | "match-played";
