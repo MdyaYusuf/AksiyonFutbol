@@ -77,7 +77,7 @@ export const AdminClubFormPanel = ({
   const submitLabel = isCreate ? "Save Club" : "Update Club";
 
   return (
-    <aside className="z-20 flex h-full w-full shrink-0 flex-col overflow-hidden border-l border-outline-variant bg-surface shadow-[-4px_0_15px_rgba(0,0,0,0.5)] md:flex lg:w-96">
+    <aside className="z-20 flex min-h-0 w-full shrink-0 flex-col overflow-hidden border-l border-outline-variant bg-surface shadow-[-4px_0_15px_rgba(0,0,0,0.5)] md:flex lg:w-96">
       <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-low p-5">
         <h3 className="flex items-center gap-2 text-headline-sm text-on-surface">
           <MaterialIcon

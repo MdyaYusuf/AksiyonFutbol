@@ -206,7 +206,8 @@ export const AdminBasePlayersPage = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div>
       <div className="mb-8">
         <h2 className="mb-1 text-headline-md font-bold text-on-surface">Base Players</h2>
         <p className="text-body-sm text-on-surface-variant">
@@ -277,6 +278,7 @@ export const AdminBasePlayersPage = () => {
         onClose={closePanel}
         onSubmit={handleSubmit}
       />
+      </div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
 
 interface LeagueStandingsHeaderProps {
   division: LeagueDivisionResponse;
+  maxMatchWeek: number;
   selectedMatchWeek: number;
   onMatchWeekChange: (matchWeek: number) => void;
   onExport: () => void;
@@ -25,12 +26,13 @@ const getDivisionSubtitle = (division: LeagueDivisionResponse): string => {
 
 export const LeagueStandingsHeader = ({
   division,
+  maxMatchWeek,
   selectedMatchWeek,
   onMatchWeekChange,
   onExport,
 }: LeagueStandingsHeaderProps) => {
   const matchWeekOptions = Array.from(
-    { length: Math.max(1, division.currentMatchWeek) },
+    { length: Math.max(1, maxMatchWeek) },
     (_, index) => index + 1,
   );
 

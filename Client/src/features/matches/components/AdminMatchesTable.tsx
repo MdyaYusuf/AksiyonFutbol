@@ -30,34 +30,29 @@ export const AdminMatchesTable = ({
   const rangeStart = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const rangeEnd = Math.min(currentPage * pageSize, totalCount);
 
+  const headerCellClassName =
+    "sticky top-0 z-20 border-b border-outline-variant bg-surface px-4 pb-3 pt-4 font-normal text-label-caps text-on-surface-variant shadow-[0_1px_0_0_rgb(51_65_85)]";
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden bg-surface">
-      <div className="flex-1 overflow-auto p-container-padding">
-        <table className="w-full border-collapse text-left">
-          <thead className="sticky top-0 z-10 bg-surface shadow-[0_1px_0_#334155]">
+      <div className="min-h-0 flex-1 overflow-auto">
+        <table className="w-full border-separate border-spacing-0 text-left">
+          <thead>
             <tr>
-              <th className="pb-3 font-normal text-label-caps text-on-surface-variant">Wk</th>
-              <th className="pb-3 font-normal text-label-caps text-on-surface-variant">
-                Date / Time
-              </th>
-              <th className="pb-3 text-right font-normal text-label-caps text-on-surface-variant">
-                Home
-              </th>
-              <th className="pb-3 text-center font-normal text-label-caps text-on-surface-variant">
-                Score
-              </th>
-              <th className="pb-3 font-normal text-label-caps text-on-surface-variant">Away</th>
-              <th className="pb-3 font-normal text-label-caps text-on-surface-variant">Referee</th>
-              <th className="pb-3 font-normal text-label-caps text-on-surface-variant">Status</th>
-              <th className="pb-3 text-right font-normal text-label-caps text-on-surface-variant">
-                Actions
-              </th>
+              <th className={headerCellClassName}>Wk</th>
+              <th className={headerCellClassName}>Date / Time</th>
+              <th className={`${headerCellClassName} text-right`}>Home</th>
+              <th className={`${headerCellClassName} text-center`}>Score</th>
+              <th className={headerCellClassName}>Away</th>
+              <th className={headerCellClassName}>Referee</th>
+              <th className={headerCellClassName}>Status</th>
+              <th className={`${headerCellClassName} text-right`}>Actions</th>
             </tr>
           </thead>
           <tbody className="text-body-sm">
             {matches.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-10 text-center text-on-surface-variant">
+                <td colSpan={8} className="px-4 py-10 text-center text-on-surface-variant">
                   No matches found.
                 </td>
               </tr>
@@ -71,21 +66,21 @@ export const AdminMatchesTable = ({
                     className="group border-b border-surface-variant transition-colors hover:bg-surface-container"
                   >
                     <td
-                      className={`py-3 ${isPlayed ? "text-on-surface-variant" : "text-on-surface"}`}
+                      className={`px-4 py-3 ${isPlayed ? "text-on-surface-variant" : "text-on-surface"}`}
                     >
                       {match.matchWeek}
                     </td>
                     <td
-                      className={`py-3 font-data-mono text-data-mono ${isPlayed ? "text-on-surface-variant" : "text-on-surface"}`}
+                      className={`px-4 py-3 font-data-mono text-data-mono ${isPlayed ? "text-on-surface-variant" : "text-on-surface"}`}
                     >
                       {formatAdminMatchDateTime(match.matchDate)}
                     </td>
                     <td
-                      className={`py-3 text-right ${isPlayed ? "font-medium text-on-surface-variant" : "font-bold text-on-surface"}`}
+                      className={`px-4 py-3 text-right ${isPlayed ? "font-medium text-on-surface-variant" : "font-bold text-on-surface"}`}
                     >
                       {match.homeClubName}
                     </td>
-                    <td className="py-3 text-center">
+                    <td className="px-4 py-3 text-center">
                       {isPlayed ? (
                         <span className="text-stat-value text-primary">
                           {match.homeScore ?? 0} - {match.awayScore ?? 0}
@@ -95,14 +90,14 @@ export const AdminMatchesTable = ({
                       )}
                     </td>
                     <td
-                      className={`py-3 ${isPlayed ? "font-medium text-on-surface-variant" : "font-bold text-on-surface"}`}
+                      className={`px-4 py-3 ${isPlayed ? "font-medium text-on-surface-variant" : "font-bold text-on-surface"}`}
                     >
                       {match.awayClubName}
                     </td>
-                    <td className="py-3 text-on-surface-variant">
+                    <td className="px-4 py-3 text-on-surface-variant">
                       {match.refereeName?.trim() || "—"}
                     </td>
-                    <td className="py-3">
+                    <td className="px-4 py-3">
                       {isPlayed ? (
                         <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                           Played
@@ -113,7 +108,7 @@ export const AdminMatchesTable = ({
                         </span>
                       )}
                     </td>
-                    <td className="py-3 text-right">
+                    <td className="px-4 py-3 text-right">
                       {isPlayed ? (
                         <Link
                           to={`/app/matches/${match.id}`}

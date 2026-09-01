@@ -3,7 +3,10 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { ClubLifecycleStatus } from "../../clubs/clubTypes";
-import { getPlacementQueueMessage } from "../../clubs/utils/clubLifecycleHelpers";
+import {
+  getPlacementQueueSummary,
+  getPlacementQueueTitle,
+} from "../../clubs/utils/clubLifecycleHelpers";
 import { useGetMatchesQuery } from "../../matches/matchesApiSlice";
 import { LeagueStandingsHeader } from "../components/LeagueStandingsHeader";
 import { StandingsTable } from "../components/StandingsTable";
@@ -12,6 +15,8 @@ import {
   buildStandings,
   exportStandingsCsv,
   getStandingsLegendItems,
+  resolveLeagueDisplayMaxMatchWeek,
+  resolveScheduledMaxMatchWeek,
 } from "../utils/standingsHelpers";
 
 export const LeaguePage = () => {
@@ -27,10 +32,47 @@ export const LeaguePage = () => {
     week: number;
   } | null>(null);
 
-  const selectedMatchWeek =
-    division != null && weekSelection?.divisionId === division.id
-      ? weekSelection.week
-      : Math.max(1, division?.currentMatchWeek ?? 1);
+  const divisionMatches = useMemo(() => {
+    if (!club) {
+      return [];
+    }
+
+    return allMatches.filter(
+      (match) =>
+        match.divisionId === club.divisionId &&
+        match.season === division?.currentSeason,
+    );
+  }, [allMatches, club, division]);
+
+  const maxMatchWeek = useMemo(() => {
+    if (!division) {
+      return 1;
+    }
+
+    const scheduledMax = resolveScheduledMaxMatchWeek(
+      divisionMatches,
+      division.id,
+      division.currentSeason,
+    );
+
+    return resolveLeagueDisplayMaxMatchWeek(
+      division.currentMatchWeek,
+      scheduledMax,
+      division.isTutorial,
+    );
+  }, [division, divisionMatches]);
+
+  const selectedMatchWeek = useMemo(() => {
+    if (!division) {
+      return 1;
+    }
+
+    if (weekSelection?.divisionId === division.id) {
+      return Math.min(weekSelection.week, maxMatchWeek);
+    }
+
+    return maxMatchWeek;
+  }, [division, maxMatchWeek, weekSelection]);
 
   const handleMatchWeekChange = (week: number) => {
     if (division == null) {
@@ -75,18 +117,6 @@ export const LeaguePage = () => {
   const isLoading =
     isClubLoading || isDivisionLoading || isClubsLoading || isMatchesLoading;
 
-  const divisionMatches = useMemo(() => {
-    if (!club) {
-      return [];
-    }
-
-    return allMatches.filter(
-      (match) =>
-        match.divisionId === club.divisionId &&
-        match.season === division?.currentSeason,
-    );
-  }, [allMatches, club, division]);
-
   const seasonLooksComplete =
     !!division &&
     divisionMatches.length > 0 &&
@@ -121,10 +151,10 @@ export const LeaguePage = () => {
         <div className="mx-auto max-w-7xl space-y-6">
           <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3">
             <p className="text-body-sm font-semibold text-on-surface">
-              {getPlacementQueueMessage(club.placementTargetTier)}
+              {getPlacementQueueTitle(club.placementTargetTier)}
             </p>
             <p className="text-body-sm text-on-surface-variant">
-              Your placement table is archived. Competitive fixtures appear after Monday seating.
+              {getPlacementQueueSummary(club.placementTargetTier)}
             </p>
           </div>
         </div>
@@ -142,6 +172,7 @@ export const LeaguePage = () => {
     <div className="mx-auto max-w-7xl space-y-6">
       <LeagueStandingsHeader
         division={division}
+        maxMatchWeek={maxMatchWeek}
         selectedMatchWeek={selectedMatchWeek}
         onMatchWeekChange={handleMatchWeekChange}
         onExport={() =>
@@ -152,10 +183,10 @@ export const LeaguePage = () => {
       {isAwaitingPlacement ? (
         <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3">
           <p className="text-body-sm font-semibold text-on-surface">
-            {getPlacementQueueMessage(club.placementTargetTier)}
+            {getPlacementQueueTitle(club.placementTargetTier)}
           </p>
           <p className="text-body-sm text-on-surface-variant">
-            This placement table is sealed. Competitive seating packs 8-club divisions on Monday.
+            {getPlacementQueueSummary(club.placementTargetTier)}
           </p>
         </div>
       ) : null}

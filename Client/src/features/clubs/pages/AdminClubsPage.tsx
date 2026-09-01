@@ -254,8 +254,8 @@ export const AdminClubsPage = () => {
   ];
 
   return (
-    <div className="-m-container-padding flex h-[calc(100vh-4rem)] overflow-hidden">
-      <div className="flex min-w-0 flex-1 flex-col gap-6 overflow-hidden border-r border-outline-variant bg-surface-container-low/50 p-container-padding">
+    <div className="-m-container-padding flex min-h-0 flex-1 overflow-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-hidden border-r border-outline-variant bg-surface-container-low/50 p-container-padding">
         <div className="flex shrink-0 flex-col gap-4">
           <div>
             <h2 className="text-headline-md text-on-surface">Clubs</h2>

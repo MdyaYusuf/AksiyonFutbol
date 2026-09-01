@@ -100,7 +100,8 @@ export const AdminDashboardPage = () => {
   }
 
   return (
-    <div className="space-y-gutter">
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="space-y-gutter">
       <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <h2 className="text-headline-md leading-tight text-on-surface">Admin Dashboard</h2>
@@ -137,6 +138,7 @@ export const AdminDashboardPage = () => {
       </div>
 
       <AdminDivisionsGlanceTable rows={divisionRows} />
+      </div>
     </div>
   );
 };

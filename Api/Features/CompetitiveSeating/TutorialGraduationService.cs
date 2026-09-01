@@ -102,6 +102,7 @@ public class TutorialGraduationService(
       _clubRepository.Update(club);
     }
 
+    division.CurrentMatchWeek = options.TutorialMatchWeeks;
     division.LifecycleStatus = DivisionLifecycleStatus.Sealed;
     _leagueDivisionRepository.Update(division);
   }

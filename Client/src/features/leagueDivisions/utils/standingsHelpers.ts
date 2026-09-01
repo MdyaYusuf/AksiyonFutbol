@@ -1,6 +1,7 @@
 import type { ClubPreview } from "../../clubs/clubTypes";
 import { LeagueTier } from "../../clubs/clubTypes";
 import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
+import { TUTORIAL_MATCH_WEEKS } from "../../clubs/utils/clubLifecycleHelpers";
 import type { MatchResponse } from "../../matches/matchTypes";
 import { parseApiDate } from "../../../core/utils/dateTime";
 
@@ -549,6 +550,43 @@ export const getStandingsLegendItems = (
   }
 
   return items;
+};
+
+type MatchWeekSource = {
+  divisionId: number;
+  season: number;
+  matchWeek: number;
+};
+
+export const resolveScheduledMaxMatchWeek = (
+  matches: MatchWeekSource[],
+  divisionId: number,
+  season: number,
+): number => {
+  let max = 0;
+
+  for (const match of matches) {
+    if (match.divisionId === divisionId && match.season === season && match.matchWeek > max) {
+      max = match.matchWeek;
+    }
+  }
+
+  return max;
+};
+
+export const resolveLeagueDisplayMaxMatchWeek = (
+  currentMatchWeek: number,
+  scheduledMaxMatchWeek: number,
+  isTutorial: boolean,
+): number => {
+  const scheduleCap =
+    scheduledMaxMatchWeek > 0
+      ? scheduledMaxMatchWeek
+      : isTutorial
+        ? TUTORIAL_MATCH_WEEKS
+        : currentMatchWeek;
+
+  return Math.max(1, Math.min(currentMatchWeek, scheduleCap));
 };
 
 export const exportStandingsCsv = (

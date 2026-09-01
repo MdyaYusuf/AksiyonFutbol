@@ -18,14 +18,25 @@ export const getLeagueTierLabel = (tier: LeagueTier): string => {
   return "Iron";
 };
 
-export const getPlacementQueueMessage = (
+export const getPlacementQueueTitle = (
   tier?: LeagueTier | null,
 ): string => {
   if (tier == null) {
-    return "Queued for seating — seats Monday 19:00";
+    return "Placement complete — waiting for competitive seating";
   }
 
-  return `Queued for ${getLeagueTierLabel(tier)} — seats Monday 19:00`;
+  return `Placement complete — queued for ${getLeagueTierLabel(tier)}`;
+};
+
+/** @deprecated Use getPlacementQueueTitle for headlines. */
+export const getPlacementQueueMessage = getPlacementQueueTitle;
+
+export const getPlacementQueueSummary = (
+  tier?: LeagueTier | null,
+): string => {
+  const tierLabel = tier != null ? getLeagueTierLabel(tier) : "competitive";
+
+  return `Waiting for an 8-club ${tierLabel} division. Seating runs Mondays 19:00 Istanbul or earlier when every team is ready. Bots fill open slots. Squad and cash unchanged while waiting. League has your sealed placement table until competitive fixtures appear.`;
 };
 
 export const getTutorialWeekBanner = (currentMatchWeek: number): string => {

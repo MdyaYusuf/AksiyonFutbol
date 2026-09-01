@@ -159,7 +159,8 @@ export const AdminRefereesPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-container-padding lg:flex-row">
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="flex flex-col gap-container-padding lg:flex-row">
       <div className="flex min-w-0 flex-1 flex-col gap-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
@@ -236,6 +237,7 @@ export const AdminRefereesPage = () => {
         onClose={closePanel}
         onSubmit={handleSubmit}
       />
+      </div>
     </div>
   );
 };

@@ -48,7 +48,7 @@ export const AdminMatchFormPanel = ({
   const divisionClubs = clubs;
 
   return (
-    <aside className="flex h-full w-full shrink-0 flex-col border-l border-outline-variant bg-surface-container-low xl:flex xl:w-80">
+    <aside className="flex min-h-0 w-full shrink-0 flex-col border-l border-outline-variant bg-surface-container-low xl:flex xl:w-80">
       <div className="flex items-center gap-2 border-b border-outline-variant bg-surface p-4">
         <MaterialIcon name="event_available" className="text-primary" />
         <h3 className="flex-1 text-headline-sm font-semibold text-on-surface">{title}</h3>

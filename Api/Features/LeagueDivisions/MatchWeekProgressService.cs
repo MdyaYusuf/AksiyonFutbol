@@ -47,7 +47,7 @@ public class MatchWeekProgressService(
       return false;
     }
 
-    if (division.CurrentMatchWeek >= _gameOptions.Value.MaximumMatchWeek)
+    if (division.CurrentMatchWeek >= ResolveMatchWeekCap(division))
     {
       return false;
     }
@@ -71,5 +71,17 @@ public class MatchWeekProgressService(
     await _cache.RemoveByTagAsync(LeagueCacheTag, cancellationToken);
 
     return true;
+  }
+
+  private int ResolveMatchWeekCap(LeagueDivision division)
+  {
+    GameOptions options = _gameOptions.Value;
+
+    if (division.IsTutorial)
+    {
+      return options.TutorialMatchWeeks;
+    }
+
+    return Math.Min(options.CompetitiveMatchWeeks, options.MaximumMatchWeek);
   }
 }

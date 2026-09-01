@@ -112,7 +112,8 @@ export const AdminProcessSeasonEndPage = () => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl">
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="mx-auto w-full max-w-7xl">
       <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
           <h1 className="font-headline-md text-headline-md text-on-surface">
@@ -183,6 +184,7 @@ export const AdminProcessSeasonEndPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

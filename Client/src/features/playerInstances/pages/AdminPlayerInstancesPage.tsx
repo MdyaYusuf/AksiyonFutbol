@@ -353,8 +353,8 @@ export const AdminPlayerInstancesPage = () => {
   }
 
   return (
-    <div className="-m-container-padding flex h-[calc(100vh-4rem)] overflow-hidden">
-      <div className="min-w-0 flex-1 overflow-y-auto p-container-padding">
+    <div className="-m-container-padding flex min-h-0 flex-1 overflow-hidden">
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-container-padding">
         <div className="mx-auto flex max-w-7xl flex-col gap-gutter">
           <div className="mb-2 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
             <div>

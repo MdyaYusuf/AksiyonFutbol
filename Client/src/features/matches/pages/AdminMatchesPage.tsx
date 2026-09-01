@@ -319,8 +319,8 @@ export const AdminMatchesPage = () => {
     : 0;
 
   return (
-    <div className="-m-container-padding flex h-[calc(100vh-4rem)] overflow-hidden">
-      <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden border-r border-outline-variant">
+    <div className="-m-container-padding flex min-h-0 flex-1 overflow-hidden">
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-r border-outline-variant">
         <div className="shrink-0 border-b border-outline-variant bg-surface p-container-padding pb-4">
           <div className="mb-4">
             <h2 className="text-headline-md font-bold text-on-surface">Matches</h2>

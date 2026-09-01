@@ -7,15 +7,15 @@ export const AdminLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
+    <div className="flex h-screen overflow-hidden bg-background text-on-surface">
       <AdminSidebar
         mobileOpen={mobileNavOpen}
         onClose={() => setMobileNavOpen(false)}
       />
 
-      <div className="flex min-h-screen flex-col lg:ml-64">
+      <div className="flex min-h-0 flex-1 flex-col lg:ml-64">
         <AdminHeader onMenuClick={() => setMobileNavOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-container-padding">
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden p-container-padding">
           <Outlet />
         </main>
       </div>
