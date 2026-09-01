@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
 import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
+import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
 import { MyDealsSummary } from "../components/MyDealsSummary";
 import { MyDealsTable } from "../components/MyDealsTable";
 import { MyDealsToolbar } from "../components/MyDealsToolbar";
@@ -18,11 +19,14 @@ import {
   type DealStatusFilter,
   type DealsTab,
 } from "../utils/myDealsHelpers";
+import { canSellOrCompleteTransfer } from "../utils/transferMarketHelpers";
 
 export const MyDealsPage = () => {
   const { data, isLoading } = useGetMyTransferDealsQuery();
   const { data: club } = useGetCurrentUserClubQuery();
+  const { data: myPlayers = [] } = useGetCurrentUserClubPlayersQuery();
   const cashSpendLocked = Boolean(club?.cashSpendLocked);
+  const canCompleteSale = canSellOrCompleteTransfer(myPlayers.length);
   const [tab, setTab] = useState<DealsTab>("outgoing");
   const [statusFilters, setStatusFilters] = useState<DealStatusFilter[]>(
     DEFAULT_DEAL_STATUS_FILTERS,
@@ -161,6 +165,7 @@ export const MyDealsPage = () => {
             tab={tab}
             isBusy={isBusy}
             cashSpendLocked={cashSpendLocked}
+            canCompleteSale={canCompleteSale}
             onAccept={handleAccept}
             onReject={handleReject}
             onWithdraw={handleWithdraw}

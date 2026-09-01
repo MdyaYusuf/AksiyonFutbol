@@ -41,6 +41,9 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
             <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
               Cash {formatCashFull(result.newCash)} · Heat {result.newSuspicion} · Morale{" "}
               {result.newMorale}
+              {result.action.targetPlayerName
+                ? ` · Player ${result.action.targetPlayerName}`
+                : ""}
               {result.newReputationPoints != null
                 ? ` · Legitimacy ${result.newReputationPoints}`
                 : ""}

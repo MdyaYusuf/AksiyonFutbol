@@ -137,6 +137,7 @@ export interface ClubActionHistoryItem {
   matchId?: string | null;
   matchWeek?: number | null;
   targetPlayerInstanceId?: string | null;
+  targetPlayerName?: string | null;
   outcome: ClubActionOutcome;
   wasDetected: boolean;
   heatGenerated: number;

@@ -87,7 +87,7 @@ public static class ClubActionCatalog
         Type = ClubActionType.FinePlayer,
         Category = ClubActionCategory.Squad,
         DisplayName = "Fine a Player",
-        Description = "Discipline the squad. Improves discipline at the cost of morale.",
+        Description = "Discipline a selected squad player. Improves club discipline at the cost of morale.",
         IsShady = false,
         MinAuthority = 2
       },

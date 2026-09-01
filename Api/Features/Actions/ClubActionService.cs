@@ -119,6 +119,7 @@ public class ClubActionService(
     Match? match = null;
     decimal pledgedWinBonus = 0m;
     Guid? targetPlayerInstanceId = null;
+    PlayerInstance? finedPlayerForResult = null;
     Club? mediaSpinOpponent = null;
 
     if (definition.IsMatchScoped)
@@ -183,6 +184,15 @@ public class ClubActionService(
           club.Id,
           request.TargetPlayerInstanceId,
           cancellationToken);
+      }
+      else if (definition.Type == ClubActionType.FinePlayer)
+      {
+        PlayerInstance finedPlayer = await ValidateSquadPlayerTargetAsync(
+          club.Id,
+          request.TargetPlayerInstanceId,
+          cancellationToken);
+        targetPlayerInstanceId = finedPlayer.Id;
+        finedPlayerForResult = finedPlayer;
       }
     }
 
@@ -296,6 +306,7 @@ public class ClubActionService(
 
     // In-memory only, so the mapper can surface the match week. Not persisted.
     action.Match = match;
+    action.TargetPlayerInstance = finedPlayerForResult;
 
     return new ReturnModel<ClubActionResultDto>()
     {
@@ -316,7 +327,9 @@ public class ClubActionService(
 
     List<ClubAction> actions = await _clubActionRepository.GetAllAsync(
       filter: a => a.ClubId == club.Id,
-      include: query => query.Include(a => a.Match),
+      include: query => query
+        .Include(a => a.Match)
+        .Include(a => a.TargetPlayerInstance),
       orderBy: query => query.OrderByDescending(a => a.CreatedDate),
       cancellationToken: cancellationToken);
 
@@ -925,6 +938,33 @@ public class ClubActionService(
     }
 
     return player.Id;
+  }
+
+  private async Task<PlayerInstance> ValidateSquadPlayerTargetAsync(
+    Guid clubId,
+    Guid? targetPlayerInstanceId,
+    CancellationToken cancellationToken)
+  {
+    if (!targetPlayerInstanceId.HasValue)
+    {
+      throw new BusinessException("Ceza için bir oyuncu seçilmelidir.");
+    }
+
+    PlayerInstance? player = await _playerInstanceRepository.GetByIdAsync(
+      targetPlayerInstanceId.Value,
+      cancellationToken: cancellationToken);
+
+    if (player == null)
+    {
+      throw new NotFoundException("Seçilen oyuncu bulunamadı.");
+    }
+
+    if (player.ClubId != clubId)
+    {
+      throw new BusinessException("Yalnızca kendi kadronuzdan bir oyuncuya ceza verebilirsiniz.");
+    }
+
+    return player;
   }
 
   private static void EnsureSabotageIsHome(Match match, Guid clubId)

@@ -55,7 +55,7 @@ public class GameOptions
   public int LineupStarterCount { get; set; } = 11;
   public int LineupMaxBenchSize { get; set; } = 7;
 
-  public int TransferMinimumSquadSize { get; set; } = 11;
+  public int TransferMinimumSquadSize { get; set; } = 14;
 
   public decimal BribeMinAmount { get; set; } = 1000m;
   public decimal BribeMaxAmount { get; set; } = 100000m;

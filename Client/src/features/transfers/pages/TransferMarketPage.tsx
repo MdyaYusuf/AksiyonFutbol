@@ -23,6 +23,7 @@ import {
   type FreeAgentSortOption,
 } from "../utils/freeAgentHelpers";
 import {
+  getTransferSquadFloorMessage,
   positionFilterToApi,
   sortOptionToApi,
   type TransferMarketSortOption,
@@ -64,6 +65,8 @@ export const TransferMarketPage = () => {
     const wageBill = myPlayers.reduce((sum, squadPlayer) => sum + squadPlayer.wage, 0);
     return club.wageBudget - wageBill;
   }, [club, myPlayers]);
+
+  const transferSquadFloorMessage = getTransferSquadFloorMessage(myPlayers.length);
 
   useEffect(() => {
     setListingsPage(1);
@@ -176,6 +179,9 @@ export const TransferMarketPage = () => {
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             Scout listed players or sign global free agents
             {isFetching ? " · Updating..." : ""}
+          </p>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            Selling: {transferSquadFloorMessage}
           </p>
         </div>
         <Link

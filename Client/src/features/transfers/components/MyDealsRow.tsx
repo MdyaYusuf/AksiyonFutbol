@@ -4,7 +4,6 @@ import {
   getPlayerInitials,
 } from "../../playerInstances/utils/squadHelpers";
 import { TransferOfferStatus, type TransferOfferResponse } from "../transferTypes";
-import { formatTransferWage } from "../utils/transferMarketHelpers";
 import {
   formatDealFee,
   formatRelativeTime,
@@ -13,12 +12,17 @@ import {
   getOfferSubtitle,
   type DealsTab,
 } from "../utils/myDealsHelpers";
+import {
+  formatTransferWage,
+  TRANSFER_MINIMUM_SQUAD_SIZE,
+} from "../utils/transferMarketHelpers";
 
 interface MyDealsRowProps {
   offer: TransferOfferResponse;
   tab: DealsTab;
   isBusy: boolean;
   cashSpendLocked?: boolean;
+  canCompleteSale?: boolean;
   onAccept: (offerId: string) => void;
   onReject: (offerId: string) => void;
   onWithdraw: (offerId: string) => void;
@@ -29,6 +33,7 @@ export const MyDealsRow = ({
   tab,
   isBusy,
   cashSpendLocked = false,
+  canCompleteSale = true,
   onAccept,
   onReject,
   onWithdraw,
@@ -43,6 +48,10 @@ export const MyDealsRow = ({
     ? `To ${offer.buyingClubName}`
     : `From ${offer.sellingClubName}`;
   const directionIcon = isOutgoing ? "flight_takeoff" : "flight_land";
+  const acceptBlockedBySquadFloor = isOutgoing && !canCompleteSale;
+  const acceptTitle = acceptBlockedBySquadFloor
+    ? `You must keep at least ${TRANSFER_MINIMUM_SQUAD_SIZE} players to complete a sale`
+    : "Accept";
 
   return (
     <tr
@@ -86,8 +95,8 @@ export const MyDealsRow = ({
           <div className="flex justify-end gap-2 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
             <button
               type="button"
-              title="Accept"
-              disabled={isBusy || cashSpendLocked}
+              title={acceptTitle}
+              disabled={isBusy || cashSpendLocked || acceptBlockedBySquadFloor}
               onClick={() => onAccept(offer.id)}
               className="rounded border border-primary/30 bg-surface p-1.5 text-primary transition-colors hover:bg-surface-bright disabled:opacity-50"
             >

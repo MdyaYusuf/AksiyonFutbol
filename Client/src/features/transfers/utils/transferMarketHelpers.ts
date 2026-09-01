@@ -2,6 +2,23 @@ import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
 import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
 import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
 
+/** Mirrors Api GameOptions.TransferMinimumSquadSize default. */
+export const TRANSFER_MINIMUM_SQUAD_SIZE = 14;
+
+export const canSellOrCompleteTransfer = (squadCount: number): boolean => {
+  return squadCount > TRANSFER_MINIMUM_SQUAD_SIZE;
+};
+
+export const getTransferSquadFloorMessage = (squadCount: number): string => {
+  if (!canSellOrCompleteTransfer(squadCount)) {
+    return `You must keep at least ${TRANSFER_MINIMUM_SQUAD_SIZE} players on your roster to sell (${squadCount} currently).`;
+  }
+
+  const sellSlots = squadCount - TRANSFER_MINIMUM_SQUAD_SIZE;
+
+  return `Minimum roster is ${TRANSFER_MINIMUM_SQUAD_SIZE} players. You can sell up to ${sellSlots} without going below that floor.`;
+};
+
 export type TransferMarketSortOption =
   | "rating-desc"
   | "rating-asc"

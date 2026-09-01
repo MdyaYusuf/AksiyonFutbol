@@ -155,6 +155,7 @@ export const ActionsHubPage = () => {
                       : ""}
                     {item.matchPenaltyApplied ? " · Match penalty" : ""}
                     {item.matchWeek != null ? ` · Week ${item.matchWeek}` : ""}
+                    {item.targetPlayerName ? ` · ${item.targetPlayerName}` : ""}
                   </div>
                 </div>
                 <div className="font-label-caps text-label-caps text-on-surface-variant">
@@ -169,6 +170,7 @@ export const ActionsHubPage = () => {
       {selectedAction ? (
         <ExecuteActionModal
           action={selectedAction}
+          clubId={context.clubId}
           matchId={context.upcomingMatch?.matchId}
           isSubmitting={isExecuting}
           onClose={() => {

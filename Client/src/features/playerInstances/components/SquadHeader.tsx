@@ -1,3 +1,8 @@
+import {
+  canSellOrCompleteTransfer,
+  getTransferSquadFloorMessage,
+  TRANSFER_MINIMUM_SQUAD_SIZE,
+} from "../../transfers/utils/transferMarketHelpers";
 import type { SquadPositionFilter } from "../utils/squadHelpers";
 import {
   getSquadFilterChipClassName,
@@ -5,6 +10,7 @@ import {
 } from "../utils/squadHelpers";
 
 interface SquadHeaderProps {
+  squadCount: number;
   positionFilter: SquadPositionFilter;
   onPositionFilterChange: (filter: SquadPositionFilter) => void;
   searchQuery: string;
@@ -12,11 +18,15 @@ interface SquadHeaderProps {
 }
 
 export const SquadHeader = ({
+  squadCount,
   positionFilter,
   onPositionFilterChange,
   searchQuery,
   onSearchQueryChange,
 }: SquadHeaderProps) => {
+  const transferFloorMessage = getTransferSquadFloorMessage(squadCount);
+  const isAtTransferFloor = !canSellOrCompleteTransfer(squadCount);
+
   return (
     <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
       <div>
@@ -24,6 +34,18 @@ export const SquadHeader = ({
         <p className="text-body-sm text-on-surface-variant">
           Manage your roster, monitor fitness, and negotiate contracts.
         </p>
+        <p
+          className={`mt-2 text-body-sm ${
+            isAtTransferFloor ? "text-secondary" : "text-on-surface-variant"
+          }`}
+        >
+          {squadCount} players · {transferFloorMessage}
+        </p>
+        {isAtTransferFloor ? (
+          <p className="mt-1 text-body-sm text-on-surface-variant">
+            The {TRANSFER_MINIMUM_SQUAD_SIZE}-player floor leaves cover for injuries and suspensions.
+          </p>
+        ) : null}
       </div>
 
       <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:items-end">

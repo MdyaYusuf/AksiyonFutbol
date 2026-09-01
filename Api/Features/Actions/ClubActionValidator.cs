@@ -24,7 +24,11 @@ public class ExecuteClubActionRequestValidator : AbstractValidator<ExecuteClubAc
       .NotNull()
       .When(x =>
         x.ActionType == ClubActionType.TapUpTarget ||
-        x.ActionType == ClubActionType.TapUpTargetII)
-      .WithMessage("Özel yaklaşım için bir oyuncu seçilmelidir.");
+        x.ActionType == ClubActionType.TapUpTargetII ||
+        x.ActionType == ClubActionType.FinePlayer)
+      .WithMessage(
+        x => x.ActionType == ClubActionType.FinePlayer
+          ? "Ceza için bir oyuncu seçilmelidir."
+          : "Özel yaklaşım için bir oyuncu seçilmelidir.");
   }
 }

@@ -1,6 +1,8 @@
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo, useState } from "react";
 import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
 import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
+import { useGetPlayerInstancesByClubIdQuery } from "../../playerInstances/playerInstancesApiSlice";
 import { useGetTransferMarketQuery } from "../../transfers/transfersApiSlice";
 import type { ClubActionAvailability, MediaSpinMode as MediaSpinModeType } from "../actionTypes";
 import { ClubActionType, MediaSpinMode } from "../actionTypes";
@@ -8,6 +10,7 @@ import { formatChancePercent } from "../utils/actionsHubHelpers";
 
 interface ExecuteActionModalProps {
   action: ClubActionAvailability;
+  clubId: string;
   matchId?: string | null;
   isSubmitting: boolean;
   onClose: () => void;
@@ -19,6 +22,7 @@ interface ExecuteActionModalProps {
 
 export const ExecuteActionModal = ({
   action,
+  clubId,
   matchId,
   isSubmitting,
   onClose,
@@ -28,6 +32,7 @@ export const ExecuteActionModal = ({
   const needsTapUpTarget =
     action.actionType === ClubActionType.TapUpTarget ||
     action.actionType === ClubActionType.TapUpTargetII;
+  const needsFinePlayerTarget = action.actionType === ClubActionType.FinePlayer;
 
   const [mediaSpinMode, setMediaSpinMode] = useState<MediaSpinModeType>(
     MediaSpinMode.OpponentMorale,
@@ -38,10 +43,12 @@ export const ExecuteActionModal = ({
     { currentPage: 1, pageSize: 50 },
     { skip: !needsTapUpTarget },
   );
+  const { data: squadPlayers = [], isLoading: squadLoading } =
+    useGetPlayerInstancesByClubIdQuery(needsFinePlayerTarget ? clubId : skipToken);
   const marketItems = marketPage?.items ?? [];
 
   const canConfirm = useMemo(() => {
-    if (needsTapUpTarget) {
+    if (needsTapUpTarget || needsFinePlayerTarget) {
       return targetPlayerId.length > 0;
     }
 
@@ -50,7 +57,14 @@ export const ExecuteActionModal = ({
     }
 
     return true;
-  }, [needsTapUpTarget, targetPlayerId, needsMediaSpinMode, mediaSpinMode, matchId]);
+  }, [
+    needsTapUpTarget,
+    needsFinePlayerTarget,
+    targetPlayerId,
+    needsMediaSpinMode,
+    mediaSpinMode,
+    matchId,
+  ]);
 
   const handleConfirm = () => {
     if (!canConfirm || isSubmitting) {
@@ -59,7 +73,8 @@ export const ExecuteActionModal = ({
 
     onConfirm({
       mediaSpinMode: needsMediaSpinMode ? mediaSpinMode : undefined,
-      targetPlayerInstanceId: needsTapUpTarget ? targetPlayerId : undefined,
+      targetPlayerInstanceId:
+        needsTapUpTarget || needsFinePlayerTarget ? targetPlayerId : undefined,
     });
   };
 
@@ -157,6 +172,38 @@ export const ExecuteActionModal = ({
                   No upcoming fixture to target.
                 </p>
               ) : null}
+            </div>
+          ) : null}
+
+          {needsFinePlayerTarget ? (
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="fine-player-target"
+                className="font-label-caps text-label-caps text-on-surface-variant"
+              >
+                Squad Player
+              </label>
+              {squadLoading ? (
+                <p className="font-body-sm text-body-sm text-on-surface-variant">
+                  Loading squad...
+                </p>
+              ) : (
+                <select
+                  id="fine-player-target"
+                  value={targetPlayerId}
+                  onChange={(event) => {
+                    setTargetPlayerId(event.target.value);
+                  }}
+                  className="rounded border border-outline-variant bg-surface-container-low px-3 py-2 font-body-sm text-body-sm text-on-surface"
+                >
+                  <option value="">Select a player</option>
+                  {squadPlayers.map((player) => (
+                    <option key={player.id} value={player.id}>
+                      {player.firstName} {player.lastName} · OVR {player.overallRating}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           ) : null}
 

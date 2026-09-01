@@ -18,6 +18,9 @@ public class ClubActionMapper
       MatchId = action.MatchId,
       MatchWeek = action.Match?.MatchWeek,
       TargetPlayerInstanceId = action.TargetPlayerInstanceId,
+      TargetPlayerName = action.TargetPlayerInstance == null
+        ? null
+        : $"{action.TargetPlayerInstance.FirstName} {action.TargetPlayerInstance.LastName}",
       Outcome = action.Outcome,
       WasDetected = action.WasDetected,
       HeatGenerated = action.HeatGenerated,

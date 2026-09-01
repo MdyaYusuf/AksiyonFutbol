@@ -49,6 +49,7 @@ export const SquadPage = () => {
   return (
     <div className="mx-auto max-w-7xl">
       <SquadHeader
+        squadCount={players.length}
         positionFilter={positionFilter}
         onPositionFilterChange={setPositionFilter}
         searchQuery={searchQuery}

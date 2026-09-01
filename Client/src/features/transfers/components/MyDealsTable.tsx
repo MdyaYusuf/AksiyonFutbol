@@ -7,6 +7,7 @@ interface MyDealsTableProps {
   tab: DealsTab;
   isBusy: boolean;
   cashSpendLocked?: boolean;
+  canCompleteSale?: boolean;
   onAccept: (offerId: string) => void;
   onReject: (offerId: string) => void;
   onWithdraw: (offerId: string) => void;
@@ -17,6 +18,7 @@ export const MyDealsTable = ({
   tab,
   isBusy,
   cashSpendLocked = false,
+  canCompleteSale = true,
   onAccept,
   onReject,
   onWithdraw,
@@ -68,6 +70,7 @@ export const MyDealsTable = ({
                   tab={tab}
                   isBusy={isBusy}
                   cashSpendLocked={cashSpendLocked}
+                  canCompleteSale={canCompleteSale}
                   onAccept={onAccept}
                   onReject={onReject}
                   onWithdraw={onWithdraw}

@@ -94,6 +94,7 @@ public sealed class ClubActionDto
   public Guid? MatchId { get; init; }
   public int? MatchWeek { get; init; }
   public Guid? TargetPlayerInstanceId { get; init; }
+  public string? TargetPlayerName { get; init; }
   public ClubActionOutcome Outcome { get; init; }
   public bool WasDetected { get; init; }
   public int HeatGenerated { get; init; }
