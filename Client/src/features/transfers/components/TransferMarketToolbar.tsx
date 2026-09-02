@@ -24,7 +24,7 @@ interface TransferMarketToolbarProps {
   searchPlaceholder?: string;
   tierFilter?: DraftTier | "ALL";
   onTierFilterChange?: (tier: DraftTier | "ALL") => void;
-  transferBudget?: number;
+  clubCash?: number;
   wageSpace?: number;
 }
 
@@ -39,12 +39,12 @@ export const TransferMarketToolbar = ({
   searchPlaceholder = "Search players, clubs...",
   tierFilter,
   onTierFilterChange,
-  transferBudget,
+  clubCash,
   wageSpace,
 }: TransferMarketToolbarProps) => {
   const showTierFilters = tierFilter !== undefined && onTierFilterChange !== undefined;
   const showBudgetSummary =
-    transferBudget !== undefined && wageSpace !== undefined;
+    clubCash !== undefined && wageSpace !== undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -119,8 +119,8 @@ export const TransferMarketToolbar = ({
           {showBudgetSummary ? (
             <div className="ml-auto flex flex-wrap items-center gap-4 font-label-caps text-label-caps text-on-surface-variant">
               <span>
-                Remaining Transfer Budget{" "}
-                <span className="text-primary">{formatCash(transferBudget)}</span>
+                Club Cash{" "}
+                <span className="text-primary">{formatCash(clubCash)}</span>
               </span>
               <span>
                 Remaining Wage Budget{" "}

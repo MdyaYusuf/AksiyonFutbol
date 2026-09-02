@@ -230,7 +230,7 @@ export const TransferMarketPage = () => {
             onSortOptionChange={setFreeAgentSortOption}
             searchQuery={freeAgentSearchQuery}
             onSearchQueryChange={setFreeAgentSearchQuery}
-            transferBudget={club?.cash}
+            clubCash={club?.cash}
             wageSpace={wageSpace}
           />
 
@@ -260,7 +260,7 @@ export const TransferMarketPage = () => {
             onSearchQueryChange={setSearchQuery}
             tierFilter={listingTierFilter}
             onTierFilterChange={setListingTierFilter}
-            transferBudget={club?.cash}
+            clubCash={club?.cash}
             wageSpace={wageSpace}
           />
 

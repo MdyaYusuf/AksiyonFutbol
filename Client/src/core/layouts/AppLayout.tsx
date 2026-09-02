@@ -22,7 +22,8 @@ export const AppLayout = () => {
         <AppHeader
           cash={club?.cash}
           cashSpendLocked={club?.cashSpendLocked}
-          reputation={president?.reputationPoints}
+          legitimacy={president?.reputationPoints}
+          infamy={president?.infamyPoints}
           onMenuClick={() => setMobileNavOpen(true)}
         />
         <main className="min-h-[calc(100vh-64px)] flex-1 p-gutter md:p-container-padding">

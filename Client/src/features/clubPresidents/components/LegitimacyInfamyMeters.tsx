@@ -31,21 +31,26 @@ export const LegitimacyInfamyMeters = ({
 
   return (
     <div className={compact ? "grid grid-cols-2 gap-3" : "grid grid-cols-1 gap-4 sm:grid-cols-2"}>
-      <div className="rounded-lg border border-outline-variant bg-surface-variant p-3">
+      <div className="rounded-lg border border-violet-400/30 bg-surface-variant p-3">
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <MaterialIcon name="verified" className="text-sm text-primary" />
+            <MaterialIcon name="verified" className="text-sm text-violet-400" />
             <span className="font-label-caps text-label-caps text-on-surface-variant">
               Legitimacy
             </span>
           </div>
-          <span className="font-data-mono text-data-mono text-primary">
+          <span className="font-data-mono text-data-mono text-violet-400">
             {legitimacy}/{maxLegitimacy}
           </span>
         </div>
-        <ProgressBar value={legitimacy} max={maxLegitimacy} />
+        <ProgressBar
+          value={legitimacy}
+          max={maxLegitimacy}
+          colorClassName="bg-violet-400"
+          trackClassName="bg-violet-400/20"
+        />
         {showUnlockBadges && honorableUnlocked ? (
-          <p className="mt-2 font-body-sm text-body-sm text-primary">
+          <p className="mt-2 font-body-sm text-body-sm text-violet-400">
             Honorable Power unlocked
           </p>
         ) : showUnlockBadges ? (

@@ -5,16 +5,20 @@ import { formatCash } from "@/features/dashboard/utils/dashboardFormatters";
 interface AppHeaderProps {
   cash?: number;
   cashSpendLocked?: boolean;
-  reputation?: number;
+  legitimacy?: number;
+  infamy?: number;
   onMenuClick: () => void;
 }
 
 export const AppHeader = ({
   cash,
   cashSpendLocked,
-  reputation,
+  legitimacy,
+  infamy,
   onMenuClick,
 }: AppHeaderProps) => {
+  const showPresidentStats = legitimacy !== undefined || infamy !== undefined;
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-6">
       <div className="flex items-center gap-4">
@@ -36,7 +40,7 @@ export const AppHeader = ({
         </button>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 sm:gap-6">
         {cash !== undefined && (
           <div className="flex items-center gap-1 font-data-mono text-data-mono text-primary">
             {cashSpendLocked ? (
@@ -45,11 +49,28 @@ export const AppHeader = ({
             {formatCash(cash)}
           </div>
         )}
-        {reputation !== undefined && (
-          <div className="font-data-mono text-data-mono text-on-surface-variant">
-            Leg: {reputation}
+        {showPresidentStats ? (
+          <div className="flex items-center gap-3 sm:gap-4">
+            {legitimacy !== undefined ? (
+              <div
+                className="font-data-mono text-data-mono text-violet-400"
+                title="Legitimacy"
+              >
+                <span className="hidden sm:inline">Leg: </span>
+                {legitimacy}
+              </div>
+            ) : null}
+            {infamy !== undefined ? (
+              <div
+                className="font-data-mono text-data-mono text-secondary"
+                title="Infamy"
+              >
+                <span className="hidden sm:inline">Inf: </span>
+                {infamy}
+              </div>
+            ) : null}
           </div>
-        )}
+        ) : null}
         <div className="ml-2 border-l border-outline-variant pl-4">
           <UserAccountMenu settingsPath="/app/settings" />
         </div>

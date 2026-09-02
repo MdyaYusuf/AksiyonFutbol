@@ -21,24 +21,14 @@ export const FinancialOverviewCard = ({ club }: FinancialOverviewCardProps) => {
         </span>
       </div>
 
-      <div className="grid flex-1 grid-cols-1 gap-card-gap sm:grid-cols-3">
+      <div className="grid flex-1 grid-cols-1 gap-card-gap sm:grid-cols-2">
         <div className="flex flex-col justify-between rounded border border-outline-variant bg-surface p-4">
-          <span className="text-label-caps text-on-surface-variant">Overall Balance</span>
+          <span className="text-label-caps text-on-surface-variant">Club Cash</span>
           <div className="mt-2 text-stat-value text-on-surface">
             {formatCashFull(club.cash)}
           </div>
           <div className="mt-1 font-data-mono text-[11px] text-on-surface-variant">
-            Available funds
-          </div>
-        </div>
-
-        <div className="flex flex-col justify-between rounded border border-outline-variant bg-surface p-4">
-          <span className="text-label-caps text-on-surface-variant">Transfer Budget</span>
-          <div className="mt-2 text-stat-value text-on-surface">
-            {formatCashFull(club.cash)}
-          </div>
-          <div className="mt-3">
-            <ProgressBar value={100} colorClassName="bg-primary" />
+            Available for transfers, facilities, and actions
           </div>
         </div>
 
