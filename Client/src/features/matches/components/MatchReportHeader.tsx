@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { MatchResponse } from "../matchTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { MatchResponse } from "@/features/matches/matchTypes";
 import {
   formatMatchReportDateTime,
   getMatchStatusLabel,
   goBackOrFallback,
-} from "../utils/matchReportHelpers";
+} from "@/features/matches/utils/matchReportHelpers";
 
 interface MatchReportHeaderProps {
   match: MatchResponse;

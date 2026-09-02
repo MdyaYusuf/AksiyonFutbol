@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   getPositionBadgeClassName,
   getPositionLabel,
-} from "../../playerInstances/utils/squadHelpers";
-import type { SlotCandidate, SlotCandidateSource } from "../utils/tacticsHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
+import type { SlotCandidate, SlotCandidateSource } from "@/features/clubLineups/utils/tacticsHelpers";
 
 interface TacticsSlotPickerProps {
   anchor: DOMRect;

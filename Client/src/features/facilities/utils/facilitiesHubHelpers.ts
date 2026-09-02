@@ -1,5 +1,5 @@
-import type { ClubFacility, FacilityType } from "../facilityTypes";
-import { FacilityType as FacilityTypeValues } from "../facilityTypes";
+import type { ClubFacility, FacilityType } from "@/features/facilities/facilityTypes";
+import { FacilityType as FacilityTypeValues } from "@/features/facilities/facilityTypes";
 
 export const getFacilityLevelLabel = (level: number, maxLevel: number): string => {
   if (level >= maxLevel) {

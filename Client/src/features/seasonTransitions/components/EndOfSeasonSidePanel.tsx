@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { SeasonClubMovement } from "../seasonTransitionTypes";
-import { getClubInitial } from "../utils/endOfSeasonHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { SeasonClubMovement } from "@/features/seasonTransitions/seasonTransitionTypes";
+import { getClubInitial } from "@/features/seasonTransitions/utils/endOfSeasonHelpers";
 
 interface EndOfSeasonBoardReviewProps {
   objective: string;

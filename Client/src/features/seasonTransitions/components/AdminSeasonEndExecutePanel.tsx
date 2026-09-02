@@ -1,4 +1,4 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 interface AdminSeasonEndWarningProps {
   blockReason?: string | null;

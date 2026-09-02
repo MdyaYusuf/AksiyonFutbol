@@ -1,8 +1,8 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubResponse } from "../../clubs/clubTypes";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import type { ClubPresidentResponse } from "../clubPresidentTypes";
-import { formatCareerPeriod } from "../utils/presidentProfileHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import type { ClubPresidentResponse } from "@/features/clubPresidents/clubPresidentTypes";
+import { formatCareerPeriod } from "@/features/clubPresidents/utils/presidentProfileHelpers";
 
 interface CareerHistoryCardProps {
   president: ClubPresidentResponse;

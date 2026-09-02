@@ -1,13 +1,13 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCash } from "../../dashboard/utils/dashboardFormatters";
-import { getTierBadgeLabel } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
-import type { ClubResponse } from "../clubTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCash } from "@/features/dashboard/utils/dashboardFormatters";
+import { getTierBadgeLabel } from "@/features/leagueDivisions/utils/adminLeagueDivisionsHelpers";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
 import {
   getClubInitials,
   getStatusBarColor,
   getTierBadgeClassName,
-} from "../utils/adminClubsHelpers";
-import { getClubDisplayName } from "../utils/clubDisplayName";
+} from "@/features/clubs/utils/adminClubsHelpers";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
 
 interface AdminClubsTableProps {
   clubs: ClubResponse[];

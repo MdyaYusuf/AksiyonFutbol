@@ -1,7 +1,7 @@
-import type { ClubResponse } from "../clubTypes";
-import { formatEstablishedYear } from "../utils/clubOverviewHelpers";
-import { getClubDisplayName } from "../utils/clubDisplayName";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
+import { formatEstablishedYear } from "@/features/clubs/utils/clubOverviewHelpers";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 interface ClubHeaderCardProps {
   club: ClubResponse;
@@ -32,21 +32,6 @@ export const ClubHeaderCard = ({ club }: ClubHeaderCardProps) => {
           {club.divisionName}
           {club.presidentName ? ` • ${club.presidentName}` : ""}
         </p>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          className="rounded border border-outline-variant bg-surface-variant px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-container-highest"
-        >
-          Club History
-        </button>
-        <button
-          type="button"
-          className="rounded border border-primary bg-primary-container px-4 py-2 text-body-sm font-bold text-on-primary-container shadow-[0_0_10px_rgba(34,197,94,0.2)] transition-all hover:brightness-110"
-        >
-          Board Request
-        </button>
       </div>
     </div>
   );

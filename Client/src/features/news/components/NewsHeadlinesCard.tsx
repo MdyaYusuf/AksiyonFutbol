@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetMyNewsFeedQuery } from "../newsApiSlice";
-import { formatArticleDate, getKindLabel } from "../utils/newsHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetMyNewsFeedQuery } from "@/features/news/newsApiSlice";
+import { formatArticleDate, getKindLabel } from "@/features/news/utils/newsHelpers";
 
 export const NewsHeadlinesCard = () => {
   const { data: articles = [], isLoading } = useGetMyNewsFeedQuery({ limit: 2 });

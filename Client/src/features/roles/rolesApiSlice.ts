@@ -1,6 +1,6 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { RoleResponse, CreateRoleRequest, UpdateRoleRequest } from "./roleTypes";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { RoleResponse, CreateRoleRequest, UpdateRoleRequest } from "@/features/roles/roleTypes";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 
 export const rolesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
-import { OnboardingTextField } from "../../../core/components/onboarding/OnboardingFields";
-import { ONBOARDING_DRAFT_PATH } from "../../../core/routes/onboardingPaths";
-import { useCreateClubMutation } from "../clubsApiSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { OnboardingSteps } from "@/core/components/onboarding/OnboardingSteps";
+import { OnboardingTextField } from "@/core/components/onboarding/OnboardingFields";
+import { ONBOARDING_DRAFT_PATH } from "@/core/routes/onboardingPaths";
+import { useCreateClubMutation } from "@/features/clubs/clubsApiSlice";
 
 export const CreateClubForm = () => {
   const navigate = useNavigate();

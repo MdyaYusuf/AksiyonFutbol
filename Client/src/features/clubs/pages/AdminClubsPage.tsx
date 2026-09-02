@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetLeagueDivisionsQuery } from "@/features/leagueDivisions/leagueDivisionsApiSlice";
 import {
   AdminClubFormPanel,
   type AdminClubFormValues,
-} from "../components/AdminClubFormPanel";
-import { AdminClubsTable } from "../components/AdminClubsTable";
+} from "@/features/clubs/components/AdminClubFormPanel";
+import { AdminClubsTable } from "@/features/clubs/components/AdminClubsTable";
 import {
   useCreateBotClubMutation,
   useDeleteClubMutation,
@@ -14,10 +14,10 @@ import {
   useUpdateClubFinancesMutation,
   useUpdateClubMutation,
   useUpdateClubStatusMutation,
-} from "../clubsApiSlice";
-import type { ClubCreationDefaults, ClubResponse } from "../clubTypes";
-import { getClubDisplayName } from "../utils/clubDisplayName";
-import type { ClubTypeFilter } from "../utils/adminClubsHelpers";
+} from "@/features/clubs/clubsApiSlice";
+import type { ClubCreationDefaults, ClubResponse } from "@/features/clubs/clubTypes";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import type { ClubTypeFilter } from "@/features/clubs/utils/adminClubsHelpers";
 
 const PAGE_SIZE = 15;
 

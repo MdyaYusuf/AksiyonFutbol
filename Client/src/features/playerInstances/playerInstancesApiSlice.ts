@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 import type {
   CreatedPlayerInstanceResponse,
   CreateCustomPlayerInstanceRequest,
@@ -10,7 +10,7 @@ import type {
   UpdatePlayerInstanceNameRequest,
   UpdatePlayerInstanceSeasonStatsRequest,
   UpdatePlayerInstanceStatsRequest,
-} from "./playerInstanceTypes";
+} from "@/features/playerInstances/playerInstanceTypes";
 
 export const playerInstancesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

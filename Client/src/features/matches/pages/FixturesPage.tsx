@@ -1,17 +1,17 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo, useState } from "react";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { FixturesHeader } from "../components/FixturesHeader";
-import { MatchWeekSection } from "../components/MatchWeekSection";
-import { useGetMatchesByDivisionIdQuery } from "../matchesApiSlice";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { FixturesHeader } from "@/features/matches/components/FixturesHeader";
+import { MatchWeekSection } from "@/features/matches/components/MatchWeekSection";
+import { useGetMatchesByDivisionIdQuery } from "@/features/matches/matchesApiSlice";
 import {
   filterMatchesByScope,
   filterMatchesByStatus,
   groupMatchesByWeek,
   type FixtureScopeFilter,
   type FixtureStatusFilter,
-} from "../utils/fixturesHelpers";
-import { filterCurrentSeasonMatches } from "../utils/seasonHelpers";
+} from "@/features/matches/utils/fixturesHelpers";
+import { filterCurrentSeasonMatches } from "@/features/matches/utils/seasonHelpers";
 
 export const FixturesPage = () => {
   const [scopeFilter, setScopeFilter] = useState<FixtureScopeFilter>("all");

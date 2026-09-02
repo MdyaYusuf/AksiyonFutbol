@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../ui/MaterialIcon";
-import { UserAccountMenu } from "../ui/UserAccountMenu";
-import { formatCash } from "../../../features/dashboard/utils/dashboardFormatters";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { UserAccountMenu } from "@/core/components/ui/UserAccountMenu";
+import { formatCash } from "@/features/dashboard/utils/dashboardFormatters";
 
 interface AppHeaderProps {
   cash?: number;

@@ -1,6 +1,6 @@
-import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import type { TransferMarketItem } from "../transferTypes";
+import { formatSquadMoney } from "@/features/playerInstances/utils/squadHelpers";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
 
 export const getOfferFeeBounds = (askingPrice: number) => {
   const asking = Math.max(1, Math.round(askingPrice));

@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubActionRequirement } from "../actionTypes";
-import { getRequirementChipClass } from "../utils/actionPresentationHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubActionRequirement } from "@/features/actions/actionTypes";
+import { getRequirementChipClass } from "@/features/actions/utils/actionPresentationHelpers";
 
 interface ActionRequirementChipsProps {
   requirements: ClubActionRequirement[];

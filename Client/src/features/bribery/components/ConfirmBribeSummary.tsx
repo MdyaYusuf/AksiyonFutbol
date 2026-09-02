@@ -1,7 +1,7 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import type { MatchInfluenceConfirmState } from "../briberyTypes";
-import { formatChancePercent } from "../utils/matchInfluenceHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import type { MatchInfluenceConfirmState } from "@/features/bribery/briberyTypes";
+import { formatChancePercent } from "@/features/bribery/utils/matchInfluenceHelpers";
 
 interface ConfirmBribeSummaryProps {
   state: MatchInfluenceConfirmState;

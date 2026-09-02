@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { AdminHeader } from "../components/admin/AdminHeader";
-import { AdminSidebar } from "../components/admin/AdminSidebar";
+import { AdminHeader } from "@/core/components/admin/AdminHeader";
+import { AdminSidebar } from "@/core/components/admin/AdminSidebar";
 
 export const AdminLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);

@@ -1,15 +1,15 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   PlayerPosition,
   PreferredFoot,
   type BasePlayerOption,
   type PlayerAttributes,
-} from "../../basePlayers/basePlayerTypes";
-import type { ClubOption } from "../../clubs/clubTypes";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import { applyPositionChange } from "../utils/playerAttributeHelpers";
-import { getPositionLabel } from "../utils/squadHelpers";
-import { AdminAttributeEditor } from "./AdminAttributeEditor";
+} from "@/features/basePlayers/basePlayerTypes";
+import type { ClubOption } from "@/features/clubs/clubTypes";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import { applyPositionChange } from "@/features/playerInstances/utils/playerAttributeHelpers";
+import { getPositionLabel } from "@/features/playerInstances/utils/squadHelpers";
+import { AdminAttributeEditor } from "@/features/playerInstances/components/AdminAttributeEditor";
 
 export type PlayerInstancePanelTab = "assign" | "custom" | "edit";
 

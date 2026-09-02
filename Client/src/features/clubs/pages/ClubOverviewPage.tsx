@@ -1,9 +1,9 @@
-import { useGetCurrentUserClubQuery } from "../clubsApiSlice";
-import { ClubHeaderCard } from "../components/ClubHeaderCard";
-import { ClubQuickLinksCard } from "../components/ClubQuickLinksCard";
-import { FacilitiesCard } from "../components/FacilitiesCard";
-import { FinancialOverviewCard } from "../components/FinancialOverviewCard";
-import { SquadAtmosphereCard } from "../components/SquadAtmosphereCard";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { ClubHeaderCard } from "@/features/clubs/components/ClubHeaderCard";
+import { ClubQuickLinksCard } from "@/features/clubs/components/ClubQuickLinksCard";
+import { FacilitiesCard } from "@/features/clubs/components/FacilitiesCard";
+import { FinancialOverviewCard } from "@/features/clubs/components/FinancialOverviewCard";
+import { SquadAtmosphereCard } from "@/features/clubs/components/SquadAtmosphereCard";
 
 export const ClubOverviewPage = () => {
   const { data: club, isLoading } = useGetCurrentUserClubQuery();

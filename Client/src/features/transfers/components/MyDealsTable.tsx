@@ -1,6 +1,6 @@
-import type { TransferOfferResponse } from "../transferTypes";
-import type { DealsTab } from "../utils/myDealsHelpers";
-import { MyDealsRow } from "./MyDealsRow";
+import type { TransferOfferResponse } from "@/features/transfers/transferTypes";
+import type { DealsTab } from "@/features/transfers/utils/myDealsHelpers";
+import { MyDealsRow } from "@/features/transfers/components/MyDealsRow";
 
 interface MyDealsTableProps {
   offers: TransferOfferResponse[];

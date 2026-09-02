@@ -1,7 +1,7 @@
 import {
   PlayerPosition,
   type PlayerAttributes,
-} from "../../basePlayers/basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 
 export type AttributePillar = "attack" | "midfield" | "defense";
 

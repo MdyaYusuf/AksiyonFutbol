@@ -1,6 +1,6 @@
-import type { ClubFacility } from "../facilityTypes";
-import { getUpgradePathProgressPercent } from "../utils/facilityUpgradeDetailHelpers";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import type { ClubFacility } from "@/features/facilities/facilityTypes";
+import { getUpgradePathProgressPercent } from "@/features/facilities/utils/facilityUpgradeDetailHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 interface FacilityUpgradePathProps {
   facility: ClubFacility;

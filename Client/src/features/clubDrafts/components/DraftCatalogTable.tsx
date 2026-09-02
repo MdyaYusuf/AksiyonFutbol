@@ -1,9 +1,9 @@
-import type { ClubDraftState, DraftCatalogPlayer } from "../clubDraftTypes";
+import type { ClubDraftState, DraftCatalogPlayer } from "@/features/clubDrafts/clubDraftTypes";
 import type {
   DraftCatalogSort,
   DraftCatalogSortColumn,
-} from "../utils/draftBoardHelpers";
-import { DraftCatalogRow } from "./DraftCatalogRow";
+} from "@/features/clubDrafts/utils/draftBoardHelpers";
+import { DraftCatalogRow } from "@/features/clubDrafts/components/DraftCatalogRow";
 
 interface DraftCatalogTableProps {
   players: DraftCatalogPlayer[];

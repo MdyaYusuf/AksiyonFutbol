@@ -1,16 +1,16 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { AdminAttributeEditor } from "../../playerInstances/components/AdminAttributeEditor";
-import { applyPositionChange } from "../../playerInstances/utils/playerAttributeHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { AdminAttributeEditor } from "@/features/playerInstances/components/AdminAttributeEditor";
+import { applyPositionChange } from "@/features/playerInstances/utils/playerAttributeHelpers";
 import {
   DraftTier,
   PlayerPosition,
   PreferredFoot,
   type PlayerAttributes,
-} from "../basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 import {
   applyDraftPricingIfUnedited,
   getDraftTierPricingDefaults,
-} from "../utils/adminBasePlayersHelpers";
+} from "@/features/basePlayers/utils/adminBasePlayersHelpers";
 
 export interface AdminBasePlayerFormValues {
   defaultFirstName: string;

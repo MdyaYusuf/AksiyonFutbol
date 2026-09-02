@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { FacilityImpactRow } from "../utils/facilityUpgradeDetailHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { FacilityImpactRow } from "@/features/facilities/utils/facilityUpgradeDetailHelpers";
 
 interface FacilityProjectedImpactProps {
   targetLevel: number;

@@ -1,28 +1,28 @@
 import { useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { OnboardingSteps } from "@/core/components/onboarding/OnboardingSteps";
 import {
   APP_DASHBOARD_PATH,
   ONBOARDING_CLUB_PATH,
   ONBOARDING_PRESIDENT_PATH,
-} from "../../../core/routes/onboardingPaths";
-import { useCheckCurrentUserHasPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { isDraftingClub } from "../../clubs/utils/clubLifecycleHelpers";
-import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
+} from "@/core/routes/onboardingPaths";
+import { useCheckCurrentUserHasPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { isDraftingClub } from "@/features/clubs/utils/clubLifecycleHelpers";
+import type { SquadPositionFilter } from "@/features/playerInstances/utils/squadHelpers";
 import {
   useAddClubDraftPickMutation,
   useFinalizeClubDraftMutation,
   useGetClubDraftCatalogQuery,
   useGetClubDraftStateQuery,
   useRemoveClubDraftPickMutation,
-} from "../clubDraftsApiSlice";
-import { DraftBudgetMeters } from "../components/DraftBudgetMeters";
-import { DraftCatalogTable } from "../components/DraftCatalogTable";
-import { DraftCatalogToolbar } from "../components/DraftCatalogToolbar";
-import { DraftPicksPanel } from "../components/DraftPicksPanel";
-import { DraftQuotaBar } from "../components/DraftQuotaBar";
+} from "@/features/clubDrafts/clubDraftsApiSlice";
+import { DraftBudgetMeters } from "@/features/clubDrafts/components/DraftBudgetMeters";
+import { DraftCatalogTable } from "@/features/clubDrafts/components/DraftCatalogTable";
+import { DraftCatalogToolbar } from "@/features/clubDrafts/components/DraftCatalogToolbar";
+import { DraftPicksPanel } from "@/features/clubDrafts/components/DraftPicksPanel";
+import { DraftQuotaBar } from "@/features/clubDrafts/components/DraftQuotaBar";
 import {
   DEFAULT_DRAFT_CATALOG_SORT,
   filterDraftCatalog,
@@ -30,7 +30,7 @@ import {
   toggleDraftCatalogSort,
   type DraftCatalogSortColumn,
   type DraftTierFilter,
-} from "../utils/draftBoardHelpers";
+} from "@/features/clubDrafts/utils/draftBoardHelpers";
 
 export const DraftBoardPage = () => {
   const navigate = useNavigate();

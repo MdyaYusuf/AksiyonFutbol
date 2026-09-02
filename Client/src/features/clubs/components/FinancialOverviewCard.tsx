@@ -1,8 +1,8 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
-import { formatCash } from "../../dashboard/utils/dashboardFormatters";
-import type { ClubResponse } from "../clubTypes";
-import { formatCashFull } from "../utils/clubOverviewHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { ProgressBar } from "@/core/components/ui/ProgressBar";
+import { formatCash } from "@/features/dashboard/utils/dashboardFormatters";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
 
 interface FinancialOverviewCardProps {
   club: ClubResponse;

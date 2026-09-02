@@ -1,4 +1,4 @@
-import { ClubLifecycleStatus, LeagueTier } from "../clubTypes";
+import { ClubLifecycleStatus, LeagueTier } from "@/features/clubs/clubTypes";
 
 export const TUTORIAL_MATCH_WEEKS = 6;
 

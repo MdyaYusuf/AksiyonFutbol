@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { MatchResponse } from "../matchTypes";
-import { formatAdminMatchDateTime } from "../utils/adminMatchesHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { MatchResponse } from "@/features/matches/matchTypes";
+import { formatAdminMatchDateTime } from "@/features/matches/utils/adminMatchesHelpers";
 
 interface AdminMatchesTableProps {
   matches: MatchResponse[];

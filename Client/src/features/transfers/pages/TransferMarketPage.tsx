@@ -1,33 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { DraftTier } from "../../basePlayers/basePlayerTypes";
-import { ClubLifecycleStatus } from "../../clubs/clubTypes";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
-import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
-import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
-import { FreeAgentMarketTable } from "../components/FreeAgentMarketTable";
-import { FreeAgentMarketToolbar } from "../components/FreeAgentMarketToolbar";
-import { TransferMarketTable } from "../components/TransferMarketTable";
-import { TransferMarketToolbar } from "../components/TransferMarketToolbar";
-import type { TransferMarketTab } from "../freeAgentTypes";
+import type { DraftTier } from "@/features/basePlayers/basePlayerTypes";
+import { ClubLifecycleStatus } from "@/features/clubs/clubTypes";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
+import { useGetCurrentUserClubPlayersQuery } from "@/features/playerInstances/playerInstancesApiSlice";
+import type { SquadPositionFilter } from "@/features/playerInstances/utils/squadHelpers";
+import { FreeAgentMarketTable } from "@/features/transfers/components/FreeAgentMarketTable";
+import { FreeAgentMarketToolbar } from "@/features/transfers/components/FreeAgentMarketToolbar";
+import { TransferMarketTable } from "@/features/transfers/components/TransferMarketTable";
+import { TransferMarketToolbar } from "@/features/transfers/components/TransferMarketToolbar";
+import type { TransferMarketTab } from "@/features/transfers/freeAgentTypes";
 import {
   useGetFreeAgentsQuery,
   useGetTransferMarketQuery,
   useSignFreeAgentMutation,
-} from "../transfersApiSlice";
-import type { TransferMarketItem } from "../transferTypes";
+} from "@/features/transfers/transfersApiSlice";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
 import {
   freeAgentSortOptionToApi,
   tierFilterToApi,
   type FreeAgentSortOption,
-} from "../utils/freeAgentHelpers";
+} from "@/features/transfers/utils/freeAgentHelpers";
 import {
   getTransferSquadFloorMessage,
   positionFilterToApi,
   sortOptionToApi,
   type TransferMarketSortOption,
-} from "../utils/transferMarketHelpers";
+} from "@/features/transfers/utils/transferMarketHelpers";
 
 const MARKET_PAGE_SIZE = 10;
 

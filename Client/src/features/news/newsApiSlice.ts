@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { NewsArticle, NewsArticleKind } from "./newsTypes";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { NewsArticle, NewsArticleKind } from "@/features/news/newsTypes";
 
 export const newsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

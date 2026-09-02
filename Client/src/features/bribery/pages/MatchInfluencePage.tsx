@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetBriberyContextQuery } from "../briberyApiSlice";
-import type { BribeStakeTier, MatchInfluenceConfirmState } from "../briberyTypes";
-import { BribeAttemptOutcome } from "../briberyTypes";
-import { ApproachStakeOption } from "../components/ApproachStakeOption";
-import { MatchInfluenceContextCard } from "../components/MatchInfluenceContextCard";
-import { MatchInfluenceHeader } from "../components/MatchInfluenceHeader";
-import { buildStakeOptions } from "../utils/matchInfluenceHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetBriberyContextQuery } from "@/features/bribery/briberyApiSlice";
+import type { BribeStakeTier, MatchInfluenceConfirmState } from "@/features/bribery/briberyTypes";
+import { BribeAttemptOutcome } from "@/features/bribery/briberyTypes";
+import { ApproachStakeOption } from "@/features/bribery/components/ApproachStakeOption";
+import { MatchInfluenceContextCard } from "@/features/bribery/components/MatchInfluenceContextCard";
+import { MatchInfluenceHeader } from "@/features/bribery/components/MatchInfluenceHeader";
+import { buildStakeOptions } from "@/features/bribery/utils/matchInfluenceHelpers";
 
 const pickDefaultTier = (
   options: ReturnType<typeof buildStakeOptions>,

@@ -1,7 +1,7 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import type { ClubActionResult } from "../actionTypes";
-import { ClubActionOutcome } from "../actionTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import type { ClubActionResult } from "@/features/actions/actionTypes";
+import { ClubActionOutcome } from "@/features/actions/actionTypes";
 
 interface ActionResultBannerProps {
   result: ClubActionResult;

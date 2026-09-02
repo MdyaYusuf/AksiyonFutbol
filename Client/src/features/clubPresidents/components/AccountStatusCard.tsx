@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubPresidentResponse } from "../clubPresidentTypes";
-import { formatMemberSince } from "../utils/presidentProfileHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubPresidentResponse } from "@/features/clubPresidents/clubPresidentTypes";
+import { formatMemberSince } from "@/features/clubPresidents/utils/presidentProfileHelpers";
 
 interface AccountStatusCardProps {
   president: ClubPresidentResponse;

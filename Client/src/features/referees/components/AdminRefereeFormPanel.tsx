@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { RefereePersonalityType } from "../refereeTypes";
-import { PERSONALITY_OPTIONS } from "../utils/adminRefereesHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { RefereePersonalityType } from "@/features/referees/refereeTypes";
+import { PERSONALITY_OPTIONS } from "@/features/referees/utils/adminRefereesHelpers";
 
 export interface AdminRefereeFormValues {
   name: string;

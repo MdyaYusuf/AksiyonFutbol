@@ -1,17 +1,17 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { OnboardingSteps } from "../../../core/components/onboarding/OnboardingSteps";
-import { OnboardingTextField } from "../../../core/components/onboarding/OnboardingFields";
-import { useCreateClubPresidentMutation } from "../clubPresidentsApiSlice";
-import type { PresidentAttributes } from "../clubPresidentTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { OnboardingSteps } from "@/core/components/onboarding/OnboardingSteps";
+import { OnboardingTextField } from "@/core/components/onboarding/OnboardingFields";
+import { useCreateClubPresidentMutation } from "@/features/clubPresidents/clubPresidentsApiSlice";
+import type { PresidentAttributes } from "@/features/clubPresidents/clubPresidentTypes";
 import {
   PRESIDENT_ATTRIBUTE_POINT_BUDGET,
   createBasePresidentAttributes,
   getRemainingAttributePoints,
-} from "../utils/presidentProfileHelpers";
-import { PresidentAttributeAllocator } from "./PresidentAttributeAllocator";
-import { PresidentPreviewCard } from "./PresidentPreviewCard";
+} from "@/features/clubPresidents/utils/presidentProfileHelpers";
+import { PresidentAttributeAllocator } from "@/features/clubPresidents/components/PresidentAttributeAllocator";
+import { PresidentPreviewCard } from "@/features/clubPresidents/components/PresidentPreviewCard";
 
 const TITLE_SUGGESTIONS = ["The Visionary", "The Tactician", "Financial Tycoon"];
 

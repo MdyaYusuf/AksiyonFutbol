@@ -1,30 +1,30 @@
 import { useMemo } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetClubOptionsQuery } from "../../clubs/clubsApiSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetClubOptionsQuery } from "@/features/clubs/clubsApiSlice";
 import {
   useGetLeagueDivisionsQuery,
   useProcessLeagueDivisionWeekMutation,
-} from "../../leagueDivisions/leagueDivisionsApiSlice";
+} from "@/features/leagueDivisions/leagueDivisionsApiSlice";
 import {
   useGetMatchesQuery,
   useGetScheduledUnplayedMatchesQuery,
   useSimulateMatchMutation,
-} from "../../matches/matchesApiSlice";
-import { AdminDivisionsGlanceTable } from "../components/AdminDivisionsGlanceTable";
-import { AdminQuickActions } from "../components/AdminQuickActions";
-import { AdminRecentActivity } from "../components/AdminRecentActivity";
-import { AdminStatCards } from "../components/AdminStatCards";
+} from "@/features/matches/matchesApiSlice";
+import { AdminDivisionsGlanceTable } from "@/features/admin/components/AdminDivisionsGlanceTable";
+import { AdminQuickActions } from "@/features/admin/components/AdminQuickActions";
+import { AdminRecentActivity } from "@/features/admin/components/AdminRecentActivity";
+import { AdminStatCards } from "@/features/admin/components/AdminStatCards";
 import {
   buildAdminDashboardStats,
   buildDivisionGlanceRows,
   buildRecentActivity,
   findAdvanceMatchWeekTarget,
   formatSeatingQueueSummary,
-} from "../utils/adminDashboardHelpers";
+} from "@/features/admin/utils/adminDashboardHelpers";
 import {
   useGetCompetitiveSeatingQueueQuery,
   useRunCompetitiveSeatingMutation,
-} from "../../competitiveSeating/competitiveSeatingApiSlice";
+} from "@/features/competitiveSeating/competitiveSeatingApiSlice";
 
 export const AdminDashboardPage = () => {
   const { data: divisionsData, isLoading: isDivisionsLoading } = useGetLeagueDivisionsQuery({

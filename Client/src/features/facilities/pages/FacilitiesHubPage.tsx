@@ -1,7 +1,7 @@
-import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
-import { FacilitiesHubHeader } from "../components/FacilitiesHubHeader";
-import { FacilityHubCard } from "../components/FacilityHubCard";
-import { useGetMyFacilitiesQuery } from "../facilitiesApiSlice";
+import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
+import { FacilitiesHubHeader } from "@/features/facilities/components/FacilitiesHubHeader";
+import { FacilityHubCard } from "@/features/facilities/components/FacilityHubCard";
+import { useGetMyFacilitiesQuery } from "@/features/facilities/facilitiesApiSlice";
 
 export const FacilitiesHubPage = () => {
   const { data: overview, isLoading, isError } = useGetMyFacilitiesQuery();

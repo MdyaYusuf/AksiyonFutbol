@@ -1,25 +1,25 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
-import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
-import { MyDealsSummary } from "../components/MyDealsSummary";
-import { MyDealsTable } from "../components/MyDealsTable";
-import { MyDealsToolbar } from "../components/MyDealsToolbar";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
+import { useGetCurrentUserClubPlayersQuery } from "@/features/playerInstances/playerInstancesApiSlice";
+import { MyDealsSummary } from "@/features/transfers/components/MyDealsSummary";
+import { MyDealsTable } from "@/features/transfers/components/MyDealsTable";
+import { MyDealsToolbar } from "@/features/transfers/components/MyDealsToolbar";
 import {
   useAcceptTransferOfferMutation,
   useGetMyTransferDealsQuery,
   useRejectTransferOfferMutation,
   useWithdrawTransferOfferMutation,
-} from "../transfersApiSlice";
+} from "@/features/transfers/transfersApiSlice";
 import {
   DEFAULT_DEAL_STATUS_FILTERS,
   offerMatchesStatusFilters,
   summarizeDeals,
   type DealStatusFilter,
   type DealsTab,
-} from "../utils/myDealsHelpers";
-import { canSellOrCompleteTransfer } from "../utils/transferMarketHelpers";
+} from "@/features/transfers/utils/myDealsHelpers";
+import { canSellOrCompleteTransfer } from "@/features/transfers/utils/transferMarketHelpers";
 
 export const MyDealsPage = () => {
   const { data, isLoading } = useGetMyTransferDealsQuery();

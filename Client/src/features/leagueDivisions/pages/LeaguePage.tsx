@@ -1,23 +1,23 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { ClubLifecycleStatus } from "../../clubs/clubTypes";
+import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { ClubLifecycleStatus } from "@/features/clubs/clubTypes";
 import {
   getPlacementQueueSummary,
   getPlacementQueueTitle,
-} from "../../clubs/utils/clubLifecycleHelpers";
-import { useGetMatchesQuery } from "../../matches/matchesApiSlice";
-import { LeagueStandingsHeader } from "../components/LeagueStandingsHeader";
-import { StandingsTable } from "../components/StandingsTable";
-import { useGetLeagueDivisionByIdQuery } from "../leagueDivisionsApiSlice";
+} from "@/features/clubs/utils/clubLifecycleHelpers";
+import { useGetMatchesQuery } from "@/features/matches/matchesApiSlice";
+import { LeagueStandingsHeader } from "@/features/leagueDivisions/components/LeagueStandingsHeader";
+import { StandingsTable } from "@/features/leagueDivisions/components/StandingsTable";
+import { useGetLeagueDivisionByIdQuery } from "@/features/leagueDivisions/leagueDivisionsApiSlice";
 import {
   buildStandings,
   exportStandingsCsv,
   getStandingsLegendItems,
   resolveLeagueDisplayMaxMatchWeek,
   resolveScheduledMaxMatchWeek,
-} from "../utils/standingsHelpers";
+} from "@/features/leagueDivisions/utils/standingsHelpers";
 
 export const LeaguePage = () => {
   const { data: club, isLoading: isClubLoading } = useGetCurrentUserClubQuery();

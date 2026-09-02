@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { AppHeader } from "../components/app/AppHeader";
-import { AppSidebar } from "../components/app/AppSidebar";
-import { useGetCurrentUserClubPresidentQuery } from "../../features/clubPresidents/clubPresidentsApiSlice";
-import { useGetCurrentUserClubQuery } from "../../features/clubs/clubsApiSlice";
+import { AppHeader } from "@/core/components/app/AppHeader";
+import { AppSidebar } from "@/core/components/app/AppSidebar";
+import { useGetCurrentUserClubPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
 
 export const AppLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);

@@ -1,12 +1,12 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { PresidentAttributeKey, PresidentAttributes } from "../clubPresidentTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { PresidentAttributeKey, PresidentAttributes } from "@/features/clubPresidents/clubPresidentTypes";
 import {
   PRESIDENT_ATTRIBUTE_KEYS,
   PRESIDENT_ATTRIBUTE_LABELS,
   PRESIDENT_ATTRIBUTE_MAX,
   PRESIDENT_ATTRIBUTE_MIN,
   getRemainingAttributePoints,
-} from "../utils/presidentProfileHelpers";
+} from "@/features/clubPresidents/utils/presidentProfileHelpers";
 
 interface PresidentAttributeAllocatorProps {
   attributes: PresidentAttributes;

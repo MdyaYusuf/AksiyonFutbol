@@ -1,20 +1,20 @@
 import { useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
 import {
   useGetCurrentUserClubPlayersQuery,
   useGetPlayerInstanceByIdQuery,
-} from "../../playerInstances/playerInstancesApiSlice";
-import { MakeOfferAttributes } from "../components/MakeOfferAttributes";
-import { MakeOfferForm } from "../components/MakeOfferForm";
-import { MakeOfferPlayerHeader } from "../components/MakeOfferPlayerHeader";
-import { MakeOfferScoutReport } from "../components/MakeOfferScoutReport";
+} from "@/features/playerInstances/playerInstancesApiSlice";
+import { MakeOfferAttributes } from "@/features/transfers/components/MakeOfferAttributes";
+import { MakeOfferForm } from "@/features/transfers/components/MakeOfferForm";
+import { MakeOfferPlayerHeader } from "@/features/transfers/components/MakeOfferPlayerHeader";
+import { MakeOfferScoutReport } from "@/features/transfers/components/MakeOfferScoutReport";
 import {
   useCreateTransferOfferMutation,
   useGetTransferMarketItemQuery,
-} from "../transfersApiSlice";
-import type { TransferMarketItem } from "../transferTypes";
+} from "@/features/transfers/transfersApiSlice";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
 
 interface MakeOfferLocationState {
   listing?: TransferMarketItem;

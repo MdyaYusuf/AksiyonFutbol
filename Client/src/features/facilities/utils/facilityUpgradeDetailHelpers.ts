@@ -1,7 +1,7 @@
-import type { ClubFacilitiesOverview, ClubFacility, FacilityType } from "../facilityTypes";
-import { FacilityType as FacilityTypeValues } from "../facilityTypes";
-import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
-import { getFacilityLevelLabel } from "./facilitiesHubHelpers";
+import type { ClubFacilitiesOverview, ClubFacility, FacilityType } from "@/features/facilities/facilityTypes";
+import { FacilityType as FacilityTypeValues } from "@/features/facilities/facilityTypes";
+import { formatSquadMoney } from "@/features/playerInstances/utils/squadHelpers";
+import { getFacilityLevelLabel } from "@/features/facilities/utils/facilitiesHubHelpers";
 
 export const parseFacilityTypeParam = (
   value: string | undefined,

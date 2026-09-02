@@ -1,10 +1,10 @@
-import type { MatchPreview } from "../../matches/matchTypes";
-import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import type { MatchPreview } from "@/features/matches/matchTypes";
+import { getMatchResultLetter } from "@/features/dashboard/utils/matchHelpers";
+import { parseApiDate } from "@/core/utils/dateTime";
 import type {
   PresidentAttributeKey,
   PresidentAttributes,
-} from "../clubPresidentTypes";
+} from "@/features/clubPresidents/clubPresidentTypes";
 
 export const PRESIDENT_ATTRIBUTE_MIN = 1;
 export const PRESIDENT_ATTRIBUTE_MAX = 5;

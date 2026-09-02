@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { ConfirmDialog } from "../../../core/components/ui/ConfirmDialog";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetClubsByDivisionIdQuery } from "../../clubs/clubsApiSlice";
-import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
-import { useGetRefereesQuery } from "../../referees/refereesApiSlice";
+import { ConfirmDialog } from "@/core/components/ui/ConfirmDialog";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetClubsByDivisionIdQuery } from "@/features/clubs/clubsApiSlice";
+import { useGetLeagueDivisionsQuery } from "@/features/leagueDivisions/leagueDivisionsApiSlice";
+import { useGetRefereesQuery } from "@/features/referees/refereesApiSlice";
 import {
   AdminMatchFormPanel,
   type AdminMatchFormValues,
-} from "../components/AdminMatchFormPanel";
-import { AdminMatchesTable } from "../components/AdminMatchesTable";
+} from "@/features/matches/components/AdminMatchFormPanel";
+import { AdminMatchesTable } from "@/features/matches/components/AdminMatchesTable";
 import {
   useCreateMatchMutation,
   useDeleteMatchMutation,
@@ -17,8 +17,8 @@ import {
   useGetMatchesQuery,
   useSimulateMatchMutation,
   useUpdateMatchScheduleMutation,
-} from "../matchesApiSlice";
-import type { MatchResponse } from "../matchTypes";
+} from "@/features/matches/matchesApiSlice";
+import type { MatchResponse } from "@/features/matches/matchTypes";
 import {
   findUnplayedWeekAlert,
   formatDivisionOption,
@@ -28,8 +28,8 @@ import {
   getUnplayedMatchesForWeek,
   toDateTimeLocalValue,
   type MatchStatusFilter,
-} from "../utils/adminMatchesHelpers";
-import { isMatchInDivisionCurrentSeason } from "../utils/seasonHelpers";
+} from "@/features/matches/utils/adminMatchesHelpers";
+import { isMatchInDivisionCurrentSeason } from "@/features/matches/utils/seasonHelpers";
 
 const PAGE_SIZE = 15;
 

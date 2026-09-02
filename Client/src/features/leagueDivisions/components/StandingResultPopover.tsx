@@ -16,7 +16,7 @@ import {
   MATCH_WEEK_BADGE_CLASS_NAME,
   type FormResult,
   type StandingMatchResult,
-} from "../utils/standingsHelpers";
+} from "@/features/leagueDivisions/utils/standingsHelpers";
 
 interface StandingResultPopoverProps {
   clubName: string;

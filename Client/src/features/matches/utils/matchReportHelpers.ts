@@ -1,5 +1,5 @@
-import { MatchEventType, type MatchEvent, type MatchResponse } from "../matchTypes";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import { MatchEventType, type MatchEvent, type MatchResponse } from "@/features/matches/matchTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
 import type { NavigateFunction } from "react-router-dom";
 
 interface RawMatchEvent {

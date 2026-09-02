@@ -1,9 +1,9 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   formatRelativeTime,
   type ActivityType,
   type RecentActivityItem,
-} from "../utils/adminDashboardHelpers";
+} from "@/features/admin/utils/adminDashboardHelpers";
 
 interface AdminRecentActivityProps {
   items: RecentActivityItem[];

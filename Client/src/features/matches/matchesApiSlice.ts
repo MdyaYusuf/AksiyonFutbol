@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 import type {
   CreatedMatchResponse,
   CreateMatchRequest,
@@ -7,7 +7,7 @@ import type {
   MatchPreview,
   MatchResponse,
   UpdateMatchScheduleRequest,
-} from "./matchTypes";
+} from "@/features/matches/matchTypes";
 
 export type AdminMatchesQuery = PaginationRequest & {
   search?: string;

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { MaterialIcon } from "../ui/MaterialIcon";
-import { useAppSelector } from "../../store/hooks";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useAppSelector } from "@/core/store/hooks";
 
 interface AppNavItem {
   to: string;

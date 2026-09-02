@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MatchEvent } from "../matchTypes";
-import { MatchEventType } from "../matchTypes";
+import type { MatchEvent } from "@/features/matches/matchTypes";
+import { MatchEventType } from "@/features/matches/matchTypes";
 import {
   getLiveMomentIntensity,
   getMatchEventKey,
   getSameMinuteSequence,
   isKeyAttackSequence,
   type LiveMomentIntensity,
-} from "../utils/matchLiveHelpers";
-import { getEventTitle } from "../utils/matchReportHelpers";
+} from "@/features/matches/utils/matchLiveHelpers";
+import { getEventTitle } from "@/features/matches/utils/matchReportHelpers";
 
 interface MatchLiveCommentaryProps {
   events: MatchEvent[];

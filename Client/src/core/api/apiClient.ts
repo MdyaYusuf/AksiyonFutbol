@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import type { ApiResponse } from "../types/ApiResponse";
+import type { ApiResponse } from "@/core/types/ApiResponse";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
@@ -138,10 +138,10 @@ export const handleLogout = () => {
   }
 
   const finishLogout = async () => {
-    const { store } = await import("../store/store");
-    const { apiSlice } = await import("./apiSlice");
-    const { logoutUser } = await import("../../features/auth/authSlice");
-    const { router } = await import("../../router");
+    const { store } = await import("@/core/store/store");
+    const { apiSlice } = await import("@/core/api/apiSlice");
+    const { logoutUser } = await import("@/features/auth/authSlice");
+    const { router } = await import("@/router");
 
     store.dispatch(logoutUser());
     store.dispatch(apiSlice.util.resetApiState());

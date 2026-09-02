@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes, SelectHTMLAttributes } from "react";
-import { MaterialIcon } from "../ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 interface OnboardingTextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;

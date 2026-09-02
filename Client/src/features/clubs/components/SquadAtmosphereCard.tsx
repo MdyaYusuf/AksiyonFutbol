@@ -1,8 +1,8 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
-import { getMoraleLabel } from "../../dashboard/utils/dashboardFormatters";
-import type { ClubResponse } from "../clubTypes";
-import { getMoraleSegmentCount } from "../utils/clubOverviewHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { ProgressBar } from "@/core/components/ui/ProgressBar";
+import { getMoraleLabel } from "@/features/dashboard/utils/dashboardFormatters";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
+import { getMoraleSegmentCount } from "@/features/clubs/utils/clubOverviewHelpers";
 
 interface SquadAtmosphereCardProps {
   club: ClubResponse;

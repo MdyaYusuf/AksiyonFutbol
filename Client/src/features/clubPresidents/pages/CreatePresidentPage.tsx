@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { useCheckCurrentUserHasPresidentQuery } from "../clubPresidentsApiSlice";
-import { CreatePresidentForm } from "../components/CreatePresidentForm";
+import { useCheckCurrentUserHasPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
+import { CreatePresidentForm } from "@/features/clubPresidents/components/CreatePresidentForm";
 
 export const CreatePresidentPage = () => {
   const { data: hasPresident, isLoading } = useCheckCurrentUserHasPresidentQuery();

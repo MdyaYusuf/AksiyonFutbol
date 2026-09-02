@@ -1,6 +1,6 @@
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import { getPositionLabel } from "../../playerInstances/utils/squadHelpers";
-import type { DraftQuota } from "../clubDraftTypes";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import { getPositionLabel } from "@/features/playerInstances/utils/squadHelpers";
+import type { DraftQuota } from "@/features/clubDrafts/clubDraftTypes";
 
 interface DraftQuotaBarProps {
   quotas: DraftQuota[];

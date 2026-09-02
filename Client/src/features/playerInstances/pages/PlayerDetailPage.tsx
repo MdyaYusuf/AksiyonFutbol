@@ -1,9 +1,9 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
-import { goBackOrFallback } from "../../matches/utils/matchReportHelpers";
-import { PlayerAttributeProfile } from "../components/PlayerAttributeProfile";
-import { useGetPlayerInstanceByIdQuery } from "../playerInstancesApiSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
+import { goBackOrFallback } from "@/features/matches/utils/matchReportHelpers";
+import { PlayerAttributeProfile } from "@/features/playerInstances/components/PlayerAttributeProfile";
+import { useGetPlayerInstanceByIdQuery } from "@/features/playerInstances/playerInstancesApiSlice";
 import {
   formatSquadMoney,
   formatWeeklyWage,
@@ -14,7 +14,7 @@ import {
   getPlayerStatus,
   getPositionLabel,
   getPreferredFootLabel,
-} from "../utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 
 export const PlayerDetailPage = () => {
   const { id } = useParams<{ id: string }>();

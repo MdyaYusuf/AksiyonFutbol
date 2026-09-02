@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../ui/MaterialIcon";
-import { UserAccountMenu } from "../ui/UserAccountMenu";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { UserAccountMenu } from "@/core/components/ui/UserAccountMenu";
 
 interface AdminHeaderProps {
   onMenuClick: () => void;

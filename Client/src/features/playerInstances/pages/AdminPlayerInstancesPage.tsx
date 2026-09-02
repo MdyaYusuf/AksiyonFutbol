@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetBasePlayerOptionsQuery } from "../../basePlayers/basePlayersApiSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetBasePlayerOptionsQuery } from "@/features/basePlayers/basePlayersApiSlice";
 import {
   PlayerPosition,
   PreferredFoot,
-} from "../../basePlayers/basePlayerTypes";
-import { useGetClubOptionsQuery } from "../../clubs/clubsApiSlice";
+} from "@/features/basePlayers/basePlayerTypes";
+import { useGetClubOptionsQuery } from "@/features/clubs/clubsApiSlice";
 import {
   AdminPlayerInstanceFormPanel,
   type AssignFromBaseFormValues,
   type CustomPlayerFormValues,
   type EditPlayerFormValues,
   type PlayerInstancePanelTab,
-} from "../components/AdminPlayerInstanceFormPanel";
-import { AdminPlayerInstancesTable } from "../components/AdminPlayerInstancesTable";
+} from "@/features/playerInstances/components/AdminPlayerInstanceFormPanel";
+import { AdminPlayerInstancesTable } from "@/features/playerInstances/components/AdminPlayerInstancesTable";
 import {
   useCreateCustomPlayerInstanceMutation,
   useCreatePlayerInstanceFromBasePlayerMutation,
@@ -23,17 +23,17 @@ import {
   useUpdatePlayerInstanceNameMutation,
   useUpdatePlayerInstanceSeasonStatsMutation,
   useUpdatePlayerInstanceStatsMutation,
-} from "../playerInstancesApiSlice";
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+} from "@/features/playerInstances/playerInstancesApiSlice";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   areAttributesEqual,
   attributesForPosition,
   buildDefaultAttributes,
-} from "../utils/playerAttributeHelpers";
+} from "@/features/playerInstances/utils/playerAttributeHelpers";
 import type {
   PlayerPositionFilter,
   PlayerStatusFilter,
-} from "../utils/adminPlayerInstancesHelpers";
+} from "@/features/playerInstances/utils/adminPlayerInstancesHelpers";
 
 const PAGE_SIZE = 15;
 

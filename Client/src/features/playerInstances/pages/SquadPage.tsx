@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { SquadHeader } from "../components/SquadHeader";
-import { SquadTable } from "../components/SquadTable";
-import { useGetCurrentUserClubPlayersQuery } from "../playerInstancesApiSlice";
+import { SquadHeader } from "@/features/playerInstances/components/SquadHeader";
+import { SquadTable } from "@/features/playerInstances/components/SquadTable";
+import { useGetCurrentUserClubPlayersQuery } from "@/features/playerInstances/playerInstancesApiSlice";
 import {
   filterSquadPlayers,
   paginatePlayers,
   type SquadPositionFilter,
-} from "../utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 
 const PAGE_SIZE = 10;
 

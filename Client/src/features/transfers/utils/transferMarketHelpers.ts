@@ -1,6 +1,6 @@
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import type { SquadPositionFilter } from "../../playerInstances/utils/squadHelpers";
-import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import type { SquadPositionFilter } from "@/features/playerInstances/utils/squadHelpers";
+import { formatSquadMoney } from "@/features/playerInstances/utils/squadHelpers";
 
 /** Mirrors Api GameOptions.TransferMinimumSquadSize default. */
 export const TRANSFER_MINIMUM_SQUAD_SIZE = 14;

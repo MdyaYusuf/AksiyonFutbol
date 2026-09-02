@@ -1,17 +1,17 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubActionAvailability } from "../actionTypes";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubActionAvailability } from "@/features/actions/actionTypes";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
 import {
   formatChancePercent,
   getActionIcon,
-} from "../utils/actionsHubHelpers";
+} from "@/features/actions/utils/actionsHubHelpers";
 import {
   getPathAffinityBadgeClass,
   getPathAffinityIcon,
   getPathAffinityLabel,
-} from "../utils/actionPresentationHelpers";
-import { ActionMoralityDeltas } from "./ActionMoralityDeltas";
-import { ActionRequirementChips } from "./ActionRequirementChips";
+} from "@/features/actions/utils/actionPresentationHelpers";
+import { ActionMoralityDeltas } from "@/features/actions/components/ActionMoralityDeltas";
+import { ActionRequirementChips } from "@/features/actions/components/ActionRequirementChips";
 
 interface ActionCardProps {
   action: ClubActionAvailability;

@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import type { MatchPreview } from "../../matches/matchTypes";
+import type { MatchPreview } from "@/features/matches/matchTypes";
 import {
   getMatchResultLetter,
   getOpponentLabel,
   getScoreLabel,
-} from "../utils/matchHelpers";
+} from "@/features/dashboard/utils/matchHelpers";
 
 interface RecentFormCardProps {
   clubId: string;

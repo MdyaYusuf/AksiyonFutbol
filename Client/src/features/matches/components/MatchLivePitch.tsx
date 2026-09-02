@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { PitchBallPosition } from "../utils/matchLiveHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { PitchBallPosition } from "@/features/matches/utils/matchLiveHelpers";
 
 interface MatchLivePitchProps {
   homeClubName: string;

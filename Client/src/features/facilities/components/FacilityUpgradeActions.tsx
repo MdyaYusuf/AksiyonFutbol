@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
 
 interface FacilityUpgradeActionsProps {
   upgradeCost: number;

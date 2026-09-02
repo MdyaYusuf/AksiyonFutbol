@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { ClubLineupResponse, UpsertClubLineupRequest } from "./clubLineupTypes";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { ClubLineupResponse, UpsertClubLineupRequest } from "@/features/clubLineups/clubLineupTypes";
 
 export const clubLineupsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

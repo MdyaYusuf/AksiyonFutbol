@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { ProgressBar } from "@/core/components/ui/ProgressBar";
 import {
   PRESIDENT_HONORABLE_POWER_THRESHOLD,
   PRESIDENT_MAX_INFAMY,
@@ -7,7 +7,7 @@ import {
   PRESIDENT_SHADY_TIER_II_THRESHOLD,
   hasHonorablePowerUnlock,
   hasShadyTierIIUnlock,
-} from "../utils/presidentProfileHelpers";
+} from "@/features/clubPresidents/utils/presidentProfileHelpers";
 
 interface LegitimacyInfamyMetersProps {
   legitimacy: number;

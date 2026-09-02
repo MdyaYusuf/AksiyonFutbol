@@ -1,12 +1,12 @@
-import type { ClubResponse } from "../../clubs/clubTypes";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   FIXTURE_SCOPE_FILTERS,
   getFixtureScopeChipClassName,
   type FixtureScopeFilter,
   type FixtureStatusFilter,
-} from "../utils/fixturesHelpers";
+} from "@/features/matches/utils/fixturesHelpers";
 
 interface FixturesHeaderProps {
   club: ClubResponse;

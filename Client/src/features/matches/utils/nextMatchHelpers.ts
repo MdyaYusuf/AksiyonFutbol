@@ -1,6 +1,6 @@
-import { parseApiDate } from "../../../core/utils/dateTime";
-import type { MatchPreview } from "../matchTypes";
-import { getMatchPresentationPhase } from "./matchLiveHelpers";
+import { parseApiDate } from "@/core/utils/dateTime";
+import type { MatchPreview } from "@/features/matches/matchTypes";
+import { getMatchPresentationPhase } from "@/features/matches/utils/matchLiveHelpers";
 
 export const getNextMatch = (
   matches: MatchPreview[],

@@ -3,8 +3,8 @@ import type {
   SeasonDivisionPreview,
   SeasonEndPreview,
   StandingRow,
-} from "../seasonTransitionTypes";
-import { SeasonMovementOutcome } from "../seasonTransitionTypes";
+} from "@/features/seasonTransitions/seasonTransitionTypes";
+import { SeasonMovementOutcome } from "@/features/seasonTransitions/seasonTransitionTypes";
 
 export type CondensedStandingRow =
   | { kind: "standing"; row: StandingRow; zone: "promoted" | "relegated" | "user" | "mid" }

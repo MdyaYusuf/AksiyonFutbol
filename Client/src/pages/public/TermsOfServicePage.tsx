@@ -1,4 +1,4 @@
-import { LegalDocumentHeader } from "./components/LegalDocumentHeader";
+import { LegalDocumentHeader } from "@/pages/public/components/LegalDocumentHeader";
 
 const LAST_UPDATED = "July 14, 2026";
 

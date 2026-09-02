@@ -1,14 +1,14 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCash } from "../../dashboard/utils/dashboardFormatters";
-import { getClubInitials } from "../../clubs/utils/adminClubsHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCash } from "@/features/dashboard/utils/dashboardFormatters";
+import { getClubInitials } from "@/features/clubs/utils/adminClubsHelpers";
 import {
   getOverallBadgeClassName,
   getPlayerInitials,
   getPositionBadgeClassName,
   getPositionLabel,
-} from "../utils/squadHelpers";
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
-import { getInjuryStatusLabel } from "../utils/adminPlayerInstancesHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { getInjuryStatusLabel } from "@/features/playerInstances/utils/adminPlayerInstancesHelpers";
 
 interface AdminPlayerInstancesTableProps {
   players: PlayerInstanceResponse[];

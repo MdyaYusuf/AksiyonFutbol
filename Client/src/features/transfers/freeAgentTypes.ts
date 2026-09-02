@@ -1,4 +1,4 @@
-import type { DraftTier, PlayerPosition, PreferredFoot } from "../basePlayers/basePlayerTypes";
+import type { DraftTier, PlayerPosition, PreferredFoot } from "@/features/basePlayers/basePlayerTypes";
 
 export interface FreeAgentMarketItem {
   basePlayerId: string;

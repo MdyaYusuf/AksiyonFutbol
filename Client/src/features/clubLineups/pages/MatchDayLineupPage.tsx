@@ -1,35 +1,35 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { formatMatchDateTime } from "../../dashboard/utils/dashboardFormatters";
-import { useGetMatchByIdQuery } from "../../matches/matchesApiSlice";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { formatMatchDateTime } from "@/features/dashboard/utils/dashboardFormatters";
+import { useGetMatchByIdQuery } from "@/features/matches/matchesApiSlice";
 import {
   getMatchLivePath,
   getMatchPresentationPhase,
   getMatchReportPath,
   shouldOpenLiveView,
   shouldOpenMatchReport,
-} from "../../matches/utils/matchLiveHelpers";
-import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { MatchDayContextBar } from "../components/MatchDayContextBar";
-import { MatchDayFooter } from "../components/MatchDayFooter";
-import { MatchDayInjuryBanner } from "../components/MatchDayInjuryBanner";
-import { MatchDayPitch } from "../components/MatchDayPitch";
-import { MatchDayStartingXi } from "../components/MatchDayStartingXi";
+} from "@/features/matches/utils/matchLiveHelpers";
+import { useGetCurrentUserClubPlayersQuery } from "@/features/playerInstances/playerInstancesApiSlice";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { MatchDayContextBar } from "@/features/clubLineups/components/MatchDayContextBar";
+import { MatchDayFooter } from "@/features/clubLineups/components/MatchDayFooter";
+import { MatchDayInjuryBanner } from "@/features/clubLineups/components/MatchDayInjuryBanner";
+import { MatchDayPitch } from "@/features/clubLineups/components/MatchDayPitch";
+import { MatchDayStartingXi } from "@/features/clubLineups/components/MatchDayStartingXi";
 import {
   useGetMyClubLineupQuery,
   useUpsertMyClubLineupMutation,
-} from "../clubLineupsApiSlice";
-import type { TeamFormation, TeamMentality } from "../clubLineupTypes";
+} from "@/features/clubLineups/clubLineupsApiSlice";
+import type { TeamFormation, TeamMentality } from "@/features/clubLineups/clubLineupTypes";
 import {
   createEmptyBenchSlots,
   createEmptyStarterSlots,
   getFormationLabel,
   LINEUP_STARTER_COUNT,
   lineupToSlots,
-} from "../utils/tacticsHelpers";
+} from "@/features/clubLineups/utils/tacticsHelpers";
 
 export const MatchDayLineupPage = () => {
   const { id: matchId } = useParams<{ id: string }>();

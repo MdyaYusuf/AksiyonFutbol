@@ -1,10 +1,10 @@
-import { apiSlice } from "../../core/api/apiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
 import type {
   ClubActionHistoryItem,
   ClubActionResult,
   ClubActionsContext,
   ExecuteClubActionRequest,
-} from "./actionTypes";
+} from "@/features/actions/actionTypes";
 
 export const actionsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

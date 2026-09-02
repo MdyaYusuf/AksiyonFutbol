@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse } from "@/core/types/ApiResponse";
 import type {
   CreateTransferListingRequest,
   CreateTransferOfferRequest,
@@ -8,12 +8,12 @@ import type {
   TransferMarketItem,
   TransferMarketQuery,
   TransferOfferResponse,
-} from "./transferTypes";
+} from "@/features/transfers/transferTypes";
 import type {
   FreeAgentMarketItem,
   FreeAgentMarketQuery,
   SignFreeAgentResponse,
-} from "./freeAgentTypes";
+} from "@/features/transfers/freeAgentTypes";
 
 export const transfersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

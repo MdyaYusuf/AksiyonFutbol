@@ -1,9 +1,9 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
-import { useGetBasePlayerByIdQuery } from "../../basePlayers/basePlayersApiSlice";
-import { goBackOrFallback } from "../../matches/utils/matchReportHelpers";
-import { PlayerAttributeProfile } from "../../playerInstances/components/PlayerAttributeProfile";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
+import { useGetBasePlayerByIdQuery } from "@/features/basePlayers/basePlayersApiSlice";
+import { goBackOrFallback } from "@/features/matches/utils/matchReportHelpers";
+import { PlayerAttributeProfile } from "@/features/playerInstances/components/PlayerAttributeProfile";
 import {
   formatSquadMoney,
   formatWeeklyWage,
@@ -13,8 +13,8 @@ import {
   getPlayerInitials,
   getPositionLabel,
   getPreferredFootLabel,
-} from "../../playerInstances/utils/squadHelpers";
-import { DRAFT_TIER_LABELS, getDraftTierBadgeClassName } from "../utils/freeAgentHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
+import { DRAFT_TIER_LABELS, getDraftTierBadgeClassName } from "@/features/transfers/utils/freeAgentHelpers";
 
 export const FreeAgentDetailPage = () => {
   const { basePlayerId } = useParams<{ basePlayerId: string }>();

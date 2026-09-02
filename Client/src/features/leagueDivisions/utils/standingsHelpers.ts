@@ -1,9 +1,9 @@
-import type { ClubPreview } from "../../clubs/clubTypes";
-import { LeagueTier } from "../../clubs/clubTypes";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import { TUTORIAL_MATCH_WEEKS } from "../../clubs/utils/clubLifecycleHelpers";
-import type { MatchResponse } from "../../matches/matchTypes";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import type { ClubPreview } from "@/features/clubs/clubTypes";
+import { LeagueTier } from "@/features/clubs/clubTypes";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import { TUTORIAL_MATCH_WEEKS } from "@/features/clubs/utils/clubLifecycleHelpers";
+import type { MatchResponse } from "@/features/matches/matchTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
 
 /** Mirrors Api GameOptions.PromotionSlots / RelegationSlots defaults. */
 export const PROMOTION_SLOTS = 2;

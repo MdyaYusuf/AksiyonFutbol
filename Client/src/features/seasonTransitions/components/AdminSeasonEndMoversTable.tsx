@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { AdminProjectedMovementRow } from "../utils/adminProcessSeasonEndHelpers";
-import { getClubInitial } from "../utils/endOfSeasonHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { AdminProjectedMovementRow } from "@/features/seasonTransitions/utils/adminProcessSeasonEndHelpers";
+import { getClubInitial } from "@/features/seasonTransitions/utils/endOfSeasonHelpers";
 
 interface AdminSeasonEndMoversTableProps {
   divisionName: string;

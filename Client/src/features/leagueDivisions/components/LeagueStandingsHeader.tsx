@@ -1,8 +1,8 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   DivisionLifecycleStatus,
   type LeagueDivisionResponse,
-} from "../leagueDivisionTypes";
+} from "@/features/leagueDivisions/leagueDivisionTypes";
 
 interface LeagueStandingsHeaderProps {
   division: LeagueDivisionResponse;

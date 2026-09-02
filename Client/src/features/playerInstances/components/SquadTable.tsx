@@ -1,5 +1,5 @@
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
-import { SquadPlayerRow } from "./SquadPlayerRow";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { SquadPlayerRow } from "@/features/playerInstances/components/SquadPlayerRow";
 
 interface SquadTableProps {
   players: PlayerInstanceResponse[];

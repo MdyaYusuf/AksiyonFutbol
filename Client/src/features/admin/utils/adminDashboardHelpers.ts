@@ -1,12 +1,12 @@
-import type { ClubOption } from "../../clubs/clubTypes";
-import { getLeagueTierLabel } from "../../clubs/utils/clubLifecycleHelpers";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import type { CompetitiveSeatingQueuePreview } from "../../competitiveSeating/competitiveSeatingTypes";
-import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
-import type { MatchResponse } from "../../matches/matchTypes";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import type { ClubOption } from "@/features/clubs/clubTypes";
+import { getLeagueTierLabel } from "@/features/clubs/utils/clubLifecycleHelpers";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import type { CompetitiveSeatingQueuePreview } from "@/features/competitiveSeating/competitiveSeatingTypes";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
+import type { MatchResponse } from "@/features/matches/matchTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
 
-export { getGroupDisplayLabel } from "../../leagueDivisions/utils/adminLeagueDivisionsHelpers";
+export { getGroupDisplayLabel } from "@/features/leagueDivisions/utils/adminLeagueDivisionsHelpers";
 
 export const formatSeatingQueueSummary = (
   preview?: CompetitiveSeatingQueuePreview,

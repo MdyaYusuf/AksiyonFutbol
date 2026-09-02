@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
-import { PlayerAttributePopover } from "../../playerInstances/components/PlayerAttributePopover";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import type { TeamFormation } from "../clubLineupTypes";
+import { PlayerAttributePopover } from "@/features/playerInstances/components/PlayerAttributePopover";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import type { TeamFormation } from "@/features/clubLineups/clubLineupTypes";
 import {
   buildPitchRows,
   formatShortName,
@@ -10,7 +10,7 @@ import {
   getPitchRatingTextClass,
   parseLineupDrag,
   serializeLineupDrag,
-} from "../utils/tacticsHelpers";
+} from "@/features/clubLineups/utils/tacticsHelpers";
 
 interface TacticsPitchProps {
   formation: TeamFormation;

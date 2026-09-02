@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 import type {
   BasePlayerOption,
   BasePlayerPreview,
@@ -8,7 +8,7 @@ import type {
   CreateBasePlayerRequest,
   PlayerPosition,
   UpdateBasePlayerRequest,
-} from "./basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 
 export const basePlayersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

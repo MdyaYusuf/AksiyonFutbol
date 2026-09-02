@@ -1,10 +1,10 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubActionAvailability, ClubActionCategory } from "../actionTypes";
-import { ClubActionCategory as Category } from "../actionTypes";
-import { getCategoryIcon, getCategoryLabel } from "../utils/actionsHubHelpers";
-import { ActionCard } from "./ActionCard";
-import { BribeRefereeActionCard } from "./BribeRefereeActionCard";
-import type { BriberyContext } from "../../bribery/briberyTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubActionAvailability, ClubActionCategory } from "@/features/actions/actionTypes";
+import { ClubActionCategory as Category } from "@/features/actions/actionTypes";
+import { getCategoryIcon, getCategoryLabel } from "@/features/actions/utils/actionsHubHelpers";
+import { ActionCard } from "@/features/actions/components/ActionCard";
+import { BribeRefereeActionCard } from "@/features/actions/components/BribeRefereeActionCard";
+import type { BriberyContext } from "@/features/bribery/briberyTypes";
 
 interface ActionCategorySectionProps {
   category: ClubActionCategory;

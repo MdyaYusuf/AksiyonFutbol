@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { MatchPreview } from "../../matches/matchTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { MatchPreview } from "@/features/matches/matchTypes";
 import {
   getMatchLivePath,
   getMatchLiveReplayPath,
   getMatchPresentationPhase,
   getMatchReportPath,
-} from "../../matches/utils/matchLiveHelpers";
-import { formatMatchDateTime } from "../utils/dashboardFormatters";
+} from "@/features/matches/utils/matchLiveHelpers";
+import { formatMatchDateTime } from "@/features/dashboard/utils/dashboardFormatters";
 
 interface NextMatchCardProps {
   clubId: string;
@@ -128,12 +128,6 @@ export const NextMatchCard = ({ clubId, nextMatch }: NextMatchCardProps) => {
               className="rounded border border-outline-variant bg-transparent px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
             >
               Actions
-            </Link>
-            <Link
-              to={reportPath}
-              className="rounded border border-outline-variant bg-transparent px-4 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-variant"
-            >
-              Scout Report
             </Link>
             <Link
               to={`/app/matches/${nextMatch.id}/lineup`}

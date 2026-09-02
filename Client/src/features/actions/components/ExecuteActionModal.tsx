@@ -1,12 +1,12 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import { useGetPlayerInstancesByClubIdQuery } from "../../playerInstances/playerInstancesApiSlice";
-import { useGetTransferMarketQuery } from "../../transfers/transfersApiSlice";
-import type { ClubActionAvailability, MediaSpinMode as MediaSpinModeType } from "../actionTypes";
-import { ClubActionType, MediaSpinMode } from "../actionTypes";
-import { formatChancePercent } from "../utils/actionsHubHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { useGetPlayerInstancesByClubIdQuery } from "@/features/playerInstances/playerInstancesApiSlice";
+import { useGetTransferMarketQuery } from "@/features/transfers/transfersApiSlice";
+import type { ClubActionAvailability, MediaSpinMode as MediaSpinModeType } from "@/features/actions/actionTypes";
+import { ClubActionType, MediaSpinMode } from "@/features/actions/actionTypes";
+import { formatChancePercent } from "@/features/actions/utils/actionsHubHelpers";
 
 interface ExecuteActionModalProps {
   action: ClubActionAvailability;

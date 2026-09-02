@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   AdminRefereeFormPanel,
   type AdminRefereeFormValues,
-} from "../components/AdminRefereeFormPanel";
-import { AdminRefereesTable } from "../components/AdminRefereesTable";
+} from "@/features/referees/components/AdminRefereeFormPanel";
+import { AdminRefereesTable } from "@/features/referees/components/AdminRefereesTable";
 import {
   useCreateRefereeMutation,
   useDeleteRefereeMutation,
   useGetRefereesQuery,
   useUpdateRefereeMutation,
-} from "../refereesApiSlice";
+} from "@/features/referees/refereesApiSlice";
 import {
   RefereePersonalityType,
   type RefereeResponse,
-} from "../refereeTypes";
-import { type RefereePersonalityFilter } from "../utils/adminRefereesHelpers";
+} from "@/features/referees/refereeTypes";
+import { type RefereePersonalityFilter } from "@/features/referees/utils/adminRefereesHelpers";
 
 const PAGE_SIZE = 10;
 

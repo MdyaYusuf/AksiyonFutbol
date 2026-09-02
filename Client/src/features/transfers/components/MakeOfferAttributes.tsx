@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { getAttributeToneClass } from "../utils/makeOfferHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { getAttributeToneClass } from "@/features/transfers/utils/makeOfferHelpers";
 
 interface MakeOfferAttributesProps {
   player: PlayerInstanceResponse;

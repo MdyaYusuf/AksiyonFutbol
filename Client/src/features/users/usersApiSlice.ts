@@ -1,15 +1,15 @@
-import { apiSlice } from "../../core/api/apiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
 import type {
   UserResponse,
   UserPreview,
   UpdateUserRequest,
   ChangePasswordRequest,
-} from "./userTypes";
+} from "@/features/users/userTypes";
 import type {
   PagedResponse,
   CursorPagedResponse,
   PaginationRequest,
-} from "../../core/types/ApiResponse";
+} from "@/core/types/ApiResponse";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

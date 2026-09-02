@@ -1,5 +1,5 @@
-import { parseApiDate } from "../../../core/utils/dateTime";
-import { MatchEventType, type MatchEvent } from "../matchTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
+import { MatchEventType, type MatchEvent } from "@/features/matches/matchTypes";
 
 /** Matches GameOptions.MatchLiveReplayDurationSeconds default. */
 export const MATCH_LIVE_REPLAY_DURATION_SECONDS = 180;

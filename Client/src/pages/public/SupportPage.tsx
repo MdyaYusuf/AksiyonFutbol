@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { FictionalDisclaimer } from "../../core/components/legal/FictionalDisclaimer";
-import { MaterialIcon } from "../../core/components/ui/MaterialIcon";
+import { FictionalDisclaimer } from "@/core/components/legal/FictionalDisclaimer";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 const FAQ_ITEMS = [
   {

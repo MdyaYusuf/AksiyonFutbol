@@ -1,12 +1,12 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 import type {
   ClubPresidentResponse,
   CreatedClubPresidentResponse,
   CreateClubPresidentRequest,
   UpdateClubPresidentReputationRequest,
   UpdateClubPresidentRequest,
-} from "./clubPresidentTypes";
+} from "@/features/clubPresidents/clubPresidentTypes";
 
 export const clubPresidentsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

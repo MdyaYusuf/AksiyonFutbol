@@ -1,21 +1,21 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useState } from "react";
-import { useGetLeagueDivisionsQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
+import { useGetLeagueDivisionsQuery } from "@/features/leagueDivisions/leagueDivisionsApiSlice";
 import {
   AdminSeasonEndExecute,
   AdminSeasonEndWarning,
-} from "../components/AdminSeasonEndExecutePanel";
-import { AdminSeasonEndMoversTable } from "../components/AdminSeasonEndMoversTable";
-import { AdminSeasonEndPreflight } from "../components/AdminSeasonEndPreflight";
+} from "@/features/seasonTransitions/components/AdminSeasonEndExecutePanel";
+import { AdminSeasonEndMoversTable } from "@/features/seasonTransitions/components/AdminSeasonEndMoversTable";
+import { AdminSeasonEndPreflight } from "@/features/seasonTransitions/components/AdminSeasonEndPreflight";
 import {
   useGetSeasonEndPreviewQuery,
   useProcessSeasonEndMutation,
-} from "../seasonTransitionsApiSlice";
+} from "@/features/seasonTransitions/seasonTransitionsApiSlice";
 import {
   buildAdminProjectedRows,
   getPreflightChecks,
   getSelectedDivisionPreview,
-} from "../utils/adminProcessSeasonEndHelpers";
+} from "@/features/seasonTransitions/utils/adminProcessSeasonEndHelpers";
 
 export const AdminProcessSeasonEndPage = () => {
   const [selectedDivisionId, setSelectedDivisionId] = useState<number | null>(null);

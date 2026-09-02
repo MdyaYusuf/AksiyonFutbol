@@ -1,4 +1,4 @@
-import type { DraftTier } from "../../basePlayers/basePlayerTypes";
+import type { DraftTier } from "@/features/basePlayers/basePlayerTypes";
 
 export const DRAFT_TIER_LABELS: Record<DraftTier, string> = {
   1: "Gold",

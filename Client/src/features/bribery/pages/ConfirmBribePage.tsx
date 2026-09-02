@@ -1,12 +1,12 @@
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useCreateBribeAttemptMutation } from "../briberyApiSlice";
-import type { MatchInfluenceConfirmState } from "../briberyTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useCreateBribeAttemptMutation } from "@/features/bribery/briberyApiSlice";
+import type { MatchInfluenceConfirmState } from "@/features/bribery/briberyTypes";
 import {
   ConfirmBribeRiskNote,
   ConfirmBribeSummary,
-} from "../components/ConfirmBribeSummary";
-import { getExposureWarningTitle } from "../utils/matchInfluenceHelpers";
+} from "@/features/bribery/components/ConfirmBribeSummary";
+import { getExposureWarningTitle } from "@/features/bribery/utils/matchInfluenceHelpers";
 
 export const ConfirmBribePage = () => {
   const navigate = useNavigate();

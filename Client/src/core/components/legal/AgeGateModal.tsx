@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { MaterialIcon } from "../ui/MaterialIcon";
-import { FictionalDisclaimer } from "./FictionalDisclaimer";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { FictionalDisclaimer } from "@/core/components/legal/FictionalDisclaimer";
 
 const STORAGE_KEY = "aksiyonfutbol.ageGateAccepted";
 

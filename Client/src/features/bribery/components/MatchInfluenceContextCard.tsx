@@ -1,11 +1,11 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { BriberyContext } from "../briberyTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { BriberyContext } from "@/features/bribery/briberyTypes";
 import {
   formatFixtureHeadline,
   formatInfluenceMatchDate,
   getDifficultyLabel,
   getPersonalityBlurb,
-} from "../utils/matchInfluenceHelpers";
+} from "@/features/bribery/utils/matchInfluenceHelpers";
 
 interface MatchInfluenceContextCardProps {
   context: BriberyContext;

@@ -1,8 +1,8 @@
-import { apiSlice } from "../../core/api/apiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
 import type {
   CompetitiveSeatingQueuePreview,
   CompetitiveSeatingRunResult,
-} from "./competitiveSeatingTypes";
+} from "@/features/competitiveSeating/competitiveSeatingTypes";
 
 export const competitiveSeatingApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

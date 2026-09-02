@@ -1,8 +1,8 @@
-import { apiSlice } from "../../core/api/apiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
 import type {
   ClubFacilitiesOverview,
   UpgradeFacilityRequest,
-} from "./facilityTypes";
+} from "@/features/facilities/facilityTypes";
 
 export const facilitiesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

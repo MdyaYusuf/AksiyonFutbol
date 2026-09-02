@@ -2,7 +2,7 @@ import {
   DEAL_STATUS_FILTER_OPTIONS,
   getDealStatusFilterChipClassName,
   type DealStatusFilter,
-} from "../utils/myDealsHelpers";
+} from "@/features/transfers/utils/myDealsHelpers";
 
 interface MyDealsToolbarProps {
   statusFilters: DealStatusFilter[];

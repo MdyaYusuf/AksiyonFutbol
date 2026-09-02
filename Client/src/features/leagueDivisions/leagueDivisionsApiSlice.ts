@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 import type {
   CreatedLeagueDivisionResponse,
   CreateLeagueDivisionRequest,
@@ -8,7 +8,7 @@ import type {
   ProcessMatchWeekResult,
   UpdateLeagueDivisionMatchWeekRequest,
   UpdateLeagueDivisionRequest,
-} from "./leagueDivisionTypes";
+} from "@/features/leagueDivisions/leagueDivisionTypes";
 
 export type GetLeagueDivisionsParams = PaginationRequest & {
   search?: string;

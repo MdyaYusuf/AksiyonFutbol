@@ -1,6 +1,6 @@
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
-import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
-import type { ClubDraftState } from "../clubDraftTypes";
+import { ProgressBar } from "@/core/components/ui/ProgressBar";
+import { formatSquadMoney } from "@/features/playerInstances/utils/squadHelpers";
+import type { ClubDraftState } from "@/features/clubDrafts/clubDraftTypes";
 
 interface DraftBudgetMetersProps {
   draft: ClubDraftState;

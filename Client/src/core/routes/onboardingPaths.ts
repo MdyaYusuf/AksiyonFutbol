@@ -1,4 +1,4 @@
-import { ClubLifecycleStatus } from "../../features/clubs/clubTypes";
+import { ClubLifecycleStatus } from "@/features/clubs/clubTypes";
 
 export const ONBOARDING_PRESIDENT_PATH = "/app/onboarding/president";
 export const ONBOARDING_CLUB_PATH = "/app/onboarding/club";

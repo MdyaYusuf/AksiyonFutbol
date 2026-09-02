@@ -1,10 +1,10 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import type { BribeStakeOption, BribeStakeTier } from "../briberyTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import type { BribeStakeOption, BribeStakeTier } from "@/features/bribery/briberyTypes";
 import {
   formatChancePercent,
   getAmountToneClass,
-} from "../utils/matchInfluenceHelpers";
+} from "@/features/bribery/utils/matchInfluenceHelpers";
 
 interface ApproachStakeOptionProps {
   option: BribeStakeOption;

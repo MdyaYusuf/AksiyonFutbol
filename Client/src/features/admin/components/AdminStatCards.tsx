@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { AdminDashboardStats } from "../utils/adminDashboardHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { AdminDashboardStats } from "@/features/admin/utils/adminDashboardHelpers";
 
 interface AdminStatCardsProps {
   stats: AdminDashboardStats;

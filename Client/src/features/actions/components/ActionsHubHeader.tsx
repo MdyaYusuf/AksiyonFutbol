@@ -1,9 +1,9 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import { PresidentCompactSummary } from "../../clubPresidents/components/PresidentCompactSummary";
-import type { ActionsPresidentSummary } from "../actionTypes";
-import { getHeatBarColor, getHeatLabel } from "../utils/actionsHubHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { ProgressBar } from "@/core/components/ui/ProgressBar";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { PresidentCompactSummary } from "@/features/clubPresidents/components/PresidentCompactSummary";
+import type { ActionsPresidentSummary } from "@/features/actions/actionTypes";
+import { getHeatBarColor, getHeatLabel } from "@/features/actions/utils/actionsHubHelpers";
 
 interface ActionsHubHeaderProps {
   clubCash: number;

@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FictionalDisclaimer } from "../../../core/components/legal/FictionalDisclaimer";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { authService } from "../authService";
-import { AuthPageShell, AuthTextField } from "./AuthFormFields";
+import { FictionalDisclaimer } from "@/core/components/legal/FictionalDisclaimer";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { authService } from "@/features/auth/authService";
+import { AuthPageShell, AuthTextField } from "@/features/auth/components/AuthFormFields";
 
 interface RegisterFormState {
   username: string;

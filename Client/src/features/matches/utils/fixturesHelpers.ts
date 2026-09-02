@@ -1,6 +1,6 @@
-import type { MatchPreview } from "../matchTypes";
-import { getMatchResultLetter } from "../../dashboard/utils/matchHelpers";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import type { MatchPreview } from "@/features/matches/matchTypes";
+import { getMatchResultLetter } from "@/features/dashboard/utils/matchHelpers";
+import { parseApiDate } from "@/core/utils/dateTime";
 
 export type FixtureStatusFilter = "all" | "played" | "upcoming";
 

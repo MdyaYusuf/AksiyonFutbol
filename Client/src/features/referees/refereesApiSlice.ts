@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse, PaginationRequest } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse, PaginationRequest } from "@/core/types/ApiResponse";
 import type {
   CreatedRefereeResponse,
   CreateRefereeRequest,
@@ -7,7 +7,7 @@ import type {
   RefereePreview,
   RefereeResponse,
   UpdateRefereeRequest,
-} from "./refereeTypes";
+} from "@/features/referees/refereeTypes";
 
 export const refereesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

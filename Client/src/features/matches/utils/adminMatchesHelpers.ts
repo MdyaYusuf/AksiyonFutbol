@@ -1,6 +1,6 @@
-import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
-import { parseApiDate } from "../../../core/utils/dateTime";
-import type { MatchResponse } from "../matchTypes";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
+import type { MatchResponse } from "@/features/matches/matchTypes";
 
 export type MatchStatusFilter = "all" | "scheduled" | "played";
 

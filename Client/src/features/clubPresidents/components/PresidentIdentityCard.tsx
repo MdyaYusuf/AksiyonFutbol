@@ -1,10 +1,10 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { resolveMediaUrl } from "../../../core/utils/mediaUrl";
-import type { ClubResponse } from "../../clubs/clubTypes";
-import type { ClubPresidentResponse } from "../clubPresidentTypes";
-import { getLegitimacyXp } from "../utils/presidentProfileHelpers";
-import { LegitimacyInfamyMeters } from "./LegitimacyInfamyMeters";
-import { PresidentAttributesPanel } from "./PresidentAttributesPanel";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { resolveMediaUrl } from "@/core/utils/mediaUrl";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
+import type { ClubPresidentResponse } from "@/features/clubPresidents/clubPresidentTypes";
+import { getLegitimacyXp } from "@/features/clubPresidents/utils/presidentProfileHelpers";
+import { LegitimacyInfamyMeters } from "@/features/clubPresidents/components/LegitimacyInfamyMeters";
+import { PresidentAttributesPanel } from "@/features/clubPresidents/components/PresidentAttributesPanel";
 
 interface PresidentIdentityCardProps {
   president: ClubPresidentResponse;

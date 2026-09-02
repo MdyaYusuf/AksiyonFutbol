@@ -1,6 +1,6 @@
-import type { TransferMarketItem } from "../transferTypes";
-import { TransferMarketPagination } from "./TransferMarketPagination";
-import { TransferMarketRow } from "./TransferMarketRow";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
+import { TransferMarketPagination } from "@/features/transfers/components/TransferMarketPagination";
+import { TransferMarketRow } from "@/features/transfers/components/TransferMarketRow";
 
 interface TransferMarketTableProps {
   items: TransferMarketItem[];

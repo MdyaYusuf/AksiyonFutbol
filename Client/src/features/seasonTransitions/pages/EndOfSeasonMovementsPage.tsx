@@ -1,24 +1,24 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Link, useNavigate } from "react-router-dom";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { EndOfSeasonHeader } from "../components/EndOfSeasonHeader";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { EndOfSeasonHeader } from "@/features/seasonTransitions/components/EndOfSeasonHeader";
 import {
   EndOfSeasonBoardReview,
   EndOfSeasonMovementsPanel,
   EndOfSeasonPresidentPackage,
-} from "../components/EndOfSeasonSidePanel";
-import { EndOfSeasonStandingsTable } from "../components/EndOfSeasonStandingsTable";
+} from "@/features/seasonTransitions/components/EndOfSeasonSidePanel";
+import { EndOfSeasonStandingsTable } from "@/features/seasonTransitions/components/EndOfSeasonStandingsTable";
 import {
   useGetSeasonEndPreviewQuery,
   useProcessSeasonEndMutation,
-} from "../seasonTransitionsApiSlice";
+} from "@/features/seasonTransitions/seasonTransitionsApiSlice";
 import {
   buildCondensedStandings,
   getBoardReview,
   getPromotedMovements,
   getRelegatedMovements,
   getUserDivisionPreview,
-} from "../utils/endOfSeasonHelpers";
+} from "@/features/seasonTransitions/utils/endOfSeasonHelpers";
 
 export const EndOfSeasonMovementsPage = () => {
   const navigate = useNavigate();

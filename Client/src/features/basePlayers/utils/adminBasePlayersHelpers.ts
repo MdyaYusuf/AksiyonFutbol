@@ -3,7 +3,7 @@ import {
   PlayerPosition,
   PreferredFoot,
   type BasePlayerResponse,
-} from "../basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 
 export type BasePlayerPositionFilter = "ALL" | PlayerPosition;
 

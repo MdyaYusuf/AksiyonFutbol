@@ -1,4 +1,4 @@
-import type { LiveMatchStats } from "../utils/matchLiveHelpers";
+import type { LiveMatchStats } from "@/features/matches/utils/matchLiveHelpers";
 
 interface MatchLiveStatsProps {
   homeClubName: string;

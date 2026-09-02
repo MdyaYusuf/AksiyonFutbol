@@ -6,15 +6,15 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useAppDispatch, useAppSelector } from "../../../core/store/hooks";
-import { resolveMediaUrl } from "../../../core/utils/mediaUrl";
-import { setCredentials } from "../../auth/authSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useAppDispatch, useAppSelector } from "@/core/store/hooks";
+import { resolveMediaUrl } from "@/core/utils/mediaUrl";
+import { setCredentials } from "@/features/auth/authSlice";
 import {
   useChangePasswordMutation,
   useGetMeQuery,
   useUpdateProfileMutation,
-} from "../usersApiSlice";
+} from "@/features/users/usersApiSlice";
 
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 

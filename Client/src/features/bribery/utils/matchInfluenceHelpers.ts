@@ -1,5 +1,5 @@
-import type { BribeStakeOption, BribeStakeTier, BriberyContext } from "../briberyTypes";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import type { BribeStakeOption, BribeStakeTier, BriberyContext } from "@/features/bribery/briberyTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
 
 /** Mirrors Api GameOptions defaults used by BriberyBusinessRules.CalculateSuccessChance. */
 const BRIBE_DIFFICULTY_CASH_SCALE = 500;

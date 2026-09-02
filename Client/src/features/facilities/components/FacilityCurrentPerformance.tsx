@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { FacilityPerformanceStat } from "../utils/facilityUpgradeDetailHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { FacilityPerformanceStat } from "@/features/facilities/utils/facilityUpgradeDetailHelpers";
 
 interface FacilityCurrentPerformanceProps {
   stats: FacilityPerformanceStat[];

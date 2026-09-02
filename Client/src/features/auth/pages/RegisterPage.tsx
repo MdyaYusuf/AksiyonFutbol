@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { useAppSelector } from "../../../core/store/hooks";
-import { RegisterForm } from "../components/RegisterForm";
+import { useAppSelector } from "@/core/store/hooks";
+import { RegisterForm } from "@/features/auth/components/RegisterForm";
 
 export const RegisterPage = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);

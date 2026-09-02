@@ -1,9 +1,9 @@
-import { ClubLifecycleStatus } from "../clubs/clubTypes";
+import { ClubLifecycleStatus } from "@/features/clubs/clubTypes";
 import {
   DraftTier,
   PlayerPosition,
   PreferredFoot,
-} from "../basePlayers/basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 
 export interface DraftCatalogPlayer {
   id: string;

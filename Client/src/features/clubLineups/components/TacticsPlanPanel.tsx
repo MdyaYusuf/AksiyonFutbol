@@ -1,11 +1,11 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   FORMATION_OPTIONS,
   MENTALITY_OPTIONS,
   getFormationEffectSummary,
   getMentalityEffectSummary,
-} from "../utils/tacticsHelpers";
-import { TeamFormation, TeamMentality } from "../clubLineupTypes";
+} from "@/features/clubLineups/utils/tacticsHelpers";
+import { TeamFormation, TeamMentality } from "@/features/clubLineups/clubLineupTypes";
 
 interface TacticsPlanPanelProps {
   formation: TeamFormation;

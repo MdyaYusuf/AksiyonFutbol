@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import {
   PlayerPosition,
   type PlayerAttributes,
-} from "../../basePlayers/basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 import {
   getGroupHeaderValue,
   getProfileAttributeGroups,
   getAttributeGroupValues,
   type AttributeGroupKind,
   type AttributePillar,
-} from "../utils/playerAttributeHelpers";
+} from "@/features/playerInstances/utils/playerAttributeHelpers";
 
 interface PillarAccent {
   fill: string;

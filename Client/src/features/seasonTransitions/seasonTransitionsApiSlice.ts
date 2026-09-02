@@ -1,8 +1,8 @@
-import { apiSlice } from "../../core/api/apiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
 import type {
   SeasonEndPreview,
   SeasonEndProcessResult,
-} from "./seasonTransitionTypes";
+} from "@/features/seasonTransitions/seasonTransitionTypes";
 
 export const seasonTransitionsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

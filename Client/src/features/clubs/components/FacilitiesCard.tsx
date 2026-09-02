@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 export const FacilitiesCard = () => {
   return (

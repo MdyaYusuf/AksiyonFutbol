@@ -1,7 +1,7 @@
-import { TransferOfferStatus, type TransferOfferResponse } from "../transferTypes";
-import { formatMarketPosition } from "./transferMarketHelpers";
-import { formatSquadMoney } from "../../playerInstances/utils/squadHelpers";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import { TransferOfferStatus, type TransferOfferResponse } from "@/features/transfers/transferTypes";
+import { formatMarketPosition } from "@/features/transfers/utils/transferMarketHelpers";
+import { formatSquadMoney } from "@/features/playerInstances/utils/squadHelpers";
+import { parseApiDate } from "@/core/utils/dateTime";
 
 export type DealsTab = "outgoing" | "incoming";
 

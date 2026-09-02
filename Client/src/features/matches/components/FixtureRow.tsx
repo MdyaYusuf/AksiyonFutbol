@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { MatchPreview } from "../matchTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { MatchPreview } from "@/features/matches/matchTypes";
 import {
   formatFixtureDateTime,
   getScoreBadgeClassName,
   getScoreDisplay,
-} from "../utils/fixturesHelpers";
+} from "@/features/matches/utils/fixturesHelpers";
 import {
   getMatchLivePath,
   getMatchPresentationPhase,
   getMatchReportPath,
   shouldOpenLiveView,
-} from "../utils/matchLiveHelpers";
+} from "@/features/matches/utils/matchLiveHelpers";
 
 interface FixtureRowProps {
   match: MatchPreview;

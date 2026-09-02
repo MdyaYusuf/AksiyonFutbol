@@ -1,4 +1,4 @@
-import { parseApiDate } from "../../../core/utils/dateTime";
+import { parseApiDate } from "@/core/utils/dateTime";
 
 export const formatCashFull = (amount: number): string => {
   return `$${Math.round(amount).toLocaleString("en-US")}`;

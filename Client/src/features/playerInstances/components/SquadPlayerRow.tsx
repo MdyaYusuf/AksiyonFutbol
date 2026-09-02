@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   formatSquadMoney,
   getOverallBadgeClassName,
@@ -13,7 +13,7 @@ import {
   getPreferredFootLabel,
   getPreferredFootShortLabel,
   getSeasonCardsTotal,
-} from "../utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 
 interface SquadPlayerRowProps {
   player: PlayerInstanceResponse;

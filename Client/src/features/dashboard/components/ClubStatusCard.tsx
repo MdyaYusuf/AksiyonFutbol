@@ -1,11 +1,11 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubResponse } from "../../clubs/clubTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
 import {
   formatCash,
   getChemistryLabel,
   getDisciplineLabel,
   getMoraleLabel,
-} from "../utils/dashboardFormatters";
+} from "@/features/dashboard/utils/dashboardFormatters";
 
 interface ClubStatusCardProps {
   club?: ClubResponse;

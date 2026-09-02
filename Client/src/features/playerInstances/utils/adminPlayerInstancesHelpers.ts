@@ -1,5 +1,5 @@
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 
 export type PlayerStatusFilter = "all" | "available" | "injured";
 export type PlayerPositionFilter = "all" | PlayerPosition;

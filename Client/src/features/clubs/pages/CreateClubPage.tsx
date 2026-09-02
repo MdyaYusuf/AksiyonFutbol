@@ -2,10 +2,10 @@ import { Navigate } from "react-router-dom";
 import {
   ONBOARDING_PRESIDENT_PATH,
   resolveOnboardingPath,
-} from "../../../core/routes/onboardingPaths";
-import { useCheckCurrentUserHasPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
-import { useCheckCurrentUserHasClubQuery, useGetCurrentUserClubQuery } from "../clubsApiSlice";
-import { CreateClubForm } from "../components/CreateClubForm";
+} from "@/core/routes/onboardingPaths";
+import { useCheckCurrentUserHasPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
+import { useCheckCurrentUserHasClubQuery, useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { CreateClubForm } from "@/features/clubs/components/CreateClubForm";
 
 export const CreateClubPage = () => {
   const { data: hasPresident, isLoading: isPresidentLoading } =

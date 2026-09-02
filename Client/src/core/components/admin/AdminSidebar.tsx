@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { MaterialIcon } from "../ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 interface AdminNavItem {
   to: string;

@@ -1,6 +1,6 @@
-import type { FreeAgentMarketItem } from "../freeAgentTypes";
-import { FreeAgentMarketRow } from "./FreeAgentMarketRow";
-import { TransferMarketPagination } from "./TransferMarketPagination";
+import type { FreeAgentMarketItem } from "@/features/transfers/freeAgentTypes";
+import { FreeAgentMarketRow } from "@/features/transfers/components/FreeAgentMarketRow";
+import { TransferMarketPagination } from "@/features/transfers/components/TransferMarketPagination";
 
 interface FreeAgentMarketTableProps {
   items: FreeAgentMarketItem[];

@@ -1,4 +1,4 @@
-import { parseApiDate } from "../../../core/utils/dateTime";
+import { parseApiDate } from "@/core/utils/dateTime";
 
 export const formatCash = (amount: number): string => {
   if (amount >= 1_000_000) {

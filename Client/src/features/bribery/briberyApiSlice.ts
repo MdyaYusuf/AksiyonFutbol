@@ -1,9 +1,9 @@
-import { apiSlice } from "../../core/api/apiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
 import type {
   BribeAttemptResponse,
   BriberyContext,
   CreateBribeAttemptRequest,
-} from "./briberyTypes";
+} from "@/features/bribery/briberyTypes";
 
 export const briberyApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

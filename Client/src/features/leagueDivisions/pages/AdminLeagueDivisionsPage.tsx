@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   AdminDivisionFormPanel,
   type AdminDivisionFormValues,
-} from "../components/AdminDivisionFormPanel";
-import { AdminDivisionsTable } from "../components/AdminDivisionsTable";
+} from "@/features/leagueDivisions/components/AdminDivisionFormPanel";
+import { AdminDivisionsTable } from "@/features/leagueDivisions/components/AdminDivisionsTable";
 import {
   useCreateLeagueDivisionMutation,
   useDeleteLeagueDivisionMutation,
@@ -12,8 +12,8 @@ import {
   useProcessLeagueDivisionWeekMutation,
   useUpdateLeagueDivisionMatchWeekMutation,
   useUpdateLeagueDivisionMutation,
-} from "../leagueDivisionsApiSlice";
-import type { LeagueDivisionResponse } from "../leagueDivisionTypes";
+} from "@/features/leagueDivisions/leagueDivisionsApiSlice";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
 
 const PAGE_SIZE = 10;
 

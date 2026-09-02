@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
 import {
   formatSquadMoney,
   getPlayerDisplayName,
@@ -8,13 +8,13 @@ import {
   getPositionLabel,
   getPreferredFootLabel,
   getPreferredFootShortLabel,
-} from "../../playerInstances/utils/squadHelpers";
-import type { TransferMarketItem } from "../transferTypes";
+} from "@/features/playerInstances/utils/squadHelpers";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
 import {
   formatTransferWage,
   getRatingBadgeClassName,
   parseMarketPosition,
-} from "../utils/transferMarketHelpers";
+} from "@/features/transfers/utils/transferMarketHelpers";
 
 interface TransferMarketRowProps {
   item: TransferMarketItem;

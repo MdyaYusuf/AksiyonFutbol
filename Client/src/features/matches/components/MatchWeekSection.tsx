@@ -1,5 +1,5 @@
-import type { MatchWeekGroup } from "../utils/fixturesHelpers";
-import { FixtureRow } from "./FixtureRow";
+import type { MatchWeekGroup } from "@/features/matches/utils/fixturesHelpers";
+import { FixtureRow } from "@/features/matches/components/FixtureRow";
 
 interface MatchWeekSectionProps {
   group: MatchWeekGroup;

@@ -1,4 +1,4 @@
-import type { ClubPreview, ClubResponse } from "../clubTypes";
+import type { ClubPreview, ClubResponse } from "@/features/clubs/clubTypes";
 
 /** Player-facing club label (template name for bots; chosen name for humans). */
 export const getClubDisplayName = (

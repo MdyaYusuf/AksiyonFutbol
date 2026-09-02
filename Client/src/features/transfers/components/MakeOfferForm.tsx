@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCash } from "../../dashboard/utils/dashboardFormatters";
-import type { TransferMarketItem } from "../transferTypes";
-import { formatTransferWage } from "../utils/transferMarketHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCash } from "@/features/dashboard/utils/dashboardFormatters";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
+import { formatTransferWage } from "@/features/transfers/utils/transferMarketHelpers";
 import {
   formatCompactMoney,
   getBudgetBarClass,
   getOfferFeeBounds,
   getRemainingCashToneClass,
-} from "../utils/makeOfferHelpers";
+} from "@/features/transfers/utils/makeOfferHelpers";
 
 interface MakeOfferFormProps {
   listing: TransferMarketItem;

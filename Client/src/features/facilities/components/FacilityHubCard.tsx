@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import type { ClubFacility } from "../facilityTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import type { ClubFacility } from "@/features/facilities/facilityTypes";
 import {
   getCurrentEffectLabel,
   getFacilityDetailPath,
@@ -10,7 +10,7 @@ import {
   getFacilityIconToneClass,
   getFacilityLevelLabel,
   getNextEffectLabel,
-} from "../utils/facilitiesHubHelpers";
+} from "@/features/facilities/utils/facilitiesHubHelpers";
 
 interface FacilityHubCardProps {
   facility: ClubFacility;

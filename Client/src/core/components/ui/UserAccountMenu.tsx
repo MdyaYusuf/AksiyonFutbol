@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { authService } from "../../../features/auth/authService";
-import { useAppSelector } from "../../store/hooks";
-import { resolveMediaUrl } from "../../utils/mediaUrl";
-import { MaterialIcon } from "./MaterialIcon";
+import { authService } from "@/features/auth/authService";
+import { useAppSelector } from "@/core/store/hooks";
+import { resolveMediaUrl } from "@/core/utils/mediaUrl";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 interface UserAccountMenuProps {
   settingsPath: string;

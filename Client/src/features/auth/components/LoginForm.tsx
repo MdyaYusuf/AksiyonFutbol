@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../../core/store/hooks";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { authService } from "../authService";
-import { setCredentials } from "../authSlice";
-import { AuthTextField } from "./AuthFormFields";
+import { useAppDispatch } from "@/core/store/hooks";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { authService } from "@/features/auth/authService";
+import { setCredentials } from "@/features/auth/authSlice";
+import { AuthTextField } from "@/features/auth/components/AuthFormFields";
 
 interface LoginFormState {
   email: string;

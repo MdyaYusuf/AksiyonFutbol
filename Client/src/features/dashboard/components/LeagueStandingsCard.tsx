@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import {
   formatGoalDifference,
   type StandingRow,
-} from "../../leagueDivisions/utils/standingsHelpers";
+} from "@/features/leagueDivisions/utils/standingsHelpers";
 
 interface LeagueStandingsCardProps {
   divisionName?: string;

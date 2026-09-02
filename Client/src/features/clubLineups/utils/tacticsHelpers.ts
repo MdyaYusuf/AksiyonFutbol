@@ -1,10 +1,10 @@
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   TeamFormation,
   TeamMentality,
   type ClubLineupResponse,
-} from "../clubLineupTypes";
+} from "@/features/clubLineups/clubLineupTypes";
 
 export interface FormationShape {
   goalkeepers: number;

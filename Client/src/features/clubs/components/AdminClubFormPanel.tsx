@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
 
 export interface AdminClubFormValues {
   name: string;

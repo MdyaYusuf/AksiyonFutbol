@@ -1,5 +1,5 @@
-import { PlayerPosition, PreferredFoot } from "../../basePlayers/basePlayerTypes";
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+import { PlayerPosition, PreferredFoot } from "@/features/basePlayers/basePlayerTypes";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 
 export type SquadPositionFilter = "ALL" | "GK" | "DEF" | "MID" | "FWD";
 

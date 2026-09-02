@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubPresidentResponse } from "../../clubPresidents/clubPresidentTypes";
-import { LegitimacyInfamyMeters } from "../../clubPresidents/components/LegitimacyInfamyMeters";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubPresidentResponse } from "@/features/clubPresidents/clubPresidentTypes";
+import { LegitimacyInfamyMeters } from "@/features/clubPresidents/components/LegitimacyInfamyMeters";
 
 interface PresidentIdentityBannerProps {
   president?: ClubPresidentResponse;

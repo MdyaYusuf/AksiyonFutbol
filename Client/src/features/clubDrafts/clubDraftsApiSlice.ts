@@ -1,11 +1,11 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import { clubsApiSlice } from "../clubs/clubsApiSlice";
+import { apiSlice } from "@/core/api/apiSlice";
+import { clubsApiSlice } from "@/features/clubs/clubsApiSlice";
 import type {
   AddClubDraftPickRequest,
   ClubDraftState,
   DraftCatalogPlayer,
   FinalizeClubDraftResponse,
-} from "./clubDraftTypes";
+} from "@/features/clubDrafts/clubDraftTypes";
 
 export const clubDraftsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

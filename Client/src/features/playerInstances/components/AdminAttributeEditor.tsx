@@ -1,8 +1,8 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import type {
   PlayerAttributes,
   PlayerPosition,
-} from "../../basePlayers/basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 import {
   averageStat,
   computeMainStats,
@@ -11,7 +11,7 @@ import {
   getAttributeGroupValues,
   setAttributeStat,
   type AttributeGroupDef,
-} from "../utils/playerAttributeHelpers";
+} from "@/features/playerInstances/utils/playerAttributeHelpers";
 
 interface AdminAttributeEditorProps {
   idPrefix: string;

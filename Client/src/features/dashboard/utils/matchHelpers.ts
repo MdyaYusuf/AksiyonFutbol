@@ -1,7 +1,7 @@
-import type { MatchPreview } from "../../matches/matchTypes";
-import { parseApiDate } from "../../../core/utils/dateTime";
+import type { MatchPreview } from "@/features/matches/matchTypes";
+import { parseApiDate } from "@/core/utils/dateTime";
 
-export { getNextMatch } from "../../matches/utils/nextMatchHelpers";
+export { getNextMatch } from "@/features/matches/utils/nextMatchHelpers";
 
 export const getRecentMatches = (
   matches: MatchPreview[],

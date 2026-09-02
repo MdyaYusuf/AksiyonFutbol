@@ -1,19 +1,19 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   formatSquadMoney,
   getPlayerDisplayName,
   getPositionLabel,
-} from "../../playerInstances/utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 import {
   DRAFT_TIER_LABELS,
   getDraftTierBadgeClassName,
-} from "../../transfers/utils/freeAgentHelpers";
-import { formatTransferWage } from "../../transfers/utils/transferMarketHelpers";
-import type { ClubDraftState } from "../clubDraftTypes";
+} from "@/features/transfers/utils/freeAgentHelpers";
+import { formatTransferWage } from "@/features/transfers/utils/transferMarketHelpers";
+import type { ClubDraftState } from "@/features/clubDrafts/clubDraftTypes";
 import {
   getRequiredPickCount,
   getSelectedPickCount,
-} from "../utils/draftBoardHelpers";
+} from "@/features/clubDrafts/utils/draftBoardHelpers";
 
 interface DraftPicksPanelProps {
   draft: ClubDraftState;

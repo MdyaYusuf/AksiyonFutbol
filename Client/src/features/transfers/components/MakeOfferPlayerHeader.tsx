@@ -1,17 +1,17 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   getPlayerFullName,
   getPositionLabel,
   getDetailPositionBadgeClassName,
-} from "../../playerInstances/utils/squadHelpers";
-import type { TransferMarketItem } from "../transferTypes";
+} from "@/features/playerInstances/utils/squadHelpers";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
 import {
   formatCompactMoney,
   getEstimatedValueRange,
   getStarFillCount,
-} from "../utils/makeOfferHelpers";
-import { formatTransferWage } from "../utils/transferMarketHelpers";
+} from "@/features/transfers/utils/makeOfferHelpers";
+import { formatTransferWage } from "@/features/transfers/utils/transferMarketHelpers";
 
 interface MakeOfferPlayerHeaderProps {
   player: PlayerInstanceResponse;

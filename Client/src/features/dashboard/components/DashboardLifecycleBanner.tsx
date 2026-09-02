@@ -1,11 +1,11 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ClubLifecycleStatus, type ClubResponse } from "../../clubs/clubTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { ClubLifecycleStatus, type ClubResponse } from "@/features/clubs/clubTypes";
 import {
   getPlacementQueueSummary,
   getPlacementQueueTitle,
   getTutorialWeekBanner,
-} from "../../clubs/utils/clubLifecycleHelpers";
-import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
+} from "@/features/clubs/utils/clubLifecycleHelpers";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
 
 interface DashboardLifecycleBannerProps {
   club: ClubResponse;

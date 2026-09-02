@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
 import {
   formatSquadMoney,
   getPlayerDisplayName,
@@ -8,17 +8,17 @@ import {
   getPositionLabel,
   getPreferredFootLabel,
   getPreferredFootShortLabel,
-} from "../../playerInstances/utils/squadHelpers";
-import type { FreeAgentMarketItem } from "../freeAgentTypes";
+} from "@/features/playerInstances/utils/squadHelpers";
+import type { FreeAgentMarketItem } from "@/features/transfers/freeAgentTypes";
 import {
   DRAFT_TIER_LABELS,
   getDraftTierBadgeClassName,
-} from "../utils/freeAgentHelpers";
+} from "@/features/transfers/utils/freeAgentHelpers";
 import {
   formatTransferWage,
   getRatingBadgeClassName,
   parseMarketPosition,
-} from "../utils/transferMarketHelpers";
+} from "@/features/transfers/utils/transferMarketHelpers";
 
 interface FreeAgentMarketRowProps {
   item: FreeAgentMarketItem;

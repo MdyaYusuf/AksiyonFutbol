@@ -1,6 +1,6 @@
-import { apiClient, handleLogout } from "../../core/api/apiClient";
-import type { LoginRequest, RegisterUserRequest } from "./authTypes";
-import type { UserResponse, CreatedUserResponse } from "../users/userTypes";
+import { apiClient, handleLogout } from "@/core/api/apiClient";
+import type { LoginRequest, RegisterUserRequest } from "@/features/auth/authTypes";
+import type { UserResponse, CreatedUserResponse } from "@/features/users/userTypes";
 
 export const authService = {
   login: async (credentials: LoginRequest) => {

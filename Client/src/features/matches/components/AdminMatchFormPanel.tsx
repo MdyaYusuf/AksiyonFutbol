@@ -1,9 +1,9 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubPreview } from "../../clubs/clubTypes";
-import { getClubDisplayName } from "../../clubs/utils/clubDisplayName";
-import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
-import type { RefereeResponse } from "../../referees/refereeTypes";
-import { formatDivisionOption } from "../utils/adminMatchesHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubPreview } from "@/features/clubs/clubTypes";
+import { getClubDisplayName } from "@/features/clubs/utils/clubDisplayName";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
+import type { RefereeResponse } from "@/features/referees/refereeTypes";
+import { formatDivisionOption } from "@/features/matches/utils/adminMatchesHelpers";
 
 export interface AdminMatchFormValues {
   divisionId: number | "";

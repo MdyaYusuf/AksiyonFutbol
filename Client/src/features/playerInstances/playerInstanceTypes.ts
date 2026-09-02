@@ -2,9 +2,9 @@ import type {
   PlayerAttributes,
   PlayerPosition,
   PreferredFoot,
-} from "../basePlayers/basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 
-export type { PlayerAttributes } from "../basePlayers/basePlayerTypes";
+export type { PlayerAttributes } from "@/features/basePlayers/basePlayerTypes";
 
 // Responses
 export interface PlayerInstanceResponse {

@@ -2,8 +2,8 @@ import type {
   SeasonClubMovement,
   SeasonDivisionPreview,
   SeasonEndPreview,
-} from "../seasonTransitionTypes";
-import { SeasonMovementOutcome } from "../seasonTransitionTypes";
+} from "@/features/seasonTransitions/seasonTransitionTypes";
+import { SeasonMovementOutcome } from "@/features/seasonTransitions/seasonTransitionTypes";
 
 export type AdminMovementKind = "champion" | "promoted" | "relegated" | "stayed";
 

@@ -1,30 +1,30 @@
 import { useEffect, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   AdminBasePlayerFormPanel,
   type AdminBasePlayerFormValues,
-} from "../components/AdminBasePlayerFormPanel";
-import { AdminBasePlayersTable } from "../components/AdminBasePlayersTable";
+} from "@/features/basePlayers/components/AdminBasePlayerFormPanel";
+import { AdminBasePlayersTable } from "@/features/basePlayers/components/AdminBasePlayersTable";
 import {
   useCreateBasePlayerMutation,
   useDeleteBasePlayerMutation,
   useGetBasePlayersQuery,
   useUpdateBasePlayerMutation,
-} from "../basePlayersApiSlice";
+} from "@/features/basePlayers/basePlayersApiSlice";
 import {
   DraftTier,
   PlayerPosition,
   PreferredFoot,
   type BasePlayerResponse,
-} from "../basePlayerTypes";
+} from "@/features/basePlayers/basePlayerTypes";
 import {
   attributesForPosition,
   buildDefaultAttributes,
-} from "../../playerInstances/utils/playerAttributeHelpers";
+} from "@/features/playerInstances/utils/playerAttributeHelpers";
 import {
   getDraftTierPricingDefaults,
   type BasePlayerPositionFilter,
-} from "../utils/adminBasePlayersHelpers";
+} from "@/features/basePlayers/utils/adminBasePlayersHelpers";
 
 const PAGE_SIZE = 10;
 

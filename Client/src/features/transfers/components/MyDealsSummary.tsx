@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatTransferWage } from "../utils/transferMarketHelpers";
-import { formatDealFee, type DealsTab } from "../utils/myDealsHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatTransferWage } from "@/features/transfers/utils/transferMarketHelpers";
+import { formatDealFee, type DealsTab } from "@/features/transfers/utils/myDealsHelpers";
 
 interface MyDealsSummaryProps {
   tab: DealsTab;

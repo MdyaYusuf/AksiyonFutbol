@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { FictionalDisclaimer } from "../../core/components/legal/FictionalDisclaimer";
-import { MaterialIcon } from "../../core/components/ui/MaterialIcon";
+import { FictionalDisclaimer } from "@/core/components/legal/FictionalDisclaimer";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 export const LandingPage = () => {
   return (

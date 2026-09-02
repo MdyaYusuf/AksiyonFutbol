@@ -1,6 +1,6 @@
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { getPositionLabel } from "../../playerInstances/utils/squadHelpers";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { getPositionLabel } from "@/features/playerInstances/utils/squadHelpers";
 
 export const getPlayerFitnessPercent = (player: PlayerInstanceResponse): number => {
   if (player.isInjured) {

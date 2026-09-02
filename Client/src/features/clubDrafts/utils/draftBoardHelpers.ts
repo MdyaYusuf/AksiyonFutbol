@@ -1,13 +1,13 @@
-import { DraftTier, PlayerPosition } from "../../basePlayers/basePlayerTypes";
+import { DraftTier, PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
 import {
   getPositionFilterForPlayer,
   type SquadPositionFilter,
-} from "../../playerInstances/utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 import type {
   ClubDraftState,
   DraftCatalogPlayer,
   DraftQuota,
-} from "../clubDraftTypes";
+} from "@/features/clubDrafts/clubDraftTypes";
 
 export type DraftTierFilter = DraftTier | "ALL";
 

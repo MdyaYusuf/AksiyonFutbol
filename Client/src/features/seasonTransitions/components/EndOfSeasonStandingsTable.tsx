@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { CondensedStandingRow } from "../utils/endOfSeasonHelpers";
-import { formatGoalDifference, getClubInitial } from "../utils/endOfSeasonHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { CondensedStandingRow } from "@/features/seasonTransitions/utils/endOfSeasonHelpers";
+import { formatGoalDifference, getClubInitial } from "@/features/seasonTransitions/utils/endOfSeasonHelpers";
 
 interface EndOfSeasonStandingsTableProps {
   rows: CondensedStandingRow[];

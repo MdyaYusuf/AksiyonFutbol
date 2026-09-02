@@ -1,10 +1,10 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { ClubFacility, FacilityType } from "../facilityTypes";
-import { getFacilityLevelLabel } from "../utils/facilitiesHubHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { ClubFacility, FacilityType } from "@/features/facilities/facilityTypes";
+import { getFacilityLevelLabel } from "@/features/facilities/utils/facilitiesHubHelpers";
 import {
   getFacilityHeroBadgeIcon,
   getFacilityHeroDescription,
-} from "../utils/facilityUpgradeDetailHelpers";
+} from "@/features/facilities/utils/facilityUpgradeDetailHelpers";
 
 interface FacilityUpgradeHeroProps {
   facility: ClubFacility;

@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { BriberyContext } from "../../bribery/briberyTypes";
-import { BribeAttemptOutcome } from "../../bribery/briberyTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { BriberyContext } from "@/features/bribery/briberyTypes";
+import { BribeAttemptOutcome } from "@/features/bribery/briberyTypes";
 import {
   formatChancePercent,
   getPreviewStakeOption,
-} from "../../bribery/utils/matchInfluenceHelpers";
+} from "@/features/bribery/utils/matchInfluenceHelpers";
 
 interface BribeRefereeActionCardProps {
   briberyContext?: BriberyContext;

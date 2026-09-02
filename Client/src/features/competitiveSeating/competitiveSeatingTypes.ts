@@ -1,4 +1,4 @@
-import type { LeagueTier } from "../clubs/clubTypes";
+import type { LeagueTier } from "@/features/clubs/clubTypes";
 
 export interface CompetitiveSeatingQueueTier {
   tier: LeagueTier;

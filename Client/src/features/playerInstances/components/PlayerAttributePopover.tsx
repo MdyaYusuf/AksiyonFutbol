@@ -7,12 +7,12 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
-import type { PlayerInstanceResponse } from "../playerInstanceTypes";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   getPlayerDisplayName,
-} from "../utils/squadHelpers";
-import { PlayerAttributeProfile } from "./PlayerAttributeProfile";
+} from "@/features/playerInstances/utils/squadHelpers";
+import { PlayerAttributeProfile } from "@/features/playerInstances/components/PlayerAttributeProfile";
 
 interface PlayerAttributePopoverProps {
   player?: PlayerInstanceResponse;

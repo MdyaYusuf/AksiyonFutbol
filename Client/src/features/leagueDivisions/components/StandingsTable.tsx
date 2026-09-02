@@ -1,11 +1,11 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { StandingRow, StandingsLegendItem } from "../utils/standingsHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { StandingRow, StandingsLegendItem } from "@/features/leagueDivisions/utils/standingsHelpers";
 import {
   formatGoalDifference,
   getFormBadgeClassName,
   getZoneDotClassName,
-} from "../utils/standingsHelpers";
-import { StandingResultPopover } from "./StandingResultPopover";
+} from "@/features/leagueDivisions/utils/standingsHelpers";
+import { StandingResultPopover } from "@/features/leagueDivisions/components/StandingResultPopover";
 
 interface StandingsTableProps {
   standings: StandingRow[];

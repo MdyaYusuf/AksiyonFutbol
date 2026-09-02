@@ -1,9 +1,9 @@
-import type { PresidentAttributes } from "../clubPresidentTypes";
+import type { PresidentAttributes } from "@/features/clubPresidents/clubPresidentTypes";
 import {
   PRESIDENT_ATTRIBUTE_KEYS,
   PRESIDENT_ATTRIBUTE_LABELS,
   PRESIDENT_ATTRIBUTE_MAX,
-} from "../utils/presidentProfileHelpers";
+} from "@/features/clubPresidents/utils/presidentProfileHelpers";
 
 interface PresidentAttributesPanelProps {
   attributes: PresidentAttributes;

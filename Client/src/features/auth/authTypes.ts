@@ -1,4 +1,4 @@
-import type { UserResponse } from "../users/userTypes";
+import type { UserResponse } from "@/features/users/userTypes";
 
 // Responses
 export interface TokenResponse {

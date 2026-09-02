@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { getNationalityFlagSrc } from "../../../core/utils/nationalityFlags";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { getNationalityFlagSrc } from "@/core/utils/nationalityFlags";
 import {
   formatSquadMoney,
   getPlayerDisplayName,
@@ -7,17 +7,17 @@ import {
   getPositionLabel,
   getPreferredFootLabel,
   getPreferredFootShortLabel,
-} from "../../playerInstances/utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 import {
   DRAFT_TIER_LABELS,
   getDraftTierBadgeClassName,
-} from "../../transfers/utils/freeAgentHelpers";
+} from "@/features/transfers/utils/freeAgentHelpers";
 import {
   formatTransferWage,
   getRatingBadgeClassName,
-} from "../../transfers/utils/transferMarketHelpers";
-import type { ClubDraftState, DraftCatalogPlayer } from "../clubDraftTypes";
-import { getPickBlockReason } from "../utils/draftBoardHelpers";
+} from "@/features/transfers/utils/transferMarketHelpers";
+import type { ClubDraftState, DraftCatalogPlayer } from "@/features/clubDrafts/clubDraftTypes";
+import { getPickBlockReason } from "@/features/clubDrafts/utils/draftBoardHelpers";
 
 interface DraftCatalogRowProps {
   player: DraftCatalogPlayer;

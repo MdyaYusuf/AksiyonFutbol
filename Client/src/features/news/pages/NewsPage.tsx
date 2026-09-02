@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { useGetMyNewsFeedQuery } from "../newsApiSlice";
-import { NewsArticleKind } from "../newsTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { useGetMyNewsFeedQuery } from "@/features/news/newsApiSlice";
+import { NewsArticleKind } from "@/features/news/newsTypes";
 import {
   filterToKind,
   formatArticleDate,
   getKindLabel,
   getToneBadgeClass,
-} from "../utils/newsHelpers";
-import type { NewsFeedFilter } from "../newsTypes";
+} from "@/features/news/utils/newsHelpers";
+import type { NewsFeedFilter } from "@/features/news/newsTypes";
 
 const filterOptions: { id: NewsFeedFilter; label: string }[] = [
   { id: "all", label: "All" },

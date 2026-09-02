@@ -1,5 +1,5 @@
 import { createApi, type BaseQueryFn } from "@reduxjs/toolkit/query/react";
-import { apiClient } from "./apiClient";
+import { apiClient } from "@/core/api/apiClient";
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 

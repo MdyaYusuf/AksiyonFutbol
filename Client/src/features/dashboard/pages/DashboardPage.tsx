@@ -1,28 +1,28 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useState } from "react";
-import { useGetCurrentUserClubPresidentQuery } from "../../clubPresidents/clubPresidentsApiSlice";
-import { PresidentCompactSummary } from "../../clubPresidents/components/PresidentCompactSummary";
-import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { ClubLifecycleStatus } from "../../clubs/clubTypes";
-import { useGetLeagueDivisionByIdQuery } from "../../leagueDivisions/leagueDivisionsApiSlice";
-import { buildStandings } from "../../leagueDivisions/utils/standingsHelpers";
+import { useGetCurrentUserClubPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
+import { PresidentCompactSummary } from "@/features/clubPresidents/components/PresidentCompactSummary";
+import { useGetClubsByDivisionIdQuery, useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { ClubLifecycleStatus } from "@/features/clubs/clubTypes";
+import { useGetLeagueDivisionByIdQuery } from "@/features/leagueDivisions/leagueDivisionsApiSlice";
+import { buildStandings } from "@/features/leagueDivisions/utils/standingsHelpers";
 import {
   useGetMatchLiveStatusQuery,
   useGetMatchesByClubIdQuery,
   useGetMatchesQuery,
-} from "../../matches/matchesApiSlice";
+} from "@/features/matches/matchesApiSlice";
 import {
   getMatchKickoff,
   getMatchPresentationPhase,
-} from "../../matches/utils/matchLiveHelpers";
-import { filterCurrentSeasonMatches } from "../../matches/utils/seasonHelpers";
-import { ClubStatusCard } from "../components/ClubStatusCard";
-import { DashboardLifecycleBanner } from "../components/DashboardLifecycleBanner";
-import { LeagueStandingsCard } from "../components/LeagueStandingsCard";
-import { NextMatchCard } from "../components/NextMatchCard";
-import { RecentFormCard } from "../components/RecentFormCard";
-import { NewsHeadlinesCard } from "../../news/components/NewsHeadlinesCard";
-import { getNextMatch, getRecentMatches } from "../utils/matchHelpers";
+} from "@/features/matches/utils/matchLiveHelpers";
+import { filterCurrentSeasonMatches } from "@/features/matches/utils/seasonHelpers";
+import { ClubStatusCard } from "@/features/dashboard/components/ClubStatusCard";
+import { DashboardLifecycleBanner } from "@/features/dashboard/components/DashboardLifecycleBanner";
+import { LeagueStandingsCard } from "@/features/dashboard/components/LeagueStandingsCard";
+import { NextMatchCard } from "@/features/dashboard/components/NextMatchCard";
+import { RecentFormCard } from "@/features/dashboard/components/RecentFormCard";
+import { NewsHeadlinesCard } from "@/features/news/components/NewsHeadlinesCard";
+import { getNextMatch, getRecentMatches } from "@/features/dashboard/utils/matchHelpers";
 
 /** Poll live-status only while waiting for simulation to finish. */
 const WAITING_SIM_POLL_MS = 5_000;

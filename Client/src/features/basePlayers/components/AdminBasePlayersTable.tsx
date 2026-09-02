@@ -1,15 +1,15 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   getPositionBadgeClassName,
   getPositionLabel,
-} from "../../playerInstances/utils/squadHelpers";
-import type { BasePlayerResponse } from "../basePlayerTypes";
+} from "@/features/playerInstances/utils/squadHelpers";
+import type { BasePlayerResponse } from "@/features/basePlayers/basePlayerTypes";
 import {
   getAttributeTextClassName,
   getBasePlayerDisplayName,
   getOverallBadgeClassName,
   getPreferredFootLabel,
-} from "../utils/adminBasePlayersHelpers";
+} from "@/features/basePlayers/utils/adminBasePlayersHelpers";
 
 interface AdminBasePlayersTableProps {
   players: BasePlayerResponse[];

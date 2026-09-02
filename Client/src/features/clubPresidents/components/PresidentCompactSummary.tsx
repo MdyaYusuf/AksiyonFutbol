@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { LegitimacyInfamyMeters } from "./LegitimacyInfamyMeters";
-import { PresidentAttributesPanel } from "./PresidentAttributesPanel";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { LegitimacyInfamyMeters } from "@/features/clubPresidents/components/LegitimacyInfamyMeters";
+import { PresidentAttributesPanel } from "@/features/clubPresidents/components/PresidentAttributesPanel";
 
 export interface PresidentCompactSummaryData {
   name: string;

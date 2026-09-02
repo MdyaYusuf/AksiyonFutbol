@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { MaterialIcon } from "../components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 export const OnboardingLayout = () => {
   return (

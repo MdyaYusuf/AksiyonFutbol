@@ -1,7 +1,7 @@
 import {
   ClubActionPathAffinity,
   type ClubActionRequirement,
-} from "../actionTypes";
+} from "@/features/actions/actionTypes";
 
 export const getPathAffinityLabel = (affinity: ClubActionPathAffinity): string => {
   switch (affinity) {

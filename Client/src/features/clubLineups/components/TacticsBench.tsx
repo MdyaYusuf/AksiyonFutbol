@@ -1,16 +1,16 @@
 import { useRef, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { PlayerAttributePopover } from "../../playerInstances/components/PlayerAttributePopover";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { PlayerAttributePopover } from "@/features/playerInstances/components/PlayerAttributePopover";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
 import {
   getPositionBadgeClassName,
   getPositionLabel,
-} from "../../playerInstances/utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 import {
   formatShortName,
   parseLineupDrag,
   serializeLineupDrag,
-} from "../utils/tacticsHelpers";
+} from "@/features/clubLineups/utils/tacticsHelpers";
 
 interface TacticsBenchProps {
   slotIds: (string | null)[];

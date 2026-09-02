@@ -1,9 +1,9 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   getPlayerDisplayName,
   getPlayerInitials,
-} from "../../playerInstances/utils/squadHelpers";
-import { TransferOfferStatus, type TransferOfferResponse } from "../transferTypes";
+} from "@/features/playerInstances/utils/squadHelpers";
+import { TransferOfferStatus, type TransferOfferResponse } from "@/features/transfers/transferTypes";
 import {
   formatDealFee,
   formatRelativeTime,
@@ -11,11 +11,11 @@ import {
   getOfferStatusLabel,
   getOfferSubtitle,
   type DealsTab,
-} from "../utils/myDealsHelpers";
+} from "@/features/transfers/utils/myDealsHelpers";
 import {
   formatTransferWage,
   TRANSFER_MINIMUM_SQUAD_SIZE,
-} from "../utils/transferMarketHelpers";
+} from "@/features/transfers/utils/transferMarketHelpers";
 
 interface MyDealsRowProps {
   offer: TransferOfferResponse;

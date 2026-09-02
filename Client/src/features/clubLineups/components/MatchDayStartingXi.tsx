@@ -1,7 +1,7 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { getPositionRoleLabel } from "../utils/matchDayHelpers";
-import { formatShortName } from "../utils/tacticsHelpers";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { getPositionRoleLabel } from "@/features/clubLineups/utils/matchDayHelpers";
+import { formatShortName } from "@/features/clubLineups/utils/tacticsHelpers";
 
 interface MatchDayStartingXiProps {
   starterIds: (string | null)[];

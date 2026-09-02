@@ -1,6 +1,6 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { PresidentAttributes } from "../clubPresidentTypes";
-import { PresidentAttributesPanel } from "./PresidentAttributesPanel";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { PresidentAttributes } from "@/features/clubPresidents/clubPresidentTypes";
+import { PresidentAttributesPanel } from "@/features/clubPresidents/components/PresidentAttributesPanel";
 
 interface PresidentPreviewCardProps {
   name: string;

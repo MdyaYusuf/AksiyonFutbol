@@ -1,4 +1,4 @@
-import { NewsArticleKind, NewsArticleTone, type NewsArticle, type NewsFeedFilter } from "../newsTypes";
+import { NewsArticleKind, NewsArticleTone, type NewsArticle, type NewsFeedFilter } from "@/features/news/newsTypes";
 
 export const filterToKind = (filter: NewsFeedFilter): NewsArticleKind | undefined => {
   switch (filter) {

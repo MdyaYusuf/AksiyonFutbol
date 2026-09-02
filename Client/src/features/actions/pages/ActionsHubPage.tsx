@@ -1,24 +1,24 @@
 import { useMemo, useState } from "react";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { formatCashFull } from "../../clubs/utils/clubOverviewHelpers";
-import { useGetBriberyContextQuery } from "../../bribery/briberyApiSlice";
-import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { useGetBriberyContextQuery } from "@/features/bribery/briberyApiSlice";
+import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
 import {
   useExecuteClubActionMutation,
   useGetActionsContextQuery,
   useGetMyActionHistoryQuery,
-} from "../actionsApiSlice";
+} from "@/features/actions/actionsApiSlice";
 import type {
   ClubActionAvailability,
   ClubActionResult,
   MediaSpinMode,
-} from "../actionTypes";
-import { ClubActionOutcome } from "../actionTypes";
-import { ActionCategorySection } from "../components/ActionCategorySection";
-import { ActionResultBanner } from "../components/ActionResultBanner";
-import { ActionsHubHeader } from "../components/ActionsHubHeader";
-import { ExecuteActionModal } from "../components/ExecuteActionModal";
-import { groupActionsByCategory } from "../utils/actionsHubHelpers";
+} from "@/features/actions/actionTypes";
+import { ClubActionOutcome } from "@/features/actions/actionTypes";
+import { ActionCategorySection } from "@/features/actions/components/ActionCategorySection";
+import { ActionResultBanner } from "@/features/actions/components/ActionResultBanner";
+import { ActionsHubHeader } from "@/features/actions/components/ActionsHubHeader";
+import { ExecuteActionModal } from "@/features/actions/components/ExecuteActionModal";
+import { groupActionsByCategory } from "@/features/actions/utils/actionsHubHelpers";
 
 export const ActionsHubPage = () => {
   const {

@@ -1,10 +1,10 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { LeagueDivisionResponse } from "../leagueDivisionTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
 import {
   getGroupDisplayLabel,
   getTierBadgeLabel,
   getTierDotClassName,
-} from "../utils/adminLeagueDivisionsHelpers";
+} from "@/features/leagueDivisions/utils/adminLeagueDivisionsHelpers";
 
 interface AdminDivisionsTableProps {
   divisions: LeagueDivisionResponse[];

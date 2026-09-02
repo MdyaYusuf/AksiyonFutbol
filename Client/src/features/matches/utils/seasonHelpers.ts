@@ -1,4 +1,4 @@
-import type { LeagueDivisionResponse } from "../../leagueDivisions/leagueDivisionTypes";
+import type { LeagueDivisionResponse } from "@/features/leagueDivisions/leagueDivisionTypes";
 
 interface SeasonMatchLike {
   divisionId: number;

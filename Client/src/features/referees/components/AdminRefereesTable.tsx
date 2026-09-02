@@ -1,11 +1,11 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import type { RefereeResponse } from "../refereeTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import type { RefereeResponse } from "@/features/referees/refereeTypes";
 import {
   getBriberyBarClassName,
   getBriberyTextClassName,
   getPersonalityBadgeClassName,
   getPersonalityLabel,
-} from "../utils/adminRefereesHelpers";
+} from "@/features/referees/utils/adminRefereesHelpers";
 
 interface AdminRefereesTableProps {
   referees: RefereeResponse[];

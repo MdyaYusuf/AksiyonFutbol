@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { MatchLiveStats } from "../components/MatchLiveStats";
-import { MatchReportHeader } from "../components/MatchReportHeader";
-import { MatchTimeline } from "../components/MatchTimeline";
-import { useGetMatchByIdQuery } from "../matchesApiSlice";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { MatchLiveStats } from "@/features/matches/components/MatchLiveStats";
+import { MatchReportHeader } from "@/features/matches/components/MatchReportHeader";
+import { MatchTimeline } from "@/features/matches/components/MatchTimeline";
+import { useGetMatchByIdQuery } from "@/features/matches/matchesApiSlice";
 import {
   getLiveMatchStats,
   getMatchLivePath,
   getMatchLiveReplayPath,
   getMatchPresentationPhase,
   shouldOpenLiveView,
-} from "../utils/matchLiveHelpers";
-import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
+} from "@/features/matches/utils/matchLiveHelpers";
+import { goBackOrFallback, parseMatchEvents } from "@/features/matches/utils/matchReportHelpers";
 
 export const MatchDetailPage = () => {
   const { id } = useParams<{ id: string }>();

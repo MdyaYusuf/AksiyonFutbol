@@ -1,16 +1,16 @@
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useAppSelector } from "../../../core/store/hooks";
-import { useGetCurrentUserClubQuery } from "../../clubs/clubsApiSlice";
-import { useGetMatchesByClubIdQuery } from "../../matches/matchesApiSlice";
-import { AccountStatusCard } from "../components/AccountStatusCard";
-import { CareerHistoryCard } from "../components/CareerHistoryCard";
-import { PresidentIdentityCard } from "../components/PresidentIdentityCard";
-import { TitlesWonCard } from "../components/TitlesWonCard";
-import { useGetCurrentUserClubPresidentQuery } from "../clubPresidentsApiSlice";
+import { useAppSelector } from "@/core/store/hooks";
+import { useGetCurrentUserClubQuery } from "@/features/clubs/clubsApiSlice";
+import { useGetMatchesByClubIdQuery } from "@/features/matches/matchesApiSlice";
+import { AccountStatusCard } from "@/features/clubPresidents/components/AccountStatusCard";
+import { CareerHistoryCard } from "@/features/clubPresidents/components/CareerHistoryCard";
+import { PresidentIdentityCard } from "@/features/clubPresidents/components/PresidentIdentityCard";
+import { TitlesWonCard } from "@/features/clubPresidents/components/TitlesWonCard";
+import { useGetCurrentUserClubPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
 import {
   getPlayedMatchCount,
   getWinRate,
-} from "../utils/presidentProfileHelpers";
+} from "@/features/clubPresidents/utils/presidentProfileHelpers";
 
 export const PresidentProfilePage = () => {
   const { user } = useAppSelector((state) => state.auth);

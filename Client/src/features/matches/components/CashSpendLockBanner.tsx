@@ -1,4 +1,4 @@
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 
 export const CASH_SPEND_LOCK_MESSAGE =
   "Club cash is locked until your live match finishes.";

@@ -1,15 +1,15 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useCheckCurrentUserHasPresidentQuery } from "../../features/clubPresidents/clubPresidentsApiSlice";
+import { useCheckCurrentUserHasPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
 import {
   useCheckCurrentUserHasClubQuery,
   useGetCurrentUserClubQuery,
-} from "../../features/clubs/clubsApiSlice";
-import { ClubLifecycleStatus } from "../../features/clubs/clubTypes";
+} from "@/features/clubs/clubsApiSlice";
+import { ClubLifecycleStatus } from "@/features/clubs/clubTypes";
 import {
   ONBOARDING_CLUB_PATH,
   ONBOARDING_DRAFT_PATH,
   ONBOARDING_PRESIDENT_PATH,
-} from "./onboardingPaths";
+} from "@/core/routes/onboardingPaths";
 
 export const OnboardingGuard = () => {
   const {

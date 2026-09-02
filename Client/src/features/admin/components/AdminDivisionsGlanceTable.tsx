@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import {
   getGroupDisplayLabel,
   type DivisionGlanceRow,
   type DivisionHealthStatus,
-} from "../utils/adminDashboardHelpers";
+} from "@/features/admin/utils/adminDashboardHelpers";
 
 interface AdminDivisionsGlanceTableProps {
   rows: DivisionGlanceRow[];

@@ -1,21 +1,21 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { FacilityCurrentPerformance } from "../components/FacilityCurrentPerformance";
-import { FacilityProjectedImpact } from "../components/FacilityProjectedImpact";
-import { FacilityUpgradeActions } from "../components/FacilityUpgradeActions";
-import { FacilityUpgradeDetailHeader } from "../components/FacilityUpgradeDetailHeader";
-import { FacilityUpgradeHero } from "../components/FacilityUpgradeHero";
-import { FacilityUpgradePath } from "../components/FacilityUpgradePath";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { FacilityCurrentPerformance } from "@/features/facilities/components/FacilityCurrentPerformance";
+import { FacilityProjectedImpact } from "@/features/facilities/components/FacilityProjectedImpact";
+import { FacilityUpgradeActions } from "@/features/facilities/components/FacilityUpgradeActions";
+import { FacilityUpgradeDetailHeader } from "@/features/facilities/components/FacilityUpgradeDetailHeader";
+import { FacilityUpgradeHero } from "@/features/facilities/components/FacilityUpgradeHero";
+import { FacilityUpgradePath } from "@/features/facilities/components/FacilityUpgradePath";
 import {
   useGetMyFacilitiesQuery,
   useUpgradeFacilityMutation,
-} from "../facilitiesApiSlice";
-import { CashSpendLockBanner } from "../../matches/components/CashSpendLockBanner";
+} from "@/features/facilities/facilitiesApiSlice";
+import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
 import {
   getFacilityPerformanceStats,
   getProjectedImpactRows,
   parseFacilityTypeParam,
-} from "../utils/facilityUpgradeDetailHelpers";
+} from "@/features/facilities/utils/facilityUpgradeDetailHelpers";
 
 export const FacilityUpgradeDetailPage = () => {
   const navigate = useNavigate();

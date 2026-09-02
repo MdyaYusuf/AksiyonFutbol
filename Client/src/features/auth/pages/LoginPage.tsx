@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { useAppSelector } from "../../../core/store/hooks";
-import { LoginForm } from "../components/LoginForm";
+import { useAppSelector } from "@/core/store/hooks";
+import { LoginForm } from "@/features/auth/components/LoginForm";
 
 export const LoginPage = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);

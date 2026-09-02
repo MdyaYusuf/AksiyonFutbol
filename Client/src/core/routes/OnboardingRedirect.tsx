@@ -1,10 +1,10 @@
 import { Navigate } from "react-router-dom";
-import { useCheckCurrentUserHasPresidentQuery } from "../../features/clubPresidents/clubPresidentsApiSlice";
+import { useCheckCurrentUserHasPresidentQuery } from "@/features/clubPresidents/clubPresidentsApiSlice";
 import {
   useCheckCurrentUserHasClubQuery,
   useGetCurrentUserClubQuery,
-} from "../../features/clubs/clubsApiSlice";
-import { resolveOnboardingPath } from "./onboardingPaths";
+} from "@/features/clubs/clubsApiSlice";
+import { resolveOnboardingPath } from "@/core/routes/onboardingPaths";
 
 export const OnboardingRedirect = () => {
   const {

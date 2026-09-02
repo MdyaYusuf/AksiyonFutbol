@@ -1,5 +1,5 @@
-import { apiSlice } from "../../core/api/apiSlice";
-import type { PagedResponse } from "../../core/types/ApiResponse";
+import { apiSlice } from "@/core/api/apiSlice";
+import type { PagedResponse } from "@/core/types/ApiResponse";
 import type {
   ClubCreationDefaults,
   ClubOption,
@@ -12,7 +12,7 @@ import type {
   UpdateClubFinancesRequest,
   UpdateClubRequest,
   UpdateClubStatusRequest,
-} from "./clubTypes";
+} from "@/features/clubs/clubTypes";
 
 export const clubsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { PlayerPosition } from "../../basePlayers/basePlayerTypes";
-import { useGetCurrentUserClubPlayersQuery } from "../../playerInstances/playerInstancesApiSlice";
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import { getPositionLabel } from "../../playerInstances/utils/squadHelpers";
-import { TacticsBench } from "../components/TacticsBench";
-import { TacticsPlanPanel } from "../components/TacticsPlanPanel";
-import { TacticsPitch } from "../components/TacticsPitch";
-import { TacticsSlotPicker } from "../components/TacticsSlotPicker";
+import { PlayerPosition } from "@/features/basePlayers/basePlayerTypes";
+import { useGetCurrentUserClubPlayersQuery } from "@/features/playerInstances/playerInstancesApiSlice";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import { getPositionLabel } from "@/features/playerInstances/utils/squadHelpers";
+import { TacticsBench } from "@/features/clubLineups/components/TacticsBench";
+import { TacticsPlanPanel } from "@/features/clubLineups/components/TacticsPlanPanel";
+import { TacticsPitch } from "@/features/clubLineups/components/TacticsPitch";
+import { TacticsSlotPicker } from "@/features/clubLineups/components/TacticsSlotPicker";
 import {
   useGetMyClubLineupQuery,
   useUpsertMyClubLineupMutation,
-} from "../clubLineupsApiSlice";
-import { TeamFormation, TeamMentality } from "../clubLineupTypes";
+} from "@/features/clubLineups/clubLineupsApiSlice";
+import { TeamFormation, TeamMentality } from "@/features/clubLineups/clubLineupTypes";
 import {
   createEmptyBenchSlots,
   createEmptyStarterSlots,
@@ -21,7 +21,7 @@ import {
   LINEUP_STARTER_COUNT,
   lineupToSlots,
   redistributeByFormation,
-} from "../utils/tacticsHelpers";
+} from "@/features/clubLineups/utils/tacticsHelpers";
 
 interface SlotPickerState {
   kind: "starter" | "bench";

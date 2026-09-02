@@ -1,5 +1,5 @@
-import { MaterialIcon } from "../../core/components/ui/MaterialIcon";
-import { LegalDocumentHeader } from "./components/LegalDocumentHeader";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { LegalDocumentHeader } from "@/pages/public/components/LegalDocumentHeader";
 
 const LAST_UPDATED = "July 14, 2026";
 

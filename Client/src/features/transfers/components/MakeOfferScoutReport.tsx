@@ -1,6 +1,6 @@
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import type { TransferMarketItem } from "../transferTypes";
-import { buildScoutNote } from "../utils/makeOfferHelpers";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import type { TransferMarketItem } from "@/features/transfers/transferTypes";
+import { buildScoutNote } from "@/features/transfers/utils/makeOfferHelpers";
 
 interface MakeOfferScoutReportProps {
   player: PlayerInstanceResponse;

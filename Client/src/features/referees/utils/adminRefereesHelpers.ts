@@ -1,7 +1,7 @@
 import {
   RefereePersonalityType,
   type RefereeResponse,
-} from "../refereeTypes";
+} from "@/features/referees/refereeTypes";
 
 export type RefereePersonalityFilter = "ALL" | RefereePersonalityType;
 

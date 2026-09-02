@@ -1,14 +1,14 @@
-import type { PlayerInstanceResponse } from "../../playerInstances/playerInstanceTypes";
-import type { TeamFormation } from "../clubLineupTypes";
+import type { PlayerInstanceResponse } from "@/features/playerInstances/playerInstanceTypes";
+import type { TeamFormation } from "@/features/clubLineups/clubLineupTypes";
 import {
   formatPitchSurname,
   getPlayerFitnessPercent,
-} from "../utils/matchDayHelpers";
+} from "@/features/clubLineups/utils/matchDayHelpers";
 import {
   buildPitchRows,
   getPitchAccentClass,
   getPitchHoverClass,
-} from "../utils/tacticsHelpers";
+} from "@/features/clubLineups/utils/tacticsHelpers";
 
 interface MatchDayPitchProps {
   formation: TeamFormation;

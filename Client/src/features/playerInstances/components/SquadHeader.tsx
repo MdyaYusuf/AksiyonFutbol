@@ -2,12 +2,12 @@ import {
   canSellOrCompleteTransfer,
   getTransferSquadFloorMessage,
   TRANSFER_MINIMUM_SQUAD_SIZE,
-} from "../../transfers/utils/transferMarketHelpers";
-import type { SquadPositionFilter } from "../utils/squadHelpers";
+} from "@/features/transfers/utils/transferMarketHelpers";
+import type { SquadPositionFilter } from "@/features/playerInstances/utils/squadHelpers";
 import {
   getSquadFilterChipClassName,
   POSITION_FILTERS,
-} from "../utils/squadHelpers";
+} from "@/features/playerInstances/utils/squadHelpers";
 
 interface SquadHeaderProps {
   squadCount: number;

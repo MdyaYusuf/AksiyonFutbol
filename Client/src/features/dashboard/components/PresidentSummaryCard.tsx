@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { MaterialIcon } from "../../../core/components/ui/MaterialIcon";
-import { ProgressBar } from "../../../core/components/ui/ProgressBar";
-import type { ClubPresidentResponse } from "../../clubPresidents/clubPresidentTypes";
-import { PresidentAttributesPanel } from "../../clubPresidents/components/PresidentAttributesPanel";
-import { LegitimacyInfamyMeters } from "../../clubPresidents/components/LegitimacyInfamyMeters";
-import type { ClubResponse } from "../../clubs/clubTypes";
+import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { ProgressBar } from "@/core/components/ui/ProgressBar";
+import type { ClubPresidentResponse } from "@/features/clubPresidents/clubPresidentTypes";
+import { PresidentAttributesPanel } from "@/features/clubPresidents/components/PresidentAttributesPanel";
+import { LegitimacyInfamyMeters } from "@/features/clubPresidents/components/LegitimacyInfamyMeters";
+import type { ClubResponse } from "@/features/clubs/clubTypes";
 
 interface PresidentSummaryCardProps {
   president?: ClubPresidentResponse;

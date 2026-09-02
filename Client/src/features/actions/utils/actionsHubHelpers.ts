@@ -1,5 +1,5 @@
-import type { ClubActionAvailability, ClubActionCategory } from "../actionTypes";
-import { ClubActionCategory as Category, ClubActionType } from "../actionTypes";
+import type { ClubActionAvailability, ClubActionCategory } from "@/features/actions/actionTypes";
+import { ClubActionCategory as Category, ClubActionType } from "@/features/actions/actionTypes";
 
 export const formatChancePercent = (chance: number): string => {
   return `${Math.round(chance * 100)}%`;

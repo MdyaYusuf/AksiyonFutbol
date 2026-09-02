@@ -1,17 +1,17 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useAppDispatch } from "../../../core/store/hooks";
-import { MatchLiveCommentary } from "../components/MatchLiveCommentary";
-import { MatchLivePitch } from "../components/MatchLivePitch";
-import { MatchLiveScoreboard } from "../components/MatchLiveScoreboard";
-import { MatchLiveStats } from "../components/MatchLiveStats";
-import type { MatchEvent, MatchResponse } from "../matchTypes";
+import { useAppDispatch } from "@/core/store/hooks";
+import { MatchLiveCommentary } from "@/features/matches/components/MatchLiveCommentary";
+import { MatchLivePitch } from "@/features/matches/components/MatchLivePitch";
+import { MatchLiveScoreboard } from "@/features/matches/components/MatchLiveScoreboard";
+import { MatchLiveStats } from "@/features/matches/components/MatchLiveStats";
+import type { MatchEvent, MatchResponse } from "@/features/matches/matchTypes";
 import {
   matchesApiSlice,
   useGetMatchByIdQuery,
   useGetMatchLiveStatusQuery,
-} from "../matchesApiSlice";
+} from "@/features/matches/matchesApiSlice";
 import {
   getBallPositionFromEvents,
   getEventsThroughFeedPresentation,
@@ -25,9 +25,9 @@ import {
   shouldOpenMatchReport,
   wallSecondsToMatchMinute,
   type MatchPresentationPhase,
-} from "../utils/matchLiveHelpers";
-import { matchSettlementRevealTags } from "../utils/matchSettlementTags";
-import { goBackOrFallback, parseMatchEvents } from "../utils/matchReportHelpers";
+} from "@/features/matches/utils/matchLiveHelpers";
+import { matchSettlementRevealTags } from "@/features/matches/utils/matchSettlementTags";
+import { goBackOrFallback, parseMatchEvents } from "@/features/matches/utils/matchReportHelpers";
 
 const WAITING_POLL_MS = 1000;
 const WAITING_TIMEOUT_MS = 120_000;
@@ -478,7 +478,7 @@ export const MatchLivePage = () => {
       <div className="mx-auto flex min-h-[40vh] max-w-lg flex-col items-center justify-center gap-4 text-center">
         <h1 className="text-headline-md text-on-surface">Match not started yet</h1>
         <p className="text-body-sm text-on-surface-variant">
-          Kickoff has not been reached. You can set your lineup or check the scout report.
+          Kickoff has not been reached. You can set your lineup before the match starts.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
@@ -486,12 +486,6 @@ export const MatchLivePage = () => {
             className="rounded bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary"
           >
             Set Lineup
-          </Link>
-          <Link
-            to={`/app/matches/${match.id}`}
-            className="rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
-          >
-            Scout Report
           </Link>
         </div>
       </div>
