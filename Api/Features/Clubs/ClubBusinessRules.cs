@@ -1,5 +1,6 @@
 using Api.Core.Exceptions;
 using Api.Core.Options;
+using Api.Core.Validation;
 using Api.Features.BaseBotClubs;
 using Api.Features.ClubPresidents;
 using Api.Features.LeagueDivisions;
@@ -177,11 +178,6 @@ public class ClubBusinessRules(
 
   public void ClubNameCannotBeRestrictedWord(string name)
   {
-    var restrictedWords = new[] { "admin", "administrator", "system", "root", "support", "moderator", "aksiyonfutbol" };
-
-    if (restrictedWords.Contains(name.ToLowerInvariant()))
-    {
-      throw new BusinessException("Seçtiğiniz kulüp adı sistem tarafından rezerve edilmiştir. Lütfen farklı bir ad belirleyiniz.");
-    }
+    RestrictedNameWords.EnsureIsNotRestricted(name, "kulüp adı");
   }
 }

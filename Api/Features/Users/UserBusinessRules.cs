@@ -1,5 +1,6 @@
 using Api.Core.Exceptions;
 using Api.Core.Security;
+using Api.Core.Validation;
 using Api.Features.Roles;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,12 +82,7 @@ public class UserBusinessRules(IUserRepository _userRepository, IRoleRepository 
 
   public void UsernameCannotBeRestrictedWord(string username)
   {
-    var restrictedWords = new[] { "admin", "administrator", "system", "root", "support", "moderator", "aksiyonfutbol" };
-
-    if (restrictedWords.Contains(username.ToLowerInvariant()))
-    {
-      throw new BusinessException("Seçtiğiniz kullanıcı adı sistem tarafından rezerve edilmiştir. Lütfen farklı bir kullanıcı adı belirleyiniz.");
-    }
+    RestrictedNameWords.EnsureIsNotRestricted(username, "kullanıcı adı");
   }
 
   public async Task CannotDeleteLastAdminAsync(User user, CancellationToken cancellationToken = default)

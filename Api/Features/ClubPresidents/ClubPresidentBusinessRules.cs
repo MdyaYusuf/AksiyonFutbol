@@ -1,4 +1,5 @@
 using Api.Core.Exceptions;
+using Api.Core.Validation;
 
 namespace Api.Features.ClubPresidents;
 
@@ -138,11 +139,6 @@ public class ClubPresidentBusinessRules(IClubPresidentRepository _clubPresidentR
 
   public void PresidentNameCannotBeRestrictedWord(string name)
   {
-    var restrictedWords = new[] { "admin", "administrator", "system", "root", "support", "moderator", "aksiyonfutbol" };
-
-    if (restrictedWords.Contains(name.ToLowerInvariant()))
-    {
-      throw new BusinessException("Seçtiğiniz başkan adı sistem tarafından rezerve edilmiştir. Lütfen farklı bir ad belirleyiniz.");
-    }
+    RestrictedNameWords.EnsureIsNotRestricted(name, "başkan adı");
   }
 }

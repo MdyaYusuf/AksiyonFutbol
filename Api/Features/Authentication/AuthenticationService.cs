@@ -68,6 +68,7 @@ public class AuthenticationService(
     }
 
     await _userBusinessRules.EmailMustBeUniqueAsync(request.Email, cancellationToken: cancellationToken);
+    _userBusinessRules.UsernameCannotBeRestrictedWord(request.Username);
     await _userBusinessRules.UsernameMustBeUniqueAsync(request.Username, cancellationToken: cancellationToken);
 
     User createdUser = _mapper.CreateToEntity(request);
