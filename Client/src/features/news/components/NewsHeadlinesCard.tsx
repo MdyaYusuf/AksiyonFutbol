@@ -21,7 +21,7 @@ export const NewsHeadlinesCard = () => {
 
       {!isLoading && articles.length === 0 ? (
         <p className="py-6 text-center text-body-sm text-on-surface-variant">
-          No headlines yet. Play matches and take actions to fill the press room.
+          No headlines yet. Finish your draft or play matches to fill the press room.
         </p>
       ) : null}
 

@@ -6,6 +6,7 @@ import { useGetPlayerInstancesByClubIdQuery } from "@/features/playerInstances/p
 import { useGetTransferMarketQuery } from "@/features/transfers/transfersApiSlice";
 import type { ClubActionAvailability, MediaSpinMode as MediaSpinModeType } from "@/features/actions/actionTypes";
 import { ClubActionType, MediaSpinMode } from "@/features/actions/actionTypes";
+import { ActionExecuteButton } from "@/features/actions/components/ActionExecuteButton";
 import { formatChancePercent } from "@/features/actions/utils/actionsHubHelpers";
 
 interface ExecuteActionModalProps {
@@ -84,9 +85,9 @@ export const ExecuteActionModal = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="execute-action-title"
-        className="w-full max-w-lg overflow-hidden rounded-xl border border-outline-variant bg-surface-container shadow-lg"
+        className="w-full max-w-lg overflow-hidden rounded border border-[#334155] bg-surface-container shadow-lg"
       >
-        <div className="flex items-start justify-between border-b border-outline-variant bg-surface-container-high px-5 py-4">
+        <div className="flex items-start justify-between border-b border-[#334155] bg-surface-container-high px-5 py-4">
           <div>
             <h2
               id="execute-action-title"
@@ -250,7 +251,7 @@ export const ExecuteActionModal = ({
           ) : null}
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-outline-variant bg-surface-container-high px-5 py-4">
+        <div className="flex justify-end gap-3 border-t border-[#334155] bg-surface-container-high px-5 py-4">
           <button
             type="button"
             onClick={onClose}
@@ -259,14 +260,13 @@ export const ExecuteActionModal = ({
           >
             Cancel
           </button>
-          <button
-            type="button"
+          <ActionExecuteButton
             onClick={handleConfirm}
             disabled={!canConfirm || isSubmitting}
-            className="rounded bg-primary px-5 py-2 font-label-caps text-label-caps text-on-primary transition-colors hover:bg-primary-fixed disabled:cursor-not-allowed disabled:opacity-40"
+            className="px-6"
           >
             {isSubmitting ? "Executing..." : "Confirm"}
-          </button>
+          </ActionExecuteButton>
         </div>
       </div>
     </div>

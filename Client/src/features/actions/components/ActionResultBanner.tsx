@@ -2,6 +2,7 @@ import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
 import type { ClubActionResult } from "@/features/actions/actionTypes";
 import { ClubActionOutcome } from "@/features/actions/actionTypes";
+import { legitimacyAccent } from "@/features/actions/utils/actionPresentationHelpers";
 
 interface ActionResultBannerProps {
   result: ClubActionResult;
@@ -16,10 +17,10 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
   return (
     <div
       className={[
-        "rounded-xl border p-4",
+        "rounded border p-4",
         detected
           ? "border-error/40 bg-error/10"
-          : "border-outline-variant bg-surface-container",
+          : "border-[#334155] bg-surface-container-high",
       ].join(" ")}
     >
       <div className="flex items-start justify-between gap-3">
@@ -44,9 +45,14 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
               {result.action.targetPlayerName
                 ? ` · Player ${result.action.targetPlayerName}`
                 : ""}
-              {result.newReputationPoints != null
-                ? ` · Legitimacy ${result.newReputationPoints}`
-                : ""}
+              {result.newReputationPoints != null ? (
+                <>
+                  {" · "}
+                  <span className={legitimacyAccent.text}>
+                    Legitimacy {result.newReputationPoints}
+                  </span>
+                </>
+              ) : null}
               {result.newInfamyPoints != null ? ` · Infamy ${result.newInfamyPoints}` : ""}
             </p>
 
@@ -59,7 +65,9 @@ export const ActionResultBanner = ({ result, onDismiss }: ActionResultBannerProp
                   <li>Morale −{investigation.moralePenalty}</li>
                 ) : null}
                 {investigation.reputationPenalty > 0 ? (
-                  <li>Legitimacy −{investigation.reputationPenalty}</li>
+                  <li className={legitimacyAccent.text}>
+                    Legitimacy −{investigation.reputationPenalty}
+                  </li>
                 ) : null}
                 {investigation.infamyGain > 0 ? (
                   <li>Infamy +{investigation.infamyGain}</li>

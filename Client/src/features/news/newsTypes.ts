@@ -2,6 +2,7 @@ export const NewsArticleKind = {
   Scandal: 1,
   ClubLife: 2,
   MatchReport: 3,
+  Placement: 4,
 } as const;
 
 export type NewsArticleKind = (typeof NewsArticleKind)[keyof typeof NewsArticleKind];

@@ -90,8 +90,8 @@ export const NewsPage = () => {
 
       {!isLoading && !isError && sortedArticles.length === 0 ? (
         <div className="rounded-lg border border-outline-variant bg-surface-container-high px-4 py-10 text-center text-body-sm text-on-surface-variant">
-          No stories yet. Scandals, honorable club moves, and match results will appear here as the
-          season unfolds.
+          No stories yet. Placement desk coverage, scandals, club moves, and match results will
+          appear here as the season unfolds.
         </div>
       ) : null}
 
@@ -102,6 +102,7 @@ export const NewsPage = () => {
             article.kind === NewsArticleKind.Scandal
               ? "crisis_alert"
               : article.kind === NewsArticleKind.ClubLife
+                || article.kind === NewsArticleKind.Placement
                 ? "favorite"
                 : "sports_soccer";
 

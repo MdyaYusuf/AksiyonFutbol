@@ -7,6 +7,7 @@ using Api.Features.BasePlayers;
 using Api.Features.ClubLineups;
 using Api.Features.Clubs;
 using Api.Features.LeagueDivisions;
+using Api.Features.LeaguePress;
 using Api.Features.Matches;
 using Api.Features.PlayerInstances;
 using FluentValidation;
@@ -23,6 +24,7 @@ public class ClubDraftService(
   IClubLineupRepository _clubLineupRepository,
   IDefaultClubLineupService _defaultClubLineupService,
   IFixtureSchedulingService _fixtureSchedulingService,
+  LeaguePressArticleGenerator _leaguePressArticleGenerator,
   IUnitOfWork _unitOfWork,
   IValidator<AddClubDraftPickRequest> _addPickValidator,
   IOptions<GameOptions> _gameOptions) : IClubDraftService
@@ -309,6 +311,16 @@ public class ClubDraftService(
       options.TutorialMatchWeeks,
       tutorial.CurrentSeason,
       cancellationToken: cancellationToken);
+
+    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+    await _leaguePressArticleGenerator.TryGeneratePlacementLeaguePackAsync(
+      tutorial.Id,
+      tutorial.Name,
+      club,
+      botClubs,
+      options,
+      cancellationToken);
 
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
+import { ActionExecuteButton } from "@/features/actions/components/ActionExecuteButton";
 import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import type { BriberyContext } from "@/features/bribery/briberyTypes";
 import { BribeAttemptOutcome } from "@/features/bribery/briberyTypes";
-import {
-  formatChancePercent,
-  getPreviewStakeOption,
-} from "@/features/bribery/utils/matchInfluenceHelpers";
+import { ActionCardStatsPanel } from "@/features/actions/components/ActionCardStatsPanel";
+import { formatChancePercent } from "@/features/actions/utils/actionsHubHelpers";
+import { getActionLockedPresentation } from "@/features/actions/utils/actionPresentationHelpers";
+import { getPreviewStakeOption } from "@/features/bribery/utils/matchInfluenceHelpers";
 
 interface BribeRefereeActionCardProps {
   briberyContext?: BriberyContext;
@@ -28,98 +28,101 @@ export const BribeRefereeActionCard = ({
         ? "Failed"
         : null;
 
+  const successValue =
+    canAttempt && previewStake
+      ? formatChancePercent(previewStake.successChance)
+      : canAttempt && briberyContext
+        ? formatChancePercent(briberyContext.estimatedSuccessChance)
+        : "—";
+
+  const stats = [
+    {
+      label: "Success",
+      value: isLoading ? "…" : successValue,
+      valueClassName: "text-secondary",
+    },
+    {
+      label: "Heat",
+      value:
+        previewStake && previewStake.heatGenerated > 0
+          ? `+${previewStake.heatGenerated}`
+          : "—",
+      valueClassName: "text-error",
+    },
+    {
+      label: "Detect",
+      value: previewStake ? formatChancePercent(previewStake.detectionChance) : "—",
+    },
+    {
+      label: "Stake",
+      value: isLoading ? "…" : "Variable",
+    },
+  ];
+
+  const lockedReason =
+    briberyContext?.unavailableReason ??
+    "No upcoming fixture with a referee assigned.";
+  const lockedPresentation = getActionLockedPresentation(lockedReason);
+  const usedPresentation = getActionLockedPresentation("Already used for this fixture.");
+
   return (
-    <div className="flex flex-col rounded-xl border border-outline-variant bg-surface-container p-5">
-      <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-outline-variant bg-surface-container-low text-primary">
-          <MaterialIcon name="gavel" className="text-2xl" />
+    <div className="group flex flex-col rounded border border-[#334155] bg-surface-container-high p-4 transition-colors hover:bg-[#334155]">
+      <div className="mb-3">
+        <div className="mb-1 flex flex-wrap items-center gap-2">
+          <h4 className="font-headline-sm text-headline-sm text-on-surface">
+            Approach Referee
+          </h4>
+          <span className="rounded border border-secondary/30 bg-secondary/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-secondary">
+            Gray Area
+          </span>
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface">
-              Approach Referee
-            </h3>
-            <span className="rounded border border-secondary/30 bg-secondary/10 px-2 py-0.5 font-label-caps text-label-caps text-secondary">
-              Gray Area
-            </span>
-          </div>
-          <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-            Quietly sound out the match official for friendlier decisions. Success tilts
-            scoring odds your way — but scrutiny rises with every push.
-          </p>
+        <p className="mt-2 font-body-sm text-body-sm leading-snug text-on-surface-variant">
+          Quietly sound out the match official for friendlier decisions. Success tilts
+          scoring odds your way — but scrutiny rises with every push.
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1 rounded border border-outline-variant bg-surface-variant px-2 py-1 font-data-mono text-xs text-on-surface-variant">
+            <MaterialIcon name="payments" className="text-[14px]" />
+            Variable stake
+          </span>
         </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Stake" value={isLoading ? "…" : "Variable"} />
-        <Stat
-          label="Success"
-          value={
-            canAttempt && previewStake
-              ? formatChancePercent(previewStake.successChance)
-              : canAttempt
-                ? formatChancePercent(briberyContext!.estimatedSuccessChance)
-                : "—"
-          }
-        />
-        <Stat
-          label="Heat"
-          value={
-            previewStake && previewStake.heatGenerated > 0
-              ? `+${previewStake.heatGenerated}`
-              : "—"
-          }
-        />
-        <Stat
-          label="Detection"
-          value={
-            previewStake
-              ? formatChancePercent(previewStake.detectionChance)
-              : "—"
-          }
-        />
-      </div>
+      <ActionCardStatsPanel stats={stats} columns={4} />
 
       {alreadyAttempted ? (
-        <div className="mt-auto flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
-          <MaterialIcon name="info" className="text-sm text-primary" />
+        <div
+          className={[
+            "mt-auto flex w-full items-center justify-center gap-2 rounded border px-3 py-2.5 font-body-sm text-body-sm font-semibold normal-case",
+            usedPresentation.buttonClassName,
+          ].join(" ")}
+        >
+          <MaterialIcon name="info" className={["text-sm", usedPresentation.iconClassName].join(" ")} />
           Already used for this fixture
-          {outcomeLabel ? ` (${outcomeLabel})` : ""}.
+          {outcomeLabel ? ` (${outcomeLabel})` : ""}
         </div>
       ) : !canAttempt && !isLoading ? (
-        <div className="mt-auto flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
-          <MaterialIcon name="lock" className="text-sm" />
-          {briberyContext?.unavailableReason ??
-            "No upcoming fixture with a referee assigned."}
-        </div>
+        <button
+          type="button"
+          disabled
+          className={[
+            "mt-auto flex w-full items-center justify-center gap-2 rounded border px-3 py-2.5 font-body-sm text-body-sm font-semibold normal-case",
+            lockedPresentation.buttonClassName,
+          ].join(" ")}
+        >
+          <MaterialIcon
+            name="lock"
+            className={["text-[18px]", lockedPresentation.iconClassName].join(" ")}
+          />
+          {lockedReason}
+        </button>
       ) : (
         <div className="mt-auto flex justify-end">
-          <Link
-            to="/app/actions/bribe"
-            className={[
-              "flex items-center gap-2 rounded px-5 py-2 font-label-caps text-label-caps transition-colors",
-              canOpen
-                ? "bg-primary text-on-primary hover:bg-primary-fixed"
-                : "pointer-events-none border border-outline-variant bg-surface-variant text-on-surface-variant opacity-60",
-            ].join(" ")}
-            aria-disabled={!canOpen}
-          >
-            <MaterialIcon name="arrow_forward" className="text-sm" />
-            Open
-          </Link>
+          <ActionExecuteButton to="/app/actions/bribe" unavailable={!canOpen}>
+            Open Flow
+          </ActionExecuteButton>
         </div>
       )}
-    </div>
-  );
-};
-
-const Stat = ({ label, value }: { label: string; value: string }) => {
-  return (
-    <div>
-      <div className="mb-0.5 font-label-caps text-label-caps text-on-surface-variant">
-        {label}
-      </div>
-      <div className="font-data-mono text-data-mono text-on-surface">{value}</div>
     </div>
   );
 };

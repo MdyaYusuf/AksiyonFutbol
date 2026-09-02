@@ -1,3 +1,5 @@
+import { legitimacyAccent } from "@/features/actions/utils/actionPresentationHelpers";
+
 interface ActionMoralityDeltasProps {
   legitimacyDeltaOnSuccess?: number | null;
   infamyDeltaOnSuccess?: number | null;
@@ -12,13 +14,13 @@ export const ActionMoralityDeltas = ({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="mt-2 flex flex-wrap gap-2">
       {legitimacyDeltaOnSuccess != null ? (
         <span
           className={[
             "rounded-full border px-2.5 py-1 font-label-caps text-label-caps",
             legitimacyDeltaOnSuccess >= 0
-              ? "border-primary/30 bg-primary/10 text-primary"
+              ? legitimacyAccent.badge
               : "border-error/30 bg-error/10 text-error",
           ].join(" ")}
         >

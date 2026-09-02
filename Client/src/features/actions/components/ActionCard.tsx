@@ -1,150 +1,209 @@
 import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import type { ClubActionAvailability } from "@/features/actions/actionTypes";
-import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { ClubActionCategory } from "@/features/actions/actionTypes";
+import { ActionExecuteButton } from "@/features/actions/components/ActionExecuteButton";
+import { ActionsCashAmount } from "@/features/actions/components/ActionsCashAmount";
+import { ActionMoralityDeltas } from "@/features/actions/components/ActionMoralityDeltas";
+import { ActionCardStatsPanel } from "@/features/actions/components/ActionCardStatsPanel";
 import {
   formatChancePercent,
-  getActionIcon,
+  formatCooldownDisplay,
 } from "@/features/actions/utils/actionsHubHelpers";
 import {
-  getPathAffinityBadgeClass,
-  getPathAffinityIcon,
-  getPathAffinityLabel,
+  getPathAffinityShortBadgeClass,
+  getPathAffinityShortLabel,
+  getRequirementChipClass,
+  getRequirementIcon,
+  getActionLockedPresentation,
+  cashAccent,
+  honorablePowerAccent,
+  legitimacyAccent,
 } from "@/features/actions/utils/actionPresentationHelpers";
-import { ActionMoralityDeltas } from "@/features/actions/components/ActionMoralityDeltas";
-import { ActionRequirementChips } from "@/features/actions/components/ActionRequirementChips";
 
 interface ActionCardProps {
   action: ClubActionAvailability;
   onExecute: (action: ClubActionAvailability) => void;
 }
 
-export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
-  const cooldownValue =
-    action.cooldownDays > 0
-      ? action.cooldownRemainingDays > 0
-        ? `${action.cooldownRemainingDays}d left`
-        : `${action.cooldownDays}d`
-      : "None";
+const ACTION_CARD_SHELL =
+  "group flex flex-col rounded border border-[#334155] bg-surface-container-high p-4 transition-colors hover:bg-[#334155]";
 
+export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
   const isLocked = !action.isAvailable;
+  const isSquad = action.category === ClubActionCategory.Squad;
+  const cooldownValue = formatCooldownDisplay(
+    action.cooldownDays,
+    action.cooldownRemainingDays,
+  );
+  const successValue = formatChancePercent(action.successChance);
+  const cooldownClassName =
+    cooldownValue !== "None" ? "text-error" : "text-on-surface";
+  const lockedReason = action.unavailableReason ?? "Unavailable";
+  const lockedPresentation = getActionLockedPresentation(lockedReason);
+
+  const stats = isSquad
+    ? [
+        {
+          label: "Cost",
+          value: <ActionsCashAmount amount={action.cost} />,
+          valueClassName: cashAccent.text,
+        },
+        {
+          label: "Success",
+          value: successValue,
+          valueClassName: "text-primary",
+        },
+      ]
+    : [
+        {
+          label: "Success",
+          value: successValue,
+          valueClassName: action.isShady ? "text-secondary" : "text-primary",
+        },
+        {
+          label: "Heat",
+          value: action.heatGenerated > 0 ? `+${action.heatGenerated}` : "0",
+          valueClassName:
+            action.heatGenerated > 0 ? "text-error" : "text-on-surface",
+        },
+        {
+          label: "Detect",
+          value: action.isShady
+            ? formatChancePercent(action.detectionChance)
+            : "0%",
+        },
+        {
+          label: "Cooldown",
+          value: cooldownValue,
+          valueClassName: cooldownClassName,
+        },
+      ];
 
   return (
     <div
       className={[
-        "flex flex-col rounded-xl border bg-surface-container p-5",
-        action.isUnlockTeaser
-          ? "border-dashed border-outline-variant opacity-90"
-          : "border-outline-variant",
+        ACTION_CARD_SHELL,
+        action.isUnlockTeaser ? "border-dashed opacity-90" : "",
       ].join(" ")}
     >
-      <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-outline-variant bg-surface-container-low text-primary">
-          <MaterialIcon name={getActionIcon(action.actionType)} className="text-2xl" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface">
-              {action.displayName}
-            </h3>
+      <div className="mb-3">
+        <div className="mb-1 flex flex-wrap items-center gap-2">
+          <h4 className="font-headline-sm text-headline-sm text-on-surface">
+            {action.displayName}
+          </h4>
+          {action.isShady ? (
+            <span className="rounded border border-secondary/30 bg-secondary/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-secondary">
+              Gray Area
+            </span>
+          ) : (
             <span
               className={[
-                "inline-flex items-center gap-1 rounded border px-2 py-0.5 font-label-caps text-label-caps",
-                getPathAffinityBadgeClass(action.pathAffinity),
+                "rounded border px-2 py-0.5 text-xs font-bold uppercase tracking-wider",
+                getPathAffinityShortBadgeClass(action.pathAffinity),
               ].join(" ")}
             >
-              <MaterialIcon name={getPathAffinityIcon(action.pathAffinity)} className="text-xs" />
-              {getPathAffinityLabel(action.pathAffinity)}
+              {getPathAffinityShortLabel(action.pathAffinity)}
             </span>
-            {action.isShady ? (
-              <span className="rounded border border-secondary/30 bg-secondary/10 px-2 py-0.5 font-label-caps text-label-caps text-secondary">
-                Gray Area
+          )}
+          {action.isHonorablePower ? (
+            <span
+              className={[
+                "rounded border px-2 py-0.5 text-xs font-bold uppercase tracking-wider",
+                honorablePowerAccent.badge,
+              ].join(" ")}
+            >
+              Honorable Power
+            </span>
+          ) : null}
+          {action.requiresShadyTierII ? (
+            <span className="rounded border border-error/30 bg-error/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-error">
+              Tier II
+            </span>
+          ) : null}
+        </div>
+
+        <p className="mt-2 font-body-sm text-body-sm leading-snug text-on-surface-variant">
+          {action.description}
+        </p>
+
+        {(action.requirements?.length ?? 0) > 0 || action.cost > 0 ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {action.requirements?.map((requirement) => (
+              <span
+                key={requirement.key}
+                className={[
+                  "inline-flex items-center gap-1 rounded border px-2 py-1 font-data-mono text-xs",
+                  getRequirementChipClass(requirement),
+                ].join(" ")}
+              >
+                <MaterialIcon
+                  name={getRequirementIcon(requirement.key)}
+                  className="text-[14px]"
+                />
+                {requirement.label} {requirement.currentValue}/{requirement.requiredValue}
               </span>
-            ) : null}
-            {action.isHonorablePower ? (
-              <span className="rounded border border-primary/30 bg-primary/10 px-2 py-0.5 font-label-caps text-label-caps text-primary">
-                Honorable Power
-              </span>
-            ) : null}
-            {action.requiresShadyTierII ? (
-              <span className="rounded border border-error/30 bg-error/10 px-2 py-0.5 font-label-caps text-label-caps text-error">
-                Tier II
+            ))}
+            {!isSquad && action.cost > 0 ? (
+              <span
+                className={[
+                  "inline-flex items-center rounded border px-2 py-1 font-data-mono text-xs",
+                  cashAccent.chip,
+                ].join(" ")}
+              >
+                <ActionsCashAmount amount={action.cost} />
               </span>
             ) : null}
           </div>
-          <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-            {action.description}
-          </p>
-        </div>
-      </div>
+        ) : null}
 
-      <div className="mb-3 space-y-3">
-        <ActionRequirementChips requirements={action.requirements ?? []} />
         <ActionMoralityDeltas
           legitimacyDeltaOnSuccess={action.legitimacyDeltaOnSuccess}
           infamyDeltaOnSuccess={action.infamyDeltaOnSuccess}
         />
       </div>
 
-      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <Stat
-          label="Cost"
-          value={action.cost > 0 ? formatCashFull(action.cost) : "Free"}
-        />
-        <Stat label="Success" value={formatChancePercent(action.successChance)} />
-        <Stat
-          label="Heat"
-          value={action.heatGenerated > 0 ? `+${action.heatGenerated}` : "None"}
-        />
-        <Stat label="Cooldown" value={cooldownValue} />
-        <Stat
-          label="Detection"
-          value={
-            action.isShady ? formatChancePercent(action.detectionChance) : "—"
-          }
-        />
-      </div>
+      <ActionCardStatsPanel stats={stats} columns={isSquad ? 2 : 4} />
 
       {isLocked ? (
         <div className="mt-auto space-y-2">
           {action.isUnlockTeaser && action.unlockHint ? (
-            <div className="rounded border border-primary/30 bg-primary/5 px-3 py-2 font-body-sm text-body-sm text-on-surface">
-              <div className="mb-1 flex items-center gap-2 font-label-caps text-label-caps text-primary">
-                <MaterialIcon name="auto_awesome" className="text-sm" />
-                Unlock path
-              </div>
+            <p
+              className={[
+                "font-body-sm text-body-sm",
+                action.isHonorablePower
+                  ? legitimacyAccent.text
+                  : honorablePowerAccent.text,
+              ].join(" ")}
+            >
               {action.unlockHint}
-            </div>
+            </p>
           ) : null}
-          <div className="flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
-            <MaterialIcon name="lock" className="text-sm" />
-            {action.unavailableReason ?? "Unavailable"}
-          </div>
+          <button
+            type="button"
+            disabled
+            className={[
+              "flex w-full items-center justify-center gap-2 rounded border px-3 py-2.5 font-body-sm text-body-sm font-semibold normal-case",
+              lockedPresentation.buttonClassName,
+            ].join(" ")}
+          >
+            <MaterialIcon
+              name="lock"
+              className={["text-[18px]", lockedPresentation.iconClassName].join(" ")}
+            />
+            {lockedReason}
+          </button>
         </div>
       ) : (
         <div className="mt-auto flex justify-end">
-          <button
-            type="button"
+          <ActionExecuteButton
             onClick={() => {
               onExecute(action);
             }}
-            className="flex items-center gap-2 rounded bg-primary px-5 py-2 font-label-caps text-label-caps text-on-primary transition-colors hover:bg-primary-fixed"
           >
-            <MaterialIcon name="bolt" className="text-sm" />
-            Execute
-          </button>
+            Execute Action
+          </ActionExecuteButton>
         </div>
       )}
-    </div>
-  );
-};
-
-const Stat = ({ label, value }: { label: string; value: string }) => {
-  return (
-    <div>
-      <div className="mb-0.5 font-label-caps text-label-caps text-on-surface-variant">
-        {label}
-      </div>
-      <div className="font-data-mono text-data-mono text-on-surface">{value}</div>
     </div>
   );
 };

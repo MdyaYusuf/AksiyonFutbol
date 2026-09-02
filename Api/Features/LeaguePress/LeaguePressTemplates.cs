@@ -1,3 +1,4 @@
+using Api.Core.Options;
 using Api.Features.Actions;
 
 namespace Api.Features.LeaguePress;
@@ -111,6 +112,54 @@ public static class LeaguePressTemplates
         $"{clubName} make positive headlines",
         $"{clubName} generated feel-good coverage around the division this week, " +
         "with staff and supporters welcoming a rare stretch of upbeat press.")
+    };
+  }
+
+  public static (string Headline, string Body) BuildPlacementWelcomeCopy(
+    string divisionName,
+    string clubName,
+    string presidentName)
+  {
+    return (
+      $"{clubName} enter the placement league",
+      $"President {presidentName} has formally registered {clubName} in {divisionName}. " +
+      "The division desk welcomes the newest boardroom on the block and notes that every rival " +
+      "club in this cohort is still finding its feet — the table is wide open from week one.");
+  }
+
+  public static (string Headline, string Body) BuildPlacementRulesCopy(
+    string divisionName,
+    GameOptions options)
+  {
+    return (
+      "Placement desk publishes graduation bands",
+      $"{divisionName} will run for {options.TutorialMatchWeeks} match weeks. " +
+      "Points at the final whistle decide where clubs graduate: " +
+      $"Gold ({options.GraduationGoldMinPoints}–{options.GraduationGoldMaxPoints} pts), " +
+      $"Silver ({options.GraduationSilverMinPoints}–{options.GraduationSilverMaxPoints}), " +
+      $"Bronze ({options.GraduationBronzeMinPoints}–{options.GraduationBronzeMaxPoints}), " +
+      $"or Iron ({options.GraduationIronMinPoints}–{options.GraduationIronMaxPoints}). " +
+      "The league office says there are no second chances — finish strong or carry the label into competitive football.");
+  }
+
+  public static (string Headline, string Body) BuildPlacementBotPrepCopy(
+    string botClubName,
+    int flavorIndex)
+  {
+    return flavorIndex switch
+    {
+      0 => (
+        $"{botClubName} squad already in training camp",
+        $"Staff at {botClubName} spent the opening days running shape drills and set-piece reps. " +
+        "Local reporters describe a disciplined, slightly paranoid camp — the kind that treats every placement week as a job interview."),
+      1 => (
+        $"{botClubName} board talk up \"statement season\"",
+        $"Insiders around {botClubName} briefed journalists on ambition without naming targets. " +
+        "The message was familiar placement-league rhetoric: prove yourself early or spend the run-in explaining missed chances."),
+      _ => (
+        $"{botClubName} keep cards close to chest",
+        $"Training ground access at {botClubName} has been limited, but fitness reports suggest a fully committed squad. " +
+        "Rival presidents mutter that the quiet clubs are often the ones that surprise you on match week one.")
     };
   }
 

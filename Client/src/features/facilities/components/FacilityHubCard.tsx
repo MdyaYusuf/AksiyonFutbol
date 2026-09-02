@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
-import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { CashAmount } from "@/core/components/ui/CashAmount";
+import { getActionLockedPresentation } from "@/features/actions/utils/actionPresentationHelpers";
 import type { ClubFacility } from "@/features/facilities/facilityTypes";
 import {
   getCurrentEffectLabel,
@@ -21,6 +22,7 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
   const canAfford =
     !facility.isMaxLevel && facility.canUpgrade && clubCash >= facility.nextUpgradeCost;
   const detailPath = getFacilityDetailPath(facility.facilityType);
+  const insufficientPresentation = getActionLockedPresentation("Insufficient funds.");
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container p-6 transition-colors hover:border-secondary/40 hover:bg-surface-container-high">
@@ -82,8 +84,15 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
           <div className="mb-1 font-label-caps text-label-caps text-on-surface-variant">
             Upgrade Cost
           </div>
-          <div className="font-stat-value text-stat-value text-on-surface">
-            {facility.isMaxLevel ? "—" : formatCashFull(facility.nextUpgradeCost)}
+          <div className="font-stat-value text-stat-value">
+            {facility.isMaxLevel ? (
+              <span className="text-on-surface">—</span>
+            ) : (
+              <CashAmount
+                amount={facility.nextUpgradeCost}
+                className="font-stat-value text-stat-value font-bold"
+              />
+            )}
           </div>
         </div>
 
@@ -103,9 +112,15 @@ export const FacilityHubCard = ({ facility, clubCash }: FacilityHubCardProps) =>
         ) : (
           <Link
             to={detailPath}
-            className="flex items-center gap-2 rounded border border-outline-variant bg-surface-variant px-6 py-2 font-label-caps text-label-caps text-on-surface opacity-70 transition-opacity hover:opacity-100"
+            className={[
+              "flex items-center gap-2 rounded border px-6 py-2 font-body-sm text-body-sm font-semibold normal-case",
+              insufficientPresentation.buttonClassName,
+            ].join(" ")}
           >
-            <MaterialIcon name="lock" className="text-sm" />
+            <MaterialIcon
+              name="lock"
+              className={["text-sm", insufficientPresentation.iconClassName].join(" ")}
+            />
             Insufficient Funds
           </Link>
         )}

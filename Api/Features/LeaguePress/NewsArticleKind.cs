@@ -4,5 +4,6 @@ public enum NewsArticleKind
 {
   Scandal = 1,
   ClubLife = 2,
-  MatchReport = 3
+  MatchReport = 3,
+  Placement = 4
 }

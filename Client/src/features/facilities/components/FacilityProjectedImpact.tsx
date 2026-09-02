@@ -1,4 +1,5 @@
 import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
+import { CashAmount } from "@/core/components/ui/CashAmount";
 import type { FacilityImpactRow } from "@/features/facilities/utils/facilityUpgradeDetailHelpers";
 
 interface FacilityProjectedImpactProps {
@@ -51,16 +52,24 @@ export const FacilityProjectedImpact = ({
                 </span>
               </div>
               <div className="flex items-center gap-2 font-data-mono text-data-mono">
-                <span className="text-on-surface-variant">{row.from}</span>
+                {row.fromAmount != null ? (
+                  <CashAmount amount={row.fromAmount} compact className="font-bold" />
+                ) : (
+                  <span className="text-on-surface-variant">{row.from}</span>
+                )}
                 <MaterialIcon
                   name="arrow_right_alt"
                   className={`text-[16px] ${row.isNegative ? "text-error" : "text-primary"}`}
                 />
-                <span
-                  className={`font-bold ${row.isNegative ? "text-error" : "text-primary"}`}
-                >
-                  {row.to}
-                </span>
+                {row.toAmount != null ? (
+                  <CashAmount amount={row.toAmount} compact className="font-bold" />
+                ) : (
+                  <span
+                    className={`font-bold ${row.isNegative ? "text-error" : "text-primary"}`}
+                  >
+                    {row.to}
+                  </span>
+                )}
               </div>
             </div>
           );

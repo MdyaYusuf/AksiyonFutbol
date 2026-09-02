@@ -1,7 +1,9 @@
-import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
 import type { ClubActionAvailability, ClubActionCategory } from "@/features/actions/actionTypes";
 import { ClubActionCategory as Category } from "@/features/actions/actionTypes";
-import { getCategoryIcon, getCategoryLabel } from "@/features/actions/utils/actionsHubHelpers";
+import {
+  getCategoryGridClass,
+  getCategorySectionTitle,
+} from "@/features/actions/utils/actionsHubHelpers";
 import { ActionCard } from "@/features/actions/components/ActionCard";
 import { BribeRefereeActionCard } from "@/features/actions/components/BribeRefereeActionCard";
 import type { BriberyContext } from "@/features/bribery/briberyTypes";
@@ -24,15 +26,12 @@ export const ActionCategorySection = ({
   const showBriberyFirst = category === Category.Match;
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-center gap-2 border-b border-outline-variant pb-2">
-        <MaterialIcon name={getCategoryIcon(category)} className="text-primary" />
-        <h2 className="font-headline-sm text-headline-sm text-on-surface">
-          {getCategoryLabel(category)}
-        </h2>
-      </div>
+    <section>
+      <h3 className="mb-6 border-b border-[#334155] pb-2 font-headline-md text-headline-md text-on-surface">
+        {getCategorySectionTitle(category)}
+      </h3>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className={getCategoryGridClass(category)}>
         {showBriberyFirst ? (
           <BribeRefereeActionCard
             briberyContext={briberyContext}

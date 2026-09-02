@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Api.Core.Options;
 using Api.Features.Actions;
 using Api.Features.Bribery;
 using Api.Features.ClubPresidents;
@@ -191,6 +192,71 @@ public class LeaguePressArticleGenerator(
     };
 
     await _newsArticleRepository.AddAsync(article, cancellationToken);
+  }
+
+  public async Task TryGeneratePlacementLeaguePackAsync(
+    int divisionId,
+    string divisionName,
+    Club humanClub,
+    IReadOnlyList<Club> botClubs,
+    GameOptions options,
+    CancellationToken cancellationToken = default)
+  {
+    if (await _newsArticleRepository.AnyAsync(
+          a => a.DivisionId == divisionId && a.Kind == NewsArticleKind.Placement,
+          cancellationToken))
+    {
+      return;
+    }
+
+    string presidentName = humanClub.President?.Name ?? "the new president";
+    int season = 1;
+    DateTime publishedAt = DateTime.UtcNow;
+
+    List<(string Headline, string Body, Guid? SubjectClubId)> copyItems = [];
+
+    (string welcomeHeadline, string welcomeBody) = LeaguePressTemplates.BuildPlacementWelcomeCopy(
+      divisionName,
+      humanClub.DisplayName,
+      presidentName);
+    copyItems.Add((welcomeHeadline, welcomeBody, humanClub.Id));
+
+    (string rulesHeadline, string rulesBody) = LeaguePressTemplates.BuildPlacementRulesCopy(
+      divisionName,
+      options);
+    copyItems.Add((rulesHeadline, rulesBody, null));
+
+    int botArticleCount = Math.Min(3, botClubs.Count);
+
+    for (int i = 0; i < botArticleCount; i++)
+    {
+      Club botClub = botClubs[i];
+      (string headline, string body) = LeaguePressTemplates.BuildPlacementBotPrepCopy(
+        botClub.DisplayName,
+        i);
+
+      copyItems.Add((headline, body, botClub.Id));
+    }
+
+    for (int i = 0; i < copyItems.Count; i++)
+    {
+      (string headline, string body, Guid? subjectClubId) = copyItems[i];
+
+      NewsArticle article = new()
+      {
+        DivisionId = divisionId,
+        Season = season,
+        MatchWeek = null,
+        SubjectClubId = subjectClubId,
+        Kind = NewsArticleKind.Placement,
+        Tone = NewsArticleTone.Neutral,
+        Headline = headline,
+        Body = body,
+        CreatedDate = publishedAt.AddMinutes(-(copyItems.Count - 1 - i))
+      };
+
+      await _newsArticleRepository.AddAsync(article, cancellationToken);
+    }
   }
 
   public async Task TryGenerateMatchReportAsync(

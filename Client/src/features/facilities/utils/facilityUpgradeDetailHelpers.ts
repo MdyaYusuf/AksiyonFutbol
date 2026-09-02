@@ -1,6 +1,5 @@
 import type { ClubFacilitiesOverview, ClubFacility, FacilityType } from "@/features/facilities/facilityTypes";
 import { FacilityType as FacilityTypeValues } from "@/features/facilities/facilityTypes";
-import { formatSquadMoney } from "@/features/playerInstances/utils/squadHelpers";
 import { getFacilityLevelLabel } from "@/features/facilities/utils/facilitiesHubHelpers";
 
 export const parseFacilityTypeParam = (
@@ -103,6 +102,8 @@ export interface FacilityImpactRow {
   icon: string;
   from: string;
   to: string;
+  fromAmount?: number;
+  toAmount?: number;
   isNegative?: boolean;
 }
 
@@ -133,8 +134,10 @@ export const getProjectedImpactRows = (
       {
         label: "Club Cash",
         icon: "payments",
-        from: formatCompactCash(overview.clubCash),
-        to: formatCompactCash(overview.clubCash - facility.nextUpgradeCost),
+        from: "",
+        to: "",
+        fromAmount: overview.clubCash,
+        toAmount: overview.clubCash - facility.nextUpgradeCost,
         isNegative: true,
       },
     ];
@@ -150,8 +153,10 @@ export const getProjectedImpactRows = (
     {
       label: "Club Cash",
       icon: "payments",
-      from: formatCompactCash(overview.clubCash),
-      to: formatCompactCash(overview.clubCash - facility.nextUpgradeCost),
+      from: "",
+      to: "",
+      fromAmount: overview.clubCash,
+      toAmount: overview.clubCash - facility.nextUpgradeCost,
       isNegative: true,
     },
   ];
@@ -168,5 +173,3 @@ export const getUpgradePathProgressPercent = (
   const completedSteps = Math.max(0, level - 1);
   return (completedSteps / (maxLevel - 1)) * 100;
 };
-
-const formatCompactCash = (amount: number): string => formatSquadMoney(amount);

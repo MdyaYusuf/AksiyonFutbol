@@ -1,5 +1,7 @@
 import type { ClubActionAvailability, ClubActionCategory } from "@/features/actions/actionTypes";
 import { ClubActionCategory as Category, ClubActionType } from "@/features/actions/actionTypes";
+import { getPresidentAttributeBarClass } from "@/features/clubPresidents/utils/presidentAttributePresentation";
+import type { PresidentAttributeKey } from "@/features/clubPresidents/clubPresidentTypes";
 
 export const formatChancePercent = (chance: number): string => {
   return `${Math.round(chance * 100)}%`;
@@ -52,6 +54,64 @@ export const getCategoryLabel = (category: ClubActionCategory): string => {
   }
 
   return "Politics";
+};
+
+export const getCategorySectionTitle = (category: ClubActionCategory): string => {
+  if (category === Category.Match) {
+    return "Match Operations";
+  }
+
+  if (category === Category.Squad) {
+    return "Squad Management";
+  }
+
+  return "Political Operations";
+};
+
+export const getCategoryGridClass = (_category: ClubActionCategory): string => {
+  return "grid grid-cols-1 gap-card-gap xl:grid-cols-2";
+};
+
+export const formatCooldownDisplay = (
+  cooldownDays: number,
+  cooldownRemainingDays: number,
+): string => {
+  if (cooldownDays <= 0) {
+    return "None";
+  }
+
+  if (cooldownRemainingDays > 0) {
+    return `${cooldownRemainingDays}d left`;
+  }
+
+  if (cooldownDays >= 7 && cooldownDays % 7 === 0) {
+    return `${cooldownDays / 7} Wk`;
+  }
+
+  return `${cooldownDays}d`;
+};
+
+export const getHeatDescription = (value: number, max: number): string => {
+  if (max <= 0) {
+    return "Scrutiny from gray-area moves. Higher heat raises the chance of exposure.";
+  }
+
+  const ratio = value / max;
+
+  if (ratio >= 0.67) {
+    return "Federation scrutiny is critical. Further gray-area moves carry a high risk of detection and sanctions.";
+  }
+
+  if (ratio >= 0.34) {
+    return "Scrutiny is elevated. Investigators are watching — bold moves will draw attention quickly.";
+  }
+
+  return "Current heat is manageable. Federation scrutiny is low, but bold gray-area moves will increase investigative attention quickly.";
+};
+
+/** President attribute bars — colors shared with action requirement chips. */
+export const getAttributeBarFillClass = (key: PresidentAttributeKey): string => {
+  return getPresidentAttributeBarClass(key);
 };
 
 export const getCategoryIcon = (category: ClubActionCategory): string => {
@@ -118,7 +178,7 @@ export const getActionIcon = (actionType: number): string => {
 export const groupActionsByCategory = (
   actions: ClubActionAvailability[],
 ): { category: ClubActionCategory; actions: ClubActionAvailability[] }[] => {
-  const order: ClubActionCategory[] = [Category.Match, Category.Squad, Category.Politics];
+  const order: ClubActionCategory[] = [Category.Match, Category.Politics, Category.Squad];
 
   return order.map((category) => ({
     category,

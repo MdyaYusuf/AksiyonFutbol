@@ -1,6 +1,4 @@
 import { useMemo, useState } from "react";
-import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
-import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
 import { useGetBriberyContextQuery } from "@/features/bribery/briberyApiSlice";
 import { CashSpendLockBanner } from "@/features/matches/components/CashSpendLockBanner";
 import {
@@ -13,10 +11,12 @@ import type {
   ClubActionResult,
   MediaSpinMode,
 } from "@/features/actions/actionTypes";
-import { ClubActionOutcome } from "@/features/actions/actionTypes";
 import { ActionCategorySection } from "@/features/actions/components/ActionCategorySection";
 import { ActionResultBanner } from "@/features/actions/components/ActionResultBanner";
-import { ActionsHubHeader } from "@/features/actions/components/ActionsHubHeader";
+import { ActionsFixtureBanner } from "@/features/actions/components/ActionsFixtureBanner";
+import { ActionsPageIntro } from "@/features/actions/components/ActionsPageIntro";
+import { ActionsRecentHistoryTable } from "@/features/actions/components/ActionsRecentHistoryTable";
+import { ActionsSummaryGrid } from "@/features/actions/components/ActionsSummaryGrid";
 import { ExecuteActionModal } from "@/features/actions/components/ExecuteActionModal";
 import { groupActionsByCategory } from "@/features/actions/utils/actionsHubHelpers";
 
@@ -81,91 +81,49 @@ export const ActionsHubPage = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-      <ActionsHubHeader
+    <div className="mx-auto flex w-full max-w-7xl flex-col">
+      <ActionsPageIntro />
+
+      {context.cashSpendLocked ? (
+        <div className="mb-8">
+          <CashSpendLockBanner />
+        </div>
+      ) : null}
+
+      {lastResult ? (
+        <div className="mb-8">
+          <ActionResultBanner
+            result={lastResult}
+            onDismiss={() => {
+              setLastResult(null);
+            }}
+          />
+        </div>
+      ) : null}
+
+      <ActionsSummaryGrid
         clubCash={context.clubCash}
         suspicion={context.suspicion}
         maxSuspicion={context.maxSuspicion}
         president={context.president}
       />
 
-      {context.cashSpendLocked ? <CashSpendLockBanner /> : null}
+      <ActionsFixtureBanner upcomingMatch={context.upcomingMatch} />
 
-      {lastResult ? (
-        <ActionResultBanner
-          result={lastResult}
-          onDismiss={() => {
-            setLastResult(null);
-          }}
-        />
-      ) : null}
+      <div className="space-y-12">
+        {grouped.map(({ category, actions }) => (
+          <ActionCategorySection
+            key={category}
+            category={category}
+            actions={actions}
+            briberyContext={briberyContext}
+            briberyLoading={briberyLoading}
+            onExecute={setSelectedAction}
+          />
+        ))}
+      </div>
 
-      {context.upcomingMatch ? (
-        <p className="font-body-sm text-body-sm text-on-surface-variant">
-          Next fixture: Week {context.upcomingMatch.matchWeek} ·{" "}
-          {context.upcomingMatch.homeClubName} vs {context.upcomingMatch.awayClubName}
-          {context.upcomingMatch.isHome ? " (Home)" : " (Away)"}
-        </p>
-      ) : (
-        <p className="font-body-sm text-body-sm text-on-surface-variant">
-          No upcoming fixture. Match-scoped actions are unavailable until the next match
-          is scheduled.
-        </p>
-      )}
-
-      {grouped.map(({ category, actions }) => (
-        <ActionCategorySection
-          key={category}
-          category={category}
-          actions={actions}
-          briberyContext={briberyContext}
-          briberyLoading={briberyLoading}
-          onExecute={setSelectedAction}
-        />
-      ))}
-
-      {recentHistory.length > 0 ? (
-        <section className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 border-b border-outline-variant pb-2">
-            <MaterialIcon name="history" className="text-primary" />
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">
-              Recent History
-            </h2>
-          </div>
-          <ul className="divide-y divide-outline-variant rounded-xl border border-outline-variant bg-surface-container">
-            {recentHistory.map((item) => (
-              <li
-                key={item.id}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3"
-              >
-                <div>
-                  <div className="font-body-sm text-body-sm font-semibold text-on-surface">
-                    {item.displayName}
-                  </div>
-                  <div
-                    className={[
-                      "font-body-sm text-body-sm",
-                      item.wasDetected ? "text-error" : "text-on-surface-variant",
-                    ].join(" ")}
-                  >
-                    {item.outcome === ClubActionOutcome.Succeeded ? "Succeeded" : "Failed"}
-                    {item.wasDetected ? " · Detected" : ""}
-                    {item.fineAmount > 0
-                      ? ` · Fine ${formatCashFull(item.fineAmount)}`
-                      : ""}
-                    {item.matchPenaltyApplied ? " · Match penalty" : ""}
-                    {item.matchWeek != null ? ` · Week ${item.matchWeek}` : ""}
-                    {item.targetPlayerName ? ` · ${item.targetPlayerName}` : ""}
-                  </div>
-                </div>
-                <div className="font-label-caps text-label-caps text-on-surface-variant">
-                  {item.heatGenerated > 0 ? `+${item.heatGenerated} heat` : "No heat"}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <ActionsRecentHistoryTable items={recentHistory} />
 
       {selectedAction ? (
         <ExecuteActionModal

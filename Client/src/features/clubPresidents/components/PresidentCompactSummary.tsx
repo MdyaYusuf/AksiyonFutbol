@@ -65,6 +65,7 @@ export const PresidentCompactSummary = ({
       {showAttributes ? (
         <PresidentAttributesPanel
           compact
+          className="pb-1"
           attributes={{
             charisma: president.charisma,
             authority: president.authority,
@@ -75,7 +76,7 @@ export const PresidentCompactSummary = ({
         />
       ) : null}
 
-      <div className={showAttributes ? "mt-3" : ""}>
+      <div className={showAttributes ? "mt-8" : ""}>
         <LegitimacyInfamyMeters
           compact
           showUnlockBadges={showUnlockBadges}

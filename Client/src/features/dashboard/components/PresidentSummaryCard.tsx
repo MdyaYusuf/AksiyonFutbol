@@ -40,7 +40,7 @@ export const PresidentSummaryCard = ({
       </div>
 
       {president ? (
-        <div className="mb-4 space-y-4">
+        <div className="mb-4">
           <PresidentAttributesPanel
             compact
             attributes={{
@@ -51,12 +51,14 @@ export const PresidentSummaryCard = ({
               connections: president.connections,
             }}
           />
-          <LegitimacyInfamyMeters
-            compact
-            showUnlockBadges={false}
-            legitimacy={president.reputationPoints}
-            infamy={president.infamyPoints}
-          />
+          <div className="mt-8">
+            <LegitimacyInfamyMeters
+              compact
+              showUnlockBadges={false}
+              legitimacy={president.reputationPoints}
+              infamy={president.infamyPoints}
+            />
+          </div>
         </div>
       ) : null}
 

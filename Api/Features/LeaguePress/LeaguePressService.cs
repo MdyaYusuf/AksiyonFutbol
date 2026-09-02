@@ -44,7 +44,13 @@ public class LeaguePressService(
 
     List<NewsArticle> articles = await _newsArticleRepository.GetAllAsync(
       filter: kind.HasValue
-        ? a => a.DivisionId == divisionId && a.Kind == kind.Value
+        ? kind.Value switch
+        {
+          NewsArticleKind.ClubLife => a =>
+            a.DivisionId == divisionId &&
+            (a.Kind == NewsArticleKind.ClubLife || a.Kind == NewsArticleKind.Placement),
+          _ => a => a.DivisionId == divisionId && a.Kind == kind.Value
+        }
         : a => a.DivisionId == divisionId,
       include: query => query.Include(a => a.SubjectClub),
       orderBy: query => query.OrderByDescending(a => a.CreatedDate),

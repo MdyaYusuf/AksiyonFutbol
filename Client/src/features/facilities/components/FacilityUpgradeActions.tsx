@@ -1,5 +1,6 @@
 import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
-import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { CashAmount } from "@/core/components/ui/CashAmount";
+import { getActionLockedPresentation } from "@/features/actions/utils/actionPresentationHelpers";
 
 interface FacilityUpgradeActionsProps {
   upgradeCost: number;
@@ -19,6 +20,8 @@ export const FacilityUpgradeActions = ({
   onConfirm,
 }: FacilityUpgradeActionsProps) => {
   const canConfirm = !isMaxLevel && canAfford && !isSubmitting;
+  const insufficientPresentation = getActionLockedPresentation("Insufficient funds.");
+  const cashLockedPresentation = getActionLockedPresentation("Cash is locked during your live match.");
 
   return (
     <div className="flex flex-col gap-6 rounded-lg border border-outline-variant bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -27,8 +30,15 @@ export const FacilityUpgradeActions = ({
           <span className="mb-1 font-label-caps text-label-caps text-on-surface-variant">
             Upgrade Cost
           </span>
-          <span className="font-stat-value text-stat-value text-on-surface">
-            {isMaxLevel ? "—" : formatCashFull(upgradeCost)}
+          <span className="font-stat-value text-stat-value">
+            {isMaxLevel ? (
+              <span className="text-on-surface">—</span>
+            ) : (
+              <CashAmount
+                amount={upgradeCost}
+                className="font-stat-value text-stat-value font-bold"
+              />
+            )}
           </span>
         </div>
         <div className="hidden h-10 w-px bg-outline-variant sm:block" />
@@ -58,14 +68,30 @@ export const FacilityUpgradeActions = ({
               : "Confirm Upgrade"}
         </button>
         {!isMaxLevel && cashSpendLocked ? (
-          <div className="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
-            <MaterialIcon name="lock" className="text-[14px]" />
+          <div
+            className={[
+              "flex w-full items-center justify-center gap-2 rounded border px-3 py-2.5 font-body-sm text-body-sm font-semibold normal-case sm:w-auto",
+              cashLockedPresentation.buttonClassName,
+            ].join(" ")}
+          >
+            <MaterialIcon
+              name="lock"
+              className={["text-[14px]", cashLockedPresentation.iconClassName].join(" ")}
+            />
             Locked during your live match.
           </div>
         ) : null}
         {!isMaxLevel && !canAfford && !cashSpendLocked ? (
-          <div className="flex items-center gap-1 font-body-sm text-body-sm text-error">
-            <MaterialIcon name="error" className="text-[14px]" />
+          <div
+            className={[
+              "flex w-full items-center justify-center gap-2 rounded border px-3 py-2.5 font-body-sm text-body-sm font-semibold normal-case sm:w-auto",
+              insufficientPresentation.buttonClassName,
+            ].join(" ")}
+          >
+            <MaterialIcon
+              name="lock"
+              className={["text-[14px]", insufficientPresentation.iconClassName].join(" ")}
+            />
             Insufficient funds.
           </div>
         ) : null}

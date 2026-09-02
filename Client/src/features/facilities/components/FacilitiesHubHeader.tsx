@@ -1,5 +1,5 @@
 import { MaterialIcon } from "@/core/components/ui/MaterialIcon";
-import { formatCashFull } from "@/features/clubs/utils/clubOverviewHelpers";
+import { CashAmount } from "@/core/components/ui/CashAmount";
 
 interface FacilitiesHubHeaderProps {
   clubCash: number;
@@ -24,9 +24,10 @@ export const FacilitiesHubHeader = ({ clubCash, morale }: FacilitiesHubHeaderPro
             <MaterialIcon name="account_balance_wallet" className="text-sm" />
             Club Cash
           </div>
-          <div className="font-stat-value text-stat-value text-primary">
-            {formatCashFull(clubCash)}
-          </div>
+          <CashAmount
+            amount={clubCash}
+            className="font-stat-value text-stat-value font-bold"
+          />
         </div>
         <div className="min-w-[140px] rounded-lg border border-outline-variant bg-surface-container-high p-4">
           <div className="mb-1 flex items-center gap-1 font-label-caps text-label-caps text-on-surface-variant">

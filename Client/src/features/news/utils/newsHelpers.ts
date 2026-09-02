@@ -18,7 +18,8 @@ export const getKindLabel = (kind: NewsArticleKind): string => {
     case NewsArticleKind.Scandal:
       return "Scandal";
     case NewsArticleKind.ClubLife:
-      return "Club Life";
+    case NewsArticleKind.Placement:
+      return "Club";
     case NewsArticleKind.MatchReport:
       return "Results";
     default:
