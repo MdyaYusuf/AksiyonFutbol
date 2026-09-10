@@ -5,6 +5,7 @@ using Api.Features.ClubLineups;
 using Api.Features.CompetitiveSeating;
 using Api.Features.LeagueDivisions;
 using Api.Features.LeaguePress;
+using Api.Features.Objectives;
 using Api.Features.SeasonTransitions;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ public class MatchPlayService(
   IPromiseWinBonusSettler _promiseWinBonusSettler,
   IPresidentMatchMoralitySettler _presidentMatchMoralitySettler,
   IPresidentAttributeGrowthSettler _presidentAttributeGrowthSettler,
+  IObjectivesProgressSettler _objectivesProgressSettler,
   ITutorialGraduationService _tutorialGraduationService,
   IMatchWeekProgressService _matchWeekProgressService,
   ICompetitiveSeasonEndService _competitiveSeasonEndService,
@@ -96,6 +98,12 @@ public class MatchPlayService(
       cancellationToken);
 
     await _presidentAttributeGrowthSettler.SettleAfterMatchAsync(
+      match,
+      result.HomeScore,
+      result.AwayScore,
+      cancellationToken);
+
+    await _objectivesProgressSettler.SettleAfterMatchAsync(
       match,
       result.HomeScore,
       result.AwayScore,

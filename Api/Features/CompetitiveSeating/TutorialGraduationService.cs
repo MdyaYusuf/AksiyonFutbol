@@ -93,10 +93,11 @@ public class TutorialGraduationService(
 
       if (club.President != null)
       {
-        _seasonIdentitySettler.ApplyTutorialGraduationPackage(
+        await _seasonIdentitySettler.ApplyTutorialGraduationPackageAsync(
           club,
           club.President,
-          tier);
+          tier,
+          cancellationToken);
       }
 
       _clubRepository.Update(club);

@@ -180,7 +180,13 @@ namespace AksiyonFutbol.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ReputationPoints = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    InfamyPoints = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "Amateur"),
+                    Charisma = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Authority = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Integrity = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Cunning = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Connections = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -239,6 +245,30 @@ namespace AksiyonFutbol.Api.Migrations
                         principalTable: "LeagueDivisions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PresidentTitleUnlocks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PresidentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TitleKey = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    Source = table.Column<int>(type: "int", nullable: false),
+                    UnlockedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PresidentTitleUnlocks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PresidentTitleUnlocks_ClubPresidents_PresidentId",
+                        column: x => x.PresidentId,
+                        principalTable: "ClubPresidents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -314,6 +344,32 @@ namespace AksiyonFutbol.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClubObjectiveProgresses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ObjectiveKey = table.Column<int>(type: "int", nullable: false),
+                    CurrentValue = table.Column<int>(type: "int", nullable: false),
+                    TargetValue = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CompletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClaimedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClubObjectiveProgresses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClubObjectiveProgresses_Clubs_ClubId",
+                        column: x => x.ClubId,
+                        principalTable: "Clubs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Matches",
                 columns: table => new
                 {
@@ -363,6 +419,36 @@ namespace AksiyonFutbol.Api.Migrations
                         name: "FK_Matches_Referees_RefereeId",
                         column: x => x.RefereeId,
                         principalTable: "Referees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NewsArticles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DivisionId = table.Column<int>(type: "int", nullable: false),
+                    Season = table.Column<int>(type: "int", nullable: false),
+                    MatchWeek = table.Column<int>(type: "int", nullable: true),
+                    SubjectClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Kind = table.Column<int>(type: "int", nullable: false),
+                    Tone = table.Column<int>(type: "int", nullable: false),
+                    Headline = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Body = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    SourceMatchId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SourceClubActionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SourceBribeAttemptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewsArticles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NewsArticles_Clubs_SubjectClubId",
+                        column: x => x.SubjectClubId,
+                        principalTable: "Clubs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -450,7 +536,13 @@ namespace AksiyonFutbol.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     SuccessChance = table.Column<decimal>(type: "decimal(5,4)", precision: 5, scale: 4, nullable: false),
+                    DetectionChance = table.Column<decimal>(type: "decimal(5,4)", precision: 5, scale: 4, nullable: false),
                     Outcome = table.Column<int>(type: "int", nullable: false),
+                    WasDetected = table.Column<bool>(type: "bit", nullable: false),
+                    HeatGenerated = table.Column<int>(type: "int", nullable: false),
+                    FineAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ScandalMoralePenaltyApplied = table.Column<int>(type: "int", nullable: false),
+                    ScandalReputationPenaltyApplied = table.Column<int>(type: "int", nullable: false),
                     ClubId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MatchId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RefereeId = table.Column<int>(type: "int", nullable: false),
@@ -746,6 +838,17 @@ namespace AksiyonFutbol.Api.Migrations
                 column: "PlayerInstanceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClubObjectiveProgresses_ClubId",
+                table: "ClubObjectiveProgresses",
+                column: "ClubId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClubObjectiveProgresses_ClubId_ObjectiveKey",
+                table: "ClubObjectiveProgresses",
+                columns: new[] { "ClubId", "ObjectiveKey" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClubPresidents_Name",
                 table: "ClubPresidents",
                 column: "Name",
@@ -867,6 +970,42 @@ namespace AksiyonFutbol.Api.Migrations
                 column: "RefereeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NewsArticles_DivisionId",
+                table: "NewsArticles",
+                column: "DivisionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NewsArticles_DivisionId_CreatedDate",
+                table: "NewsArticles",
+                columns: new[] { "DivisionId", "CreatedDate" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NewsArticles_SourceBribeAttemptId",
+                table: "NewsArticles",
+                column: "SourceBribeAttemptId",
+                unique: true,
+                filter: "[SourceBribeAttemptId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NewsArticles_SourceClubActionId",
+                table: "NewsArticles",
+                column: "SourceClubActionId",
+                unique: true,
+                filter: "[SourceClubActionId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NewsArticles_SourceMatchId",
+                table: "NewsArticles",
+                column: "SourceMatchId",
+                unique: true,
+                filter: "[SourceMatchId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NewsArticles_SubjectClubId",
+                table: "NewsArticles",
+                column: "SubjectClubId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PlayerInstances_BasePlayerId",
                 table: "PlayerInstances",
                 column: "BasePlayerId");
@@ -885,6 +1024,17 @@ namespace AksiyonFutbol.Api.Migrations
                 name: "IX_PlayerInstances_Position",
                 table: "PlayerInstances",
                 column: "Position");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PresidentTitleUnlocks_PresidentId",
+                table: "PresidentTitleUnlocks",
+                column: "PresidentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PresidentTitleUnlocks_PresidentId_TitleKey",
+                table: "PresidentTitleUnlocks",
+                columns: new[] { "PresidentId", "TitleKey" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Referees_BriberyDifficulty",
@@ -976,6 +1126,15 @@ namespace AksiyonFutbol.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "ClubLineupSelections");
+
+            migrationBuilder.DropTable(
+                name: "ClubObjectiveProgresses");
+
+            migrationBuilder.DropTable(
+                name: "NewsArticles");
+
+            migrationBuilder.DropTable(
+                name: "PresidentTitleUnlocks");
 
             migrationBuilder.DropTable(
                 name: "TransferOffers");

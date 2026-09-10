@@ -57,7 +57,6 @@ export interface PresidentAttributes {
 // Requests
 export interface CreateClubPresidentRequest {
   name: string;
-  title?: string | null;
   charisma: number;
   authority: number;
   integrity: number;
@@ -68,7 +67,6 @@ export interface CreateClubPresidentRequest {
 export interface UpdateClubPresidentRequest {
   id: string;
   name: string;
-  title?: string | null;
 }
 
 export interface UpdateClubPresidentReputationRequest {

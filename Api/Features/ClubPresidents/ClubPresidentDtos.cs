@@ -47,7 +47,6 @@ public sealed record CreatedClubPresidentResponseDto
 // Requests
 public sealed record CreateClubPresidentRequest(
   string Name,
-  string? Title,
   int Charisma,
   int Authority,
   int Integrity,
@@ -56,8 +55,7 @@ public sealed record CreateClubPresidentRequest(
 
 public sealed record UpdateClubPresidentRequest(
   Guid Id,
-  string Name,
-  string? Title);
+  string Name);
 
 public sealed record UpdateClubPresidentReputationRequest(
   Guid Id,

@@ -3,6 +3,7 @@ using Api.Core.Repositories;
 using Api.Core.Responses;
 using Api.Features.Clubs;
 using Api.Features.Matches;
+using Api.Features.Objectives;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,8 @@ public class FacilitiesService(
   FacilitiesMapper _mapper,
   IUnitOfWork _unitOfWork,
   IValidator<UpgradeFacilityRequest> _upgradeValidator,
-  IMatchSettlementGate _settlementGate) : IFacilitiesService
+  IMatchSettlementGate _settlementGate,
+  IObjectivesProgressSettler _objectivesProgressSettler) : IFacilitiesService
 {
   public async Task<ReturnModel<ClubFacilitiesOverviewDto>> GetForCurrentUserAsync(
     Guid currentUserId,
@@ -71,6 +73,8 @@ public class FacilitiesService(
     facility.Level += 1;
     facility.UpdatedDate = DateTime.UtcNow;
     ApplyUpgradeEffects(club, facility.FacilityType);
+
+    await _objectivesProgressSettler.SettleAfterFacilityUpgradeAsync(club, cancellationToken);
 
     _clubRepository.Update(club);
     _clubFacilityRepository.Update(facility);

@@ -228,9 +228,10 @@ public class SeasonTransitionService(
       _clubRepository.Update(club);
     }
 
-    List<SeasonPresidentPackageDto> appliedPackages = ApplySeasonIdentityPackages(
+    List<SeasonPresidentPackageDto> appliedPackages = await ApplySeasonIdentityPackagesAsync(
       preview.Movements,
-      clubsById);
+      clubsById,
+      cancellationToken);
 
     await ResetSeasonStatsForClubsAsync(clubsById.Keys, cancellationToken);
 
@@ -309,9 +310,10 @@ public class SeasonTransitionService(
     };
   }
 
-  private List<SeasonPresidentPackageDto> ApplySeasonIdentityPackages(
+  private async Task<List<SeasonPresidentPackageDto>> ApplySeasonIdentityPackagesAsync(
     IReadOnlyList<SeasonClubMovementDto> movements,
-    Dictionary<Guid, Club> clubsById)
+    Dictionary<Guid, Club> clubsById,
+    CancellationToken cancellationToken)
   {
     List<SeasonPresidentPackageDto> packages = [];
 
@@ -327,11 +329,12 @@ public class SeasonTransitionService(
         continue;
       }
 
-      SeasonPresidentPackageDto package = _seasonIdentitySettler.ApplySeasonPackage(
+      SeasonPresidentPackageDto package = await _seasonIdentitySettler.ApplySeasonPackageAsync(
         club,
         club.President,
         movement.Outcome,
-        movement.Position);
+        movement.Position,
+        cancellationToken);
 
       packages.Add(package);
       _clubRepository.Update(club);

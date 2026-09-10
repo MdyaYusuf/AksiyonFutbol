@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Api.Core.Repositories;
 using Api.Core.Responses;
+using Api.Features.Objectives;
 using Api.Features.Users;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ public class ClubPresidentService(
   IClubPresidentRepository _clubPresidentRepository,
   ClubPresidentMapper _mapper,
   ClubPresidentBusinessRules _businessRules,
+  ObjectivesBusinessRules _objectivesBusinessRules,
   UserBusinessRules _userBusinessRules,
   IUnitOfWork _unitOfWork,
   IValidator<CreateClubPresidentRequest> _createValidator,
@@ -179,9 +181,15 @@ public class ClubPresidentService(
     ClubPresident clubPresident = _mapper.CreateToEntity(request);
     clubPresident.UserId = currentUserId;
     clubPresident.ReputationPoints = 0;
-    clubPresident.Title = string.IsNullOrWhiteSpace(request.Title) ? "Amateur" : request.Title;
+    clubPresident.Title = ClubPresidentBusinessRules.DefaultTitle;
 
     await _clubPresidentRepository.AddAsync(clubPresident, cancellationToken);
+    await _objectivesBusinessRules.UnlockTitleIfMissingAsync(
+      clubPresident,
+      ObjectivesBusinessRules.ToTitleKey(ClubPresidentBusinessRules.DefaultTitle),
+      ClubPresidentBusinessRules.DefaultTitle,
+      TitleUnlockSource.Starting,
+      cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     CreatedClubPresidentResponseDto response = _mapper.EntityToCreatedResponseDto(clubPresident);
@@ -218,7 +226,6 @@ public class ClubPresidentService(
     await _businessRules.PresidentNameMustBeUniqueAsync(request.Name, request.Id, cancellationToken);
 
     _mapper.UpdateEntityFromRequest(request, clubPresident);
-    clubPresident.Title = string.IsNullOrWhiteSpace(request.Title) ? "Amateur" : request.Title;
 
     _clubPresidentRepository.Update(clubPresident);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

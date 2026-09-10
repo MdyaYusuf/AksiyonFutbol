@@ -38,6 +38,7 @@ import { MyDealsPage } from "@/features/transfers/pages/MyDealsPage";
 import { MatchInfluencePage } from "@/features/bribery/pages/MatchInfluencePage";
 import { ConfirmBribePage } from "@/features/bribery/pages/ConfirmBribePage";
 import { ActionsHubPage } from "@/features/actions/pages/ActionsHubPage";
+import { ObjectivesHubPage } from "@/features/objectives/pages/ObjectivesHubPage";
 import { FacilitiesHubPage } from "@/features/facilities/pages/FacilitiesHubPage";
 import { FacilityUpgradeDetailPage } from "@/features/facilities/pages/FacilityUpgradeDetailPage";
 import { EndOfSeasonMovementsPage } from "@/features/seasonTransitions/pages/EndOfSeasonMovementsPage";
@@ -195,6 +196,10 @@ export const router = createBrowserRouter([
                       {
                         path: "actions",
                         element: <ActionsHubPage />,
+                      },
+                      {
+                        path: "objectives",
+                        element: <ObjectivesHubPage />,
                       },
                       {
                         path: "actions/bribe",

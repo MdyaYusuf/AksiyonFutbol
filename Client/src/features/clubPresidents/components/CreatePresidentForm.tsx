@@ -13,12 +13,11 @@ import {
 import { PresidentAttributeAllocator } from "@/features/clubPresidents/components/PresidentAttributeAllocator";
 import { PresidentPreviewCard } from "@/features/clubPresidents/components/PresidentPreviewCard";
 
-const TITLE_SUGGESTIONS = ["The Visionary", "The Tactician", "Financial Tycoon"];
+const DEFAULT_TITLE = "Amateur";
 
 export const CreatePresidentForm = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [title, setTitle] = useState("");
   const [attributes, setAttributes] = useState<PresidentAttributes>(
     createBasePresidentAttributes,
   );
@@ -37,7 +36,6 @@ export const CreatePresidentForm = () => {
     try {
       await createPresident({
         name: name.trim(),
-        title: title.trim() || null,
         charisma: attributes.charisma,
         authority: attributes.authority,
         integrity: attributes.integrity,
@@ -83,31 +81,6 @@ export const CreatePresidentForm = () => {
               autoComplete="off"
             />
 
-            <div className="flex flex-col gap-2">
-              <OnboardingTextField
-                id="presidentTitle"
-                name="title"
-                label="Executive Title"
-                icon="workspace_premium"
-                placeholder="e.g., The Visionary"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                autoComplete="off"
-              />
-              <div className="mt-2 flex flex-wrap gap-2">
-                {TITLE_SUGGESTIONS.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => setTitle(suggestion)}
-                    className="rounded border border-outline-variant bg-surface-container-lowest px-3 py-1 text-[10px] text-label-caps text-on-surface-variant transition-colors hover:bg-surface-variant hover:text-on-surface"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <PresidentAttributeAllocator
               attributes={attributes}
               onChange={setAttributes}
@@ -130,7 +103,7 @@ export const CreatePresidentForm = () => {
         <div className="flex justify-center lg:col-span-7 lg:justify-end">
           <PresidentPreviewCard
             name={name.trim()}
-            title={title.trim()}
+            title={DEFAULT_TITLE}
             attributes={attributes}
             remainingPoints={remainingPoints}
             isReady={isReady}

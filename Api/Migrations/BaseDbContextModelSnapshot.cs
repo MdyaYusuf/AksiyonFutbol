@@ -977,6 +977,96 @@ namespace AksiyonFutbol.Api.Migrations
                     b.ToTable("Matches", (string)null);
                 });
 
+            modelBuilder.Entity("Api.Features.Objectives.ClubObjectiveProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime?>("ClaimedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<int>("CurrentValue")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ObjectiveKey")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetValue")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("ClubId", "ObjectiveKey")
+                        .IsUnique();
+
+                    b.ToTable("ClubObjectiveProgresses", (string)null);
+                });
+
+            modelBuilder.Entity("Api.Features.Objectives.PresidentTitleUnlock", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<Guid>("PresidentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TitleKey")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("UnlockedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("UpdatedDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PresidentId");
+
+                    b.HasIndex("PresidentId", "TitleKey")
+                        .IsUnique();
+
+                    b.ToTable("PresidentTitleUnlocks", (string)null);
+                });
+
             modelBuilder.Entity("Api.Features.PlayerInstances.PlayerInstance", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1591,6 +1681,28 @@ namespace AksiyonFutbol.Api.Migrations
                     b.Navigation("HomeClub");
 
                     b.Navigation("Referee");
+                });
+
+            modelBuilder.Entity("Api.Features.Objectives.ClubObjectiveProgress", b =>
+                {
+                    b.HasOne("Api.Features.Clubs.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Club");
+                });
+
+            modelBuilder.Entity("Api.Features.Objectives.PresidentTitleUnlock", b =>
+                {
+                    b.HasOne("Api.Features.ClubPresidents.ClubPresident", "President")
+                        .WithMany()
+                        .HasForeignKey("PresidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("President");
                 });
 
             modelBuilder.Entity("Api.Features.PlayerInstances.PlayerInstance", b =>

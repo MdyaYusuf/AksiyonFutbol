@@ -20,6 +20,7 @@ const navItems: AppNavItem[] = [
   { to: "/app/news", label: "News", icon: "newspaper" },
   { to: "/app/fixtures", label: "Fixtures", icon: "calendar_month" },
   { to: "/app/actions", label: "Actions", icon: "bolt" },
+  { to: "/app/objectives", label: "Objectives", icon: "flag" },
 ];
 
 interface AppSidebarProps {

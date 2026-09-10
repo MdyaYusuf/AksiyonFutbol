@@ -16,6 +16,7 @@ using Api.Features.Transfers;
 using Api.Features.Bribery;
 using Api.Features.Actions;
 using Api.Features.LeaguePress;
+using Api.Features.Objectives;
 using Api.Features.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,6 +48,8 @@ public class BaseDbContext : DbContext
   public DbSet<ClubFacility> ClubFacilities { get; set; }
   public DbSet<ClubAction> ClubActions { get; set; }
   public DbSet<NewsArticle> NewsArticles { get; set; }
+  public DbSet<ClubObjectiveProgress> ClubObjectiveProgresses { get; set; }
+  public DbSet<PresidentTitleUnlock> PresidentTitleUnlocks { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

@@ -11,9 +11,6 @@ public class CreateClubPresidentRequestValidator : AbstractValidator<CreateClubP
       .MinimumLength(3).WithMessage("Başkan adı en az 3 karakter olmalıdır.")
       .MaximumLength(100).WithMessage("Başkan adı 100 karakterden uzun olamaz.");
 
-    RuleFor(cp => cp.Title)
-      .MaximumLength(50).WithMessage("Başkan unvanı 50 karakterden uzun olamaz.");
-
     RuleFor(cp => cp.Charisma)
       .InclusiveBetween(
         ClubPresidentBusinessRules.AttributeMin,
@@ -73,9 +70,6 @@ public class UpdateClubPresidentRequestValidator : AbstractValidator<UpdateClubP
       .NotEmpty().WithMessage("Başkan adı boş olamaz.")
       .MinimumLength(3).WithMessage("Başkan adı en az 3 karakter olmalıdır.")
       .MaximumLength(100).WithMessage("Başkan adı 100 karakterden uzun olamaz.");
-
-    RuleFor(cp => cp.Title)
-      .MaximumLength(50).WithMessage("Başkan unvanı 50 karakterden uzun olamaz.");
   }
 }
 

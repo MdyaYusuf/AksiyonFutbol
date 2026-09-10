@@ -6,6 +6,7 @@ using Api.Features.ClubPresidents;
 using Api.Features.Clubs;
 using Api.Features.LeaguePress;
 using Api.Features.Matches;
+using Api.Features.Objectives;
 using Api.Features.PlayerInstances;
 using Api.Features.Referees;
 using FluentValidation;
@@ -25,6 +26,7 @@ public class ClubActionService(
   IMatchSettlementGate _settlementGate,
   IPresidentMoralitySettler _moralitySettler,
   IClubScandalSettler _scandalSettler,
+  IObjectivesProgressSettler _objectivesProgressSettler,
   ILeaguePressEventPublisher _pressPublisher) : IClubActionService
 {
   public async Task<ReturnModel<ClubActionsContextResponseDto>> GetContextForCurrentUserAsync(
@@ -301,6 +303,12 @@ public class ClubActionService(
           cancellationToken);
       }
     }
+
+    await _objectivesProgressSettler.SettleAfterActionAsync(
+      club,
+      definition,
+      succeeded,
+      cancellationToken);
 
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 

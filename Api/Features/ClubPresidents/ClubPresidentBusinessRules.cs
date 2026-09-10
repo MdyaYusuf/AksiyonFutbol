@@ -8,6 +8,7 @@ public class ClubPresidentBusinessRules(IClubPresidentRepository _clubPresidentR
   public const int AttributeMin = 1;
   public const int AttributeMax = 5;
   public const int AttributePointBudget = 8;
+  public const string DefaultTitle = "Amateur";
 
   public static int CalculateSpentAttributePoints(
     int charisma,
