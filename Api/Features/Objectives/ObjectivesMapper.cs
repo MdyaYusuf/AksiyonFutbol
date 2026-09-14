@@ -8,6 +8,7 @@ public class ObjectivesMapper
   {
     return new ObjectiveProgressDto(
       Key: definition.Key,
+      Metric: definition.Metric,
       DisplayName: definition.DisplayName,
       Description: definition.Description,
       Category: definition.Category,

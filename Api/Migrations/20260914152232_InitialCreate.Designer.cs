@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AksiyonFutbol.Api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20260910150328_InitialCreate")]
+    [Migration("20260914152232_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

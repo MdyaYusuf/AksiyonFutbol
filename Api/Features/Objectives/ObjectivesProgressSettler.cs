@@ -71,19 +71,18 @@ public class ObjectivesProgressSettler(
       return;
     }
 
-    await _businessRules.EnsureProgressSeededAsync(club.Id, cancellationToken);
     List<ClubObjectiveProgress> progresses = await LoadProgressAsync(club.Id, cancellationToken);
 
     ClubActionPathAffinity affinity = ClubActionPresentationRules.GetPathAffinity(definition);
 
     if (affinity == ClubActionPathAffinity.Honorable)
     {
-      Increment(progresses, ObjectiveKey.IntegrityActions3, 1);
+      ApplyMetric(progresses, ObjectiveMetric.IntegrityActions, 1);
     }
 
     if (definition.IsShady)
     {
-      Increment(progresses, ObjectiveKey.GrayActions3, 1);
+      ApplyMetric(progresses, ObjectiveMetric.GrayActions, 1);
     }
 
     await SyncIdentityThresholdsAsync(club, club.President, cancellationToken);
@@ -98,9 +97,8 @@ public class ObjectivesProgressSettler(
       return;
     }
 
-    await _businessRules.EnsureProgressSeededAsync(club.Id, cancellationToken);
     List<ClubObjectiveProgress> progresses = await LoadProgressAsync(club.Id, cancellationToken);
-    Increment(progresses, ObjectiveKey.FacilityUpgrade1, 1);
+    ApplyMetric(progresses, ObjectiveMetric.FacilityUpgrades, 1);
   }
 
   public async Task SettleAfterSeasonPackageAsync(
@@ -128,16 +126,15 @@ public class ObjectivesProgressSettler(
         cancellationToken);
     }
 
-    await _businessRules.EnsureProgressSeededAsync(club.Id, cancellationToken);
     List<ClubObjectiveProgress> progresses = await LoadProgressAsync(club.Id, cancellationToken);
 
     if (track == PresidentIdentityTrack.Honorable)
     {
-      Complete(progresses, ObjectiveKey.SeasonHonorablePackage);
+      ApplyMetric(progresses, ObjectiveMetric.SeasonHonorableFinished, 1);
     }
     else if (track == PresidentIdentityTrack.Shady)
     {
-      Complete(progresses, ObjectiveKey.SeasonShadyPackage);
+      ApplyMetric(progresses, ObjectiveMetric.SeasonShadyFinished, 1);
     }
 
     await SyncIdentityThresholdsAsync(club, president, cancellationToken);
@@ -153,17 +150,16 @@ public class ObjectivesProgressSettler(
       return;
     }
 
-    await _businessRules.EnsureProgressSeededAsync(club.Id, cancellationToken);
     List<ClubObjectiveProgress> progresses = await LoadProgressAsync(club.Id, cancellationToken);
 
     if (ClubPresidentMoralityBusinessRules.HasHonorablePowerUnlock(president.ReputationPoints))
     {
-      Complete(progresses, ObjectiveKey.ReachHonorablePower);
+      ApplyMetric(progresses, ObjectiveMetric.HonorablePowerReached, 1);
     }
 
     if (ClubPresidentMoralityBusinessRules.HasShadyTierIIUnlock(president.InfamyPoints))
     {
-      Complete(progresses, ObjectiveKey.ReachGrayTierII);
+      ApplyMetric(progresses, ObjectiveMetric.GrayTierIIReached, 1);
     }
   }
 
@@ -178,7 +174,6 @@ public class ObjectivesProgressSettler(
       return;
     }
 
-    await _businessRules.EnsureProgressSeededAsync(club.Id, cancellationToken);
     List<ClubObjectiveProgress> progresses = await LoadProgressAsync(club.Id, cancellationToken);
 
     bool won = goalsFor > goalsAgainst;
@@ -186,17 +181,17 @@ public class ObjectivesProgressSettler(
 
     if (won)
     {
-      Increment(progresses, ObjectiveKey.WinMatches5, 1);
+      ApplyMetric(progresses, ObjectiveMetric.MatchWins, 1);
     }
 
     if (goalsFor > 0)
     {
-      Increment(progresses, ObjectiveKey.ScoreGoals10, goalsFor);
+      ApplyMetric(progresses, ObjectiveMetric.GoalsScored, goalsFor);
     }
 
     if (cleanSheet)
     {
-      Increment(progresses, ObjectiveKey.CleanSheets3, 1);
+      ApplyMetric(progresses, ObjectiveMetric.CleanSheets, 1);
     }
 
     await SyncIdentityThresholdsAsync(club, club.President, cancellationToken);
@@ -212,31 +207,22 @@ public class ObjectivesProgressSettler(
       cancellationToken: cancellationToken);
   }
 
-  private static void Increment(
+  private static void ApplyMetric(
     List<ClubObjectiveProgress> progresses,
-    ObjectiveKey key,
+    ObjectiveMetric metric,
     int amount)
   {
-    ClubObjectiveProgress? progress = progresses.FirstOrDefault(p => p.ObjectiveKey == key);
-    if (progress == null)
+    IReadOnlyList<ObjectiveKey> keys = ObjectiveCatalog.KeysForMetric(metric);
+
+    foreach (ObjectiveKey key in keys)
     {
-      return;
+      ClubObjectiveProgress? progress = progresses.FirstOrDefault(p => p.ObjectiveKey == key);
+      if (progress == null)
+      {
+        continue;
+      }
+
+      ObjectivesBusinessRules.ApplyProgressIncrement(progress, amount);
     }
-
-    ObjectivesBusinessRules.ApplyProgressIncrement(progress, amount);
-    // tracked entity — Update not required for EF-tracked
-  }
-
-  private static void Complete(
-    List<ClubObjectiveProgress> progresses,
-    ObjectiveKey key)
-  {
-    ClubObjectiveProgress? progress = progresses.FirstOrDefault(p => p.ObjectiveKey == key);
-    if (progress == null)
-    {
-      return;
-    }
-
-    ObjectivesBusinessRules.CompleteOneShot(progress);
   }
 }

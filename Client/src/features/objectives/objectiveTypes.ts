@@ -13,6 +13,22 @@ export const ObjectiveKey = {
 
 export type ObjectiveKey = (typeof ObjectiveKey)[keyof typeof ObjectiveKey];
 
+export const ObjectiveMetric = {
+  MatchWins: 1,
+  GoalsScored: 2,
+  CleanSheets: 3,
+  IntegrityActions: 4,
+  GrayActions: 5,
+  HonorablePowerReached: 6,
+  GrayTierIIReached: 7,
+  FacilityUpgrades: 8,
+  SeasonHonorableFinished: 9,
+  SeasonShadyFinished: 10,
+} as const;
+
+export type ObjectiveMetric =
+  (typeof ObjectiveMetric)[keyof typeof ObjectiveMetric];
+
 export const ObjectiveCategory = {
   Match: 1,
   Actions: 2,
@@ -61,6 +77,7 @@ export interface ObjectiveReward {
 
 export interface ObjectiveProgress {
   key: ObjectiveKey;
+  metric: ObjectiveMetric;
   displayName: string;
   description: string;
   category: ObjectiveCategory;

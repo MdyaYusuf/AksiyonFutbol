@@ -8,7 +8,6 @@ namespace Api.Features.Objectives;
 
 public partial class ObjectivesBusinessRules(
   IClubRepository _clubRepository,
-  IClubObjectiveProgressRepository _progressRepository,
   IPresidentTitleUnlockRepository _titleUnlockRepository)
 {
   public async Task<Club> GetClubByUserIdIfExistAsync(
@@ -81,19 +80,6 @@ public partial class ObjectivesBusinessRules(
     }
   }
 
-  public static void CompleteOneShot(ClubObjectiveProgress progress)
-  {
-    if (progress.Status != ObjectiveStatus.Active)
-    {
-      return;
-    }
-
-    progress.CurrentValue = progress.TargetValue;
-    progress.Status = ObjectiveStatus.Completed;
-    progress.CompletedDate = DateTime.UtcNow;
-    progress.UpdatedDate = DateTime.UtcNow;
-  }
-
   public static string ToTitleKey(string displayName)
   {
     string trimmed = displayName.Trim().ToLowerInvariant();
@@ -106,37 +92,6 @@ public partial class ObjectivesBusinessRules(
     }
 
     return cleaned;
-  }
-
-  public async Task EnsureProgressSeededAsync(
-    Guid clubId,
-    CancellationToken cancellationToken = default)
-  {
-    List<ClubObjectiveProgress> existing = await _progressRepository.GetAllAsync(
-      filter: p => p.ClubId == clubId,
-      enableTracking: true,
-      cancellationToken: cancellationToken);
-
-    HashSet<ObjectiveKey> existingKeys = existing.Select(p => p.ObjectiveKey).ToHashSet();
-
-    foreach (ObjectiveDefinition definition in ObjectiveCatalog.All())
-    {
-      if (existingKeys.Contains(definition.Key))
-      {
-        continue;
-      }
-
-      await _progressRepository.AddAsync(
-        new ClubObjectiveProgress
-        {
-          ClubId = clubId,
-          ObjectiveKey = definition.Key,
-          CurrentValue = 0,
-          TargetValue = definition.TargetValue,
-          Status = ObjectiveStatus.Active
-        },
-        cancellationToken);
-    }
   }
 
   public async Task<PresidentTitleUnlock?> FindTitleUnlockAsync(

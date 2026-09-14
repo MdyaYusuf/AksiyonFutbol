@@ -9,6 +9,7 @@ public sealed record ObjectiveRewardDto(
 
 public sealed record ObjectiveProgressDto(
   ObjectiveKey Key,
+  ObjectiveMetric Metric,
   string DisplayName,
   string Description,
   ObjectiveCategory Category,

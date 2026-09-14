@@ -3,6 +3,7 @@ namespace Api.Features.Objectives;
 public sealed class ObjectiveDefinition
 {
   public required ObjectiveKey Key { get; init; }
+  public required ObjectiveMetric Metric { get; init; }
   public required string DisplayName { get; init; }
   public required string Description { get; init; }
   public required ObjectiveCategory Category { get; init; }
@@ -22,6 +23,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.WinMatches5,
+      Metric = ObjectiveMetric.MatchWins,
       DisplayName = "First Wins",
       Description = "Win 5 matches with your club.",
       Category = ObjectiveCategory.Match,
@@ -32,6 +34,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.ScoreGoals10,
+      Metric = ObjectiveMetric.GoalsScored,
       DisplayName = "Goal Rush",
       Description = "Score 10 goals with your club.",
       Category = ObjectiveCategory.Match,
@@ -42,6 +45,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.CleanSheets3,
+      Metric = ObjectiveMetric.CleanSheets,
       DisplayName = "Shutout Specialist",
       Description = "Keep 3 clean sheets.",
       Category = ObjectiveCategory.Match,
@@ -52,6 +56,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.IntegrityActions3,
+      Metric = ObjectiveMetric.IntegrityActions,
       DisplayName = "Clean Hands",
       Description = "Successfully complete 3 Integrity-path actions.",
       Category = ObjectiveCategory.Actions,
@@ -63,6 +68,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.GrayActions3,
+      Metric = ObjectiveMetric.GrayActions,
       DisplayName = "Under the Table",
       Description = "Successfully complete 3 Gray Area actions.",
       Category = ObjectiveCategory.Actions,
@@ -74,6 +80,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.ReachHonorablePower,
+      Metric = ObjectiveMetric.HonorablePowerReached,
       DisplayName = "Honorable Mandate",
       Description = "Reach Honorable Power by raising Legitimacy to 40.",
       Category = ObjectiveCategory.Identity,
@@ -85,6 +92,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.ReachGrayTierII,
+      Metric = ObjectiveMetric.GrayTierIIReached,
       DisplayName = "Shadow Network",
       Description = "Unlock Gray Tier II by raising Infamy to 40.",
       Category = ObjectiveCategory.Identity,
@@ -96,6 +104,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.FacilityUpgrade1,
+      Metric = ObjectiveMetric.FacilityUpgrades,
       DisplayName = "Grounds Investment",
       Description = "Complete one facility upgrade.",
       Category = ObjectiveCategory.Club,
@@ -106,6 +115,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.SeasonHonorablePackage,
+      Metric = ObjectiveMetric.SeasonHonorableFinished,
       DisplayName = "Clean Season",
       Description = "Finish a season or placement on the Honorable identity track.",
       Category = ObjectiveCategory.Identity,
@@ -116,6 +126,7 @@ public static class ObjectiveCatalog
     new()
     {
       Key = ObjectiveKey.SeasonShadyPackage,
+      Metric = ObjectiveMetric.SeasonShadyFinished,
       DisplayName = "Shadow Season",
       Description = "Finish a season or placement on the Shady identity track.",
       Category = ObjectiveCategory.Identity,
@@ -125,7 +136,24 @@ public static class ObjectiveCatalog
     }
   ];
 
+  private static readonly IReadOnlyDictionary<ObjectiveMetric, IReadOnlyList<ObjectiveKey>> KeysByMetric =
+    Definitions
+      .GroupBy(d => d.Metric)
+      .ToDictionary(
+        g => g.Key,
+        g => (IReadOnlyList<ObjectiveKey>)g.Select(d => d.Key).ToList());
+
   public static IReadOnlyList<ObjectiveDefinition> All() => Definitions;
+
+  public static IReadOnlyList<ObjectiveKey> KeysForMetric(ObjectiveMetric metric)
+  {
+    if (KeysByMetric.TryGetValue(metric, out IReadOnlyList<ObjectiveKey>? keys))
+    {
+      return keys;
+    }
+
+    return [];
+  }
 
   public static ObjectiveDefinition Get(ObjectiveKey key)
   {

@@ -14,6 +14,23 @@ public enum ObjectiveKey
   SeasonShadyPackage = 10
 }
 
+/// <summary>
+/// Progress counters the settler applies. Multiple objectives may share one metric.
+/// </summary>
+public enum ObjectiveMetric
+{
+  MatchWins = 1,
+  GoalsScored = 2,
+  CleanSheets = 3,
+  IntegrityActions = 4,
+  GrayActions = 5,
+  HonorablePowerReached = 6,
+  GrayTierIIReached = 7,
+  FacilityUpgrades = 8,
+  SeasonHonorableFinished = 9,
+  SeasonShadyFinished = 10
+}
+
 public enum ObjectiveCategory
 {
   Match = 1,

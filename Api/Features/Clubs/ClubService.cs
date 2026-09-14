@@ -5,6 +5,7 @@ using Api.Core.Responses;
 using Api.Features.ClubLineups;
 using Api.Features.ClubPresidents;
 using Api.Features.Matches;
+using Api.Features.Objectives;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,7 @@ public class ClubService(
   IClubRepository _clubRepository,
   ClubMapper _mapper,
   ClubBusinessRules _businessRules,
+  IClubObjectiveProgressRepository _objectiveProgressRepository,
   IStarterSquadService _starterSquadService,
   IDefaultClubLineupService _defaultClubLineupService,
   IUnitOfWork _unitOfWork,
@@ -278,6 +280,7 @@ public class ClubService(
     club.Suspicion = _gameOptions.Value.StartingSuspicion;
 
     await _clubRepository.AddAsync(club, cancellationToken);
+    await SeedObjectiveProgressAsync(club, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     CreatedClubResponseDto response = _mapper.EntityToCreatedResponseDto(club);
@@ -568,5 +571,29 @@ public class ClubService(
   {
     return query.Include(c => c.President)
       .Include(c => c.Division);
+  }
+
+  private async Task SeedObjectiveProgressAsync(
+    Club club,
+    CancellationToken cancellationToken)
+  {
+    if (club.IsBot)
+    {
+      return;
+    }
+
+    foreach (ObjectiveDefinition definition in ObjectiveCatalog.All())
+    {
+      await _objectiveProgressRepository.AddAsync(
+        new ClubObjectiveProgress
+        {
+          ClubId = club.Id,
+          ObjectiveKey = definition.Key,
+          CurrentValue = 0,
+          TargetValue = definition.TargetValue,
+          Status = ObjectiveStatus.Active
+        },
+        cancellationToken);
+    }
   }
 }

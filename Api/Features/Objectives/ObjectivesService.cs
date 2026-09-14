@@ -173,7 +173,6 @@ public class ObjectivesService(
   private async Task PrepareClubAsync(Club club, CancellationToken cancellationToken)
   {
     ClubPresident president = club.President!;
-    await _businessRules.EnsureProgressSeededAsync(club.Id, cancellationToken);
     await _progressSettler.SyncIdentityThresholdsAsync(club, president, cancellationToken);
   }
 
