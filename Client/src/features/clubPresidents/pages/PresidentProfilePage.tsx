@@ -61,7 +61,7 @@ export const PresidentProfilePage = () => {
         profileImageUrl={user?.profileImageUrl}
       />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CareerHistoryCard
           president={president}
           club={club}

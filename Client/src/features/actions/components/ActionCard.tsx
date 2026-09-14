@@ -17,7 +17,6 @@ import {
   getActionLockedPresentation,
   cashAccent,
   honorablePowerAccent,
-  legitimacyAccent,
 } from "@/features/actions/utils/actionPresentationHelpers";
 
 interface ActionCardProps {
@@ -167,14 +166,7 @@ export const ActionCard = ({ action, onExecute }: ActionCardProps) => {
       {isLocked ? (
         <div className="mt-auto space-y-2">
           {action.isUnlockTeaser && action.unlockHint ? (
-            <p
-              className={[
-                "font-body-sm text-body-sm",
-                action.isHonorablePower
-                  ? legitimacyAccent.text
-                  : honorablePowerAccent.text,
-              ].join(" ")}
-            >
+            <p className="font-body-sm text-body-sm text-on-surface-variant">
               {action.unlockHint}
             </p>
           ) : null}

@@ -15,13 +15,13 @@ export const ObjectivesTitlesPanel = ({
   onEquip,
 }: ObjectivesTitlesPanelProps) => {
   return (
-    <section className="rounded border border-outline-variant bg-surface-container-high p-4">
+    <section className="rounded border border-[#334155] bg-surface-container-high p-4">
       <div className="mb-4 flex items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 font-headline-sm text-headline-sm text-on-surface">
           <MaterialIcon name="emoji_events" className="text-secondary" />
           Title Cabinet
         </h3>
-        <span className="font-body-sm text-body-sm text-on-surface-variant">
+        <span className="rounded border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
           Equipped: {equippedTitle}
         </span>
       </div>
@@ -44,14 +44,19 @@ export const ObjectivesTitlesPanel = ({
                 "rounded border px-3 py-3 text-left transition-colors",
                 title.isEquipped
                   ? "border-primary/50 bg-primary/10 text-primary"
-                  : "border-outline-variant bg-surface text-on-surface hover:border-primary/40 hover:bg-surface-variant",
+                  : "border-[#334155] bg-surface text-on-surface hover:border-secondary/40 hover:bg-secondary/10",
                 isEquipping ? "opacity-60" : "",
               ].join(" ")}
             >
               <div className="font-body-sm text-body-sm font-semibold">
                 {title.displayName}
               </div>
-              <div className="mt-1 text-[10px] uppercase tracking-wider text-on-surface-variant">
+              <div
+                className={[
+                  "mt-1 text-[10px] uppercase tracking-wider",
+                  title.isEquipped ? "text-primary" : "text-on-surface-variant",
+                ].join(" ")}
+              >
                 {title.isEquipped ? "Equipped" : "Click to equip"}
               </div>
             </button>

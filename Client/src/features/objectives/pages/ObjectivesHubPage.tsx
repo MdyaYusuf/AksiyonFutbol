@@ -9,6 +9,7 @@ import { ObjectivesTitlesPanel } from "@/features/objectives/components/Objectiv
 import type { ObjectiveProgress } from "@/features/objectives/objectiveTypes";
 import {
   filterObjectives,
+  getObjectivesFilterButtonClass,
   type ObjectivesFilter,
 } from "@/features/objectives/utils/objectivesPresentation";
 
@@ -43,6 +44,7 @@ export const ObjectivesHubPage = () => {
   }
 
   const visible = filterObjectives(data.objectives, filter);
+  const hasClaimable = data.claimableCount > 0;
 
   const handleClaim = async (objective: ObjectiveProgress) => {
     setClaimingKey(objective.key);
@@ -64,6 +66,17 @@ export const ObjectivesHubPage = () => {
     }
   };
 
+  let claimStatShellClass =
+    "rounded-lg border border-outline-variant bg-surface-container-high px-4 py-3";
+  let claimStatLabelClass = "font-label-caps text-label-caps text-on-surface-variant";
+  let claimStatValueClass = "font-stat-value text-stat-value text-on-surface-variant";
+
+  if (hasClaimable) {
+    claimStatShellClass = "rounded-lg border border-primary/40 bg-primary/10 px-4 py-3";
+    claimStatLabelClass = "font-label-caps text-label-caps text-primary";
+    claimStatValueClass = "font-stat-value text-stat-value text-primary";
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
       <div className="flex flex-col justify-between gap-4 border-b border-outline-variant pb-6 md:flex-row md:items-end">
@@ -76,13 +89,9 @@ export const ObjectivesHubPage = () => {
             Cunning paths.
           </p>
         </div>
-        <div className="rounded-lg border border-outline-variant bg-surface-container-high px-4 py-3">
-          <div className="font-label-caps text-label-caps text-on-surface-variant">
-            Ready to claim
-          </div>
-          <div className="font-stat-value text-stat-value text-primary">
-            {data.claimableCount}
-          </div>
+        <div className={claimStatShellClass}>
+          <div className={claimStatLabelClass}>Ready to claim</div>
+          <div className={claimStatValueClass}>{data.claimableCount}</div>
         </div>
       </div>
 
@@ -93,7 +102,7 @@ export const ObjectivesHubPage = () => {
         onEquip={handleEquip}
       />
 
-      <div className="flex flex-wrap gap-2 rounded-lg border border-outline-variant bg-surface-container p-1">
+      <div className="flex flex-wrap gap-2 rounded-lg border border-[#334155] bg-surface-container p-1">
         {FILTERS.map((item) => (
           <button
             key={item.id}
@@ -101,12 +110,7 @@ export const ObjectivesHubPage = () => {
             onClick={() => {
               setFilter(item.id);
             }}
-            className={[
-              "rounded px-4 py-2 font-label-caps text-label-caps transition-colors",
-              filter === item.id
-                ? "bg-primary text-on-primary"
-                : "text-on-surface-variant hover:bg-surface-variant",
-            ].join(" ")}
+            className={getObjectivesFilterButtonClass(item.id, filter === item.id)}
           >
             {item.label}
           </button>

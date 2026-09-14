@@ -20,6 +20,7 @@ import { ClubStatusCard } from "@/features/dashboard/components/ClubStatusCard";
 import { DashboardLifecycleBanner } from "@/features/dashboard/components/DashboardLifecycleBanner";
 import { LeagueStandingsCard } from "@/features/dashboard/components/LeagueStandingsCard";
 import { NextMatchCard } from "@/features/dashboard/components/NextMatchCard";
+import { ObjectivesSnapshotCard } from "@/features/dashboard/components/ObjectivesSnapshotCard";
 import { RecentFormCard } from "@/features/dashboard/components/RecentFormCard";
 import { NewsHeadlinesCard } from "@/features/news/components/NewsHeadlinesCard";
 import { getNextMatch, getRecentMatches } from "@/features/dashboard/utils/matchHelpers";
@@ -150,20 +151,21 @@ export const DashboardPage = () => {
       {showNextMatch ? (
         <NextMatchCard clubId={club.id} nextMatch={nextMatch} />
       ) : null}
+      <NewsHeadlinesCard />
+      <ClubStatusCard club={club} />
       {president ? (
         <PresidentCompactSummary
           president={president}
-          className="col-span-1 md:col-span-4 lg:col-span-4"
+          className="col-span-1 md:col-span-4 lg:col-span-6"
         />
       ) : null}
-      <ClubStatusCard club={club} />
       <LeagueStandingsCard
         divisionName={club?.divisionName ?? undefined}
         standings={standings}
         currentClubId={club?.id}
       />
-      {club && <RecentFormCard clubId={club.id} matches={recentMatches} />}
-      <NewsHeadlinesCard />
+      {club ? <RecentFormCard clubId={club.id} matches={recentMatches} /> : null}
+      <ObjectivesSnapshotCard />
     </div>
   );
 };

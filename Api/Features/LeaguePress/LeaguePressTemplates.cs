@@ -99,7 +99,7 @@ public static class LeaguePressTemplates
       ClubActionType.FairPlayPledge => (
         $"{clubName} sign fair-play charter",
         $"{clubName} publicly backed a fair-play pledge, promising cleaner conduct on and off the field. " +
-        "Rival clubs noticed — some approvingly, others with a raised eyebrow."),
+        "Rival clubs noticed, some approvingly, others with a raised eyebrow."),
       ClubActionType.CleanMediaCampaign => (
         $"{clubName} reset the narrative",
         $"{clubName} launched a clean media campaign aimed at rebuilding trust with supporters and sponsors. " +
@@ -124,7 +124,7 @@ public static class LeaguePressTemplates
       $"{clubName} enter the placement league",
       $"President {presidentName} has formally registered {clubName} in {divisionName}. " +
       "The division desk welcomes the newest boardroom on the block and notes that every rival " +
-      "club in this cohort is still finding its feet — the table is wide open from week one.");
+      "club in this cohort is still finding its feet. The table is wide open from week one.");
   }
 
   public static (string Headline, string Body) BuildPlacementRulesCopy(
@@ -135,11 +135,11 @@ public static class LeaguePressTemplates
       "Placement desk publishes graduation bands",
       $"{divisionName} will run for {options.TutorialMatchWeeks} match weeks. " +
       "Points at the final whistle decide where clubs graduate: " +
-      $"Gold ({options.GraduationGoldMinPoints}–{options.GraduationGoldMaxPoints} pts), " +
-      $"Silver ({options.GraduationSilverMinPoints}–{options.GraduationSilverMaxPoints}), " +
-      $"Bronze ({options.GraduationBronzeMinPoints}–{options.GraduationBronzeMaxPoints}), " +
-      $"or Iron ({options.GraduationIronMinPoints}–{options.GraduationIronMaxPoints}). " +
-      "The league office says there are no second chances — finish strong or carry the label into competitive football.");
+      $"Gold ({options.GraduationGoldMinPoints} to {options.GraduationGoldMaxPoints} pts), " +
+      $"Silver ({options.GraduationSilverMinPoints} to {options.GraduationSilverMaxPoints}), " +
+      $"Bronze ({options.GraduationBronzeMinPoints} to {options.GraduationBronzeMaxPoints}), " +
+      $"or Iron ({options.GraduationIronMinPoints} to {options.GraduationIronMaxPoints}). " +
+      "The league office says there are no second chances. Finish strong or carry the label into competitive football.");
   }
 
   public static (string Headline, string Body) BuildPlacementBotPrepCopy(
@@ -151,7 +151,7 @@ public static class LeaguePressTemplates
       0 => (
         $"{botClubName} squad already in training camp",
         $"Staff at {botClubName} spent the opening days running shape drills and set-piece reps. " +
-        "Local reporters describe a disciplined, slightly paranoid camp — the kind that treats every placement week as a job interview."),
+        "Local reporters describe a disciplined, slightly paranoid camp, the kind that treats every placement week as a job interview."),
       1 => (
         $"{botClubName} board talk up \"statement season\"",
         $"Insiders around {botClubName} briefed journalists on ambition without naming targets. " +

@@ -28,7 +28,7 @@ const resultStyles = {
 
 export const RecentFormCard = ({ clubId, matches }: RecentFormCardProps) => {
   return (
-    <div className="col-span-1 flex flex-col rounded-lg border border-outline-variant bg-surface-container-high p-4 md:col-span-8 lg:col-span-4">
+    <div className="col-span-1 flex flex-col rounded-lg border border-outline-variant bg-surface-container-high p-4 md:col-span-4 lg:col-span-4">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-label-caps text-on-surface-variant">Recent Form</h2>
         <Link to="/app/fixtures" className="text-body-sm text-primary hover:underline">
